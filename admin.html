@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="preload" href="/fonts/Millo-RiceSoyMilk80.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/fonts/Millo-RiceSoyMilk90.ttf" as="font" type="font/ttf" crossorigin>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>柚子的后台 · 只有自己用</title>
@@ -1879,6 +1881,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         if (c) {
           CARDS = normCardsRaw(c);
           CARDS_SAVED = JSON.parse(JSON.stringify(CARDS)); // 档案基准 = 载入的已保存数据
+          var at = parseSetting('artist_templates', null);
+          if (at && typeof at === 'object' && !Array.isArray(at)) { ART_TPL = at; }
+          else { ART_TPL = artistArchiveRaw(CARDS_SAVED); saveSetting('artist_templates', ART_TPL); } // 一次性种子：把现行档案固定成模板
           // 旧数据补 id 后静默存回，主页「编辑卡」从此有真实 card_id 可传
           if (CARDS.some(function (x) { return !x.id; })) saveCardsQuiet(function () {});
         }
@@ -2118,6 +2123,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   });
   // ===== 色卡管理（一张色卡 · 多名画师）=====
   var CARDS = [];
+  var ART_TPL = {}; // 画师价格模板：独立固定存储，不随色卡保存/删除漂移
   var CARDS_SAVED = []; // 最近一次「正式保存」的快照：画师价格档案只从这里读取，草稿/自动保存不进档
   var BJDS = [];
   var BJDS_SAVED = []; // 最近一次保存的快照：取消编辑时从这里还原
@@ -2352,10 +2358,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (CARDS_EDIT >= CARDS.length) CARDS_EDIT = CARDS.length - 1;
     renderCards();
   }
-  function artistArchive() {
-    // 画师价格档案：只读「已正式保存」的色卡数据（同名取最先出现的记录，可重复使用）
+  function artistArchiveRaw(list) {
+    // 从色卡列表提取「画师名 → 项目+价格」（同名取最先出现的记录）
     var map = {};
-    CARDS_SAVED.forEach(function (c0) {
+    (list || []).forEach(function (c0) {
       normCard(c0).artists.forEach(function (a0) {
         var n = (a0.name || '').trim();
         if (!n || map[n]) return;
@@ -2363,6 +2369,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       });
     });
     return map;
+  }
+  function artistArchive() {
+    // 画师价格模板：独立存储，只在「存为模板」时更新——色卡怎么删怎么改都不影响下次带出
+    return ART_TPL;
+  }
+  function tplSaveFor(name, rows) {
+    ART_TPL[name] = (rows || []).map(function (r) { return { label: r.label || '', price: r.price }; });
+    saveSetting('artist_templates', ART_TPL);
   }
   // 色卡/BJD 后台筛选排序：只影响当前显示顺序，不改 CARDS/BJDS 原始数组（默认排序即恢复手动顺序）
   var SC_FILTER = 'all', SC_SORT = 'manual';
@@ -2658,7 +2672,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     }
     if (SC_POP.type === 'artist') {
       var c1 = normCard(CARDS[SC_POP.i]);
-      return '<button class="sc-opt sc-opt-del" data-opt="del">删除画师</button>' +
+      return '<button class="sc-opt" data-opt="tpl">★ 存为画师模板</button>' +
+        '<button class="sc-opt sc-opt-del" data-opt="del">删除画师</button>' +
         '<button class="sc-opt" data-opt="copy">复制画师</button>' +
         '<button class="sc-opt" data-opt="up"' + (SC_POP.ai === 0 ? ' disabled' : '') + '>↑ 往上移动</button>' +
         '<button class="sc-opt" data-opt="down"' + (SC_POP.ai === c1.artists.length - 1 ? ' disabled' : '') + '>↓ 往下移动</button>' +
@@ -2880,7 +2895,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   document.body.appendChild(comboPop);
   function comboSource(el) {
     if (!el || !el.classList) return null;
-    if (el.classList.contains('a-name')) return Object.keys(artistArchive());
+    if (el.classList.contains('a-name')) {
+      var names = Object.keys(artistArchive()).slice();
+      CARDS_SAVED.forEach(function (c0) { normCard(c0).artists.forEach(function (a0) { var n = (a0.name || '').trim(); if (n && names.indexOf(n) === -1) names.push(n); }); });
+      return names;
+    }
     if (el.id === 'p-tag' || el.classList.contains('e-tag')) return tagOptions();
     if (el.classList.contains('wk-artist')) return WORK_META.artists.slice(); // 稿件画师联想
     if (el.classList.contains('wk-cat')) return WORK_META.cats.slice(); // 稿件种类联想
@@ -3095,6 +3114,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (opt === 'del') { a.rows.splice(ctx.ri, 1); if (!a.rows.length) a.rows.push({ label: '', price: '', qty: 1 }); }
       if (opt === 'copy') { a.rows.splice(ctx.ri + 1, 0, JSON.parse(JSON.stringify(a.rows[ctx.ri]))); toast('已复制，可继续修改'); }
     } else if (ctx.type === 'artist') {
+      if (opt === 'tpl') {
+        var nm = ((c.artists[ctx.ai] || {}).name || '').trim();
+        if (!nm) { toast('先填画师名字，再存模板'); return; }
+        tplSaveFor(nm, c.artists[ctx.ai].rows);
+        toast('已把「' + nm + '」当前项目价格存为模板');
+        popClose();
+        return; // 存模板不动卡片数据
+      }
       if (opt === 'up' && ctx.ai > 0) { var t3 = c.artists[ctx.ai - 1]; c.artists[ctx.ai - 1] = c.artists[ctx.ai]; c.artists[ctx.ai] = t3; }
       if (opt === 'down' && ctx.ai < c.artists.length - 1) { var t4 = c.artists[ctx.ai + 1]; c.artists[ctx.ai + 1] = c.artists[ctx.ai]; c.artists[ctx.ai] = t4; }
       if (opt === 'del') { c.artists.splice(ctx.ai, 1); if (!c.artists.length) c.artists.push({ name: '', rows: [{ label: '', price: '', qty: 1 }] }); }

@@ -1,0 +1,27 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>
+<script>try{localStorage.setItem('yuki-admin-session',JSON.stringify({r:'f'}))}catch(e){}</script>
+<iframe id="f" src="__t_adm.html" style="width:1440px;height:900px;border:0;display:none"></iframe>
+<pre id="out"></pre>
+<script>
+document.getElementById('out').textContent='loading...';
+</script>
+<script>
+const f=document.getElementById('f');
+f.onload=()=>setTimeout(()=>{
+  try{
+    const d=f.contentDocument,w=f.contentWindow;
+    const bad=[];
+    let total=0;
+    // 全元素扫描（含伪元素抽查）
+    d.querySelectorAll('*').forEach(el=>{
+      const cs=w.getComputedStyle(el);
+      if(cs.display==='none'||el.tagName==='SCRIPT'||el.tagName==='STYLE'||el.tagName==='LINK')return;
+      total++;
+      if(cs.fontFamily.indexOf('Millo Body')===-1 && !el.matches('svg,br')){
+        bad.push(el.tagName+'.'+(el.className&&el.className.toString?el.className.toString().split(' ')[0]:'')+'「'+(el.textContent||'').trim().slice(0,10)+'」→'+cs.fontFamily.split(',')[0]);
+      }
+    });
+    document.getElementById('out').textContent='扫描 '+total+' 个可见元素\n'+(bad.length?('非米豆乳元素 '+bad.length+' 个:\n'+bad.slice(0,15).join('\n')):'全部=Millo Body ✓');
+  }catch(e){document.getElementById('out').textContent='ERR '+e.message;}
+},6000);
+</script></body></html>
