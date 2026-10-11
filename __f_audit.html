@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>
+<iframe id="f" style="width:375px;height:800px;border:0"></iframe>
+<pre id="out"></pre>
+<script>
+const OUT=[];function p(s){OUT.push(s);document.getElementById('out').textContent=OUT.join('\n');}
+const PAGES=['/index.html','/photos/','/bjd/','/color-card/','/shop/','/askbox/','/works/','/admin.html'];
+const f=document.getElementById('f');let idx=0;
+async function fontsLoaded(w){try{await w.document.fonts.ready;}catch(e){}}
+function next(){
+  if(idx>=PAGES.length){p('=== DONE ===');return;}
+  const url=PAGES[idx++];
+  f.src='http://localhost:8901'+url;
+  f.onload=async()=>{
+    setTimeout(async()=>{
+      try{
+        const d=f.contentDocument,w=f.contentWindow;
+        await fontsLoaded(w);
+        const ff=(el)=>w.getComputedStyle(el).fontFamily.split(',')[0];
+        const body=ff(d.body);
+        const h1=d.querySelector('h1,h2');
+        const r=[];
+        r.push('body='+body);
+        if(h1)r.push('h='+ff(h1));
+        // 字体真的加载了吗
+        const loaded={};
+        ['Millo Heading','Millo Body','Millo Data'].forEach(n=>{try{loaded[n]=w.document.fonts.check('16px "'+n+'"');}catch(e){loaded[n]='ERR';}});
+        r.push('loaded='+JSON.stringify(loaded));
+        // 404 检查：resource entries
+        const res=w.performance.getEntriesByType('resource').filter(e=>e.name.includes('/fonts/'));
+        res.forEach(e=>r.push('font:'+e.name.split('/').pop()+(e.responseStatus?(' status='+e.responseStatus):'')));
+        // 375 溢出
+        const ov=d.scrollingElement.scrollWidth-d.scrollingElement.clientWidth;
+        if(ov>1)r.push('✗375溢出'+ov+'px');
+        p((ov>1?'✗ ':'✓ ')+url+' | '+r.join(' | '));
+      }catch(e){p('ERR '+url+' '+e.message);}
+      next();
+    },7000);
+  };
+}
+f.src='http://localhost:8901/index.html';
+f.onload=()=>{if(idx===0){idx=1;setTimeout(async()=>{
+  try{const d=f.contentDocument,w=f.contentWindow;await fontsLoaded(w);
+    const ff=(el)=>w.getComputedStyle(el).fontFamily.split(',')[0];
+    const r=['body='+ff(d.body)];
+    const h1=d.querySelector('h1');if(h1)r.push('h='+ff(h1));
+    const loaded={};['Millo Heading','Millo Body','Millo Data'].forEach(n=>{try{loaded[n]=w.document.fonts.check('16px "'+n+'"');}catch(e){loaded[n]='ERR';}});
+    r.push('loaded='+JSON.stringify(loaded));
+    w.performance.getEntriesByType('resource').filter(e=>e.name.includes('/fonts/')).forEach(e=>r.push('font:'+e.name.split('/').pop()));
+    const ov=d.scrollingElement.scrollWidth-d.scrollingElement.clientWidth;
+    if(ov>1)r.push('✗375溢出'+ov+'px');
+    p((ov>1?'✗ ':'✓ ')+'/index.html | '+r.join(' | '));
+  }catch(e){p('ERR '+e.message);}
+  next();},7000);}};
+</script></body></html>

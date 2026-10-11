@@ -1,0 +1,269 @@
+/* ═══════════ 全站统一汉堡菜单（唯一导航数据源 + 唯一渲染逻辑）═══════════
+   所有页面共用这一个组件：
+   - 一个导航数据源（NAV + 数据库同步）
+   - 一个渲染逻辑（内容/顺序/样式/动画全站一致）
+   - 当前页轻微高亮，子菜单默认收起
+   - 新增/删除页面只需改这里的 NAV
+   站点结构（根绝对路径，无 hash 路由）：
+   / = 主页 · /photos/ = Photo Gallery · /bjd/ = BJD · /color-card/ = 色卡
+   /shop/ = 小铺 · /askbox/ = 提问箱 · /admin.html = 后台 */
+(function () {
+  var LANG = 'zh';
+  try { LANG = localStorage.getItem('yuki-lang') || 'zh'; } catch (e) {}
+  function t(zh, en) { return LANG === 'en' ? en : zh; }
+
+  // ── 唯一导航数据源 ──
+  var NAV = [
+    { key: 'home', zh: 'Home', en: 'Home', page: 'index', url: '/' },
+    { key: 'cal', zh: '日历', en: 'Calendar', page: 'index', url: '/', scrollTo: 'home-cal', scroll: true },
+    { key: 'gallery', group: true, nav: 'gallery', zh: '照片展示', en: 'Photo Gallery', items: [
+      { key: 'instax', zh: '拍立得展示', en: 'Instax Display', page: 'photos', url: '/photos/?sec=instax', sec: 'instax' },
+      { key: 'film', zh: '胶卷相机照片展示', en: 'Film Camera Pictures', page: 'photos', url: '/photos/?sec=film', sec: 'film' }
+    ]},
+    { key: 'bjd', zh: 'BJD', en: 'BJD', page: 'bjd', url: '/bjd/' },
+    { key: 'cards', zh: '色卡', en: 'Color Cards', page: 'cards', url: '/color-card/' },
+    { key: 'works', zh: '稿件展示', en: 'Works', page: 'works', url: '/works/' },
+    { key: 'shop', group: true, nav: 'shop', zh: '我的小铺', en: 'My Shop', items: [
+      { key: 'shop', zh: '逛小铺', en: 'Shop', page: 'shop', url: '/shop/' },
+      { key: 'reviews', zh: '评价返图', en: 'Review', page: 'shop', url: '/shop/?sec=reviews', sec: 'reviews' },
+      { key: 'pay', zh: '付款方式', en: 'Payment', page: 'shop', url: '/shop/?sec=pay', sec: 'pay' }
+    ]},
+    { key: 'anon', zh: '匿名留言', en: 'Ask Box', page: 'askbox', url: '/askbox/' },
+    { key: 'links', zh: '找到我', en: 'Find Me', page: 'index', url: '/', scrollTo: 'links', scroll: true }
+  ];
+
+  // 当前页面 / 当前子区（?sec= / ?id= / ?card=）
+  var QS = new URLSearchParams(location.search);
+  var curPage = (function () {
+    var p = location.pathname;
+    if (p.indexOf('/photos/') === 0) return 'photos';
+    if (p.indexOf('/bjd/') === 0) return 'bjd';
+    if (p.indexOf('/color-card/') === 0) return 'cards';
+    if (p.indexOf('/works/') === 0) return 'works';
+    if (p.indexOf('/shop/') === 0 || p.indexOf('/shop.html') === 0) return 'shop';
+    if (p.indexOf('/askbox/') === 0) return 'askbox';
+    if (p.indexOf('/admin.html') === 0) return 'admin';
+    return 'index';
+  })();
+  var curSec = QS.get('sec') || '';
+  var curSubId = QS.get('id') != null ? QS.get('id') : (QS.get('card') != null ? QS.get('card') : '');
+
+  function hrefOf(item) {
+    if (curPage === item.page && item.scrollTo) return item.url; // 同页区块入口：点击时 data-scroll 平滑滚动，不产生 hash
+    return item.url;
+  }
+  function itemMatchesCurrent(it) {
+    if (it.page !== curPage) return false;
+    if (it.sec) return it.sec === curSec && !curSubId;
+    if (/(^|\?|&)id=/.test(it.url)) return curSubId !== '' && QS.get('id') === curSubId && it.page === 'bjd';
+    if (/(^|\?|&)card=/.test(it.url)) return curSubId !== '' && QS.get('card') === curSubId && it.page === 'cards';
+    return !curSec && !curSubId;
+  }
+
+  function el(html) {
+    var d = document.createElement('div');
+    d.innerHTML = html.trim();
+    return d.firstChild;
+  }
+  function span(zh, en) {
+    return '<span data-zh="' + zh + '" data-en="' + en + '">' + t(zh, en) + '</span>';
+  }
+
+  function buildMenu(nav) {
+    var frag = document.createDocumentFragment();
+    nav.forEach(function (item) {
+      if (item.group) {
+        var g = el('<div class="menu-group" data-nav="' + item.nav + '" data-key="' + item.key + '"></div>');
+        var tg = el('<button class="menu-toggle" type="button">' + span(item.zh, item.en) + '<span class="plus"></span></button>');
+        var sub = el('<div class="submenu"></div>');
+        item.items.forEach(function (s) {
+          sub.appendChild(el('<a href="' + hrefOf(s) + '" data-key="' + s.key + '"><span class="dash">-</span>' + span(s.zh, s.en) + '</a>'));
+        });
+        g.appendChild(tg); g.appendChild(sub);
+        frag.appendChild(g);
+      } else {
+        var attrs = [];
+        if (item.scroll && curPage === item.page) attrs.push('data-scroll="' + item.scrollTo + '"');
+        frag.appendChild(el('<a class="menu-link" data-key="' + item.key + '" href="' + hrefOf(item) + '" ' + attrs.join(' ') + '>' + span(item.zh, item.en) + '</a>'));
+      }
+    });
+    return frag;
+  }
+  function isCurrent(item) {
+    return itemMatchesCurrent(item);
+  }
+
+  // 柚子专属：登录后是可展开分组（管理后台），没登录是普通链接
+  function buildOwner() {
+    var logged = false;
+    try { logged = !!localStorage.getItem('yuki-admin-session'); } catch (e) {}
+    if (logged) {
+      var g = el('<div class="menu-group" id="menu-owner-group" style="margin-top:auto;"></div>');
+      g.appendChild(el('<button class="menu-toggle" type="button">' + span('柚子专属', 'Yuki\'s Personal') + '<span class="plus"></span></button>'));
+      var sub = el('<div class="submenu"></div>');
+      sub.appendChild(el('<a class="menu-link" data-key="admin" href="/admin.html">' + span('管理后台', 'Admin') + '</a>'));
+      g.appendChild(sub);
+      return g;
+    }
+    return el('<a class="menu-owner" id="menu-owner-link" href="/admin.html" style="margin-top:auto;">' + span('柚子专属', 'Yuki\'s Personal') + '</a>');
+  }
+
+  function render() {
+    var menu = document.getElementById('menu');
+    if (!menu) return;
+    menu.innerHTML = '';
+    menu.appendChild(buildMenu(NAV));
+    menu.appendChild(buildOwner());
+  }
+
+  // ── 数据库同步（全站同一份数据：照片分区 / 区域标题与显隐 / BJD 名单 / 色卡名单）──
+  var DB_BASE = 'https://zajcglvlzsolygvjeumb.supabase.co/rest/v1/';
+  var DB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphamNnbHZsenNvbHlndmpldW1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMzI4NjUsImV4cCI6MjEwNjgwODg2NX0.7_Pthb3wPInb5v4o7IoWejozEvDZQgNPS8DgwikQ8ys';
+  function dbFetch(path) {
+    return fetch(DB_BASE + path, { headers: { 'apikey': DB_KEY, 'Authorization': 'Bearer ' + DB_KEY } })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .catch(function () { return []; });
+  }
+
+  function refresh() {
+    render();
+    Promise.all([
+      dbFetch('photo_sections?select=id,key,name_zh,name_en,sort&order=sort.asc,created_at.asc&limit=100'),
+      dbFetch('site_settings?select=key,value&key=in.(areas,bjds,cards)&limit=10')
+    ]).then(function (res) {
+      var sections = res[0] || [];
+      var settings = {};
+      (res[1] || []).forEach(function (row) {
+        try { settings[row.key] = typeof row.value === 'string' ? JSON.parse(row.value) : row.value; } catch (e) {}
+      });
+      var areas = settings.areas || {};
+      var bjds = settings.bjds || [];
+      var cardsRaw = settings.cards;
+      var cards = Array.isArray(cardsRaw) ? cardsRaw : (cardsRaw && cardsRaw.artists ? cardsRaw.artists : []);
+
+      var nav = NAV.map(function (item) { return Object.assign({}, item); });
+      // 区域显隐（主页后台设置的同一份数据：关了的区块菜单里也不出现）
+      nav = nav.filter(function (item) {
+        var aKey = item.nav || (item.page === 'index' ? item.key : item.key);
+        if (item.key === 'home' || item.key === 'cal') return true;
+        var a = areas[aKey];
+        return !(a && a.visible === false);
+      });
+      // 照片分区 → 照片展示子项（BJD 分区已合并为独立区块）
+      var gal = nav.filter(function (i) { return i.nav === 'gallery'; })[0];
+      if (gal) {
+        var secs = sections.filter(function (s) { return s.key !== 'bjd'; })
+          .map(function (s) { return { key: s.key, zh: s.name_zh, en: s.name_en, page: 'photos', url: '/photos/?sec=' + encodeURIComponent(s.key), sec: s.key }; });
+        if (secs.length) gal.items = secs;
+        var ga = areas.gallery;
+        if (ga && ga.title_zh) { gal.zh = ga.title_zh; gal.en = ga.title_en || ga.title_zh; }
+      }
+      // BJD 名单 → BJD 分组（有娃娃才展开成组，没有就是普通入口）
+      var bjdIdx = -1;
+      nav.forEach(function (item, i) { if (item.key === 'bjd') bjdIdx = i; });
+      if (bjdIdx > -1 && bjds.length) {
+        nav[bjdIdx] = { key: 'bjd', group: true, nav: 'bjd', zh: 'BJD', en: 'BJD', items: bjds.map(function (b, i) {
+          var nm = b.name || '未命名娃娃';
+          return { key: 'bjd-' + i, zh: nm, en: nm, page: 'bjd', url: '/bjd/?id=' + i, sub: String(i) };
+        })};
+      }
+      // 色卡名单 → 色卡分组（同一套数据）
+      var cardsIdx = -1;
+      nav.forEach(function (item, i) { if (item.key === 'cards') cardsIdx = i; });
+      if (cardsIdx > -1 && cards.length) {
+        nav[cardsIdx] = { key: 'cards', group: true, nav: 'cards', zh: '色卡', en: 'Color Cards', items: cards.map(function (c, i) {
+          var nm = c.name || '未命名色卡';
+          return { key: 'card-' + i, zh: nm, en: nm, page: 'cards', url: '/color-card/?card=' + i, sub: String(i) };
+        })};
+      }
+      render();
+      applyCurrent();
+      document.dispatchEvent(new CustomEvent('sitemenu:rendered'));
+    });
+  }
+
+  // ── 交互：开合 / 手风琴 / 点击后收起（全站同一套）──
+  function setMenu(open) {
+    var burger = document.querySelector('.burger');
+    var menu = document.getElementById('menu');
+    var mask = document.getElementById('menu-mask');
+    if (!menu) return;
+    menu.classList.toggle('open', open);
+    mask = mask || createMask();
+    mask.classList.toggle('open', open);
+    if (burger) burger.classList.toggle('open', open);
+  }
+  function createMask() {
+    var mask = document.createElement('div');
+    mask.className = 'menu-mask';
+    mask.id = 'menu-mask';
+    mask.addEventListener('click', function () { setMenu(false); });
+    document.body.appendChild(mask);
+    return mask;
+  }
+  document.addEventListener('click', function (e) {
+    var burger = e.target.closest('.burger');
+    if (burger) { setMenu(!document.getElementById('menu').classList.contains('open')); return; }
+    var toggle = e.target.closest('.menu-toggle');
+    if (toggle && toggle.closest('#menu')) { toggle.closest('.menu-group').classList.toggle('open'); return; }
+    var a = e.target.closest('#menu a');
+    if (a) {
+      var sc = a.getAttribute('data-scroll');
+      setMenu(false);
+      if (sc && typeof window.__menuScroll === 'function') {
+        e.preventDefault();
+        window.__menuScroll(sc);
+      }
+      return;
+    }
+    if (!e.target.closest('#menu')) setMenu(false);
+  });
+
+  // 当前页高亮：只切换 class，不重建菜单（避免菜单打开时突然跳动）
+  function applyCurrent() {
+    var menu = document.getElementById('menu');
+    if (!menu) return;
+    var curKey = currentKey();
+    menu.querySelectorAll('[data-key]').forEach(function (el) {
+      el.classList.toggle('current', el.getAttribute('data-key') === curKey);
+    });
+  }
+  function currentKey() {
+    var best = '';
+    var scan = function (cond) {
+      NAV.forEach(function (item) {
+        if (best) return;
+        var pool = item.group ? item.items : [item];
+        pool.forEach(function (it) { if (best) return; if (cond(it)) best = it.key; });
+      });
+    };
+    scan(function (it) { return itemMatchesCurrent(it); });   // 精确匹配（含 ?sec= / ?id= / ?card=）
+    if (!best) scan(function (it) { return it.page === curPage; }); // 页面默认项
+    if (curPage === 'admin') best = 'admin';
+    return best;
+  }
+
+  // 页面通知：子页加载后调用（分组 active 由菜单组件独占管理）
+  function notify(name) {
+    var menu = document.getElementById('menu');
+    if (!menu) return;
+    menu.querySelectorAll('[data-nav]').forEach(function (g) {
+      g.classList.toggle('active', g.getAttribute('data-nav') === name);
+    });
+  }
+
+  window.addEventListener('popstate', function () {
+    applyCurrent();
+  });
+
+  window.SiteMenu = {
+    refresh: refresh,
+    close: function () { setMenu(false); },
+    notify: notify,
+    applyCurrent: applyCurrent
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refresh);
+  else refresh();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyCurrent);
+  else applyCurrent();
+})();
