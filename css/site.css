@@ -563,8 +563,8 @@
   }
 
   /* ===== 装饰符号 ♥ ☆ ===== */
-  section[id^="sec-"] > h2::after { content: " ♥"; color: var(--accent); font-size: .8em; }
-  .subpage-title::after { content: " ♥"; color: var(--accent); font-size: .75em; }
-  .hero-name p::after { content: " ☆"; color: var(--accent); }
-  .section-sub::after { content: " ☆"; color: var(--accent-soft); }
-  .cal-head b::after { content: " ☆"; color: var(--accent); font-size: .85em; }
+  section[id^="sec-"] > h2::after { content: " ♥"; font-size: .8em; }
+  .subpage-title::after { content: " ♥"; font-size: .75em; }
+  .hero-name p::after { content: " ☆"; }
+  .section-sub::after { content: " ☆"; }
+  .cal-head b::after { content: " ☆"; font-size: .85em; }
