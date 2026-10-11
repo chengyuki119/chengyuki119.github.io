@@ -1,5 +1,5 @@
-  @font-face { font-family: "Millo Body"; src: url("/fonts/Millo-RiceSoyMilk80.ttf") format("truetype"); font-display: swap; }
-  @font-face { font-family: "Millo Body Heavy"; src: url("/fonts/Millo-RiceSoyMilk90.ttf") format("truetype"); font-display: swap; }  /* 标题备用 */
+  @font-face { font-family: "Millo Body"; src: url("/fonts/Millo-RiceSoyMilk80.woff2") format("woff2"), url("/fonts/Millo-RiceSoyMilk80.ttf") format("truetype"); font-display: swap; }
+  @font-face { font-family: "Millo Body Heavy"; src: url("/fonts/Millo-RiceSoyMilk90.woff2") format("woff2"), url("/fonts/Millo-RiceSoyMilk90.ttf") format("truetype"); font-display: swap; }  /* 标题备用 */
 /* ═══════════ 全站统一汉堡菜单（唯一组件，所有页面共用）═══════════ */
 .burger {
   width: 42px; height: 42px;

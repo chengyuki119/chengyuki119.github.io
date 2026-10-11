@@ -1,6 +1,6 @@
   /* ===== Millo 字体（测试版） ===== */
-  @font-face { font-family: "Millo Body Heavy"; src: url("/fonts/Millo-RiceSoyMilk90.ttf") format("truetype"); font-display: swap; }
-  @font-face { font-family: "Millo Body"; src: url("/fonts/Millo-RiceSoyMilk80.ttf") format("truetype"); font-display: swap; }
+  @font-face { font-family: "Millo Body Heavy"; src: url("/fonts/Millo-RiceSoyMilk90.woff2") format("woff2"), url("/fonts/Millo-RiceSoyMilk90.ttf") format("truetype"); font-display: swap; }
+  @font-face { font-family: "Millo Body"; src: url("/fonts/Millo-RiceSoyMilk80.woff2") format("woff2"), url("/fonts/Millo-RiceSoyMilk80.ttf") format("truetype"); font-display: swap; }
 
   :root {
     --bg: #fffcfd;
@@ -347,8 +347,8 @@
   .cal-day .dots { position: absolute; left: 50%; transform: translateX(-50%); bottom: 1px; display: flex; gap: 2px; align-items: center; }
   .cal-day .dots i { width: 4px; height: 4px; border-radius: 50%; display: block; }
   .cal-day .dots em { font-style: normal; font-size:12px; line-height: 1; color: var(--muted); }
-  .cal-date-big { font-size: min(16px, 4vw); font-weight: 700; white-space: nowrap; }
-  .cal-side-sub { font-size:16px; color: var(--muted); margin: 12px 0 4px; font-weight: 600; }
+  .cal-date-big { font-size: min(17px, 4vw); font-weight: 700; white-space: nowrap; }
+  .cal-side-sub { font-size: min(17px, 4vw); color: var(--muted); margin: 12px 0 4px; font-weight: 600; }
   .cal-ev { padding: 4px 0; font-size:17px; cursor: pointer; }
   .cal-ev .ev-sub { font-size:15px; color: var(--muted); }
   .cal-ev .ev-detail { display: none; font-size:16px; color: var(--text); background: var(--card-hover); border-radius: 8px; padding: 6px 10px; margin-top: 4px; }
