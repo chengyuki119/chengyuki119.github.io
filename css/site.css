@@ -29,7 +29,7 @@
   button { font-family: inherit; }
 
   h1, h2, .subpage-title { font-family: var(--font-heading); }
-  h3, .bjd-size-h, .bjd-chip, .cal-day, .f-data { font-family: var(--font-data); }
+  h3, .bjd-size-h, .bjd-chip, .cal-day, .cal-head b, .f-data { font-family: var(--font-data); }
 
   /* ===== 顶部白色长条：左语言 · 中 logo · 右菜单 ===== */
   .topbar {
