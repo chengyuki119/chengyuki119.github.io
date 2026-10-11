@@ -13,7 +13,7 @@
     --accent-soft: #ffc8d6;
     --radius: 16px;
     --font-heading: "Millo Heading", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-    --font-body: "Millo Heading", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    --font-body: "Millo Body", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
     --font-data: "Millo Data", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
