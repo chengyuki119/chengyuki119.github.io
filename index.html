@@ -973,16 +973,18 @@
   }
   // ===== 自动纪念日：BJD / 色卡出生日期 → 特殊天数（100/200/300/500/1000/2000/3000/4000/5000天）+ 每年生日 =====
   // 每次载入由原始记录一致地生成（不落库），改日期/删记录自动跟随，永不重复；手动创建的日历事件不受影响
-  function genAutoEvents(bjds, cards) {
+  function genAutoEvents(bjds, cards, days) {
     var out = [];
     var valid = function (d) { return /^\d{4}-\d{2}-\d{2}$/.test(String(d || '')); };
     var iso = function (d) { return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth() + 1) + '-' + pad2(d.getUTCDate()); };
-    function pushAll(name, birth) {
+    var zhDay = { 100: '一百天', 200: '两百天', 300: '三百天', 400: '四百天', 500: '五百天', 600: '六百天', 700: '七百天', 800: '八百天', 900: '九百天', 1000: '一千天', 2000: '两千天', 3000: '三千天', 4000: '四千天', 5000: '五千天' };
+    function pushAll(name, birth, withYearly) {
       var p = birth.split('-').map(Number);
-      [100, 200, 300, 500, 1000, 2000, 3000, 4000, 5000].forEach(function (n) {
+      [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000].forEach(function (n) {
         var d = new Date(Date.UTC(p[0], p[1] - 1, p[2] + (n - 1))); // 出生当天算第 1 天
-        out.push({ name: name + (LANG === 'en' ? ' · Day ' + n : '出生第' + n + '天'), day: iso(d), type: '纪念', repeat: 'none', auto: true });
+        out.push({ name: name + (LANG === 'en' ? ' · Day ' + n : zhDay[n]), day: iso(d), type: '纪念', repeat: 'none', auto: true });
       });
+      if (withYearly === false) return; // 手动重要日子只加百天系列，不生成「N岁」
       var nowY = new Date().getFullYear();
       var maxY = Math.min(80, nowY - p[0] + 2);
       for (var y = 1; y <= maxY; y++) {
@@ -992,6 +994,14 @@
     }
     (bjds || []).forEach(function (b) { if (b && b.name && valid(b.birth)) pushAll(b.name, b.birth); });
     (cards || []).forEach(function (c) { if (c && c.name && valid(c.birth)) pushAll(c.name, c.birth); });
+    // 手动添加的重要日子（生日除外）：也按起始日期生成每一百天纪念
+    (days || []).forEach(function (ev) {
+      if (!ev || !valid(ev.day)) return;
+      var ty = String(ev.type || '');
+      if (ty === 'birthday' || ty.indexOf('生日') > -1) return; // 生日保持「xxx 几岁生日」不变
+      var nm = String(ev.name || '').replace(/的?生日\s*$/, '').trim();
+      if (nm) pushAll(nm, ev.day);
+    });
     return out;
   }
   function loadEvents() {
@@ -1004,7 +1014,7 @@
       migrateOldBirthdays();
       var S = {};
       (res[1] || []).forEach(function (r) { try { S[r.key] = JSON.parse(r.value); } catch (e) {} });
-      EVENTS = rows.concat(genAutoEvents(S.bjds || [], S.cards || []));
+      EVENTS = rows.concat(genAutoEvents(S.bjds || [], S.cards || [], rows));
       renderCal();
       renderCalSide();
     }).catch(function () { DB_POST_OK = false; renderCal(); renderCalSide(); });
