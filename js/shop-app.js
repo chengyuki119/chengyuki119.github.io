@@ -733,7 +733,7 @@
     if (!USER) {
       box.innerHTML =
         '<h2 style="font-size:22px;margin-bottom:14px;">' + t('我的账号', 'My Account') + '</h2>' +
-        '<div class="card" style="padding:18px;max-width:560px;">' +
+        '<div class="card" style="padding:18px;">' +
           '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
             '<button class="buy-btn acct-tab on" data-v="login" style="padding:8px 20px;">' + t('登录', 'Log in') + '</button>' +
             '<button class="buy-btn acct-tab" data-v="reg" style="padding:8px 20px;background:#fff;">' + t('注册', 'Sign up') + '</button>' +
@@ -799,7 +799,7 @@
         ADDR = arr(res[1]);
         box.innerHTML =
           '<h2 style="font-size:22px;margin-bottom:14px;">' + t('我的账号', 'My Account') + '</h2>' +
-          '<div class="card" style="padding:18px;max-width:560px;margin-bottom:14px;">' +
+          '<div class="card" style="padding:18px;margin-bottom:14px;">' +
             '<p style="font-size:15px;color:var(--muted);margin-bottom:10px;">' + esc(USER.email) + '</p>' +
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
               '<input id="pf-name" placeholder="' + t('姓名', 'Full name') + '" value="' + escAttr(prof.name || '') + '">' +
@@ -809,13 +809,13 @@
             '<button class="buy-btn" id="pf-save" style="margin-top:10px;padding:9px 20px;">' + t('保存资料', 'Save profile') + '</button> ' +
             '<button class="buy-btn" id="pf-out" style="padding:9px 20px;background:#fff;color:var(--muted);">' + t('退出登录', 'Log out') + '</button>' +
           '</div>' +
-          '<div class="card" style="padding:18px;max-width:560px;margin-bottom:14px;">' +
+          '<div class="card" style="padding:18px;margin-bottom:14px;">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
               '<span style="font-size:16px;color:var(--text,#5d6780);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:13px;color:var(--muted,#9aa5bd);">' + t('邮件通知服务尚未配置，启用前不会发送邮件', 'Email delivery not configured yet — no emails will be sent until enabled') + '</span></span>' +
               subToggleHtml('pf-notify', !!(prof && prof.notify_new) || subRead()) +
             '</div>' +
           '</div>' +
-          '<div class="card" style="padding:18px;max-width:560px;">' +
+          '<div class="card" style="padding:18px;">' +
             '<b style="font-size:17px;">' + t('收货地址', 'Addresses') + '</b><div id="pf-addr" style="margin-top:8px;"></div>' +
             '<button class="buy-btn" id="pf-add" style="margin-top:8px;padding:7px 16px;">' + t('＋ 新地址', '+ New address') + '</button>' +
             '<div id="pf-addr-form"></div>' +
@@ -1032,7 +1032,7 @@
     var old = document.getElementById('fav-section'); if (old) old.remove();
     var sec = document.createElement('div');
     sec.id = 'fav-section';
-    sec.style.cssText = 'background:var(--card);border-radius:var(--radius,18px);padding:16px;margin-top:14px;max-width:520px;';
+    sec.style.cssText = 'background:var(--card);border-radius:var(--radius,18px);padding:16px;margin-top:14px;';
     var items = FAVS.map(function (id) { return PRODUCTS.filter(function (p) { return String(p.id) === String(id); })[0]; }).filter(Boolean);
     sec.innerHTML = '<b style="font-size:17px;">' + t('我的收藏', 'Favorites') + '</b>' +
       (items.length ? '<div class="grid" style="margin-top:10px;">' + items.map(productCardShop).join('') + '</div>'

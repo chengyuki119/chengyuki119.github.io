@@ -35,7 +35,7 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261023f">
+<link rel="stylesheet" href="/css/site.css?v=20261023g">
   <link rel="stylesheet" href="/site-menu.css">
     <script src="/site-menu.js" defer></script>
 </head>
@@ -104,7 +104,9 @@
     <!-- 自制小铺（日历下方） -->
     <section id="shop">
       <h2>我的小铺</h2>
-      <a class="entry-card" href="/shop/">
+      <div id="home-shop-grid" class="home-shop-grid"></div>
+      <a id="home-shop-more" class="home-shop-more" href="/shop/" data-zh="查看全部商品" data-en="View all items" style="display:none;">查看全部商品</a>
+      <a class="entry-card" href="/shop/" style="margin-top:16px;">
         
         <div class="entry-info">
           <h3>小柚的小铺</h3>
@@ -112,8 +114,6 @@
         </div>
         <div class="entry-arrow">›</div>
       </a>
-      <div id="home-shop-grid" class="home-shop-grid"></div>
-      <a id="home-shop-more" class="home-shop-more" href="/shop/" data-zh="查看全部商品" data-en="View all items" style="display:none;">查看全部商品</a>
     </section>
 
     <section id="sec-gallery">
@@ -209,7 +209,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261023f"></script>
+<script src="/js/site-common.js?v=20261023g"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -1455,7 +1455,7 @@
   });
   loadHidden().then(fetchProducts).then(function (rows) {
     if (!grid) return;
-    var list = (rows || []).filter(function (p) { return HIDE.indexOf(String(p.id)) === -1; }).slice(0, 4);
+    var list = (rows || []).filter(function (p) { return HIDE.indexOf(String(p.id)) === -1; }).slice(0, 3);
     if (!list.length) return; // 没有可展示的商品：只保留原入口卡，不放假数据
     grid.innerHTML = list.map(cardHtml).join('');
     if (more) more.style.display = '';
