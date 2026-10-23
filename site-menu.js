@@ -116,8 +116,12 @@
   // 柚子专属：没登录是普通链接（后台登录入口）；专属账号登录后是可展开分组；普通买家登录后隐藏
   function buildOwner() {
     var s = readSession();
-    // 有权限模块的页面（前台/商城）：严格按专属确认结果；后台自身（无 site-common）维持原规则
-    if (s && window.ykExclusiveCheck && window.__YK_MENU_OK !== true) return el('<div style="display:none;"></div>');
+    // 前台/商城（有权限模块）：未登录与普通买家一律不显示专属后台入口，仅专属确认后显示
+    if (window.ykExclusiveCheck) {
+      if (window.__YK_MENU_OK !== true) return el('<div style="display:none;"></div>');
+    } else if (!s) {
+      return el('<div style="display:none;"></div>'); // 后台自身未登录也不显示
+    }
     if (s) {
       var g = el('<div class="menu-group" id="menu-owner-group" style="margin-top:auto;"></div>');
       g.appendChild(el('<button class="menu-toggle" type="button">' + span('柚子专属', 'Yuki\'s Personal') + '<span class="plus"></span></button>'));

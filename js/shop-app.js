@@ -98,7 +98,7 @@
     (root || document).querySelectorAll('input, textarea').forEach(function (i) {
       if (i.dataset.styled) return;
       i.dataset.styled = '1';
-      i.style.cssText = 'width:100%;padding:11px 14px;font-size:17px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:12px;background:#fff;outline:none;color:var(--text,#b88f9d);font-family:inherit;box-sizing:border-box;transition:border-color .15s;';
+      i.style.cssText = 'width:100%;padding:11px 14px;font-size:17px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:12px;background:#fff;outline:none;color:var(--text,#5d6780);font-family:inherit;box-sizing:border-box;transition:border-color .15s;';
       i.addEventListener('focus', function () { i.style.borderColor = 'var(--accent,#ff6fa5)'; });
       i.addEventListener('blur', function () { i.style.borderColor = 'var(--accent-soft,#ffc8d6)'; });
     });
@@ -107,7 +107,7 @@
     scope.querySelectorAll('.acct-tab').forEach(function (x) {
       var on = x === active;
       x.style.background = on ? 'var(--accent,#ff6fa5)' : '#fff';
-      x.style.color = on ? '#fff' : 'var(--muted,#c9aeb8)';
+      x.style.color = on ? '#fff' : 'var(--muted,#9aa5bd)';
       x.style.boxShadow = on ? 'none' : 'inset 0 0 0 1.5px var(--accent-soft,#ffc8d6)';
     });
   }
@@ -503,7 +503,11 @@
       '</div>' +
       '<div style="display:flex;gap:8px;margin-top:8px;"><button class="buy-btn" id="af-save" style="padding:8px 18px;">' + t('保存', 'Save') + '</button>' +
       '<button class="buy-btn" id="af-cancel" style="padding:8px 18px;background:#fff;color:var(--muted);">' + t('取消', 'Cancel') + '</button></div>';
-    box.querySelectorAll('input').forEach(function (i) { i.style.cssText = 'width:100%;padding:10px 12px;font-size:16px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;'; });
+    box.querySelectorAll('input').forEach(function (i) {
+      i.style.cssText = 'width:100%;padding:10px 12px;font-size:16px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:12px;background:#fff;outline:none;color:var(--text,#5d6780);font-family:inherit;box-sizing:border-box;transition:border-color .15s;';
+      i.addEventListener('focus', function () { i.style.borderColor = 'var(--accent,#ff6fa5)'; });
+      i.addEventListener('blur', function () { i.style.borderColor = 'var(--accent-soft,#ffc8d6)'; });
+    });
     document.getElementById('af-cancel').addEventListener('click', function () { box.style.display = 'none'; });
     document.getElementById('af-save').addEventListener('click', function () {
       var body = {
@@ -729,7 +733,7 @@
     if (!USER) {
       box.innerHTML =
         '<h2 style="font-size:22px;margin-bottom:14px;">' + t('我的账号', 'My Account') + '</h2>' +
-        '<div class="card" style="padding:18px;max-width:520px;">' +
+        '<div class="card" style="padding:18px;max-width:560px;">' +
           '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
             '<button class="buy-btn acct-tab on" data-v="login" style="padding:8px 20px;">' + t('登录', 'Log in') + '</button>' +
             '<button class="buy-btn acct-tab" data-v="reg" style="padding:8px 20px;background:#fff;">' + t('注册', 'Sign up') + '</button>' +
@@ -752,7 +756,7 @@
             '<p style="font-size:16px;margin:10px 0 4px;">' + t('收货地址', 'Shipping address') + '</p>' +
             '<div id="rg-addr"></div>' +
             '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:10px 12px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:12px;background:#fff;">' +
-              '<span style="font-size:15px;color:var(--text,#b88f9d);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:12px;color:var(--muted,#c9aeb8);">' + t('默认关闭 · 邮件通知服务尚未配置，启用前不会发送邮件', 'Off by default · email delivery not configured yet') + '</span></span>' +
+              '<span style="font-size:16px;color:var(--text,#5d6780);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:13px;color:var(--muted,#9aa5bd);">' + t('默认关闭 · 邮件通知服务尚未配置，启用前不会发送邮件', 'Off by default · email delivery not configured yet') + '</span></span>' +
               subToggleHtml('rg-notify', false) +
             '</div>' +
             '<button class="buy-btn" id="rg-go" style="width:100%;padding:11px;background:var(--accent);color:#fff;font-size:17px;margin-top:10px;">' + t('注册', 'Create account') + '</button>' +
@@ -807,7 +811,7 @@
           '</div>' +
           '<div class="card" style="padding:18px;max-width:560px;margin-bottom:14px;">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
-              '<span style="font-size:15px;color:var(--text,#b88f9d);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:12px;color:var(--muted,#c9aeb8);">' + t('邮件通知服务尚未配置，启用前不会发送邮件', 'Email delivery not configured yet — no emails will be sent until enabled') + '</span></span>' +
+              '<span style="font-size:16px;color:var(--text,#5d6780);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:13px;color:var(--muted,#9aa5bd);">' + t('邮件通知服务尚未配置，启用前不会发送邮件', 'Email delivery not configured yet — no emails will be sent until enabled') + '</span></span>' +
               subToggleHtml('pf-notify', !!(prof && prof.notify_new) || subRead()) +
             '</div>' +
           '</div>' +
@@ -879,6 +883,13 @@
     }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (res) {
       if (!res.ok || !res.j.access_token) { toast((res.j.msg) || t('登录失败，检查邮箱密码', 'Login failed')); return; }
       USER = { a: res.j.access_token, r: res.j.refresh_token, email: email }; saveUser();
+      // 柚子专属账号：写入后台会话并直接进入原有专属后台，不落普通买家账户页
+      if (email.toLowerCase() === 'chengyuki119@gmail.com') {
+        try { localStorage.setItem('yuki-admin-session', JSON.stringify({ r: res.j.refresh_token, t: Date.now() })); } catch (e) {}
+        toast(t('专属身份已确认，正在进入后台…', 'Yuki mode — opening admin…'));
+        setTimeout(function () { location.href = '/admin.html'; }, 500);
+        return;
+      }
       toast(t('欢迎回来～', 'Welcome back~'));
       afterLogin();
     });

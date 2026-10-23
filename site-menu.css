@@ -13,7 +13,7 @@
 }
 .burger span {
   width: 20px; height: 2px;
-  background: #5d6780;
+  background: var(--text);
   border-radius: 2px;
   transition: transform .25s, opacity .25s;
 }
@@ -146,7 +146,7 @@
 }
 .menu-acct-cart {
   background: var(--card, #fff2f7);
-  color: var(--text, #b88f9d);
+  color: var(--text, #5d6780);
   position: relative;
   transition: background .2s;
 }
