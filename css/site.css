@@ -6,8 +6,8 @@
     --bg: #fffcfd;
     --card: #fff2f7;
     --card-hover: #ffe7f0;
-    --text: #5d6780;
-    --muted: #9aa5bd;
+    --text: #b88f9d;
+    --muted: #c9aeb8;
     --accent: #ff6fa5;
     --accent-soft: #ffc8d6;
     --radius: 16px;
@@ -478,7 +478,7 @@
     position: fixed;
     bottom: 32px; left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: var(--text);
+    background: #5d6780;
     color: #fff;
     font-size:17px;
     padding: 10px 22px;
@@ -576,3 +576,42 @@
 .pg-thumbs::-webkit-scrollbar { display: none; }
 .pg-thumb { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(255,255,255,.9); cursor: pointer; opacity: .85; transition: opacity .2s, border-color .2s; box-sizing: border-box; background: var(--card); display: block; }
 .pg-thumb.on { border-color: var(--accent); opacity: 1; }
+
+/* ═══ 首页小铺商品展示（视觉规范参考色卡页卡片）═══ */
+.home-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 18px;
+}
+.home-shop-grid .hs-card {
+  display: block; text-decoration: none;
+  background: #fff; border-radius: 18px; overflow: hidden;
+  box-shadow: 0 2px 12px rgba(255,143,171,.12);
+  transition: transform .18s, box-shadow .18s;
+}
+.home-shop-grid .hs-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(255,143,171,.2); }
+.home-shop-grid .hs-card.off { opacity: .62; }
+.hs-info { padding: 12px 14px 14px; }
+.hs-tag {
+  display: inline-block; font-size: 13px; color: var(--muted);
+  background: var(--card); border-radius: 999px; padding: 2px 10px;
+}
+.hs-name {
+  display: block; margin-top: 6px; font-size: 18px; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hs-row { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+.hs-price { flex: 1; font-size: 17px; font-weight: 600; color: var(--accent); }
+.hs-price small { font-size: 13px; margin-right: 1px; }
+.hs-st { font-size: 13px; color: var(--muted); }
+.home-shop-more {
+  display: inline-block; margin-top: 16px;
+  font-size: 16px; color: var(--accent); text-decoration: none;
+  background: var(--card); border-radius: 999px; padding: 9px 22px;
+  transition: background .2s;
+}
+.home-shop-more:hover { background: var(--card-hover); }
+@media (max-width: 640px) {
+  .home-shop-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}

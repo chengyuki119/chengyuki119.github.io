@@ -884,7 +884,7 @@ function ykGatePage(mode) {
   return check.then(function (res) {
     if (res.ok === 'pending') {
       var bar = document.createElement('div');
-      bar.style.cssText = 'position:sticky;top:0;z-index:99;background:var(--card,#fff2f7);color:var(--text,#5d6780);text-align:center;font-size:14px;padding:7px 12px;border-bottom:1px solid var(--accent-soft,#ffc8d6);';
+      bar.style.cssText = 'position:sticky;top:0;z-index:99;background:var(--card,#fff2f7);color:var(--text,#b88f9d);text-align:center;font-size:14px;padding:7px 12px;border-bottom:1px solid var(--accent-soft,#ffc8d6);';
       bar.textContent = (window.LANG === 'en' ? 'Permission layer not active yet (waiting for SQL).' : '专属权限层尚未启用（等待 SQL），当前仅前端临时放行。');
       document.body.insertBefore(bar, document.body.firstChild);
       return true;
@@ -901,12 +901,12 @@ function ykGatePage(mode) {
       btns = '<a href="/shop/?sec=account&next=' + encodeURIComponent(location.pathname + location.search) + '" style="display:inline-block;background:var(--accent,#ff6fa5);color:#fff;border-radius:999px;padding:11px 26px;font-size:16px;text-decoration:none;">' + (en ? 'Go to Login' : '去登录') + '</a>';
     } else {
       btns = '<button id="yk-logout" style="background:var(--accent,#ff6fa5);color:#fff;border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Log Out' : '退出登录') + '</button>' +
-             ' <a href="/" style="display:inline-block;margin-left:10px;color:var(--muted,#9aa5bd);text-decoration:none;">' + (en ? 'Back to Home' : '返回主页') + '</a>';
+             ' <a href="/" style="display:inline-block;margin-left:10px;color:var(--muted,#c9aeb8);text-decoration:none;">' + (en ? 'Back to Home' : '返回主页') + '</a>';
     }
     wrap.innerHTML = '<div style="background:var(--card,#fff2f7);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
       '<div style="font-size:34px;color:var(--accent,#ff6fa5);line-height:1;">♥</div>' +
-      '<h2 style="font-size:20px;color:var(--text,#5d6780);margin:14px 0 8px;">' + title + '</h2>' +
-      '<p style="font-size:15px;color:var(--muted,#9aa5bd);margin:0 0 22px;">' +
+      '<h2 style="font-size:20px;color:var(--text,#b88f9d);margin:14px 0 8px;">' + title + '</h2>' +
+      '<p style="font-size:15px;color:var(--muted,#c9aeb8);margin:0 0 22px;">' +
         (logged
           ? (mode === 'photos'
               ? (en ? 'You are logged in — enjoying the photos~' : '你已登录，慢慢看照片～')

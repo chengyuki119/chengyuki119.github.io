@@ -97,7 +97,7 @@
         var tg = el('<button class="menu-toggle" type="button">' + span(item.zh, item.en) + '<span class="plus"></span></button>');
         var sub = el('<div class="submenu"></div>');
         item.items.forEach(function (s) {
-          sub.appendChild(el('<a href="' + hrefOf(s) + '" data-key="' + s.key + '"><span class="dash">-</span>' + span(s.zh, s.en) + '</a>'));
+          sub.appendChild(el('<a href="' + hrefOf(s) + '" data-key="' + s.key + '">' + span(s.zh, s.en) + '</a>'));
         });
         g.appendChild(tg); g.appendChild(sub);
         frag.appendChild(g);
@@ -136,7 +136,7 @@
     var logged = !!(s && (s.a || s.r));
     return (list || []).filter(function (item) {
       if (item.key === 'gallery') return logged;
-      if (item.key === 'bjd' || item.key === 'cards' || item.key === 'works') return window.__YK_MENU_OK === true;
+      if (item.key === 'cal' || item.key === 'bjd' || item.key === 'cards' || item.key === 'works') return window.__YK_MENU_OK === true;
       return true;
     });
   }

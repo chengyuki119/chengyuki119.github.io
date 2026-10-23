@@ -35,7 +35,7 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261023d">
+<link rel="stylesheet" href="/css/site.css?v=20261023e">
   <link rel="stylesheet" href="/site-menu.css">
     <script src="/site-menu.js" defer></script>
 </head>
@@ -112,6 +112,8 @@
         </div>
         <div class="entry-arrow">›</div>
       </a>
+      <div id="home-shop-grid" class="home-shop-grid"></div>
+      <a id="home-shop-more" class="home-shop-more" href="/shop/" data-zh="查看全部商品" data-en="View all items" style="display:none;">查看全部商品</a>
     </section>
 
     <section id="sec-gallery">
@@ -207,7 +209,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261023d"></script>
+<script src="/js/site-common.js?v=20261023e"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -1068,16 +1070,30 @@
     return out;
   }
   function ykCalGate(S) {
+    // 日历是柚子专属内容：未登录/普通买家隐藏，仅专属账号显示
+    var cal = document.getElementById('home-cal');
+    var logged = false;
+    try {
+      var ss = JSON.parse(localStorage.getItem('yuki-user-session') || 'null') || JSON.parse(localStorage.getItem('yuki-admin-session') || 'null');
+      logged = !!(ss && (ss.a || ss.r));
+    } catch (e) {}
+    if (cal && !logged) cal.style.display = 'none'; // 未登录同步隐藏，避免闪现
     if (!window.ykExclusiveCheck) return Promise.resolve(S);
     return window.ykExclusiveCheck().then(function (res) {
-      if (res && res.ok === false) { S.bjds = []; S.cards = []; return S; }
-      if (res && res.ok === true && window.ykExclusiveData) {
-        return Promise.all(['bjds', 'cards'].map(function (k) {
-          return window.ykExclusiveData(k).catch(function () { return []; });
-        })).then(function (r) { S.bjds = r[0] || []; S.cards = r[1] || []; return S; });
+      if (res && res.ok === true) {
+        if (cal) cal.style.display = '';
+        if (window.ykExclusiveData) {
+          return Promise.all(['bjds', 'cards'].map(function (k) {
+            return window.ykExclusiveData(k).catch(function () { return []; });
+          })).then(function (r) { S.bjds = r[0] || []; S.cards = r[1] || []; return S; });
+        }
+        return S;
       }
+      // 未确认 / 无权限 / pending：一律隐藏（宁可少显示，不可泄露）
+      if (cal) cal.style.display = 'none';
+      if (res && res.ok === false) { S.bjds = []; S.cards = []; }
       return S;
-    }).catch(function () { return S; });
+    }).catch(function () { if (cal) cal.style.display = 'none'; return S; });
   }
   function loadEvents() {
     Promise.all([
@@ -1398,6 +1414,53 @@
     renderCal();
     renderCalSide();
   })();
+</script>
+<script>
+// ═══ 首页小铺：展示 4 件真实商品（与商城同一套上下架规则；下架/删除的不出现；不显示成本）═══
+(function () {
+  var HIDE = [];
+  function loadHidden() {
+    return fetch(DB_BASE + 'site_settings?select=value&key=eq.shop_hidden', { headers: DB_HEADERS })
+      .then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+        try { var v = JSON.parse((rows && rows[0] && rows[0].value) || '[]'); HIDE = Array.isArray(v) ? v.map(String) : []; } catch (e) { HIDE = []; }
+      }).catch(function () { HIDE = []; });
+  }
+  function fetchProducts() {
+    var sel = 'id,name,price,tag,image_url,images,sold,stock,display_only';
+    return fetch(DB_BASE + 'products?select=' + sel + '&order=created_at.desc&limit=100', { headers: DB_HEADERS })
+      .then(function (r) { return r.json(); })
+      .then(function (rows) { return Array.isArray(rows) ? rows : []; })
+      .catch(function () { return []; });
+  }
+  function statusOf(p) { return p.display_only ? 'display' : (p.sold || !(p.stock > 0)) ? 'out' : 'on'; }
+  function cardHtml(p) {
+    var imgs = pagerImgsOf({ images: p.images, image_url: p.image_url });
+    var st = statusOf(p);
+    var stText = st === 'on' ? '在售' : st === 'display' ? '仅展示' : '售尽';
+    return '<div class="hs-card' + (st === 'on' ? '' : ' off') + '" data-href="/shop/?id=' + encodeURIComponent(p.id) + '">' +
+      pagerWrapHtml(imgs, p.name || '') +
+      '<div class="hs-info">' +
+        '<span class="hs-tag">' + escDb(p.tag || '没有标签') + '</span>' +
+        '<b class="hs-name">' + escDb(p.name || '') + '</b>' +
+        '<div class="hs-row"><span class="hs-price">' + (p.price ? '<small>¥</small>' + fmtMoney(p.price) : '') + '</span>' +
+        '<span class="hs-st">' + stText + '</span></div>' +
+      '</div></div>';
+  }
+  var grid = document.getElementById('home-shop-grid');
+  var more = document.getElementById('home-shop-more');
+  if (grid) grid.addEventListener('click', function (e) {
+    if (e.target.closest('.pg-btn, .pg-thumb, .pg-dots')) return; // 翻页操作不跳转
+    var card = e.target.closest('.hs-card');
+    if (card && card.getAttribute('data-href')) location.href = card.getAttribute('data-href');
+  });
+  loadHidden().then(fetchProducts).then(function (rows) {
+    if (!grid) return;
+    var list = (rows || []).filter(function (p) { return HIDE.indexOf(String(p.id)) === -1; }).slice(0, 4);
+    if (!list.length) return; // 没有可展示的商品：只保留原入口卡，不放假数据
+    grid.innerHTML = list.map(cardHtml).join('');
+    if (more) more.style.display = '';
+  });
+})();
 </script>
 </body>
 </html>

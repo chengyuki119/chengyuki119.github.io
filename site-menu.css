@@ -13,7 +13,7 @@
 }
 .burger span {
   width: 20px; height: 2px;
-  background: var(--text);
+  background: #5d6780;
   border-radius: 2px;
   transition: transform .25s, opacity .25s;
 }
@@ -69,22 +69,23 @@
   transition: background .2s;
 }
 .menu-toggle:hover, .menu-group.open .menu-toggle, .menu-group.active .menu-toggle { background: var(--card); }
+/* 父级统一向下箭头：展开时旋转 180°，不做其他装饰 */
 .menu-toggle .plus {
   margin-left: auto;
   color: var(--muted);
-  font-size:20px;
+  font-size:15px;
   line-height: 1;
+  transition: transform .25s ease;
 }
-.menu-toggle .plus::before { content: "+"; }
-.menu-group.open .menu-toggle .plus::before { content: "⌄"; }
+.menu-toggle .plus::before { content: "▾"; }
+.menu-group.open .menu-toggle .plus { transform: rotate(180deg); }
 .submenu {
   overflow: hidden;
   max-height: 0;
   transition: max-height .3s ease;
 }
 .menu-group.open .submenu { max-height: 70vh; overflow-y: auto; }
-.submenu a { padding-left: 40px; }
-.submenu .dash { color: var(--muted); }
+.submenu a { padding-left: 34px; font-size: 17px; color: var(--muted); }
 .menu-link {
   display: flex; align-items: center; gap: 12px;
   padding: 13px 16px;
@@ -108,9 +109,9 @@
 }
 .menu-owner:hover { background: var(--card-hover); }
 
-/* 当前所在页面：轻微高亮（所有页面统一，只标当前，不重排不隐藏） */
-.menu a.current, .menu-link.current { background: var(--card); font-weight: 600; }
-.menu-group.current > .menu-toggle { background: var(--card); font-weight: 600; }
+/* 当前所在页面：柔和粉色高亮（所有页面统一，只标当前，不重排不隐藏） */
+.menu a.current, .menu-link.current { background: #ffe9f2; font-weight: 600; }
+.menu-group.current > .menu-toggle { background: #ffe9f2; font-weight: 600; }
 
 /* 顶栏中间 logo：全站统一组件（只按高度等比缩放，永不拉伸/裁切/压扁） */
 .site-logo {
@@ -145,7 +146,7 @@
 }
 .menu-acct-cart {
   background: var(--card, #fff2f7);
-  color: var(--text, #5d6780);
+  color: var(--text, #b88f9d);
   position: relative;
   transition: background .2s;
 }
