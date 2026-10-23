@@ -1,0 +1,49 @@
+════════════════════════════════════════════════════════════════════
+照片展示登录权限 SQL · 第 3 批
+· 一次性粘贴到 Supabase SQL Editor 运行即可，可重复执行
+· 目的：photos / photo_sections 两张表改为「仅登录用户可读、仅管理员可写」
+· 只影响这两张表；不删除任何数据；不影响其他表和正式站页面
+  （正式站照片页同样是登录后才拉数据——它和测试站共用这套库，
+   跑完后正式站的照片页对未登录用户也会变成空列表，
+   正式站前端切换等你发布令，过渡期表现为未登录看不到照片列表）
+════════════════════════════════════════════════════════════════════
+
+-- 第 1 步：清空这两张表上的旧策略（不管原来叫什么名字，避免旧策略残留放行 anon）
+do $$
+declare r record;
+begin
+  for r in select policyname, tablename from pg_policies
+           where schemaname = 'public' and tablename in ('photos', 'photo_sections')
+  loop
+    execute format('drop policy if exists %I on public.%I', r.policyname, r.tablename);
+  end loop;
+end $$;
+
+-- 第 2 步：开启 RLS
+alter table public.photos         enable row level security;
+alter table public.photo_sections enable row level security;
+
+-- 第 3 步：新策略
+-- 任何登录用户可读
+drop policy if exists photos_authed_select on public.photos;
+create policy photos_authed_select on public.photos for select
+  to authenticated using (true);
+drop policy if exists psecs_authed_select on public.photo_sections;
+create policy psecs_authed_select on public.photo_sections for select
+  to authenticated using (true);
+
+-- 管理员（shop_admins）可写
+drop policy if exists photos_admin_write on public.photos;
+create policy photos_admin_write on public.photos for all
+  using (public.shop_is_admin()) with check (public.shop_is_admin());
+drop policy if exists psecs_admin_write on public.photo_sections;
+create policy psecs_admin_write on public.photo_sections for all
+  using (public.shop_is_admin()) with check (public.shop_is_admin());
+
+════════════════════════════════════════════════════════════════════
+运行完成后告诉我一声。
+· 跑完后照片页数据只有登录用户能拉到（前端已同步为登录态取数）
+· 已知边界：照片文件本体是站点静态文件（/photos/*.jpg），
+  知道确切文件名的人仍能直链访问；要彻底封死需把图片迁移到
+  Supabase 私有存储桶 + 签名 URL，属于后续独立任务，等你拍板
+════════════════════════════════════════════════════════════════════

@@ -26,7 +26,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261017c">
+<link rel="stylesheet" href="/css/site.css?v=20261023c">
   <link rel="stylesheet" href="/site-menu.css">
     <script src="/site-menu.js" defer></script>
 </head>
@@ -179,7 +179,12 @@
 
 
 <div class="toast" id="toast"></div>
-<script src="/js/site-common.js?v=20261023b"></script>
+<script src="/js/site-common.js?v=20261023c"></script>
+<script>
+  // 照片展示门禁：登录后可见（任意登录账号；未登录显示粉色提示卡并停载所有数据）
+  window.YK_PHOTOS_GATE = (window.ykGatePage ? ykGatePage('photos') : Promise.resolve(true));
+  window.YK_PHOTOS_GATE.then(function (ok) { if (ok) document.body.classList.add('yk-photos-on'); });
+</script>
 <script>
   // ===== Photo Gallery：独立子页（数据库驱动 + 静态回退） =====
   var PHOTO_STYLES = {};
@@ -202,16 +207,18 @@
     });
   }
   function loadPhotoRows() {
-    // 新字段（pinned/home）没建之前自动回退旧查询，照片功能不受影响
-    return fetch(DB_BASE + 'photos?select=id,category,image_url,caption_zh,caption_en,pinned,home&order=pinned.desc,sort.asc,created_at.asc&limit=300', { headers: DB_HEADERS })
-      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-      .catch(function () {
-        return dbFetch('photos?select=id,category,image_url,caption_zh,caption_en&order=sort.asc,created_at.asc&limit=300');
+    // 登录态取数（RLS 后 anon 读不到）；新字段（pinned/home）没建之前自动回退旧查询
+    return ykAuthFetch('photos?select=id,category,image_url,caption_zh,caption_en,pinned,home&order=pinned.desc,sort.asc,created_at.asc&limit=300')
+      .then(function (rows) {
+        if (Array.isArray(rows) && rows.length) return rows;
+        return ykAuthFetch('photos?select=id,category,image_url,caption_zh,caption_en&order=sort.asc,created_at.asc&limit=300');
       });
   }
 
-  // 静态占位照片：数据库没数据时兜底显示，缺文件自动隐藏
-  document.querySelectorAll('section[data-sec] .album-item[data-img]').forEach(function (fig) {
+  // 静态占位照片：数据库没数据时兜底显示，缺文件自动隐藏（门禁通过后才填充）
+  window.YK_PHOTOS_GATE.then(function (okG) {
+    if (!okG) return;
+    document.querySelectorAll('section[data-sec] .album-item[data-img]').forEach(function (fig) {
     var src = normImg(fig.getAttribute('data-img'));
     var probe = new Image();
     probe.onload = function () {
@@ -223,7 +230,8 @@
     probe.onerror = function () { fig.style.display = 'none'; };
     probe.src = src;
   });
-  document.querySelectorAll('section[data-sec] .album-item figcaption').forEach(bindCaption);
+    document.querySelectorAll('section[data-sec] .album-item figcaption').forEach(bindCaption);
+  });
 
   // 每分区「每行显示」：存 site_settings.photo_grid（{ 分区key: 1..4 }），默认 4
   var PHOTO_GRID = {};
@@ -242,8 +250,10 @@
     applyGrids();
   });
 
-  Promise.all([
-    dbFetch('photo_sections?select=id,key,name_zh,name_en,sort&order=sort.asc,created_at.asc&limit=100'),
+  window.YK_PHOTOS_GATE.then(function (okG) {
+    if (!okG) return;
+    return Promise.all([
+    ykAuthFetch('photo_sections?select=id,key,name_zh,name_en,sort&order=sort.asc,created_at.asc&limit=100'),
     loadPhotoRows(),
     dbFetch('site_settings?select=key,value&key=eq.photo_styles&limit=1').then(function (rr) {
       (rr || []).forEach(function (row) { try { PHOTO_STYLES = JSON.parse(row.value || '{}') || {}; } catch (e) {} });
@@ -327,6 +337,7 @@
       }
     });
   }).catch(function () {});
+  });
 
   // /photos/?sec=xxx → 滚动到对应分区（来自菜单）
   (function () {

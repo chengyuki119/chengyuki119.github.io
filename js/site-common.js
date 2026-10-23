@@ -773,34 +773,51 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 // 三态：true 白名单已登录 / false 无权限 / 'pending' 后端 RPC 未部署（SQL 未跑），页面自行决定放行与否
 var YK_EXCLUSIVE_MEMO = null; // 会话内缓存，避免每页多次 ping
 function ykSession() {
+  // 支持两种形态：商城 {a,r,email} / 后台 {r}（仅 refresh token，access token 需换取）
   var s = null;
   try { s = JSON.parse(localStorage.getItem('yuki-user-session') || 'null') || JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
-  return (s && s.a) ? s : null;
+  return (s && (s.a || s.r)) ? s : null;
+}
+function ykHasAT() { var s = ykSession(); return !!(s && s.a); }
+function ykToken() {
+  var s = ykSession();
+  if (!s) return Promise.resolve(null);
+  if (s.a) return Promise.resolve(s.a);
+  return getAuthToken(); // 后台 {r} 形态：用现有刷新逻辑换 access token（内部已缓存并回写）
 }
 function ykStoreKey() { return localStorage.getItem('yuki-user-session') ? 'yuki-user-session' : 'yuki-admin-session'; }
 function ykRpc(p_kind) {
-  var s = ykSession();
-  if (!s || !s.a) { var e0 = new Error('请先登录'); e0.ykCode = 'nosession'; return Promise.reject(e0); }
-  var call = function (at) {
-    return fetch(DB_BASE + 'rpc/yuki_exclusive_get', {
-      method: 'POST',
-      headers: { 'apikey': DB_HEADERS.apikey, 'Authorization': 'Bearer ' + at, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_kind: p_kind })
-    }).then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); });
-  };
-  return call(s.a).then(function (res) {
-    if (res.status !== 401) return res;
-    // access token 过期 → 用 refresh token 续一次
-    if (!s.r) { var e1 = new Error('登录过期'); e1.ykCode = 'expired'; throw e1; }
-    return fetch('https://zajcglvlzsolygvjeumb.supabase.co/auth/v1/token?grant_type=refresh_token', {
-      method: 'POST',
-      headers: { 'apikey': DB_HEADERS.apikey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: s.r })
-    }).then(function (rr) { return rr.ok ? rr.json() : null; }).then(function (d) {
-      if (!d || !d.access_token) { var e2 = new Error('登录过期'); e2.ykCode = 'expired'; throw e2; }
-      s.a = d.access_token; if (d.refresh_token) s.r = d.refresh_token;
-      try { localStorage.setItem(ykStoreKey(), JSON.stringify(s)); } catch (e) {}
-      return call(s.a);
+  return ykToken().then(function (at) {
+    if (!at) { var e0 = new Error('请先登录'); e0.ykCode = 'nosession'; throw e0; }
+    var call = function (token) {
+      return fetch(DB_BASE + 'rpc/yuki_exclusive_get', {
+        method: 'POST',
+        headers: { 'apikey': DB_HEADERS.apikey, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_kind: p_kind })
+      }).then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); });
+    };
+    return call(at).then(function (res) {
+      if (res.status !== 401) return res;
+      // access token 过期 → 强制重换一次再试
+      AUTH_TOKEN = null;
+      var s = ykSession();
+      if (!s || (!s.r && !ykHasAT())) { var e1 = new Error('登录过期'); e1.ykCode = 'expired'; throw e1; }
+      if (s.a && s.r) {
+        return fetch('https://zajcglvlzsolygvjeumb.supabase.co/auth/v1/token?grant_type=refresh_token', {
+          method: 'POST',
+          headers: { 'apikey': DB_HEADERS.apikey, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: s.r })
+        }).then(function (rr) { return rr.ok ? rr.json() : null; }).then(function (d) {
+          if (!d || !d.access_token) { var e2 = new Error('登录过期'); e2.ykCode = 'expired'; throw e2; }
+          s.a = d.access_token; if (d.refresh_token) s.r = d.refresh_token;
+          try { localStorage.setItem(ykStoreKey(), JSON.stringify(s)); } catch (e) {}
+          return call(s.a);
+        });
+      }
+      return getAuthToken().then(function (t2) {
+        if (!t2) { var e3 = new Error('登录过期'); e3.ykCode = 'expired'; throw e3; }
+        return call(t2);
+      });
     });
   }).then(function (res) {
     var code = res.body && res.body.code;
@@ -818,6 +835,11 @@ function ykExclusiveCheck() {
   if (YK_EXCLUSIVE_MEMO) return Promise.resolve({ ok: YK_EXCLUSIVE_MEMO, email: ykSession().email || null });
   return ykRpc('ping').then(function (j) {
     YK_EXCLUSIVE_MEMO = true;
+    var s = ykSession();
+    if (s && !s.email && j && j.email) { // 后台 {r} 形态补记邮箱，提示卡/菜单都能用
+      s.email = j.email;
+      try { localStorage.setItem(ykStoreKey(), JSON.stringify(s)); } catch (e) {}
+    }
     return { ok: true, email: (j && j.email) || null };
   }).catch(function (e) {
     if (e && e.ykCode === 'pending') { YK_EXCLUSIVE_MEMO = 'pending'; return { ok: 'pending', email: null }; }
@@ -834,9 +856,14 @@ function ykExclusiveLogout() {
   YK_EXCLUSIVE_MEMO = null;
   location.reload();
 }
-// 页面门禁：resolve(true) = 可渲染；false = 已渲染权限提示页（调用方必须停止数据加载）
-function ykGatePage() {
-  return ykExclusiveCheck().then(function (res) {
+// 页面门禁：mode 'exclusive'（默认，柚子专属白名单）| 'photos'（任意登录用户可看）
+// resolve(true) = 可渲染；false = 已渲染权限提示页（调用方必须停止数据加载）
+function ykGatePage(mode) {
+  mode = mode || 'exclusive';
+  var check = (mode === 'photos')
+    ? Promise.resolve({ ok: ykSession() ? true : false, email: (ykSession() || {}).email || null })
+    : ykExclusiveCheck();
+  return check.then(function (res) {
     if (res.ok === 'pending') {
       var bar = document.createElement('div');
       bar.style.cssText = 'position:sticky;top:0;z-index:99;background:var(--card,#fff2f7);color:var(--text,#5d6780);text-align:center;font-size:14px;padding:7px 12px;border-bottom:1px solid var(--accent-soft,#ffc8d6);';
@@ -850,6 +877,7 @@ function ykGatePage() {
     var wrap = document.createElement('div');
     wrap.style.cssText = 'min-height:62vh;display:flex;align-items:center;justify-content:center;padding:30px 16px;';
     var logged = !!ykSession();
+    var title = (mode === 'photos') ? (en ? 'Photos are for logged-in visitors' : '照片展示要登录后才能看哦') : (en ? 'Yuki Members Only' : '此内容仅限柚子专属账号查看');
     var btns = '';
     if (!logged) {
       btns = '<a href="/shop/?sec=account&next=' + encodeURIComponent(location.pathname + location.search) + '" style="display:inline-block;background:var(--accent,#ff6fa5);color:#fff;border-radius:999px;padding:11px 26px;font-size:16px;text-decoration:none;">' + (en ? 'Go to Login' : '去登录') + '</a>';
@@ -859,11 +887,15 @@ function ykGatePage() {
     }
     wrap.innerHTML = '<div style="background:var(--card,#fff2f7);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
       '<div style="font-size:34px;color:var(--accent,#ff6fa5);line-height:1;">♥</div>' +
-      '<h2 style="font-size:20px;color:var(--text,#5d6780);margin:14px 0 8px;">' + (en ? 'Yuki Members Only' : '此内容仅限柚子专属账号查看') + '</h2>' +
+      '<h2 style="font-size:20px;color:var(--text,#5d6780);margin:14px 0 8px;">' + title + '</h2>' +
       '<p style="font-size:15px;color:var(--muted,#9aa5bd);margin:0 0 22px;">' +
         (logged
-          ? (en ? 'Current account: ' + escDb(res.email || '') + '. This area is only for Yuki\'s own account.' : '当前登录：' + escDb(res.email || '') + '，这里只有柚子的专属账号能进来哦')
-          : (en ? 'Please log in with the Yuki exclusive account first.' : '请先用柚子的专属账号登录再来哦')) +
+          ? (mode === 'photos'
+              ? (en ? 'You are logged in — enjoying the photos~' : '你已登录，慢慢看照片～')
+              : (en ? 'Current account: ' + escDb(res.email || '') + '. This area is only for Yuki\'s own account.' : '当前登录：' + escDb(res.email || '') + '，这里只有柚子的专属账号能进来哦'))
+          : (mode === 'photos'
+              ? (en ? 'Please log in first.' : '请先登录再来看照片哦')
+              : (en ? 'Please log in with the Yuki exclusive account first.' : '请先用柚子的专属账号登录再来哦'))) +
       '</p>' + btns + '</div>';
     document.body.insertBefore(wrap, document.body.firstChild);
     var others = document.querySelectorAll('body > *:not(:first-child)');
@@ -876,3 +908,11 @@ function ykGatePage() {
 window.ykExclusiveCheck = ykExclusiveCheck;
 window.ykExclusiveData = ykExclusiveData;
 window.ykGatePage = ykGatePage;
+// 登录态取数：有会话用 access token，否则 anon（照片页等登录可见数据用）
+function ykAuthFetch(path) {
+  return ykToken().then(function (at) {
+    var h = at ? { 'apikey': DB_HEADERS.apikey, 'Authorization': 'Bearer ' + at } : DB_HEADERS;
+    return fetch(DB_BASE + path, { headers: h }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
+  });
+}
+window.ykAuthFetch = ykAuthFetch;

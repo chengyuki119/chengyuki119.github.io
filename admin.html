@@ -125,6 +125,30 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .pp-menu .tab-btn:hover { background: var(--card-hover); }
   .pp-menu .tab-btn.active { background: var(--accent-soft); color: #fff; }
   @keyframes ppIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  /* ── 后台导航五组分组标签 ── */
+  .pp-menu .pp-group {
+    font-size: 13px; color: var(--muted); letter-spacing: .04em;
+    padding: 9px 12px 3px; user-select: none;
+  }
+  .pp-menu .pp-group:not(:first-child) {
+    border-top: 1px solid var(--card-hover); margin-top: 7px; padding-top: 12px;
+  }
+  /* ── 桌面端：导航固定左侧栏，内容右侧 ── */
+  #adm-content { min-width: 0; }
+  @media (min-width: 900px) {
+    #admin-body { display: flex; align-items: flex-start; gap: 22px; }
+    #pp-wrap {
+      position: sticky; top: 18px; width: 190px; flex-shrink: 0;
+      margin-bottom: 0; align-self: flex-start;
+    }
+    #pp-btn { display: none; }
+    #adm-content { flex: 1; }
+    #pp-menu {
+      position: static; display: block;
+      box-shadow: none; border: 1px solid var(--card-hover);
+      width: 100%; max-height: calc(100vh - 36px); overflow-y: auto;
+    }
+  }
 
   .card {
     background: #fff;
@@ -454,20 +478,27 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     <div class="pp-wrap" id="pp-wrap">
       <button class="pp-btn" id="pp-btn" type="button">当前页面：<span id="pp-cur">Profile 编辑</span> <span class="pp-arrow">▼</span></button>
       <div class="pp-menu" id="pp-menu">
+        <div class="pp-group">主页设置</div>
         <button class="tab-btn active" data-tab="profile">Profile 编辑</button>
         <button class="tab-btn" data-tab="home">主页管理</button>
+        <div class="pp-group">内容管理</div>
         <button class="tab-btn" data-tab="days">重要日子</button>
         <button class="tab-btn" data-tab="photos">照片管理</button>
         <button class="tab-btn" data-tab="works">稿件管理</button>
         <button class="tab-btn" data-tab="bjd">BJD管理</button>
         <button class="tab-btn" data-tab="cards">色卡管理</button>
+        <div class="pp-group">商城管理</div>
         <button class="tab-btn" data-tab="shop">小铺上架</button>
         <button class="tab-btn" data-tab="shopmgr">商城管理</button>
+        <div class="pp-group">互动管理</div>
         <button class="tab-btn" data-tab="reviews">评价返图</button>
         <button class="tab-btn" data-tab="messages">匿名留言</button>
         <button class="tab-btn" data-tab="ai">AI 对话</button>
+        <div class="pp-group">系统设置</div>
+        <button class="tab-btn" data-tab="system">系统状态</button>
       </div>
     </div>
+
 
     <!-- 留言管理 -->
     <div id="tab-messages" style="display:none;">
@@ -948,7 +979,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   window.addEventListener('focus', function () { if (REFRESH) tryRefresh().catch(function () {}); });
   function enterAdmin() {
     document.getElementById('gate').style.display = 'none';
-    document.getElementById('admin-body').style.display = 'block';
+    document.getElementById('admin-body').style.display = '';
     document.getElementById('btn-logout').style.display = 'inline';
     if (window.SiteMenu) SiteMenu.refresh(); // 登录后菜单里的柚子专属变成可展开分组
     loadMessages(); loadProducts(); loadHome();
@@ -1028,7 +1059,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       b.classList.add('active');
       document.getElementById('pp-cur').textContent = b.textContent;
       ppClose();
-      ['messages', 'shop', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai'].forEach(function (name) {
+      ['messages', 'shop', 'shopmgr', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (name) {
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.style.display = b.dataset.tab === name ? '' : 'none';
       });
@@ -3114,6 +3145,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         (c.image ? '<img src="' + escAttr(c.image) + '" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0;">' : '') +
         '<label class="btn-mini hm-file-btn">上传图片<input type="file" class="sc-photos" accept="image/*" multiple hidden></label>' +
         '</div>' +
+        '<div style="margin-top:12px;">' +
+          '<div style="font-size:16px;font-weight:600;">日历事项 <span style="font-size:14px;color:var(--muted);font-weight:400;">（可选：如入手纪念日，保存后是独立日历记录）</span></div>' +
+          '<div class="c-cal-list">' + (c.cal_events || []).map(calRowHtml).join('') + '</div>' +
+          '<button type="button" class="btn-mini c-cal-add" style="margin-top:6px;">＋ 添加日历事项</button>' +
+        '</div>' +
         photoStrip(c.image, c.photos, 'c-photo-kebab', 'card', i) +
         '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:16px;">' +
         '<label style="display:flex;align-items:center;gap:6px;flex-shrink:0;">购入日期<input type="text" class="c-bought date-pick" readonly value="' + escAttr(c.bought || '') + '" placeholder="选择日期" style="width:100px;padding:7px 10px;font-size:16px;cursor:pointer;"></label>' +
@@ -3154,6 +3190,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (!r.ok) throw new Error();
       if (!keepArchive) CARDS_SAVED = JSON.parse(JSON.stringify(CARDS)); // 点「保存」才更新画师价格档案；自动保存不更新
       if (done) done(); else toast('已保存');
+      syncCalEvents('cards', CARDS, function () { saveSetting('cards', JSON.parse(JSON.stringify(CARDS))).catch(function () {}); }); // 回写 _dbid
     }).catch(function () { toast('保存失败'); });
   }
   function toolbarSave(kind) { // kind：'bjd' / 'cards'；不给就按当前在编辑的东西，没在编辑就两个都存
@@ -3699,12 +3736,20 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (opt === 'up' && ctx.i > 0) { var u = BJDS[ctx.i - 1]; BJDS[ctx.i - 1] = BJDS[ctx.i]; BJDS[ctx.i] = u; if (BJDS_EDIT === ctx.i) BJDS_EDIT = ctx.i - 1; else if (BJDS_EDIT === ctx.i - 1) BJDS_EDIT = ctx.i; }
       if (opt === 'down' && ctx.i < BJDS.length - 1) { var dn = BJDS[ctx.i + 1]; BJDS[ctx.i + 1] = BJDS[ctx.i]; BJDS[ctx.i] = dn; if (BJDS_EDIT === ctx.i) BJDS_EDIT = ctx.i + 1; else if (BJDS_EDIT === ctx.i + 1) BJDS_EDIT = ctx.i; }
       if (opt === 'del') {
-        uiConfirm('确定删除这个娃娃档案吗？', function () {
+        var evCount = ((BJDS[ctx.i] || {}).cal_events || []).filter(function (ce) { return ce._dbid; }).length;
+        var doDelBjd = function (alsoDel) {
+          if (alsoDel) {
+            (BJDS[ctx.i].cal_events || []).forEach(function (ce) {
+              if (ce._dbid) api('important_days?id=eq.' + ce._dbid, { method: 'DELETE' }).catch(function () {});
+            });
+          }
           BJDS.splice(ctx.i, 1);
           if (BJDS_EDIT === ctx.i) BJDS_EDIT = -1; else if (BJDS_EDIT > ctx.i) BJDS_EDIT -= 1;
           saveBjdsQuiet();
           renderBjds();
-        });
+        };
+        if (evCount) uiConfirm('这个娃娃带着 ' + evCount + ' 条日历事项。「确定」= 事项一起删掉；「取消」= 保留事项只删娃娃。', function (withEvents) { doDelBjd(withEvents); });
+        else uiConfirm('确定删除这个娃娃档案吗？', function () { doDelBjd(false); });
       }
       if (opt === 'collapse') BJDS_EDIT = -1;
       saveBjdsQuiet();
@@ -4062,6 +4107,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<label class="btn-mini hm-file-btn">上传图片<input type="file" class="b-photos" accept="image/*" multiple hidden></label>' +
         '</div>' +
         photoStrip(b.image, b.photos, 'b-photo-kebab', 'bjd', i) +
+        '<div style="margin-top:12px;">' +
+          '<div style="font-size:16px;font-weight:600;">日历事项 <span style="font-size:14px;color:var(--muted);font-weight:400;">（可选：标题和日期自己写，保存后是独立日历记录，可单独改/删）</span></div>' +
+          '<div class="b-cal-list">' + (b.cal_events || []).map(calRowHtml).join('') + '</div>' +
+          '<button type="button" class="btn-mini b-cal-add" style="margin-top:6px;">＋ 添加日历事项</button>' +
+        '</div>' +
         '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px;">' +
         bjdField('尺寸 / 种类', '<select class="b-head-size">' + opts(BJD_SIZES, b.head.size) + '</select>') +
         '</div>' +
@@ -4117,11 +4167,68 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     enhanceSelects();
     syncToolbarSaveLabel();
   }
+  // ===== BJD/色卡 → 日历事项联动（独立 important_days 记录，_dbid 存在商品数据里做关联） =====
+  function calRowHtml(ce) {
+    ce = ce || {};
+    return '<div class="cal-row" data-eid="' + escAttr(ce.eid || '') + '" data-dbid="' + escAttr(ce._dbid || '') + '" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px;background:var(--card);border-radius:10px;padding:6px 8px;">' +
+      '<input class="cal-name" placeholder="事项名称（自己写，如：到家纪念日）" value="' + escAttr(ce.name || '') + '" style="width:190px;">' +
+      '<input class="cal-day" type="date" value="' + escAttr(ce.day || '') + '" style="width:150px;">' +
+      '<input class="cal-cat" placeholder="分类，如：纪念日" value="' + escAttr(ce.type || '') + '" style="width:120px;">' +
+      '<span class="tgl-label" style="font-size:15px;"><button type="button" class="tgl cal-repeat' + (ce.repeat !== 'none' ? ' on' : '') + '" aria-pressed="' + (ce.repeat !== 'none') + '"><span class="tgl-knob"></span></button>每年</span>' +
+      '<button type="button" class="btn-del cal-row-del">删除</button>' +
+      '</div>';
+  }
+  function collectCalRows(card, listSel) {
+    var box = card.querySelector(listSel);
+    if (!box) return [];
+    return Array.prototype.map.call(box.querySelectorAll('.cal-row'), function (row) {
+      return { eid: row.getAttribute('data-eid') || '', _dbid: row.getAttribute('data-dbid') || '',
+        name: row.querySelector('.cal-name').value.trim(), day: row.querySelector('.cal-day').value,
+        type: row.querySelector('.cal-cat').value.trim(),
+        repeat: row.querySelector('.cal-repeat').classList.contains('on') ? 'yearly' : 'none' };
+    });
+  }
+  var CAL_SYNCING = false;
+  function syncCalEvents(kind, list, afterSaved) {
+    if (CAL_SYNCING) return Promise.resolve();
+    var targets = [];
+    (list || []).forEach(function (item, idx) {
+      (item.cal_events || []).forEach(function (ce) {
+        if (ce.name && ce.day) targets.push({ ce: ce, idx: idx, name: item.name || '' });
+      });
+    });
+    if (!targets.length) return Promise.resolve();
+    CAL_SYNCING = true;
+    var changed = false;
+    var chain = Promise.resolve();
+    targets.forEach(function (t) {
+      chain = chain.then(function () {
+        var body = { name: t.ce.name, day: t.ce.day, type: t.ce.type || '纪念日', repeat: t.ce.repeat || 'yearly' };
+        var p;
+        if (t.ce._dbid) {
+          p = api('important_days?id=eq.' + t.ce._dbid, { method: 'PATCH', body: JSON.stringify(body) });
+        } else {
+          p = api('important_days', { method: 'POST', headers: { 'Prefer': 'return=representation' }, body: JSON.stringify(body) })
+            .then(function (r) { return r.json ? r.json().catch(function () { return null; }) : null; })
+            .then(function (rows) {
+              if (Array.isArray(rows) && rows[0] && rows[0].id) { t.ce._dbid = rows[0].id; changed = true; }
+            });
+        }
+        return p.catch(function () {});
+      });
+    });
+    return chain.then(function () {
+      CAL_SYNCING = false;
+      if (changed && afterSaved) afterSaved(); // 把拿回的 _dbid 存回商品数据
+    }).catch(function () { CAL_SYNCING = false; });
+  }
+
   function saveBjdsQuiet(done) {
     saveSetting('bjds', JSON.parse(JSON.stringify(BJDS))).then(function (r) {
       if (!r.ok) throw new Error();
       BJDS_SAVED = JSON.parse(JSON.stringify(BJDS));
       if (done) done();
+      syncCalEvents('bjd', BJDS, function () { saveSetting('bjds', JSON.parse(JSON.stringify(BJDS))).catch(function () {}); }); // 回写 _dbid
     }).catch(function () { toast('保存失败'); });
   }
   var bjdSaveTimer = null;
@@ -4522,6 +4629,37 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (i !== BJDS_EDIT && e.target.closest('.sc-name')) {
       window.open('/bjd/?id=' + i, '_blank'); return; // 点娃娃名 → 打开前台检视页
     }
+    if (e.target.classList.contains('b-cal-add')) { // 添加一条日历事项
+      var b0 = normBjd(BJDS[i]);
+      b0.cal_events = (b0.cal_events || []).concat([{ eid: 'e' + Date.now() + Math.floor(Math.random() * 1000), name: '', day: '', type: '', repeat: 'yearly' }]);
+      BJDS[i] = b0;
+      renderBjds();
+      return;
+    }
+    if (e.target.classList.contains('cal-row-del')) { // 删除一条（已落库的连日历记录一起删）
+      var calRow = e.target.closest('.cal-row');
+      var calDbid = calRow ? calRow.getAttribute('data-dbid') : '';
+      var doCalRemove = function () {
+        var b1 = normBjd(BJDS[i]);
+        b1.cal_events = collectCalRows(card, '.b-cal-list').filter(function (ce) { return ce.eid !== (calRow ? calRow.getAttribute('data-eid') : ''); });
+        BJDS[i] = b1;
+        scheduleBjdSave();
+        renderBjds();
+      };
+      if (calDbid) {
+        uiConfirm('同时删除日历里的这条事项？', function () {
+          api('important_days?id=eq.' + calDbid, { method: 'DELETE' }).catch(function () {});
+          doCalRemove();
+        });
+      } else doCalRemove();
+      return;
+    }
+    if (e.target.classList.contains('cal-repeat')) { // 每年开关拨动后回存
+      var b2 = normBjd(BJDS[i]);
+      b2.cal_events = collectCalRows(card, '.b-cal-list');
+      BJDS[i] = b2;
+      scheduleBjdSave();
+    }
     if (SC_POP) { popClose(); return; }
   });
   document.getElementById('bjd-list').addEventListener('input', function (e) {
@@ -4546,6 +4684,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           if (ti) { ti.value = String(parseFloat(t.toFixed(2))); b.price.total = ti.value; }
         }
       }
+      scheduleBjdSave();
+    }
+    if (/^cal-/.test(e.target.className)) { // 日历事项行内编辑
+      b.cal_events = collectCalRows(card, '.b-cal-list');
       scheduleBjdSave();
     }
   });
@@ -5068,6 +5210,73 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 })();
 </script>
 
+<!-- 系统状态 -->
+<div id="tab-system" style="display:none;">
+  <div class="card" style="max-width:640px;">
+    <h3 style="margin:0 0 12px;">系统状态</h3>
+    <div style="font-size:16px; line-height:2;">
+      <div>数据库连接：<b id="sys-db">检测中…</b></div>
+      <div>照片登录权限：<b id="sys-photo">检测中…</b></div>
+      <div>柚子专属数据：<b id="sys-yk">检测中…</b></div>
+    </div>
+    <p style="color:var(--muted); font-size:14px; line-height:1.8; margin:12px 0 0;">
+      照片登录权限未生效时，请先在 Supabase 执行「照片权限 SQL3」。<br>
+      柚子专属数据未同步时，请执行「商城升级 SQL2」。
+    </p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+      <a class="btn-mini" href="/" target="_blank" rel="noopener">打开前台</a>
+      <a class="btn-mini" href="/shop/" target="_blank" rel="noopener">打开商城</a>
+      <a class="btn-mini" href="/photos/" target="_blank" rel="noopener">打开照片页</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 系统状态 tab：真实探测，不模拟 ── */
+(function () {
+  var URLBASE = 'https://zajcglvlzsolygvjeumb.supabase.co/rest/v1/';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphamNnbHZsenNvbHlndmpldW1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMzI4NjUsImV4cCI6MjEwNjgwODg2NX0.7_Pthb3wPInb5v4o7IoWejozEvDZQgNPS8DgwikQ8ys';
+  function probe(table, el, okText, anonBlockedText, missingText) {
+    fetch(URLBASE + table + '?select=*&limit=1', { headers: { apikey: ANON } })
+      .then(function (r) {
+        if (!r.ok) {
+          if (r.status === 404 && missingText) {
+            document.getElementById(el).textContent = missingText;
+            document.getElementById(el).style.color = '#c98a2b';
+          }
+          throw 0;
+        }
+        return r.json();
+      })
+      .then(function (rows) {
+        if (rows && rows.length) {
+          document.getElementById(el).textContent = okText;
+          document.getElementById(el).style.color = '#3aa06a';
+        } else {
+          document.getElementById(el).textContent = anonBlockedText;
+          document.getElementById(el).style.color = '#c98a2b';
+        }
+      })
+      .catch(function () {
+        document.getElementById(el).textContent = '连接失败';
+        document.getElementById(el).style.color = '#d05a7a';
+      });
+  }
+  function boot() {
+    var t = document.getElementById('tab-system');
+    if (!t || t.dataset.booted) return;
+    t.dataset.booted = '1';
+    probe('site_settings', 'sys-db', '已连接', '已连接（暂无数据）', '连接失败');
+    probe('photos', 'sys-photo', '未开启（照片对所有人可见）', '已开启（匿名不可见 · SQL3 已生效）', '照片表不存在');
+    probe('yuki_exclusive', 'sys-yk', '未同步（请执行 SQL2）', '已同步（SQL2 已生效 · 匿名被拦截属正常）', '未同步（请执行 SQL2）');
+  }
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('.tab-btn[data-tab="system"]')) setTimeout(boot, 50);
+  });
+  if (location.hash === '#system') setTimeout(boot, 300);
+})();
+</script>
+
 <!-- 退出登录确认小弹窗 -->
 <div class="lo-mask" id="lo-mask">
   <div class="lo-box">
@@ -5091,6 +5300,26 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </div>
 
 <script>
+/* 桌面侧边导航布局：把导航以外的内容包进 #adm-content */
+(function () {
+  var body = document.getElementById('admin-body');
+  if (!body) return;
+  var wrap = document.createElement('div');
+  wrap.id = 'adm-content';
+  // 1) admin-body 里除导航以外的内容
+  Array.prototype.slice.call(body.children).forEach(function (ch) {
+    if (ch.id === 'pp-wrap') return;
+    wrap.appendChild(ch);
+  });
+  // 2) 历史 markup 中提前闭合导致散落在 body 层的 tab 面板，一并收编
+  Array.prototype.slice.call(document.body.children).forEach(function (ch) {
+    if (ch.id && ch.id.indexOf('tab-') === 0) wrap.appendChild(ch);
+  });
+  body.appendChild(wrap);
+})();
+</script>
+
+<script>
 /* ═══ 后台安全：1 小时无操作自动退出 ═══ */
 (function () {
   // ── 1 小时无操作自动退出 ──
@@ -5110,7 +5339,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261023b"></script>
+<script src="js/admin-shop.js?v=20261023c"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

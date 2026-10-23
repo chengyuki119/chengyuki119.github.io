@@ -35,7 +35,7 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261017c">
+<link rel="stylesheet" href="/css/site.css?v=20261023c">
   <link rel="stylesheet" href="/site-menu.css">
     <script src="/site-menu.js" defer></script>
 </head>
@@ -207,7 +207,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261023b"></script>
+<script src="/js/site-common.js?v=20261023c"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -636,10 +636,19 @@
   function ykGateApply(S) {
     var strip = function () {
       delete S.bjds; delete S.cards; delete S.works;
+      var logged = false;
+      try {
+        var ss = JSON.parse(localStorage.getItem('yuki-user-session') || 'null') || JSON.parse(localStorage.getItem('yuki-admin-session') || 'null');
+        logged = !!(ss && (ss.a || ss.r));
+      } catch (e) {}
       ['sec-bjd', 'sec-cards', 'sec-works'].forEach(function (id) {
         var el = document.getElementById(id);
         if (el) { el.style.display = 'none'; el.setAttribute('data-yk-hidden', '1'); }
       });
+      if (!logged) { // 照片展示也需登录：未登录隐藏照片区块
+        var g = document.getElementById('sec-gallery');
+        if (g) { g.style.display = 'none'; g.setAttribute('data-yk-hidden', '1'); }
+      }
       return S;
     };
     if (!window.ykExclusiveCheck) return Promise.resolve(S); // 旧缓存 site-common 无新模块时按 pending 放行

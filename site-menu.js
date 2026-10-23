@@ -108,11 +108,22 @@
     return el('<a class="menu-owner" id="menu-owner-link" href="/admin.html" style="margin-top:auto;">' + span('柚子专属', 'Yuki\'s Personal') + '</a>');
   }
 
-  function render() {
+  // 权限过滤：照片=任意登录可见；BJD/色卡/稿件=柚子专属（未确认前先隐藏，确认后自动出现）
+  function permFilter(list) {
+    var s = null;
+    try { s = JSON.parse(localStorage.getItem('yuki-user-session') || 'null') || JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
+    var logged = !!(s && (s.a || s.r));
+    return (list || []).filter(function (item) {
+      if (item.key === 'gallery') return logged;
+      if (item.key === 'bjd' || item.key === 'cards' || item.key === 'works') return window.__YK_MENU_OK === true;
+      return true;
+    });
+  }
+  function render(list) {
     var menu = document.getElementById('menu');
     if (!menu) return;
     menu.innerHTML = '';
-    menu.appendChild(buildMenu(NAV));
+    menu.appendChild(buildMenu(permFilter(list || NAV)));
     menu.appendChild(buildOwner());
   }
 
@@ -176,10 +187,17 @@
           return { key: 'card-' + i, zh: nm, en: nm, page: 'cards', url: '/color-card/?card=' + i, sub: String(i) };
         })};
       }
-      render();
+      render(nav);
       applyCurrent();
       document.dispatchEvent(new CustomEvent('sitemenu:rendered'));
     });
+    // 柚子专属权限异步确认：确认后重建菜单（BJD/色卡/稿件入口自动出现）
+    if (window.ykExclusiveCheck && !window.__YK_MENU_CHECKED) {
+      window.__YK_MENU_CHECKED = true;
+      window.ykExclusiveCheck().then(function (res) {
+        if (res.ok === true) { window.__YK_MENU_OK = true; refresh(); }
+      }).catch(function () {});
+    }
   }
 
   // ── 交互：开合 / 手风琴 / 点击后收起（全站同一套）──
