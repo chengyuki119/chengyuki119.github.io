@@ -57,6 +57,18 @@ function dbSend(path, method, body) {
 function fmtMoney(v) {
   return (parseFloat(v) || 0).toFixed(2); // 金额统一两位小数，避免浮点长尾
 }
+// 兼容纯文本价格：能提取到数字就统一两位小数，纯文字备注原样保留
+function fmtPriceText(s) {
+  var str = String(s == null ? '' : s).trim().replace(/^¥+/, '');
+  if (str === '') return '';
+  var num = parseFloat(str.replace(/[,\s]/g, ''));
+  return isFinite(num) && /^\d+(\.\d+)?$/.test(str.replace(/[,\s]/g, '')) ? fmtMoney(num) : str;
+}
+// 详情页价格行：纯数字加 ¥ 前缀 + 两位小数，文字原样
+function fmtPriceRow(s) {
+  var v = fmtPriceText(s);
+  return v === '' ? '' : (/^\d/.test(v) ? '¥' + v : v);
+}
 function rowTotalV(r) {
   return (parseFloat(r.price) || 0) * (parseInt(r.qty, 10) || 0);
 }
@@ -108,6 +120,58 @@ var CARDS_CACHE = [];  // 页面脚本按需填充
 var BJDS_CACHE = [];   // 页面脚本按需填充
 var WORKS_CACHE = [];  // 页面脚本按需填充（稿件展示）
 
+// ===== 卡片多图翻页（色卡 / BJD / 小铺通用）：‹ › 切换、右下角计数 =====
+function pagerImgsOf(o) {
+  o = o || {};
+  var arr = [];
+  if (Array.isArray(o.images) && o.images.length) arr = o.images.filter(Boolean); // 小铺：images 自带主图
+  else if (o.image || Array.isArray(o.photos)) { // 色卡/BJD/稿件：封面在前，照片跟后（去重）
+    if (o.image) arr.push(o.image);
+    (Array.isArray(o.photos) ? o.photos : []).forEach(function (u) { if (u && arr.indexOf(u) === -1) arr.push(u); });
+  }
+  else if (o.image_url) arr = [o.image_url];
+  return arr.map(function (u) { return normImg(u); });
+}
+function pagerWrapHtml(urls, alt) {
+  urls = urls || [];
+  if (!urls.length) return '<div style="width:100%;aspect-ratio:1/1;background:var(--card);"></div>';
+  var multi = urls.length > 1;
+  return '<div class="pg-wrap" data-i="0" style="position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--card);">' +
+    '<img class="pg-img" src="' + escAttrDb(urls[0]) + '" data-urls="' + escAttrDb(JSON.stringify(urls)) + '" style="width:100%;height:100%;object-fit:contain;display:block;" alt="' + escAttrDb(alt || '') + '" loading="lazy">' +
+    (multi ?
+      '<button type="button" class="pg-btn pg-prev" aria-label="上一张">‹</button><button type="button" class="pg-btn pg-next" aria-label="下一张">›</button>' +
+      '<div class="pg-dots">' + urls.map(function (_, k) { return '<span class="pg-dot' + (k === 0 ? ' on' : '') + '"></span>'; }).join('') + '</div>' +
+      '<div class="pg-thumbs">' + urls.map(function (u, k) { return '<img class="pg-thumb' + (k === 0 ? ' on' : '') + '" src="' + escAttrDb(u) + '" data-k="' + k + '" alt="" loading="lazy">'; }).join('') + '</div>'
+      : '') +
+    '</div>';
+}
+function pgSet(wrap, i) { // 统一切换：大图 + 极简圆点（当前是长条） + 底部小图预览（自动滚到当前，也可手动左右划、点小图跳转）
+  var img = wrap.querySelector('.pg-img');
+  var urls = [];
+  try { urls = JSON.parse(img.getAttribute('data-urls') || '[]'); } catch (err) {}
+  if (!urls.length) return;
+  i = (i + urls.length) % urls.length;
+  wrap.setAttribute('data-i', String(i));
+  img.src = urls[i];
+  wrap.querySelectorAll('.pg-dot').forEach(function (d, k) { d.classList.toggle('on', k === i); });
+  wrap.querySelectorAll('.pg-thumb').forEach(function (t, k) {
+    t.classList.toggle('on', k === i);
+    if (k === i) { try { t.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); } catch (err) { t.scrollIntoView(); } } // 小图条自动滑到当前张
+  });
+}
+document.addEventListener('click', function (e) { // 捕获阶段拦下箭头/小图点击，不触发卡片本身的进详情；点大图直接进详情页
+  var t = e.target.closest ? e.target.closest('.pg-btn, .pg-thumb') : null;
+  if (!t) return;
+  e.preventDefault(); e.stopPropagation();
+  var wrap = t.closest('.pg-wrap');
+  var urls = [];
+  try { urls = JSON.parse(wrap.querySelector('.pg-img').getAttribute('data-urls') || '[]'); } catch (err) {}
+  if (urls.length < 2) return;
+  if (t.classList.contains('pg-thumb')) { pgSet(wrap, parseInt(t.getAttribute('data-k'), 10) || 0); return; }
+  var i = parseInt(wrap.getAttribute('data-i') || '0', 10) || 0;
+  pgSet(wrap, i + (t.classList.contains('pg-next') ? 1 : -1));
+}, true);
+
 // ===== BJD 总价（与色卡总价同一套展示口径）：已启用部件的价格自动求和 =====
 function bjdTotalV(b) {
   var p = (b && b.price) || {}, parts = (b && b.parts) || {};
@@ -157,7 +221,7 @@ function bjdMeta(b) {
 }
 function bjdRow(label, val) {
   if (val == null || String(val).trim() === '') return '';
-  return '<div style="display:flex;gap:12px;padding:3px 0;font-size:17px;"><span style="color:var(--muted);flex-shrink:0;width:96px;">' + label + '</span><span class="f-data">' + escDb(val) + '</span></div>';
+  return '<div style="display:flex;gap:12px;padding:3px 0;font-size:16px;"><span style="color:var(--muted);flex-shrink:0;width:96px;">' + label + '</span><span class="f-data">' + escDb(val) + '</span></div>';
 }
 function bjdHasPart(b, part) {
   // 部件由后台勾选决定：没勾选 = 没有这个部件
@@ -251,12 +315,31 @@ var ASKBOX_URL = '/askbox/'; // 匿名提问箱页面
 var SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="M8 7l4-4 4 4"/><path d="M6 11h-1a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg>';
 var ADMIN_LOGGED = false;
 try { ADMIN_LOGGED = !!localStorage.getItem('yuki-admin-session'); } catch (e) {}
-function cardEditBtn(i) {
-  // 编辑卡：仅登录后显示；传真实 card_id（旧数据暂无 id 时传位置，后台打开会自动补 id）
+// ===== 前台「编辑」按钮（只有登录了后台账号才出现）：色卡 / BJD / 小铺 共用同一套 =====
+// 传真实 id（色卡 / 商品有 id）；没有 id 的（BJD 档案）传位置编号，后台按编号打开
+var EDIT_TAB_OF = { card: 'cards', bjd: 'bjd', product: 'shop', work: 'works' };
+function adminEditBtn(kind, i, list) {
   if (!ADMIN_LOGGED) return '';
-  var c = (window.CARDS_CACHE || CARDS_CACHE)[i];
-  var key = (c && c.id) ? String(c.id) : String(i);
-  return '<button class="card-edit-btn" data-edit-card="' + escAttrDb(key) + '" data-zh="编辑卡" data-en="Edit">编辑卡</button>';
+  var it = (list || [])[i] || {};
+  var key = (it && it.id != null) ? String(it.id) : String(i);
+  var zh = kind === 'bjd' ? '编辑娃' : (kind === 'product' ? '编辑商品' : '编辑卡');
+  var label = t(zh, 'Edit');
+  return '<button class="card-edit-btn" data-edit-kind="' + kind + '" data-edit-key="' + escAttrDb(key) + '" data-edit-card="' + escAttrDb(key) + '" data-zh="' + zh + '" data-en="Edit">' + label + '</button>';
+}
+function cardEditBtn(i) { return adminEditBtn('card', i, (window.CARDS_CACHE || CARDS_CACHE)); }
+function bjdEditBtn(i) { return adminEditBtn('bjd', i, (window.BJDS_CACHE || BJDS_CACHE)); }
+function workEditBtn(i, list) { return adminEditBtn('work', i, list).replace(/编辑卡/g, '编辑稿'); } // 稿件：同套编辑按钮，文案用「编辑稿」
+// 点「编辑」→ 记下要编辑的对象，跳到后台对应 tab 直接展开它
+if (!window.__editBtnBound) {
+  window.__editBtnBound = 1;
+  document.addEventListener('click', function (e) {
+    var eb = e.target && e.target.closest ? e.target.closest('.card-edit-btn') : null;
+    if (!eb) return;
+    e.preventDefault(); e.stopPropagation();
+    var kind = eb.getAttribute('data-edit-kind') || 'card';
+    try { sessionStorage.setItem('admin-edit-' + kind, eb.getAttribute('data-edit-key') || ''); } catch (err) {}
+    location.href = '/admin.html#' + (EDIT_TAB_OF[kind] || 'cards');
+  }, true);
 }
 function shareBtnHtml(i, type, inline) {
   return '<button class="share-btn' + (inline ? ' share-inline' : '') + '" data-share="' + i + '" data-share-type="' + (type || 'card') + '" title="' + t('分享', 'Share') + '" aria-label="' + t('分享', 'Share') + '">' + SHARE_ICON + '</button>';
@@ -510,10 +593,20 @@ if (document.getElementById('date-pop')) {
     var r = input.getBoundingClientRect();
     var pw = pop.offsetWidth || 240, ph = pop.offsetHeight || 350;
     var left = Math.max(8, Math.min(r.left, window.innerWidth - pw - 8));
-    var top = r.bottom + 6;
-    if (top + ph > window.innerHeight - 8 && r.top - ph - 6 > 8) top = r.top - ph - 6; // 下方放不下则向上弹
+    var top = r.bottom + 6; // 始终在输入框正下方
+    if (top + ph > window.innerHeight - 8) { // 下方放不下：先把输入框滚到视口中部再重算，弹层仍然贴在正下方
+      try { input.scrollIntoView({ block: 'center' }); } catch (err) {}
+      var r2 = input.getBoundingClientRect();
+      left = Math.max(8, Math.min(r2.left, window.innerWidth - pw - 8));
+      top = Math.max(8, r2.bottom + 6);
+      if (top + ph > window.innerHeight - 8) top = Math.max(8, window.innerHeight - ph - 8);
+    }
     pop.style.left = left + 'px';
-    pop.style.top = Math.max(8, top) + 'px';
+    pop.style.top = top + 'px';
+    if (!window.__dpScrollBound) { // 页面滚动时日期弹层直接收起，避免 fixed 弹层飘走
+      window.__dpScrollBound = true;
+      window.addEventListener('scroll', function () { var p = document.getElementById('date-pop'); if (p && p.style.display === 'block') p.style.display = 'none'; }, { passive: true });
+    }
   }
   function dpRender() {
     var pop = document.getElementById('date-pop');
@@ -525,20 +618,39 @@ if (document.getElementById('date-pop')) {
       : DP.y + ' 年 ' + (DP.m + 1) + ' 月';
     var grid = pop.querySelector('.dp-grid');
     var ym = pop.querySelector('.dp-ym');
-    if (DP.mode === 'ym') { // 年月快速选择：年份列表可滚动 + 直接输入年份 + 12 月网格
+    if (DP.mode === 'ym') { // 年月快速选择：苹果式双滚轮（年 | 月）
       grid.style.display = 'none';
       ym.style.display = 'block';
-      if (!ym.innerHTML) {
-        var y1 = new Date().getFullYear() + 5, years = '';
-        for (var yy = y1; yy >= 2000; yy--) years += '<button type="button" class="dp-year" data-y="' + yy + '">' + yy + '</button>';
-        var ms = '';
-        for (var mm = 0; mm < 12; mm++) ms += '<button type="button" class="dp-mon" data-m="' + mm + '">' + (mm + 1) + (LANG === 'en' ? '' : ' 月') + '</button>';
-        ym.innerHTML = '<div class="dp-ym-row"><input type="text" inputmode="numeric" class="dp-year-input" placeholder="' + (LANG === 'en' ? 'Year' : '输入年份') + '"></div><div class="dp-years">' + years + '</div><div class="dp-months">' + ms + '</div>';
-      }
-      ym.querySelectorAll('.dp-year').forEach(function (b) { b.classList.toggle('cur', parseInt(b.getAttribute('data-y'), 10) === DP.y); });
-      ym.querySelectorAll('.dp-mon').forEach(function (b) { b.classList.toggle('cur', parseInt(b.getAttribute('data-m'), 10) === DP.m); });
-      var cur = ym.querySelector('.dp-year.cur');
-      if (cur) ym.querySelector('.dp-years').scrollTop = cur.offsetTop - 50;
+      var y1 = new Date().getFullYear() + 5, years = [];
+      for (var yy = y1; yy >= 2000; yy--) years.push(yy);
+      var months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      var yl = years.map(function (y) { return '<div class="wheel-item' + (y === DP.y ? ' cur' : '') + '" data-v="' + y + '">' + y + '</div>'; }).join('');
+      var ml = months.map(function (m) { return '<div class="wheel-item' + (m === DP.m ? ' cur' : '') + '" data-v="' + m + '">' + (m + 1) + (LANG === 'en' ? '' : ' 月') + '</div>'; }).join('');
+      ym.innerHTML = '<div class="dp-wheel"><div class="wheel" data-k="y"><div class="wheel-list">' + yl + '</div></div><div class="wheel" data-k="m"><div class="wheel-list">' + ml + '</div></div><div class="wheel-band"></div></div>';
+      ym.querySelectorAll('.wheel').forEach(function (col) {
+        var isY = col.getAttribute('data-k') === 'y';
+        var vals = isY ? years : months;
+        var list = col.querySelector('.wheel-list');
+        var curIdx = isY ? years.indexOf(DP.y) : DP.m;
+        if (curIdx < 0) curIdx = 0;
+        list.scrollTop = curIdx * 36;
+        var wt = null;
+        list.addEventListener('scroll', function () {
+          clearTimeout(wt);
+          wt = setTimeout(function () {
+            var i = Math.max(0, Math.min(vals.length - 1, Math.round(list.scrollTop / 36)));
+            list.querySelectorAll('.wheel-item').forEach(function (c, j) { c.classList.toggle('cur', j === i); });
+            if (isY) DP.y = vals[i]; else DP.m = vals[i];
+            var pop2 = document.getElementById('date-pop');
+            pop2.querySelector('.dp-title').textContent = LANG === 'en' ? DP_MON_EN[DP.m] + ' ' + DP.y : DP.y + ' 年 ' + (DP.m + 1) + ' 月';
+          }, 130);
+        });
+        list.addEventListener('click', function (e) {
+          var it = e.target.closest('.wheel-item'); if (!it) return;
+          var i = Array.prototype.indexOf.call(list.children, it);
+          list.scrollTo({ top: i * 36, behavior: 'smooth' });
+        });
+      });
       return;
     }
     ym.style.display = 'none';
@@ -649,3 +761,10 @@ enhanceSelects();
 
 // ===== 汉堡菜单关闭（site-menu.js 负责） =====
 function closeMenu() { if (window.SiteMenu) SiteMenu.close(); }
+
+// ===== Service Worker：页面导航断网/加载失败时兜底到 /offline.html（自己的 UI 风格） =====
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js').catch(function () {});
+  });
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页面走丢了 · Yuki / 柚子</title>
+<link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
+<link rel="stylesheet" href="/css/site.css?v=20261017c">
+<link rel="stylesheet" href="/site-menu.css">
+<script src="/site-menu.js" defer></script>
+<style>
+  body { padding: 0 !important; }
+  .er-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; }
+  .er-card { background: var(--card); border-radius: var(--radius); padding: 44px 40px; text-align: center; max-width: 420px; width: 100%; box-shadow: 0 10px 40px rgba(180,120,150,.14); }
+  .er-logo { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 16px rgba(255,111,165,.25); }
+  .er-code { font-family: "Millo Body Heavy", "Millo Body", sans-serif; font-size: 52px; color: var(--accent); line-height: 1.1; margin: 18px 0 4px; }
+  .er-title { font-size: 22px; font-weight: 700; color: var(--text); }
+  .er-sub { font-size: 16px; color: var(--muted); margin-top: 8px; }
+  .er-star { color: var(--accent-soft); }
+  .er-btns { margin-top: 26px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .er-btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 26px; border-radius: 999px; font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; }
+  .er-btn-main { background: var(--accent); color: #fff; }
+  .er-btn-main:hover { filter: brightness(1.05); }
+  .er-btn-soft { background: #fff; color: var(--accent); border: 1.5px solid var(--accent-soft); }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="lang-switch">
+    <button class="lang-btn" data-lang="zh">简体中文</button>
+    <button class="lang-btn" data-lang="en">English</button>
+  </div>
+  <a class="site-logo" href="/" aria-label="回主页"><img src="/logo.png" alt="logo"></a>
+  <button class="burger" aria-label="菜单">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+  <div class="er-wrap">
+    <div class="er-card">
+      <img class="er-logo" src="/logo.png" alt="柚子">
+      <div class="er-code">404</div>
+      <div class="er-title"><span data-zh="这一页走丢了">这一页走丢了</span> <span class="er-star">～ ☆</span></div>
+      <div class="er-sub" data-zh="它可能被挪走啦，回主页逛逛吧" data-en="It may have been moved — head back home?">它可能被挪走啦，回主页逛逛吧</div>
+      <div class="er-btns">
+        <a class="er-btn er-btn-main" href="/" data-zh="回主页" data-en="Back to Home">回主页</a>
+        <a class="er-btn er-btn-soft" href="/shop/" data-zh="去小铺逛逛" data-en="Browse the Shop">去小铺逛逛</a>
+      </div>
+    </div>
+  </div>
+<div class="menu-mask" id="menu-mask"></div>
+<nav class="menu" id="menu"></nav>
+<script>
+(function () {
+  var lang = 'zh';
+  try { lang = localStorage.getItem('yuki-lang') === 'en' ? 'en' : 'zh'; } catch (err) {}
+  function apply(l) {
+    lang = l;
+    document.documentElement.lang = l === 'en' ? 'en' : 'zh-CN';
+    document.querySelector('.er-title [data-zh]').textContent = l === 'en' ? 'This page wandered off' : '这一页走丢了';
+    document.title = l === 'en' ? 'Page not found · Yuki / Yuki' : '页面走丢了 · Yuki / 柚子';
+    var nodes = document.querySelectorAll('[data-zh]');
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      if (n.closest('.er-title')) continue;
+      n.textContent = l === 'en' ? (n.getAttribute('data-en') || n.getAttribute('data-zh')) : n.getAttribute('data-zh');
+    }
+    var btns = document.querySelectorAll('.lang-btn');
+    for (var j = 0; j < btns.length; j++) btns[j].classList.toggle('active', btns[j].getAttribute('data-lang') === l);
+    try { localStorage.setItem('yuki-lang', l); } catch (err) {}
+  }
+  document.querySelector('.lang-switch').addEventListener('click', function (e) {
+    var b = e.target.closest('.lang-btn');
+    if (b) apply(b.getAttribute('data-lang') === 'en' ? 'en' : 'zh');
+  });
+  apply(lang);
+})();
+</script>
+</body>
+</html>

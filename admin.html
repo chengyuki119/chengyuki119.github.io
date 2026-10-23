@@ -54,7 +54,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .back-link {
     display: inline-flex; align-items: center; gap: 8px;
     color: var(--text);
-    font-size:18px;
+    font-size:17px;
     padding: 8px 14px;
     border-radius: 999px;
     background: var(--card);
@@ -64,8 +64,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
   .wrap { max-width: 1200px; margin: 0 auto; padding: 40px 24px 64px; }
   a { color: inherit; text-decoration: none; }
-  h1 { font-size:32px; margin: 20px 0 6px; }
-  .sub { color: var(--muted); font-size:17px; margin-bottom: 20px; }
+  h1 { font-size:31px; margin: 20px 0 6px; }
+  .sub { color: var(--muted); font-size:16px; margin-bottom: 20px; }
 
   .gate {
     background: var(--card);
@@ -76,22 +76,22 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .gate input {
     border: none; border-radius: 12px;
     background: #fff; padding: 12px 14px;
-    font-family: inherit; font-size:18px;
+    font-family: inherit; font-size:17px;
     color: var(--text); outline: none;
   }
   .gate button {
     align-self: flex-end;
     border: none; background: var(--accent-soft); color: #fff;
-    font-size:18px; padding: 9px 24px; border-radius: 999px;
+    font-size:17px; padding: 9px 24px; border-radius: 999px;
     cursor: pointer;
   }
-  .hint { font-size:16px; color: var(--muted); }
+  .hint { font-size:15px; color: var(--muted); }
 
   .tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
   .tab-btn { font-family: "Millo Body", -apple-system, "PingFang SC", sans-serif;
     flex: 1 1 auto; white-space: nowrap;
     border: none; background: var(--card);
-    font-size:17px; padding: 9px 12px;
+    font-size:16px; padding: 9px 12px;
     border-radius: 12px; cursor: pointer;
     color: var(--muted);
     transition: background .2s, color .2s;
@@ -102,12 +102,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .pp-btn {
     display: inline-flex; align-items: center; gap: 8px;
     border: none; background: var(--card); color: var(--text);
-    font-size:17px; padding: 9px 14px;
+    font-size:16px; padding: 9px 14px;
     border-radius: 12px; cursor: pointer;
     transition: background .2s;
   }
   .pp-btn:hover { background: var(--card-hover); }
-  .pp-btn .pp-arrow { font-size:14px; color: var(--muted); }
+  .pp-btn .pp-arrow { font-size:13px; color: var(--muted); }
   .pp-menu {
     position: absolute; top: calc(100% + 6px); left: 0; z-index: 60;
     background: #fff; border-radius: 12px;
@@ -119,7 +119,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .pp-menu .tab-btn {
     display: block; width: 100%; text-align: left; box-sizing: border-box;
     border: none; background: none; color: var(--text);
-    font-size:17px; padding: 9px 12px;
+    font-size:16px; padding: 9px 12px;
     border-radius: 8px; cursor: pointer;
   }
   .pp-menu .tab-btn:hover { background: var(--card-hover); }
@@ -133,10 +133,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     margin-bottom: 14px;
     box-shadow: 0 2px 10px rgba(180,120,150,.12);
   }
-  .qa-q { font-size:18px; white-space: pre-wrap; word-break: break-word; }
-  .qa-meta { font-size:16px; color: var(--muted); margin-top: 6px; }
+  .qa-q { font-size:17px; white-space: pre-wrap; word-break: break-word; }
+  .qa-meta { font-size:15px; color: var(--muted); margin-top: 6px; }
   .qa-contact {
-    margin-top: 8px; font-size:17px;
+    margin-top: 8px; font-size:16px;
     background: #fff7e6; border-radius: 10px; padding: 8px 12px;
     word-break: break-all;
   }
@@ -144,27 +144,31 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     width: 100%; min-height: 70px;
     border: 1px solid #f6d9e6; border-radius: 12px;
     background: var(--card); padding: 10px 12px;
-    font-family: inherit; font-size:18px;
+    font-family: inherit; font-size:17px;
     color: var(--text); line-height: 1.6;
     resize: none; outline: none;
   }
   input, select {
     border: 1px solid #f6d9e6; border-radius: 12px;
     background: var(--card); padding: 10px 12px;
-    font-family: inherit; font-size:18px;
+    font-family: inherit; font-size:17px;
     color: var(--text); outline: none; width: 100%;
   }
   .actions { display: flex; gap: 8px; margin-top: 10px; justify-content: flex-end; }
   .actions button {
-    border: none; font-size:17px; padding: 7px 16px;
+    border: none; font-size:16px; padding: 7px 16px;
     border-radius: 999px; cursor: pointer;
   }
   .btn-save { background: var(--accent-soft); color: #fff; }
   .btn-cancel { background: var(--card-hover); color: var(--text); }
+  /* 数字输入框不要浏览器原生上下小箭头（和自定义控件打架） */
+  input[type="number"] { appearance: textfield; -moz-appearance: textfield; }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   .btn-del { background: #f6d9e6; color: var(--text); }
   /* 按钮组件统一：不管在不在 .actions 里，都是同一套圆角小按钮（不再有浏览器默认样式）*/
   .btn-mini, .btn-del, .btn-save, .btn-cancel {
-    border: none; font-family: inherit; font-size:17px;
+    border: none; font-family: inherit; font-size:16px;
     padding: 7px 16px; border-radius: 999px; cursor: pointer;
     transition: background .2s, opacity .2s;
   }
@@ -172,65 +176,62 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .btn-del:hover { background: #f0c3da; }
   .btn-save:hover { opacity: .85; }
   .dy-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .dy-chip {
-  .dy-chip { white-space: nowrap; flex: none; }
-  #dy-cat, .de-cat { border: 1px solid #f0cfdf; border-radius: 8px; padding: 6px 10px; font-size:16px; font-family: inherit; color: var(--text); background: #fff; outline: none; }
+  .dy-chip { display: inline-flex; align-items: center; border: none; background: var(--card-hover); color: var(--muted); border-radius: 999px; padding: 5px 12px; font-size:15px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; flex: none; }
+  #dy-cat, .de-cat { border: 1px solid #f0cfdf; border-radius: 8px; padding: 6px 10px; font-size:15px; font-family: inherit; color: var(--text); background: #fff; outline: none; }
   #dy-cat:focus, .de-cat:focus { border-color: var(--accent); }
   #dy-cat-list, .dy-cat-list { display: none; position: absolute; z-index: 1399; background: #fff; border-radius: 10px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 4px; min-width: 170px; max-height: 168px; overflow-y: auto; }
   .day-item.editing .dy-cat-list { position: relative; margin-top: 4px; }
-  #days-form-card .cat-opt, .day-item .cat-opt { display: block; width: 100%; box-sizing: border-box; border: none; background: none; text-align: left; padding: 8px 12px; font-size:17px; cursor: pointer; border-radius: 8px; color: var(--text); font-family: inherit; line-height: 1.4; }
+  #days-form-card #dy-cat-list { top: calc(100% + 4px); } /* 联想浮层锚在表单行正下方（横向跟随输入框），不压住重复选项 */
+  #days-form-card .cat-opt, .day-item .cat-opt { display: block; width: 100%; box-sizing: border-box; border: none; background: none; text-align: left; padding: 8px 12px; font-size:16px; cursor: pointer; border-radius: 8px; color: var(--text); font-family: inherit; line-height: 1.4; }
   #days-form-card .cat-opt:hover, .day-item .cat-opt:hover { background: var(--card-hover); }
-  #days-form-card .cat-opt.cat-new, .day-item .cat-opt.cat-new { color: var(--accent); font-weight: 600; } display: inline-flex; align-items: center; border: none; background: var(--card-hover); color: var(--muted); border-radius: 999px; padding: 5px 12px; font-size:16px; cursor: pointer; transition: background .2s, color .2s; }
+  #days-form-card .cat-opt.cat-new, .day-item .cat-opt.cat-new { color: var(--accent); font-weight: 600; }
   .dy-chip:hover { color: var(--text); }
   .dy-chip.active { background: var(--accent-soft); color: #fff; }
   /* 竖排文字防护：所有表单勾选/徽章标签禁止逐字换行 */
   .sc-artist label, .bjd-item label, .sold-badge { white-space: nowrap; }
   /* 统一下拉菜单（替代浏览器原生 select 面板） */
-  .sel-btn { display: inline-flex; align-items: center; gap: 6px; border: none; background: var(--card); color: var(--text); border-radius: 999px; padding: 6px 12px; font-size:16px; cursor: pointer; font-family: inherit; line-height: 1.4; }
+  .sel-btn { display: inline-flex; align-items: center; gap: 6px; border: none; background: var(--card); color: var(--text); border-radius: 999px; padding: 6px 12px; font-size:15px; cursor: pointer; font-family: inherit; line-height: 1.4; }
   .sel-btn:hover { background: var(--card-hover); }
-  .sel-btn::after { content: '▾'; color: var(--muted); font-size:14px; }
+  .sel-btn::after { content: '▾'; color: var(--muted); font-size:13px; }
   .sel-menu { position: fixed; z-index: 1000; background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 6px; min-width: 160px; max-height: 260px; overflow-y: auto; display: none; box-sizing: border-box; }
-  .sel-opt { display: block; width: 100%; border: none; background: none; text-align: left; padding: 9px 12px; font-size:17px; cursor: pointer; border-radius: 8px; color: var(--text); font-family: inherit; line-height: 1.4; }
+  .sel-opt { display: block; width: 100%; border: none; background: none; text-align: left; padding: 9px 12px; font-size:16px; cursor: pointer; border-radius: 8px; color: var(--text); font-family: inherit; line-height: 1.4; }
   .sel-opt:hover { background: var(--card-hover); }
   .sel-opt.active { background: var(--accent-soft); color: #fff; }
   /* 后台筛选/排序：自定义下拉按钮（不用原生 select），与 sel-menu 同一套视觉 */
-  .pick-btn-label { font-size:17px; color: var(--muted); }
+  .pick-btn-label { font-size:16px; color: var(--muted); }
   /* 自定义联想下拉（画师 / 标签）：与 sel-menu / sc-pop 同一套视觉，彻底替代浏览器 datalist */
   #combo-pop { position: fixed; z-index: 1000; background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 6px; min-width: 200px; max-width: 320px; max-height: 240px; overflow-y: auto; display: none; box-sizing: border-box; animation: scPopIn .16s ease; }
-  .combo-opt { display: block; width: 100%; border: none; background: none; text-align: left; padding: 9px 12px; font-size:17px; cursor: pointer; border-radius: 8px; color: var(--text); font-family: inherit; line-height: 1.4; }
+  .combo-opt { display: block; width: 100%; border: none; background: none; text-align: left; padding: 9px 12px; font-size:16px; cursor: pointer; border-radius: 8px; color: var(--text); font-family: inherit; line-height: 1.4; }
   .combo-opt:hover { background: var(--card-hover); }
   .dy-chip input { position: absolute; opacity: 0; pointer-events: none; }
   .btn-mini { background: var(--card); color: var(--text); }
   /* 头像 / 主页背景图上传区：两行对齐，隐藏原生 file 控件 */
   .hm-upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .hm-upload-row + .hm-upload-row { margin-top: 12px; }
-  .hm-upload-name { font-size:17px; color: var(--text); min-width: 84px; flex-shrink: 0; }
-  .hm-file-name { font-size:16px; color: var(--muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hm-upload-name { font-size:16px; color: var(--text); min-width: 84px; flex-shrink: 0; }
+  .hm-file-name { font-size:15px; color: var(--muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* 主页区域 / 主页文案的简化管理：显隐 chip + 卡片头 ⋮（不用绝对定位的 .kebab） */
-  .vis-chip { display: inline-flex; align-items: center; border: none; background: var(--card-hover); color: var(--muted); border-radius: 999px; padding: 4px 10px; font-size:16px; cursor: pointer; font-family: inherit; flex-shrink: 0; }
+  .vis-chip { display: inline-flex; align-items: center; border: none; background: var(--card-hover); color: var(--muted); border-radius: 999px; padding: 4px 10px; font-size:15px; cursor: pointer; font-family: inherit; flex-shrink: 0; }
   .vis-chip.vis-on { background: var(--accent-soft); color: #fff; }
-  .area-kebab, .hm-kebab { width: 32px; height: 32px; flex-shrink: 0; border: none; border-radius: 10px; background: var(--card); color: var(--muted); font-size:20px; cursor: pointer; font-family: inherit; line-height: 1; }
+  .area-kebab, .hm-kebab { width: 32px; height: 32px; flex-shrink: 0; border: none; border-radius: 10px; background: var(--card); color: var(--muted); font-size:19px; cursor: pointer; font-family: inherit; line-height: 1; }
   .area-kebab:hover, .hm-kebab:hover { background: var(--card-hover); color: var(--text); }
-  .empty { text-align: center; color: var(--muted); font-size:18px; padding: 30px 0; }
-  h3 { font-size:19px; margin: 0 0 12px; }
+  .empty { text-align: center; color: var(--muted); font-size:17px; padding: 30px 0; }
+  h3 { font-size:18px; margin: 0 0 12px; }
   h3.outside { margin: 18px 0 12px; }
 
   /* 上架表单 */
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .form-grid .full { grid-column: 1 / -1; }
-  .img-preview {
-    width: 100%; aspect-ratio: 1/1;
-    border-radius: 12px; background: var(--card);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--muted); font-size:17px; overflow: hidden;
-    margin-top: 8px;
-  }
-  .img-preview img { width: 100%; height: 100%; object-fit: cover; }
+  /* 上架预览：小方图缩略条（跟色卡/照片管理同一套尺寸，不用整屏大预览框） */
+  .p-preview { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+  .p-preview .pv { width: 64px; height: 64px; border-radius: 10px; overflow: hidden; background: var(--card); flex-shrink: 0; }
+  .p-preview .pv img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .p-preview .pv-empty { font-size: 15px; color: var(--muted); }
   .logout {
     background: var(--card);
     border: 1px solid var(--card-hover);
     color: #8d99b5;
-    font-size:17px;
+    font-size:16px;
     padding: 6px 14px;
     border-radius: 999px;
     cursor: pointer;
@@ -243,7 +244,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .lo-mask { position: fixed; inset: 0; background: rgba(90,66,76,.25); z-index: 2000; display: none; align-items: center; justify-content: center; }
   .lo-mask.open { display: flex; }
   .lo-box { background: #fff; border-radius: var(--radius); box-shadow: 0 10px 30px rgba(120,80,100,.2); padding: 22px 24px 18px; width: min(320px, calc(100vw - 48px)); }
-  .lo-box p { margin: 0 0 16px; font-size:18px; color: var(--text); }
+  .lo-box p { margin: 0 0 16px; font-size:17px; color: var(--text); }
   .lo-actions { display: flex; gap: 8px; justify-content: flex-end; }
 
   .shop-item { display: flex; gap: 12px; position: relative; }
@@ -252,90 +253,98 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     width: 32px; height: 38px;
     border: none; border-radius: 10px;
     background: var(--card); color: var(--muted);
-    font-size:22px; font-weight: 700; line-height: 1;
+    font-size:21px; font-weight: 700; line-height: 1;
     cursor: pointer; transition: background .2s;
   }
   .kebab:hover { background: var(--card-hover); color: var(--text); }
+  /* 管理小圆片（尺寸/种类/画师/标签）里的 ⋮：跟着圆片走，不要绝对定位飘到卡片角落 */
+  #bjd-size-chips .kebab, #bjd-body-chips .kebab, #work-cat-chips .kebab, #work-artist-chips .kebab, #p-tag-chips .kebab { position: static; }
   .section-item .kebab, .link-item .kebab { position: static; flex-shrink: 0; }
   .sc-row { display: grid; grid-template-columns: 100px 92px 18px 60px 18px 70px auto; gap: 8px; align-items: center; position: relative; margin-bottom: 8px; }
   .sc-row input { width: 100%; box-sizing: border-box; }
   .sc-row .r-x, .sc-row .r-eq { text-align: center; color: var(--muted); }
-  .sc-row .r-total { text-align: right; font-size:17px; }
+  .sc-row .r-total { text-align: right; font-size:16px; }
   .sc-row .kebab { position: static; justify-self: end; }
   #sc-pop { position: fixed; z-index: 999; background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 6px; width: 168px; box-sizing: border-box; display: none; animation: scPopIn .16s ease; }
   @keyframes scPopIn { from { opacity: 0; transform: scale(.94); } }
   /* 自定义日期选择器（替代系统原生，购入日期/最后记录共用） */
   #date-pop { position: fixed; z-index: 1400; background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 10px; width: 231px; box-sizing: border-box; display: none; animation: scPopIn .16s ease; }
   #date-pop .dp-title { cursor: pointer; }
-  #date-pop .dp-hint { display: none; font-size:15px; color: #e0722f; margin: -2px 0 6px; }
+  #date-pop .dp-hint { display: none; font-size:14px; color: #e0722f; margin: -2px 0 6px; }
+  /* ===== 苹果式年月滚轮 ===== */
+  .dp-wheel { display: flex; position: relative; height: 180px; background: var(--card); border-radius: 12px; overflow: hidden; }
+  .dp-wheel .wheel { flex: 1; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; -webkit-mask-image: linear-gradient(transparent, #000 24%, #000 76%, transparent); mask-image: linear-gradient(transparent, #000 24%, #000 76%, transparent); }
+  .dp-wheel .wheel::-webkit-scrollbar { display: none; }
+  .dp-wheel .wheel-list { padding: 72px 0; }
+  .dp-wheel .wheel-item { height: 36px; line-height: 36px; text-align: center; scroll-snap-align: center; font-size:16px; color: var(--text); cursor: pointer; font-family: inherit; }
+  .dp-wheel .wheel-item.cur { color: var(--accent); font-weight: 700; }
+  .dp-wheel .wheel-band { position: absolute; left: 8px; right: 8px; top: 50%; height: 36px; transform: translateY(-50%); background: var(--accent-soft); border-radius: 10px; opacity: .45; pointer-events: none; }
   #date-pop .dp-ym { display: none; }
-  #date-pop .dp-years { display: flex; flex-wrap: wrap; gap: 5px; overflow-y: auto; max-height: 96px; padding-right: 2px; margin-bottom: 6px; }
-  #date-pop .dp-year, #date-pop .dp-mon { border: none; background: var(--card); color: var(--text); border-radius: 8px; padding: 4px 7px; font-size:16px; cursor: pointer; font-family: inherit; line-height: 1.4; }
   #date-pop .dp-mon { text-align: center; }
-  #date-pop .dp-year.cur, #date-pop .dp-mon.cur { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
-  #date-pop .dp-year:hover, #date-pop .dp-mon:hover { background: var(--card-hover); }
-  #date-pop .dp-months { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-  #date-pop .dp-ym-row { margin-bottom: 6px; }
-  #date-pop .dp-year-input { width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid #f0cfdf; border-radius: 8px; font-size:17px; font-family: inherit; color: var(--text); outline: none; }
   .dp-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-  .dp-title { flex: 1; text-align: center; font-size:17px; font-weight: 700; }
-  .dp-nav, .dp-today { border: none; background: var(--card-hover); color: var(--accent); font-size:16px; border-radius: 999px; cursor: pointer; padding: 5px 10px; line-height: 1; }
+  .dp-title { flex: 1; text-align: center; font-size:16px; font-weight: 700; }
+  .dp-nav, .dp-today { border: none; background: var(--card-hover); color: var(--accent); font-size:15px; border-radius: 999px; cursor: pointer; padding: 5px 10px; line-height: 1; }
   .dp-nav:hover, .dp-today:hover { background: var(--accent-soft); color: #fff; }
   .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-  .dp-wd { font-size:15px; color: var(--muted); text-align: center; padding: 4px 0; }
-  .dp-day { border: none; background: none; font-size:16px; color: var(--text); border-radius: 8px; padding: 6px 0; cursor: pointer; line-height: 1; font-family: inherit; }
+  .dp-wd { font-size:14px; color: var(--muted); text-align: center; padding: 4px 0; }
+  .dp-day { border: none; background: none; font-size:15px; color: var(--text); border-radius: 8px; padding: 6px 0; cursor: pointer; line-height: 1; font-family: inherit; }
   .dp-day:hover { background: var(--card-hover); }
   .dp-day.today { color: var(--accent); font-weight: 700; }
   .dp-day.sel, .dp-day.sel:hover { background: var(--accent); color: #fff; }
-  #date-pop .dp-input { width: 100%; box-sizing: border-box; margin-bottom: 6px; border: 1px solid #f0cfdf; background: #fff; border-radius: 8px; padding: 7px 10px; font-size:17px; font-family: inherit; color: var(--text); outline: none; }
+  #date-pop .dp-input { width: 100%; box-sizing: border-box; margin-bottom: 6px; border: 1px solid #f0cfdf; background: #fff; border-radius: 8px; padding: 7px 10px; font-size:16px; font-family: inherit; color: var(--text); outline: none; }
   #date-pop .dp-input:focus { border-color: var(--accent); }
-  #date-pop .dp-year-input:focus { border-color: var(--accent); }
   .dp-empty { visibility: hidden; }
   @media (max-width: 520px) {
     .sc-row { grid-template-columns: 56px 48px 10px 38px 10px 44px auto; gap: 4px; }
-    .sc-row input { font-size:17px; padding: 7px 8px; }
+    .sc-row input { font-size:16px; padding: 7px 8px; }
     .sc-row .kebab { width: 26px; }
   }
   @media (max-width: 360px) {
     .sc-row { grid-template-columns: 50px 42px 8px 32px 8px 38px auto; gap: 3px; }
     .sc-row .kebab { width: 22px; height: 30px; }
   }
-  #sc-pop .sc-opt { display: flex; align-items: center; gap: 8px; width: 100%; box-sizing: border-box; border: none; background: none; padding: 9px 12px; font-size:17px; line-height: 1; cursor: pointer; border-radius: 8px; text-align: left; color: var(--text); }
-  #sc-pop .sc-opt:hover { background: var(--card); }
+  #sc-pop .sc-opt { display: flex; align-items: center; gap: 8px; width: 100%; box-sizing: border-box; border: none; background: none; padding: 9px 12px; font-size:16px; line-height: 1; cursor: pointer; border-radius: 8px; text-align: left; color: var(--text); }
+  #sc-pop .sc-opt:hover { background: #f6d9e6; }
   #sc-pop .sc-opt:disabled { color: var(--muted); cursor: default; background: none; }
-  #sc-pop .sc-opt-del { background: #f6d9e6; color: var(--text); }
-  #sc-pop .sc-opt-del:hover { background: #f3c9dd; }
+  #sc-pop .sc-opt-del { background: none; color: var(--text); }
+  #sc-pop .sc-opt-del:hover { background: #f6d9e6; }
   /* 色卡 / BJD 列表：同一个卡片尺寸规范（同一网格、同一间距、同一卡片结构）*/
   #sc-artist-list, #bjd-list, #works-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   @media (max-width: 900px) { #sc-artist-list, #bjd-list, #works-list { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
   #sc-artist-list .sc-artist, #bjd-list .bjd-item { margin-bottom: 0; }
-  #sc-artist-list .sc-artist.editing, #bjd-list .bjd-item.editing { grid-column: 1 / -1; }
+  #sc-artist-list .sc-artist.editing, #bjd-list .bjd-item.editing, #works-list .work-item.editing { grid-column: 1 / -1; }
+  /* 评价返图管理：跟色卡同一套卡片尺寸规范（方图卡 + 卡内 ⋮） */
+  #review-admin-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 900px) { #review-admin-list { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
+  .rv-item { margin-bottom: 0; padding: 0; overflow: hidden; }
+  .rv-item > .kebab { top: 8px; right: 8px; z-index: 2; background: rgba(255,255,255,.92); }
+  .rv-text { font-size:15px; line-height: 1.55; color: var(--text); margin-top: 4px; white-space: pre-wrap; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
   /* 色卡列表卡价格明细：与详情/前台同一套计算（labelAgg/artistSub/cardFinal），只补展示 */
-  .sc-bd-line { margin-top: 5px; font-size:16px; color: var(--text); }
+  .sc-bd-line { margin-top: 5px; font-size:15px; color: var(--text); }
   .sc-bd-line b { color: var(--accent); }
-  .sc-bd { margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--card-hover); font-size:15px; line-height: 1.55; color: var(--muted); }
+  .sc-bd { margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--card-hover); font-size:14px; line-height: 1.55; color: var(--muted); }
   .sc-bd-a { padding: 2px 0; }
-  .sc-bd-a b { display: block; color: var(--text); font-size:15px; }
+  .sc-bd-a b { display: block; color: var(--text); font-size:14px; }
   .sc-bd-a span { display: inline-block; margin-right: 6px; white-space: nowrap; }
   .sc-bd-a i { display: block; font-style: normal; color: var(--accent); }
   .sc-bd-final { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--card-hover); color: var(--accent); font-weight: 600; }
-  .sc-bd-final b { font-size:17px; }
+  .sc-bd-final b { font-size:16px; }
   .sc-artist > .kebab { background: #fff; }
   .sc-card-img { width: 100%; aspect-ratio: 1/1; overflow: hidden; background: var(--card); }
   .sc-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .sc-card-img .sc-img-empty { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size:16px; }
+  .sc-card-img .sc-img-empty { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size:15px; }
   .sc-info { padding: 12px 14px 14px; min-width: 0; }
-  .sc-info .sc-name { font-size:19px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+  .sc-info .sc-name { font-size:18px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
   .sc-info .sc-name:hover { color: var(--accent); }
-  .sc-info .sc-shop { font-size:16px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 19px; }
-  .sc-info .sc-meta { font-size:16px; color: var(--muted); margin-top: 3px; }
-  .sc-info .sc-price { font-size:18px; color: var(--accent); font-weight: 600; margin-top: 4px; }
+  .sc-info .sc-shop { font-size:15px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 19px; }
+  .sc-info .sc-meta { font-size:15px; color: var(--muted); margin-top: 3px; }
+  .sc-info .sc-price { font-size:17px; color: var(--accent); font-weight: 600; margin-top: 4px; }
   /* 编辑态内所有 ⋮（卡片级/画师级/行级）都在同一条垂直线上 */
   .sc-artist.editing > .sc-kebab { right: 16px; }
   .sc-artist.editing .sc-artist-block > .kebab { right: 0; }
   .section-item { margin-bottom: 10px; }
-  .section-item .sec-name { font-size:19px; font-weight: 600; }
-  .section-item .sec-meta { font-size:16px; color: var(--muted); margin-top: 3px; }
+  .section-item .sec-name { font-size:18px; font-weight: 600; }
+  .section-item .sec-meta { font-size:15px; color: var(--muted); margin-top: 3px; }
   .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; min-width: 0; }
   .edit-grid .e-desc, .edit-grid .e-file { grid-column: 1 / -1; }
   /* 照片管理列表：紧凑一行卡（缩略图 72px + 信息） */
@@ -348,13 +357,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .photo-item .thumb { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: var(--card-hover); position: relative; }
   .photo-item .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .photo-item .info { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 3px; }
-  .photo-item .ph-title { font-size:18px; font-weight: 600; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 1.4em; }
-  .photo-item .ph-meta { font-size:16px; color: var(--muted); }
+  .photo-item .ph-title { font-size:17px; font-weight: 600; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 1.4em; }
+  .photo-item .ph-meta { font-size:15px; color: var(--muted); }
   .photo-item .edit-grid { grid-template-columns: 1fr; margin-top: 6px; }
   .photo-item .actions { margin-top: 8px; }
   /* 每行显示选择器（分区设置）：4 个可视化布局选项，不用原生 select */
   .pr-picker { display: flex; gap: 6px; flex-wrap: wrap; }
-  .pr-opt { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 1px solid #f6d9e6; background: var(--card); border-radius: 10px; padding: 7px 8px 5px; cursor: pointer; font-size:15px; color: var(--muted); font-family: inherit; transition: background .2s, border-color .2s, color .2s; }
+  .pr-opt { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 1px solid #f6d9e6; background: var(--card); border-radius: 10px; padding: 7px 8px 5px; cursor: pointer; font-size:14px; color: var(--muted); font-family: inherit; transition: background .2s, border-color .2s, color .2s; }
   .pr-opt:hover { background: var(--card-hover); }
   .pr-opt.active { background: var(--accent-soft); border-color: var(--accent); color: #fff; }
   .pr-demo { display: grid; gap: 2px; width: 38px; height: 22px; }
@@ -365,32 +374,36 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .tgl .tgl-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 1px solid #f0cfdf; box-sizing: border-box; transition: left .2s, background .2s; }
   .tgl.on { background: var(--accent-soft); border-color: var(--accent); }
   .tgl.on .tgl-knob { left: 18px; background: var(--accent); border-color: var(--accent); }
-  .tgl-label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size:17px; flex-shrink: 0; color: var(--text); }
+  .tgl-label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size:16px; flex-shrink: 0; color: var(--text); }
   /* 上传新照片：字段行内小标签 + 统一间距 */
   .fld-inline { display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .fld-label { font-size:16px; color: var(--muted); flex-shrink: 0; }
+  .fld-label { font-size:15px; color: var(--muted); flex-shrink: 0; }
   /* 小铺商品：缩略图更矮、保持原始比例不裁切 */
   .shop-item .thumb {
-    width: auto; min-width: 60px; height: 60px; border-radius: 12px; overflow: hidden;
-    background: var(--card); flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; font-size:26px;
+    width: 60px; height: 60px; border-radius: 12px; overflow: hidden;
+    background: var(--card); flex-shrink: 0; position: relative;
+    display: flex; align-items: center; justify-content: center; font-size:25px;
   }
-  .shop-item .thumb img { width: auto; height: 100%; object-fit: contain; display: block; }
+  .shop-item .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .shop-item .info { flex: 1; min-width: 0; }
-  .shop-item .info h3 { font-size:19px; }
-  .shop-item .info p { font-size:16px; color: var(--muted); }
-  .sold-badge { display: inline-block; font-size:15px; color:#fff; border-radius: 999px; padding: 1px 8px; margin-left: 6px; }
+  .shop-item .info h3 { font-size:18px; }
+  .shop-item .info p { font-size:15px; color: var(--muted); }
+  .sold-badge { display: inline-block; font-size:14px; color:#fff; border-radius: 999px; padding: 1px 8px; margin-left: 6px; }
   .st-on { background: #9ecfae; }
   .st-display { background: #b3ace0; }
   .st-out { background: #c4bcb6; }
-  .private-line { font-size:16px; color: var(--muted); margin-top: 4px; }
+  .st-off { background: #e6a9c3; }
+  /* 商品列表标签筛选 chips */
+  .pf-chip { border: 1px solid #f6d9e6; }
+  .pf-chip.on { background: var(--accent-soft); border-color: var(--accent); color: #fff; }
+  .private-line { font-size:15px; color: var(--muted); margin-top: 4px; }
 
     .btn-save-tb { margin-left: auto; background: var(--accent-soft) !important; color: #fff !important; }
 .toast {
     position: fixed; bottom: 32px; left: 50%;
     transform: translateX(-50%) translateY(20px);
     background: var(--text); color: #fff;
-    font-size:18px; padding: 10px 22px;
+    font-size:17px; padding: 10px 22px;
     border-radius: 999px; opacity: 0;
     transition: opacity .25s, transform .25s;
     z-index: 400; pointer-events: none;
@@ -399,7 +412,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   footer {
     text-align: center;
     color: var(--muted);
-    font-size:16px;
+    font-size:15px;
     padding: 24px 0 40px;
   }
 
@@ -449,6 +462,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <button class="tab-btn" data-tab="bjd">BJD管理</button>
         <button class="tab-btn" data-tab="cards">色卡管理</button>
         <button class="tab-btn" data-tab="shop">小铺上架</button>
+        <button class="tab-btn" data-tab="reviews">评价返图</button>
         <button class="tab-btn" data-tab="messages">匿名留言</button>
         <button class="tab-btn" data-tab="ai">AI 对话</button>
       </div>
@@ -464,16 +478,16 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       <style>
         .aix-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
         .aix-stat { background: #fff; border-radius: var(--radius); padding: 10px 14px; box-shadow: 0 2px 10px rgba(180,120,150,.12); }
-        .aix-stat b { display: block; font-size:24px; color: var(--accent); line-height: 1.3; }
-        .aix-stat span { font-size:15px; color: var(--muted); }
+        .aix-stat b { display: block; font-size:23px; color: var(--accent); line-height: 1.3; }
+        .aix-stat span { font-size:14px; color: var(--muted); }
         .aix-toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
         .aix-searchbox { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 6px; border: 1px solid var(--card-hover); border-radius: 999px; background: #fff; padding: 2px 8px 2px 16px; }
         .aix-searchbox:focus-within { border-color: var(--accent-soft); }
-        .aix-searchbox input { flex: 1; min-width: 0; border: none; background: transparent; padding: 8px 0; font-size:17px; font-family: inherit; color: var(--text); outline: none; }
-        .aix-searchbox .clear { width: 24px; height: 24px; border: none; border-radius: 50%; background: var(--card-hover); color: var(--text); font-size:17px; line-height: 1; cursor: pointer; flex-shrink: 0; display: none; font-family: inherit; }
+        .aix-searchbox input { flex: 1; min-width: 0; border: none; background: transparent; padding: 8px 0; font-size:16px; font-family: inherit; color: var(--text); outline: none; }
+        .aix-searchbox .clear { width: 24px; height: 24px; border: none; border-radius: 50%; background: var(--card-hover); color: var(--text); font-size:16px; line-height: 1; cursor: pointer; flex-shrink: 0; display: none; font-family: inherit; }
         .aix-searchbox .clear.show { display: block; }
         .aix-filters { display: flex; gap: 6px; flex-wrap: wrap; }
-        .aix-filters button { border: none; border-radius: 999px; background: var(--card); color: var(--muted); font-size:16px; padding: 7px 13px; cursor: pointer; font-family: inherit; transition: background .15s, color .15s; }
+        .aix-filters button { border: none; border-radius: 999px; background: var(--card); color: var(--muted); font-size:15px; padding: 7px 13px; cursor: pointer; font-family: inherit; transition: background .15s, color .15s; }
         .aix-filters button.active { background: var(--accent-soft); color: #fff; }
         .aix-filters .fclear { display: none; color: var(--accent); background: #fff; border: 1px solid var(--card-hover); }
         .aix-filters .fclear.show { display: inline-block; }
@@ -482,42 +496,42 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         .aix-session:hover { background: var(--card-hover); }
         .aix-session.active { border-color: var(--accent-soft); background: #fff; }
         .aix-s-top { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; flex-wrap: wrap; }
-        .aix-s-time { font-size:15px; color: var(--muted); flex-shrink: 0; }
-        .aix-s-q { flex: 1; min-width: 0; font-size:17px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .aix-s-a { font-size:16px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .aix-badge { font-size:14px; background: var(--accent-soft); color: #fff; border-radius: 999px; padding: 1px 8px; flex-shrink: 0; white-space: nowrap; }
+        .aix-s-time { font-size:14px; color: var(--muted); flex-shrink: 0; }
+        .aix-s-q { flex: 1; min-width: 0; font-size:16px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .aix-s-a { font-size:15px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .aix-badge { font-size:13px; background: var(--accent-soft); color: #fff; border-radius: 999px; padding: 1px 8px; flex-shrink: 0; white-space: nowrap; }
         .aix-badge.warn { background: #f3b96d; }
         .aix-chat { display: flex; flex-direction: column; gap: 10px; background: var(--bg); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 50vh; overflow-y: auto; }
         .aix-msg { display: flex; flex-direction: column; max-width: 85%; }
         .aix-msg.user { align-self: flex-end; align-items: flex-end; }
-        .aix-msg .bubble { border-radius: 14px; padding: 8px 12px; font-size:17px; line-height: 1.55; word-break: break-word; }
+        .aix-msg .bubble { border-radius: 14px; padding: 8px 12px; font-size:16px; line-height: 1.55; word-break: break-word; }
         .aix-msg.user .bubble { background: var(--accent-soft); color: #fff; border-bottom-right-radius: 4px; }
         .aix-msg.ai .bubble { background: var(--card); color: var(--text); border-bottom-left-radius: 4px; }
-        .aix-msg .who { font-size:14px; color: var(--muted); margin: 0 4px 2px; }
-        .aix-msg .t { font-size:14px; color: var(--muted); margin: 2px 4px 0; }
-        .aix-answer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 4px 0; background: #fff; border: 1px dashed var(--accent-soft); border-radius: 10px; padding: 7px 10px; font-size:16px; color: var(--text); max-width: 100%; }
-        .aix-answer em { font-style: normal; color: var(--muted); font-size:15px; }
+        .aix-msg .who { font-size:13px; color: var(--muted); margin: 0 4px 2px; }
+        .aix-msg .t { font-size:13px; color: var(--muted); margin: 2px 4px 0; }
+        .aix-answer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 4px 0; background: #fff; border: 1px dashed var(--accent-soft); border-radius: 10px; padding: 7px 10px; font-size:15px; color: var(--text); max-width: 100%; }
+        .aix-answer em { font-style: normal; color: var(--muted); font-size:14px; }
         .aix-answer .spacer { flex: 1; }
-        .aix-add { margin: 4px 4px 0; border: none; border-radius: 999px; background: #f3b96d; color: #fff; font-size:15px; padding: 4px 12px; cursor: pointer; font-family: inherit; }
+        .aix-add { margin: 4px 4px 0; border: none; border-radius: 999px; background: #f3b96d; color: #fff; font-size:14px; padding: 4px 12px; cursor: pointer; font-family: inherit; }
         .aix-add:hover { background: #eda94e; }
         .aix-form { margin: 10px 4px 2px; background: #fff; border: 1px solid var(--card-hover); border-radius: 12px; padding: 12px; }
-        .aix-form b { display: block; font-size:17px; margin-bottom: 8px; }
-        .aix-form input, .aix-form textarea { width: 100%; box-sizing: border-box; border: 1px solid var(--card-hover); border-radius: 10px; background: var(--bg); padding: 8px 12px; font-size:17px; font-family: inherit; color: var(--text); outline: none; margin-bottom: 8px; }
+        .aix-form b { display: block; font-size:16px; margin-bottom: 8px; }
+        .aix-form input, .aix-form textarea { width: 100%; box-sizing: border-box; border: 1px solid var(--card-hover); border-radius: 10px; background: var(--bg); padding: 8px 12px; font-size:16px; font-family: inherit; color: var(--text); outline: none; margin-bottom: 8px; }
         .aix-form textarea { min-height: 64px; resize: none; }
         .aix-form input:focus, .aix-form textarea:focus { border-color: var(--accent-soft); }
         .aix-form .row { display: flex; gap: 8px; }
         .aix-form .row button { font-family: inherit; cursor: pointer; }
-        .aix-confirm { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 4px 0; font-size:16px; color: var(--text); }
+        .aix-confirm { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 4px 0; font-size:15px; color: var(--text); }
         .aix-pager { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: center; margin: 14px 0 4px; }
-        .aix-pager button { min-width: 30px; height: 30px; border: none; border-radius: 999px; background: var(--card); color: var(--muted); font-size:16px; padding: 0 10px; cursor: pointer; font-family: inherit; }
+        .aix-pager button { min-width: 30px; height: 30px; border: none; border-radius: 999px; background: var(--card); color: var(--muted); font-size:15px; padding: 0 10px; cursor: pointer; font-family: inherit; }
         .aix-pager button.cur { background: var(--accent); color: #fff; }
-        .aix-pager .dots { color: var(--muted); font-size:16px; }
+        .aix-pager .dots { color: var(--muted); font-size:15px; }
         .aix-kb { margin-bottom: 10px; }
-        .aix-kb .k-q { font-size:18px; font-weight: 600; margin-bottom: 2px; word-break: break-word; }
-        .aix-kb .k-a { font-size:17px; color: var(--text); margin-bottom: 4px; word-break: break-word; }
-        .aix-kb .k-meta { font-size:16px; color: var(--muted); }
+        .aix-kb .k-q { font-size:17px; font-weight: 600; margin-bottom: 2px; word-break: break-word; }
+        .aix-kb .k-a { font-size:16px; color: var(--text); margin-bottom: 4px; word-break: break-word; }
+        .aix-kb .k-meta { font-size:15px; color: var(--muted); }
         .aix-kb .k-actions { margin-top: 8px; display: flex; gap: 8px; }
-        .aix-empty { color: var(--muted); text-align: center; padding: 24px 0; font-size:17px; }
+        .aix-empty { color: var(--muted); text-align: center; padding: 24px 0; font-size:16px; }
       </style>
       <div class="aix-hint">AI 回不上来的问题会标「待补充答案」——点开对话就能添加标准回复，以后访客问类似的问题 AI 会直接用它。测试版：模拟数据 + 主页本地记录，未接数据库。</div>
       <div class="aix-stats" id="ai-stats"></div>
@@ -555,16 +569,39 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <input id="p-stock" type="number" min="0" placeholder="库存数量（0 = 售尽）">
           <input id="p-cost" type="number" min="0" step="0.01" placeholder="成本，只有你自己能看到">
           <input id="p-tag" placeholder="标签，如 手作 / 毛线 / 黏土（点输入框可选已有标签）">
-          <input id="p-file" type="file" accept="image/*">
+          <div class="full fld-inline"><label class="btn-mini hm-file-btn">选择图片<input id="p-file" type="file" accept="image/*" multiple hidden></label><span class="hm-file-name" id="p-file-name">未选择图片</span></div>
           <textarea id="p-desc" class="full" style="min-height:56px;" placeholder="商品描述：材料、尺寸、细节…"></textarea>
         </div>
-        <div class="img-preview" id="p-preview">选了图片会在这里预览</div>
+        <div class="p-preview" id="p-preview"><span class="pv-empty">选了图片会在这里预览</span></div>
         <div class="actions">
           <button class="btn-save" id="btn-add-product">上架这个商品</button>
         </div>
       </div>
-      <h3 class="outside">已上架的商品</h3>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <h3 style="margin:0;flex-shrink:0;">标签管理</h3>
+          <span id="p-tag-chips" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:200px;"></span>
+          <input id="p-tag-new" placeholder="新标签名" style="border:none;border-radius:10px;background:var(--card);padding:8px 12px;font-size:16px;width:120px;outline:none;color:var(--text);font-family:inherit;">
+          <button type="button" class="btn-mini" id="btn-add-tag" style="padding:8px 14px;">+ 添加</button>
+        </div>
+        <p class="hint" style="margin:10px 0 0;">删标签不会删商品：用它的商品都会保留，只是变成「没有标签」；改名会把用这个标签的商品一起改。</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:18px 0 12px;">
+        <h3 style="margin:0;">已上架的商品</h3>
+        <button type="button" class="btn-mini" id="goto-reviews">评价返图管理 →</button>
+        <span style="flex:1;"></span>
+        <span id="p-filter-chips" style="display:flex;gap:6px;flex-wrap:wrap;"></span>
+      </div>
       <div id="product-list"><p class="empty">加载中…</p></div>
+    </div>
+
+    <!-- 评价返图管理 -->
+    <div id="tab-reviews" style="display:none;">
+      <div class="card">
+        <h3>评价返图</h3>
+        <p style="font-size:15px;color:var(--muted);margin:0 0 14px;">小可爱们在<a href="/shop/?sec=reviews" target="_blank" style="color:var(--accent);">小铺页面</a>提交的评价都收在这里 · 不想留的那条点卡片里的「删除」</p>
+        <div id="review-admin-list"><p class="empty">加载中…</p></div>
+      </div>
     </div>
 
     <div id="tab-photos" style="display:none;">
@@ -573,7 +610,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <h3 style="margin:0;">照片展示文案</h3>
           <button type="button" class="hm-kebab" data-edit="gl-copy-edit" data-view="gl-copy-view" title="编辑">⋮</button>
         </div>
-        <div id="gl-copy-view" style="margin-top:10px;font-size:17px;line-height:1.9;">
+        <div id="gl-copy-view" style="margin-top:10px;font-size:16px;line-height:1.9;">
           <div>相册页标题：<span data-v="gl-title-zh"></span> / <span data-v="gl-title-en"></span></div>
           <div>说明小字：<span data-v="gl-sub-zh"></span></div>
           <div id="gl-sec-view"></div>
@@ -618,7 +655,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <input id="sec-zh" placeholder="分区名称（中文），如：日常碎片">
           <input id="sec-en" placeholder="分区名称（英文），如：Daily Moments">
           <input id="sec-sort" type="number" placeholder="排序数字（小的在前，可留空）">
-          <div class="full" style="margin-top:2px;"><div style="font-size:16px;color:var(--muted);margin-bottom:4px;">每行显示（前台 Photo Gallery 布局）</div><div id="sec-pr"></div></div>
+          <div class="full" style="margin-top:2px;"><div style="font-size:15px;color:var(--muted);margin-bottom:4px;">每行显示（前台 Photo Gallery 布局）</div><div id="sec-pr"></div></div>
         </div>
         <div class="actions">
           <button class="btn-save" id="btn-add-section">添加分区</button>
@@ -633,7 +670,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     <div id="tab-home" style="display:none;">
       <div class="card">
         <h3>主页区域</h3>
-        <p style="font-size:16px;color:var(--muted);margin:-4px 0 12px;">跟主页一模一样的区块都在这里（照片展示、我的小铺是两种模板）：点「⋮」编辑、排序、复制、删除；点「显示中」切换显隐；改完点「保存」，主页刷新后同步</p>
+        <p style="font-size:15px;color:var(--muted);margin:-4px 0 12px;">跟主页一模一样的区块都在这里（照片展示、我的小铺是两种模板）：点「⋮」编辑、排序、复制、删除；点「显示中」切换显隐；改完点「保存」，主页刷新后同步</p>
         <div id="area-list"></div>
         <div class="actions" style="justify-content:space-between;">
           <button class="btn-mini" id="btn-area-add">＋ 添加新区域</button>
@@ -645,7 +682,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <h3 style="margin:0;">入口卡片</h3>
           <button type="button" class="hm-kebab" data-edit="hm-entries-edit" data-view="hm-entries-view" title="编辑">⋮</button>
         </div>
-        <div id="hm-entries-view" style="margin-top:10px;font-size:17px;line-height:1.9;">
+        <div id="hm-entries-view" style="margin-top:10px;font-size:16px;line-height:1.9;">
           <div>小铺卡片标题：<span data-v="hm-shop-h"></span></div>
           <div>小铺卡片小字：<span data-v="hm-shop-p"></span></div>
           <div>提问箱卡片标题：<span data-v="hm-anon-h"></span></div>
@@ -695,8 +732,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <h3 style="margin:0;">Profile 编辑</h3>
           <button type="button" class="hm-kebab" data-edit="hm-hero-edit" data-view="hm-hero-view" title="编辑">⋮</button>
         </div>
-        <p style="font-size:16px;color:var(--muted);margin:8px 0 0;">改完保存，主页头像、背景图、ID 和 Bio 全部同步更新</p>
-        <div id="hm-hero-view" style="margin-top:10px;font-size:17px;line-height:1.9;display:none;">
+        <p style="font-size:15px;color:var(--muted);margin:8px 0 0;">改完保存，主页头像、背景图、ID 和 Bio 全部同步更新</p>
+        <div id="hm-hero-view" style="margin-top:10px;font-size:16px;line-height:1.9;display:none;">
           <div>名字 / ID：<span data-v="hm-name"></span></div>
           <div>Bio 第一行：<span data-v="hm-line1"></span></div>
           <div>Bio 第二行：<span data-v="hm-line2"></span></div>
@@ -725,14 +762,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <img id="hm-avatar-preview" src="avatar.jpg" alt="当前头像" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--card);">
           <span class="hm-upload-name">头像</span>
           <label class="btn-mini hm-file-btn">选择图片<input id="hm-avatar-file" type="file" accept="image/*" hidden></label>
-          <span class="hm-file-name" id="hm-avatar-name"></span>
+          <span class="hm-file-name" id="hm-avatar-name">未选择图片</span>
           <button class="btn-save" id="btn-avatar">上传头像</button>
         </div>
         <div class="hm-upload-row">
           <img id="hm-cover-preview" src="cover.jpg" alt="当前背景图" style="width:72px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--card);">
           <span class="hm-upload-name">主页背景图</span>
           <label class="btn-mini hm-file-btn">选择图片<input id="hm-cover-file" type="file" accept="image/*" hidden></label>
-          <span class="hm-file-name" id="hm-cover-name"></span>
+          <span class="hm-file-name" id="hm-cover-name">未选择图片</span>
           <button class="btn-save" id="btn-cover">上传背景图</button>
         </div>
       </div>
@@ -743,21 +780,22 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <h3>稿件管理</h3>
         <p class="sub" style="margin:-6px 0 12px;">和桓桓宝宝的稿件展示（/works/），后台改完前台同步；点「显示中」切换显隐</p>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-          <span style="font-size:17px;color:var(--muted);flex-shrink:0;">种类管理</span>
+          <span style="font-size:16px;color:var(--muted);flex-shrink:0;">种类管理</span>
           <div id="work-cat-chips" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:160px;"></div>
-          <input id="work-cat-new" placeholder="新种类名" style="border:none;border-radius:10px;background:var(--card);padding:8px 12px;font-size:17px;width:120px;outline:none;color:var(--text);">
+          <input id="work-cat-new" placeholder="新种类名" style="border:none;border-radius:10px;background:var(--card);padding:8px 12px;font-size:16px;width:120px;outline:none;color:var(--text);">
           <button class="btn-mini" id="btn-work-cat-add">+ 添加</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-          <span style="font-size:17px;color:var(--muted);flex-shrink:0;">画师管理</span>
+          <span style="font-size:16px;color:var(--muted);flex-shrink:0;">画师管理</span>
           <div id="work-artist-chips" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:160px;"></div>
-          <input id="work-artist-new" placeholder="新画师名" style="border:none;border-radius:10px;background:var(--card);padding:8px 12px;font-size:17px;width:120px;outline:none;color:var(--text);">
+          <input id="work-artist-new" placeholder="新画师名" style="border:none;border-radius:10px;background:var(--card);padding:8px 12px;font-size:16px;width:120px;outline:none;color:var(--text);">
           <button class="btn-mini" id="btn-work-artist-add">+ 添加</button>
         </div>
         <div id="works-list"></div>
         <div class="actions" style="flex-wrap:wrap;">
           <button class="btn-mini" id="btn-work-add">+ 新增稿件</button>
-          <span id="works-total" style="font-size:18px;font-weight:600;color:var(--accent);align-self:center;"></span>
+          <button class="btn-mini btn-save-tb" id="btn-work-save">保存稿件改动</button>
+          <span id="works-total" style="font-size:17px;font-weight:600;color:var(--accent);align-self:center;"></span>
         </div>
       </div>
     </div>
@@ -769,7 +807,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <input id="dy-name" placeholder="名称，如：桓桓生日" style="flex:1;min-width:150px;">
           <input id="dy-day" type="text" class="date-pick" data-disp="1" placeholder="YYYY/MM/DD" autocomplete="off" style="flex:1;min-width:140px;">
         </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:16px;position:relative;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:15px;position:relative;">
           <span style="color:var(--muted);">分类</span>
           <input id="dy-cat" placeholder="输入分类，如：纪念日" autocomplete="off" style="width:170px;">
           <div id="dy-cat-list"></div>
@@ -779,7 +817,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <label class="dy-chip"><input type="radio" name="dy-repeat" value="weekly">每周重复</label>
           <label class="dy-chip"><input type="radio" name="dy-repeat" value="monthly">每月重复</label>
           <label class="dy-chip active"><input type="radio" name="dy-repeat" value="yearly" checked>每年</label>
-          <button class="btn-mini btn-save-tb" id="btn-day-save" style="border:none;font-size:17px;padding:7px 16px;border-radius:999px;cursor:pointer;">保存</button>
+          <button class="btn-mini btn-save-tb" id="btn-day-save" style="border:none;font-size:16px;padding:7px 16px;border-radius:999px;cursor:pointer;">保存</button>
         </div>
       </div>
       <div id="days-list"></div>
@@ -788,17 +826,17 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       <div class="card">
         <h3>BJD 管理</h3>
         <div id="bjd-toolbar" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
-          <span style="font-size:17px;color:var(--muted);">筛选与排序</span>
+          <span style="font-size:16px;color:var(--muted);">筛选与排序</span>
           <button type="button" class="sel-btn" id="bjd-filter-btn">尺寸：全部</button>
           <button type="button" class="sel-btn" id="bjd-sort-btn">排序：默认</button>
           <span style="flex:1;"></span>
           <button class="btn-mini" id="btn-bjd-add">+ 新增 BJD</button>
-          <span id="bjd-total" style="font-size:18px;font-weight:600;color:var(--accent);"></span>
+          <span id="bjd-total" style="font-size:17px;font-weight:600;color:var(--accent);"></span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-          <span style="font-size:17px;color:var(--muted);flex-shrink:0;">尺寸 / 种类管理</span>
+          <span style="font-size:16px;color:var(--muted);flex-shrink:0;">尺寸 / 种类管理</span>
           <div id="bjd-size-chips" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:180px;"></div>
-          <input id="bjd-size-new" placeholder="新尺寸名" style="border:none;border-radius:10px;background:var(--card);padding:8px 12px;font-size:17px;width:120px;outline:none;color:var(--text);">
+          <input id="bjd-size-new" placeholder="新尺寸名" style="border:none;border-radius:10px;background:var(--card);padding:8px 12px;font-size:16px;width:120px;outline:none;color:var(--text);">
           <button class="btn-mini" id="btn-bjd-size-add">+ 添加</button>
         </div>
         <div id="bjd-list"></div>
@@ -812,12 +850,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       <div class="card">
         <h3>色卡管理</h3>
         <div id="sc-toolbar" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
-          <span style="font-size:17px;color:var(--muted);">筛选与排序</span>
+          <span style="font-size:16px;color:var(--muted);">筛选与排序</span>
           <button type="button" class="sel-btn" id="sc-filter-btn">筛选：全部</button>
           <button type="button" class="sel-btn" id="sc-sort-btn">排序：默认</button>
           <span style="flex:1;"></span>
           <button class="btn-mini" id="btn-sc-add">+ 新建色卡</button>
-          <span id="sc-total" style="font-size:18px;font-weight:600;color:var(--accent);"></span>
+          <button class="btn-mini btn-save-tb" id="btn-sc-save">保存色卡改动</button>
+          <span id="sc-total" style="font-size:17px;font-weight:600;color:var(--accent);"></span>
         </div>
         <div id="sc-artist-list"></div>
       </div>
@@ -838,7 +877,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   (function () {
     var h = location.hash.replace('#', '');
     if (h === 'records') h = 'cards'; // 兼容旧链接 admin.html#records
-    if (['messages', 'shop', 'photos', 'home', 'profile', 'works', 'cards', 'days', 'bjd', 'ai'].indexOf(h) !== -1) PENDING_TAB = h;
+    if (['messages', 'shop', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'days', 'bjd', 'ai'].indexOf(h) !== -1) PENDING_TAB = h;
   })();
 
   function toast(msg) {
@@ -848,6 +887,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     setTimeout(function () { el.classList.remove('show'); }, 2200);
   }
   var PRODUCT_CACHE = {};
+  var REVIEW_CACHE = {};
   function escAttr(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
   }
@@ -873,7 +913,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     var headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
     if (ACCESS) { headers['Authorization'] = 'Bearer ' + ACCESS; }
     options.headers = Object.assign(headers, options.headers || {});
-    return fetch(SUPABASE_URL + '/rest/v1/' + path, options);
+    return authedFetch(SUPABASE_URL + '/rest/v1/' + path, options);
   }
   function tryRefresh() {
     if (!REFRESH) return Promise.reject();
@@ -884,6 +924,24 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
       .then(function (data) { saveSession(data); });
   }
+  // 带鉴权的 fetch：token 过期（401）时自动续期并重试一次，避免登录久了保存静默失败
+  function authedFetch(url, options) {
+    options = options || {};
+    var headers = Object.assign({}, options.headers || {});
+    if (ACCESS) headers['Authorization'] = 'Bearer ' + ACCESS;
+    var opts = Object.assign({}, options, { headers: headers });
+    return fetch(url, opts).then(function (r) {
+      if (r.status !== 401 || !REFRESH) return r;
+      return tryRefresh().then(function () {
+        var h = Object.assign({}, opts.headers, { 'Authorization': 'Bearer ' + ACCESS });
+        return fetch(url, Object.assign({}, opts, { headers: h }));
+      }).catch(function () { return r; });
+    });
+  }
+  // 每 30 分钟主动续期，保持登录态不过期
+  setInterval(function () { if (REFRESH) tryRefresh().catch(function () {}); }, 20 * 60 * 1000); // 挂着不动也自动续期，不会掉登录
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && REFRESH) tryRefresh().catch(function () {}); }); // 切回页面时顺手续期：离开一小时再回来还是登录状态
+  window.addEventListener('focus', function () { if (REFRESH) tryRefresh().catch(function () {}); });
   function enterAdmin() {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('admin-body').style.display = 'block';
@@ -966,11 +1024,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       b.classList.add('active');
       document.getElementById('pp-cur').textContent = b.textContent;
       ppClose();
-      ['messages', 'shop', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai'].forEach(function (name) {
+      ['messages', 'shop', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai'].forEach(function (name) {
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.style.display = b.dataset.tab === name ? '' : 'none';
       });
       if (b.dataset.tab === 'works') renderWorks();
+      if (b.dataset.tab === 'reviews') loadReviewsAdmin();
       try { history.replaceState(null, '', '#' + b.dataset.tab); } catch (e) {} // 把当前 tab 写进地址：刷新后停留在原页
     });
   });
@@ -989,13 +1048,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       list.innerHTML = questions.map(function (q) {
         var contact = cmap[q.id];
         var contactHtml = contact ? '<div class="qa-contact">联系方式：' + esc(contact) + '</div>' : '';
-        return '<div class="card" data-id="' + q.id + '">' +
+        return '<div class="card" data-id="' + q.id + '" data-reply="' + escAttr(q.reply || '') + '">' +
           '<div class="qa-q">' + esc(q.content) + '</div>' +
           '<div class="qa-meta">' + fmtTime(q.created_at) + (q.replied_at ? ' · 已回复' : ' · 待回复') + '</div>' +
           contactHtml +
           '<textarea placeholder="写下你的回复…（会公开显示在提问箱）">' + esc(q.reply || '') + '</textarea>' +
           '<div class="actions">' +
           '<button class="btn-del">删除</button>' +
+          '<button class="btn-cancel btn-cancel-reply">取消</button>' +
           '<button class="btn-save">保存回复</button>' +
           '</div></div>';
       }).join('');
@@ -1020,6 +1080,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       }).catch(function () { toast('保存失败，再试一次'); })
         .finally(function () { e.target.disabled = false; });
     }
+    if (e.target.classList.contains('btn-cancel-reply')) {
+      card.querySelector('textarea').value = card.getAttribute('data-reply') || ''; // 改回原来的回复内容，不动数据库
+      toast('已改回原来的回复');
+      return;
+    }
     if (e.target.classList.contains('btn-del')) {
       uiConfirm('确定删除这条留言吗？', function () {
         api('questions?id=eq.' + id, { method: 'DELETE' })
@@ -1030,47 +1095,124 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   });
 
   // ===== 小铺管理 =====
-  var pendingFile = null;
-  document.getElementById('p-file').addEventListener('change', function () {
-    pendingFile = this.files[0] || null;
-    var box = document.getElementById('p-preview');
-    if (pendingFile) {
-      var reader = new FileReader();
-      reader.onload = function () { box.innerHTML = '<img src="' + reader.result + '">'; };
-      reader.readAsDataURL(pendingFile);
-    } else { box.textContent = '选了图片会在这里预览'; }
+  var P_TAG_FILTER = ''; // 商品列表筛选：'' 全部 / 具体标签 / '__off' 已下架
+  // 下架 = 从店内隐藏（存 site_settings.shop_hidden，可随时上架回来）；删除 = 真的从数据库删掉
+  function shopHiddenList() {
+    try { var v = JSON.parse(SETTINGS['shop_hidden'] || '[]'); return Array.isArray(v) ? v.map(String) : []; } catch (e) { return []; }
+  }
+  function isShopHidden(id) { return shopHiddenList().indexOf(String(id)) !== -1; }
+  function setShopHidden(id, hidden) {
+    var list = shopHiddenList();
+    var i = list.indexOf(String(id));
+    if (hidden && i === -1) list.push(String(id));
+    if (!hidden && i !== -1) list.splice(i, 1);
+    SETTINGS['shop_hidden'] = JSON.stringify(list);
+    return saveSetting('shop_hidden', list).then(function (r) { if (!r.ok) throw new Error(); });
+  }
+  function renderProductFilter() {
+    var box = document.getElementById('p-filter-chips');
+    if (!box) return;
+    var chips = [['', '全部']].concat(tagOptions().map(function (t) { return [t, t]; })).concat([['__off', '已下架']]);
+    box.innerHTML = chips.map(function (c) {
+      return '<button type="button" class="btn-mini pf-chip' + (P_TAG_FILTER === c[0] ? ' on' : '') + '" data-tag="' + escAttr(c[0]) + '">' + esc(c[1]) + '</button>';
+    }).join('');
+  }
+  document.getElementById('goto-reviews').addEventListener('click', function () {
+    var b = document.querySelector('.tab-btn[data-tab="reviews"]');
+    if (b) b.click();
   });
+  document.getElementById('p-filter-chips').addEventListener('click', function (e) {
+    var b = e.target.closest('.pf-chip');
+    if (!b) return;
+    P_TAG_FILTER = b.getAttribute('data-tag') || '';
+    loadProducts();
+  });
+  var pendingFiles = [];
+  function renderPendingPreview() { // 上架前预览：第一张=封面，可拖动排序
+    var box = document.getElementById('p-preview');
+    box.classList.add('ph-strip');
+    box.setAttribute('data-kind', 'pnew');
+    if (!pendingFiles.length) { box.innerHTML = '<span class="pv-empty">选了图片会在这里预览</span>'; return; }
+    box.innerHTML = pendingFiles.map(function (f, idx) {
+      return '<div class="pv ph-tile' + (idx === 0 ? ' ph-cover' : '') + '" draggable="true" data-idx="' + idx + '" title="拖动可调整顺序" style="cursor:grab;position:relative;">' +
+        '<img src="' + URL.createObjectURL(f) + '" alt="">' +
+        (idx === 0 ? '<span style="position:absolute;left:3px;bottom:3px;background:var(--accent);color:#fff;border-radius:999px;padding:0 6px;font-size:10px;line-height:14px;">封面</span>' : '') +
+        '</div>';
+    }).join('');
+  }
+  function productStripHtml(items) { // 商品多图：第一张=封面，可拖动排序（与前台顺序一致）
+    if (!items || !items.length) return '';
+    return '<div class="ph-strip" data-kind="product" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;width:100%;">' + items.map(function (it, idx) {
+      var src = it.u || it.__url;
+      if (!src) return '';
+      return '<div class="ph-tile' + (idx === 0 ? ' ph-cover' : '') + '" draggable="true" data-idx="' + idx + '" title="拖动可调整顺序" style="width:64px;height:64px;border-radius:10px;overflow:hidden;position:relative;background:var(--card);flex-shrink:0;cursor:grab;">' +
+        '<img src="' + escAttr(src) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;">' +
+        (idx === 0 ? '<span style="position:absolute;left:3px;bottom:3px;background:var(--accent);color:#fff;border-radius:999px;padding:0 7px;font-size:11px;line-height:16px;">封面</span>'
+                   : '<button type="button" class="ph-del" data-idx="' + idx + '" title="删除照片" style="position:absolute;top:3px;right:3px;width:20px;height:20px;font-size:13px;line-height:1;border:none;border-radius:50%;background:rgba(255,255,255,.92);cursor:pointer;color:#5d6780;">⋮</button>') +
+        '</div>';
+    }).join('') + '</div>';
+  }
+  function productStripRefresh(card) {
+    var stripEl = card.querySelector('.ph-strip');
+    if (stripEl) stripEl.outerHTML = productStripHtml(card.__imgItems);
+  }
+  function productImgReorder(strip, from, to) {
+    var card2 = strip.closest('.shop-item');
+    if (!card2 || !Array.isArray(card2.__imgItems)) return;
+    var arrP = card2.__imgItems;
+    var mvP = arrP.splice(from, 1)[0];
+    arrP.splice(to, 0, mvP);
+    card2.__imgsChanged = true;
+    productStripRefresh(card2);
+  }
+  document.getElementById('p-file').addEventListener('change', function () {
+    pendingFiles = Array.prototype.slice.call(this.files || []);
+    var label = document.getElementById('p-file-name');
+    if (!pendingFiles.length) {
+      renderPendingPreview();
+      label.textContent = '未选择图片';
+      return;
+    }
+    label.textContent = '已选 ' + pendingFiles.length + ' 张（第一张默认封面，可拖动排序）';
+    renderPendingPreview();
+  });
+  function uploadShopFiles(files) {
+    return Promise.all(files.map(function (f) {
+      return authedFetch(SUPABASE_URL + '/storage/v1/object/shop/' + Date.now() + '-' + Math.random().toString(36).slice(2, 6) + '-' + f.name.replace(/[^\w.\-]/g, '_'), {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + ACCESS },
+        body: f
+      }).then(function (r) { if (!r.ok) throw new Error('upload failed'); return r.json(); })
+        .then(function (res) { return SUPABASE_URL + '/storage/v1/object/public/shop/' + res.Key.split('/').slice(1).join('/'); });
+    }));
+  }
   document.getElementById('btn-add-product').addEventListener('click', function () {
     var btn = this;
     var name = document.getElementById('p-name').value.trim();
     var price = document.getElementById('p-price').value.trim();
     var stock = document.getElementById('p-stock').value.trim();
     var cost = document.getElementById('p-cost').value.trim();
-    var tag = document.getElementById('p-tag').value.trim() || '手作';
+    var tag = document.getElementById('p-tag').value.trim() || '手作'; // 没填默认「手作」
     var desc = document.getElementById('p-desc').value.trim();
     if (!name) { toast('商品名称总要有的呀'); return; }
     btn.disabled = true; btn.textContent = '上架中…';
 
-    var upload = pendingFile
-      ? fetch(SUPABASE_URL + '/storage/v1/object/shop/' + Date.now() + '-' + pendingFile.name.replace(/[^\w.\-]/g, '_'), {
-          method: 'POST',
-          headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + ACCESS },
-          body: pendingFile
-        }).then(function (r) {
-          if (!r.ok) throw new Error('upload failed');
-          return r.json();
-        }).then(function (res) {
-          return SUPABASE_URL + '/storage/v1/object/public/shop/' + res.Key.split('/').slice(1).join('/');
-        })
-      : Promise.resolve(null);
-
-    upload.then(function (imageUrl) {
-      return api('products', {
-        method: 'POST',
-        body: JSON.stringify({ name: name, price: price, description: desc, tag: tag, image_url: imageUrl, stock: stock === '' ? 1 : parseInt(stock, 10), cost: cost === '' ? null : parseFloat(cost) })
+    uploadShopFiles(pendingFiles).then(function (urls) {
+      var body = { name: name, price: price, description: desc, tag: tag, image_url: urls[0] || null, stock: stock === '' ? 1 : parseInt(stock, 10), cost: cost === '' ? null : parseFloat(cost) };
+      if (urls.length > 1) body.images = urls; // 多图：images 列还没建时下面会自动降级为只存主图
+      return api('products', { method: 'POST', body: JSON.stringify(body) }).then(function (r) {
+        if (r.ok) return r;
+        if (body.images) {
+          delete body.images;
+          return api('products', { method: 'POST', body: JSON.stringify(body) }).then(function (r2) {
+            if (!r2.ok) throw new Error();
+            toast('多图列还没建，已先存主图；跑「小铺多图.sql」后重传即可');
+            return r2;
+          });
+        }
+        throw new Error();
       });
-    }).then(function (r) {
-      if (!r.ok) throw new Error();
+    }).then(function () {
       toast('上架成功！小铺页面已经能看到啦');
       document.getElementById('p-name').value = '';
       document.getElementById('p-price').value = '';
@@ -1079,28 +1221,95 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       document.getElementById('p-tag').value = '';
       document.getElementById('p-desc').value = '';
       document.getElementById('p-file').value = '';
-      pendingFile = null;
-      document.getElementById('p-preview').textContent = '选了图片会在这里预览';
+      pendingFiles = [];
+      renderPendingPreview();
+      document.getElementById('p-file-name').textContent = '未选择图片';
       rememberTag(tag); // 新标签存起来，下次直接选
       loadProducts();
     }).catch(function () { toast('上架失败，重试一下'); })
       .finally(function () { btn.disabled = false; btn.textContent = '上架这个商品'; });
   });
 
+  // ===== 标签管理：每个标签都能改名 / 删除，商品永远不丢（删了只会变成「没有标签」）=====
+  function renderShopTags() {
+    var box = document.getElementById('p-tag-chips');
+    if (!box) return;
+    var arr = tagOptions();
+    box.innerHTML = arr.length ? arr.map(function (v, ti) {
+      return '<span style="display:inline-flex;align-items:center;gap:2px;background:var(--card);border-radius:999px;padding:5px 6px 5px 12px;font-size:16px;">' + esc(v) +
+        '<button type="button" class="kebab shop-tag-kebab" data-ti="' + ti + '" title="菜单" style="width:22px;height:22px;font-size:15px;">⋮</button></span>';
+    }).join('') : '<span style="font-size:15px;color:var(--muted);">还没有标签</span>';
+  }
+  document.getElementById('p-tag-chips').addEventListener('click', function (e) {
+    var saveBtn = e.target.closest('.shop-tag-save');
+    if (saveBtn) { // 改名 → 一起改掉用这个标签的商品
+      var wrap = saveBtn.parentElement;
+      var inp = wrap ? wrap.querySelector('.shop-tag-edit') : null;
+      var ti = parseInt(saveBtn.getAttribute('data-ti'), 10);
+      var v = inp ? inp.value.trim() : '';
+      var arr = tagOptions();
+      var oldT = arr[ti];
+      if (!v) { toast('名字不能空着'); return; }
+      if (arr.indexOf(v) !== -1 && arr.indexOf(v) !== ti) { toast('已经有这个标签了'); return; }
+      var all = arr.map(function (x) { return x === oldT ? v : x; });
+      api('products?tag=eq.' + encodeURIComponent(oldT), { method: 'PATCH', body: JSON.stringify({ tag: v }) })
+        .then(function (r) { if (!r.ok) throw new Error(); return saveSetting('tags', all); })
+        .then(function (r) { if (!r.ok) throw new Error(); SETTINGS['tags'] = JSON.stringify(all); toast('已改名，商品跟着改好了'); loadProducts(); })
+        .catch(function () { toast('保存失败'); });
+      return;
+    }
+    if (e.target.closest('.shop-tag-cancel')) { renderShopTags(); toast('没改'); return; }
+    var kb = e.target.closest('.shop-tag-kebab');
+    if (!kb) return;
+    if (SC_POP && POP_BTN === kb) { popClose(); return; }
+    popOpen('shop-tag', parseInt(kb.getAttribute('data-ti'), 10), -1, -1, kb);
+  });
+  document.getElementById('p-tag-chips').addEventListener('keydown', function (e) {
+    if (!e.target.classList.contains('shop-tag-edit')) return;
+    if (e.key === 'Enter') { var sb = document.querySelector('#p-tag-chips .shop-tag-save'); if (sb) sb.click(); }
+    if (e.key === 'Escape') renderShopTags();
+  });
+  document.getElementById('btn-add-tag').addEventListener('click', function () {
+    var inp = document.getElementById('p-tag-new');
+    var v = (inp.value || '').trim();
+    if (!v) { toast('先写个标签名'); return; }
+    if (tagOptions().indexOf(v) !== -1) { toast('已经有这个标签了'); return; }
+    var all = tagOptions().slice();
+    all.push(v);
+    saveSetting('tags', all).then(function (r) {
+      if (!r.ok) throw new Error();
+      SETTINGS['tags'] = JSON.stringify(all);
+      inp.value = '';
+      toast('已添加');
+      renderShopTags();
+    }).catch(function () { toast('保存失败'); });
+  });
   function loadProducts() {
-    api('products?select=id,name,price,description,image_url,sold,stock,cost,display_only,created_at&order=created_at.desc&limit=200')
-      .then(function (r) { return r.json(); })
+    var tryLoad = function (withImages) {
+      return api('products?select=id,name,price,description,tag,image_url' + (withImages ? ',images' : '') + ',sold,stock,cost,display_only,created_at&order=created_at.desc&limit=200')
+        .then(function (r) { return r.json(); })
+        .then(function (rows) { if (!Array.isArray(rows)) throw new Error(); return rows; });
+    };
+    tryLoad(true).catch(function () { return tryLoad(false); })
       .then(function (rows) {
         var list = document.getElementById('product-list');
-        if (!rows || !rows.length) { list.innerHTML = '<p class="empty">还没有商品，先上架一件吧</p>'; return; }
         PRODUCT_CACHE = {};
-        rows.forEach(function (p) { PRODUCT_CACHE[p.id] = p; });
+        (rows || []).forEach(function (p) { PRODUCT_CACHE[p.id] = p; });
         refreshTagList(); // 已有商品的标签全部进选项
-        list.innerHTML = rows.map(function (p) {
+        renderProductFilter(); // 标签筛选 chips（数据变了重建）
+        if (!rows || !rows.length) { list.innerHTML = '<p class="empty">还没有商品，先上架一件吧</p>'; return; }
+        var shown = rows.filter(function (p) {
+          if (P_TAG_FILTER === '__off') return isShopHidden(p.id);
+          if (P_TAG_FILTER) return (p.tag || '').trim() === P_TAG_FILTER;
+          return true; // 「全部」里也显示已下架的（带「已下架」标签），方便随时上架回去
+        });
+        if (!shown.length) { list.innerHTML = '<p class="empty">这个标签下还没有商品</p>'; return; }
+        list.innerHTML = shown.map(function (p) {
           var thumb = p.image_url
             ? '<img src="' + esc(p.image_url) + '">'
             : '';
-          var st = p.display_only ? ['仅展示', 'st-display'] : (p.sold || !(p.stock > 0)) ? ['售尽', 'st-out'] : ['在售', 'st-on'];
+          var off = isShopHidden(p.id);
+          var st = off ? ['已下架', 'st-off'] : p.display_only ? ['仅展示', 'st-display'] : (p.sold || !(p.stock > 0)) ? ['售尽', 'st-out'] : ['在售', 'st-on'];
           var stockInfo = '库存 ' + (p.stock == null ? '-' : p.stock);
           var costInfo = p.cost == null ? '未填成本' : '成本 ¥' + p.cost;
           return '<div class="card shop-item" data-id="' + p.id + '" data-stock="' + (p.stock == null ? 0 : p.stock) + '">' +
@@ -1113,11 +1322,25 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
             '<button class="btn-mini btn-display">' + (p.display_only ? '恢复在售' : '设为仅展示') + '</button>' +
             '<button class="btn-mini btn-minus">库存 -1</button>' +
             '<button class="btn-mini btn-plus">库存 +1</button>' +
-            '<button class="btn-del">下架删除</button>' +
+            '<button class="btn-mini btn-off">' + (off ? '重新上架' : '下架') + '</button>' +
+            '<button class="btn-del btn-del-product">删除</button>' +
             '</div></div>' +
             '<button class="kebab" title="编辑商品">⋮</button>' +
             '</div>';
         }).join('');
+        // 前台「编辑商品」直达：按商品 id 展开对应商品的编辑状态
+        try {
+          var ep = sessionStorage.getItem('admin-edit-product');
+          if (ep) {
+            sessionStorage.removeItem('admin-edit-product');
+            var pc = list.querySelector('.shop-item[data-id="' + ep + '"]');
+            if (pc) {
+              var kb2 = pc.querySelector('.kebab');
+              try { pc.scrollIntoView({ block: 'center' }); } catch (err) {}
+              if (kb2) kb2.click();
+            }
+          }
+        } catch (e) {}
       }).catch(function () {
         document.getElementById('product-list').innerHTML = '<p class="empty">加载失败，刷新重试</p>';
       });
@@ -1139,20 +1362,33 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         .then(function (r) { if (!r.ok) throw new Error(); toast('库存已改为 ' + next); loadProducts(); })
         .catch(function () { toast('操作失败'); });
     }
+    var pdel = e.target.closest('.ph-del');
+    if (pdel) { // 商品照片 ⋮ → 删除（封面不会被删，拖到后面才能删）
+      var di = parseInt(pdel.getAttribute('data-idx'), 10);
+      uiConfirm('确定删除这张照片吗？', function () {
+        card.__imgItems.splice(di, 1);
+        card.__imgsChanged = true;
+        productStripRefresh(card);
+      });
+      return;
+    }
     if (e.target.classList.contains('kebab')) {
       var p = PRODUCT_CACHE[id];
       if (!p) return;
+      var base0 = (Array.isArray(p.images) && p.images.length) ? p.images.filter(Boolean) : (p.image_url ? [p.image_url] : []);
+      card.__imgItems = base0.map(function (u) { return { u: u }; }); // 全部图：第一张=封面，可拖动排序
       var thumbHtml = p.image_url ? '<img src="' + esc(p.image_url) + '">' : '';
       card.innerHTML =
         '<div class="thumb">' + thumbHtml + '</div>' +
         '<div class="info">' +
+        productStripHtml(card.__imgItems) +
         '<div class="edit-grid">' +
         '<input class="e-name" value="' + escAttr(p.name) + '" placeholder="商品名称">' +
         '<input class="e-price" value="' + escAttr(p.price) + '" placeholder="价格">' +
         '<input class="e-tag" value="' + escAttr(p.tag) + '" placeholder="标签（点输入框可选已有标签）">' +
         '<input class="e-stock" type="number" min="0" value="' + (p.stock == null ? '' : p.stock) + '" placeholder="库存">' +
         '<input class="e-cost" type="number" step="0.01" value="' + (p.cost == null ? '' : p.cost) + '" placeholder="成本（仅自己可见）">' +
-        '<input class="e-file" type="file" accept="image/*" style="grid-column:1/-1;">' +
+        '<div class="fld-inline" style="grid-column:1/-1;"><label class="btn-mini hm-file-btn">选择图片<input type="file" class="e-file" accept="image/*" multiple hidden></label><span class="hm-file-name e-file-name">未选择图片</span></div>' +
         '<textarea class="e-desc" placeholder="商品描述">' + esc(p.description) + '</textarea>' +
         '</div>' +
         '<div class="private-line">原图会保留；选了新图会自动替换</div>' +
@@ -1161,13 +1397,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<button class="btn-mini btn-cancel-edit">取消</button>' +
         '</div></div>';
       card.querySelector('.e-file').addEventListener('change', function () {
-        var f = this.files && this.files[0];
-        if (!f) return;
+        var fs = Array.prototype.slice.call(this.files || []);
+        if (!fs.length) return;
+        var nameEl = card.querySelector('.e-file-name');
+        if (nameEl) nameEl.textContent = '已选 ' + fs.length + ' 张';
         var thumb = card.querySelector('.thumb');
-        var reader = new FileReader();
-        reader.onload = function () { thumb.innerHTML = '<img src="' + reader.result + '">'; };
-        reader.readAsDataURL(f);
+        thumb.innerHTML = '<img src="' + URL.createObjectURL(fs[0]) + '" alt="">';
       });
+      goEditTop(); // 打开商品编辑：自动回到页面最上面
     }
     if (e.target.classList.contains('btn-cancel-edit')) {
       loadProducts();
@@ -1183,31 +1420,99 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       };
       if (!body.name) { toast('名称不能为空'); return; }
       e.target.disabled = true; e.target.textContent = '保存中…';
-      var fileInput = card.querySelector('.e-file');
-      var f = fileInput && fileInput.files && fileInput.files[0];
-      var doPatch = function (imageUrl) {
-        if (imageUrl) body.image_url = imageUrl;
-        api('products?id=eq.' + id, { method: 'PATCH', body: JSON.stringify(body) })
-          .then(function (r) { if (!r.ok) throw new Error(); toast('已保存'); rememberTag(body.tag); loadProducts(); })
-          .catch(function () { toast('保存失败，重试一下'); });
+      var items2 = Array.isArray(card.__imgItems) ? card.__imgItems : null;
+      var tryPatch = function (b) {
+        return api('products?id=eq.' + id, { method: 'PATCH', body: JSON.stringify(b) }).then(function (r) {
+          if (r.ok) return r;
+          if (b.images) { // images 列还没建：降级为只存主图
+            delete b.images;
+            return tryPatch(b);
+          }
+          throw new Error();
+        });
       };
-      if (f) {
-        fetch(SUPABASE_URL + '/storage/v1/object/shop/' + Date.now() + '-' + f.name.replace(/[^\w.\-]/g, '_'), {
-          method: 'POST',
-          headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + ACCESS },
-          body: f
-        }).then(function (r) { if (!r.ok) throw new Error('upload'); return r.json(); })
-          .then(function (res) { doPatch(SUPABASE_URL + '/storage/v1/object/public/shop/' + res.Key.split('/').slice(1).join('/')); })
-          .catch(function () { toast('图片上传失败'); e.target.disabled = false; e.target.textContent = '保存修改'; });
-      } else { doPatch(); }
+      var finish = function () {
+        tryPatch(body).then(function () {
+          toast('已保存'); rememberTag(body.tag); loadProducts();
+        }).catch(function () { toast('保存失败，重试一下'); e.target.disabled = false; e.target.textContent = '保存修改'; });
+      };
+      if (items2 && card.__imgsChanged) { // 图片条被拖动过或加过图：按顺序重建 images（第一张=封面）
+        e.target.disabled = true;
+        var final = [];
+        var chainI = Promise.resolve();
+        if (items2.some(function (it) { return it.f; })) e.target.textContent = '上传中…';
+        items2.forEach(function (it) {
+          chainI = chainI.then(function () {
+            if (it.u) { final.push(it.u); return null; }
+            return uploadShopFiles([it.f]).then(function (us) { final.push(us[0]); });
+          });
+        });
+        chainI.then(function () {
+          if (final.length) { body.image_url = final[0]; if (final.length > 1) body.images = final; }
+          else body.image_url = null;
+          finish();
+        }).catch(function () { toast('图片上传失败'); e.target.disabled = false; e.target.textContent = '保存修改'; });
+      } else { finish(); }
+    }
+    if (e.target.classList.contains('btn-off')) { // 下架 / 重新上架：改的是店内显隐，不删数据
+      var willHide = !isShopHidden(id);
+      setShopHidden(id, willHide)
+        .then(function () { toast(willHide ? '已下架（店里看不到了，随时能上架回来）' : '已重新上架'); loadProducts(); })
+        .catch(function () { toast('操作失败，重试一下'); });
     }
     if (e.target.classList.contains('btn-del')) {
-      uiConfirm('确定下架删除这个商品吗？', function () {
+      uiConfirm('确定删除这个商品吗？删了就找不回来了。想从店里拿掉的话，用「下架」就好。', function () {
         api('products?id=eq.' + id, { method: 'DELETE' })
-          .then(function (r) { if (!r.ok) throw new Error(); toast('已下架'); loadProducts(); })
+          .then(function (r) { if (!r.ok) throw new Error(); toast('已删除'); loadProducts(); })
           .catch(function () { toast('删除失败'); });
       });
     }
+  });
+
+  // ===== 评价返图管理 =====
+  function starsStr(n) {
+    n = Math.max(0, Math.min(5, parseInt(n, 10) || 0));
+    // 站内米豆乳字体把 ★ 画成空心、☆ 画成实心，所以这里反着来：得分的用 ☆（看起来是实心）
+    return '☆☆☆☆☆'.slice(0, n) + '★★★★★'.slice(0, 5 - n);
+  }
+  function loadReviewsAdmin() {
+    var box = document.getElementById('review-admin-list');
+    if (!box) return;
+    box.innerHTML = '<p class="empty">加载中…</p>';
+    fetch(SUPABASE_URL + '/rest/v1/reviews?select=id,name,content,rating,image_url,created_at&order=created_at.desc&limit=200', {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); }).then(function (rows) {
+      if (!Array.isArray(rows) || !rows.length) { box.innerHTML = '<p class="empty">还没有人评价</p>'; return; }
+      REVIEW_CACHE = {};
+      rows.forEach(function (rv) { REVIEW_CACHE[rv.id] = rv; });
+      box.innerHTML = rows.map(function (rv) {
+        return '<div class="card rv-item" data-id="' + rv.id + '">' +
+          '<div class="sc-card-img">' + (rv.image_url ? '<img src="' + escAttr(rv.image_url) + '" alt="返图">' : '<div class="sc-img-empty">没有返图</div>') + '</div>' +
+          '<div class="sc-info">' +
+          '<span class="sc-name">' + esc(rv.name || '小可爱') + '</span>' +
+          '<div class="sc-shop" style="color:var(--accent);letter-spacing:2px;">' + starsStr(rv.rating) + '</div>' +
+          '<div class="rv-text">' + esc(rv.content || '') + '</div>' +
+          '<div class="sc-meta">' + fmtTime(rv.created_at) + '</div>' +
+          '<div class="actions" style="justify-content:flex-start;margin-top:8px;"><button class="btn-del rv-del">删除</button></div>' +
+          '</div>' +
+          '</div>';
+      }).join('');
+    }).catch(function () { box.innerHTML = '<p class="empty">加载失败，刷新重试</p>'; });
+  }
+  document.getElementById('review-admin-list').addEventListener('click', function (e) {
+    var card = e.target.closest('.rv-item');
+    if (!card || !e.target.classList.contains('rv-del')) return;
+    var id = card.getAttribute('data-id');
+    var rv = REVIEW_CACHE[id] || {};
+    uiConfirm('删掉「' + (rv.name || '小可爱') + '」的这条评价吗？删了找不回来。', function () {
+      api('reviews?id=eq.' + id, { method: 'DELETE', headers: { 'Prefer': 'return=representation' } })
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error()); })
+        .then(function (back) {
+          if (!Array.isArray(back) || !back.length) { toast('没删掉：删除权限还没开，先跑一下我发的 SQL'); return; }
+          toast('已删除'); loadReviewsAdmin();
+        })
+        .catch(function () { toast('删除失败'); });
+    });
   });
 
   // ===== 照片分区 =====
@@ -1312,7 +1617,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<input data-f="name_en" value="' + escAttr(sec.name_en) + '" placeholder="名称（英文）">' +
         '<input data-f="sort" type="number" value="' + (sec.sort == null ? 0 : sec.sort) + '" placeholder="排序数字">' +
         '</div>' +
-        '<div style="margin-top:8px;"><div style="font-size:16px;color:var(--muted);margin-bottom:4px;">每行显示（前台 Photo Gallery 布局）</div>' + prPickerHtml(photoGridOf(sec.key)) + '</div>' +
+        '<div style="margin-top:8px;"><div style="font-size:15px;color:var(--muted);margin-bottom:4px;">每行显示（前台 Photo Gallery 布局）</div>' + prPickerHtml(photoGridOf(sec.key)) + '</div>' +
         '<div class="actions" style="justify-content:flex-start;">' +
         '<button class="btn-mini btn-save-section">保存</button>' +
         '<button class="btn-del btn-del-section">删除</button>' +
@@ -1333,10 +1638,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         .catch(function () { toast('保存失败'); });
     }
     if (e.target.classList.contains('btn-del-section')) {
-      uiConfirm('确定删除这个分区吗？分区里的照片不会删，但不会再显示。', function () {
+      uiConfirm('确定删除这个分区吗？分区里的照片不会删，会移到「没有标签」里继续显示。', function () {
         photoGridSave(sec.key, null);
-        api('photo_sections?id=eq.' + id, { method: 'DELETE' })
-          .then(function (r) { if (!r.ok) throw new Error(); toast('已删除'); loadSections(); })
+        // 先把分区里的照片改成「没有标签」，再删分区：一张照片都不会丢
+        api('photos?category=eq.' + encodeURIComponent(sec.key), { method: 'PATCH', body: JSON.stringify({ category: '' }) })
+          .catch(function () {})
+          .then(function () { return api('photo_sections?id=eq.' + id, { method: 'DELETE' }); })
+          .then(function (r) { if (!r.ok) throw new Error(); toast('分区已删除，照片移到了「没有标签」'); loadSections(); if (typeof loadPhotoList === 'function') loadPhotoList(); })
           .catch(function () { toast('删除失败'); });
       });
     }
@@ -1403,6 +1711,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (inp.value.trim() && !exact) html += '<button type="button" class="cat-opt cat-new" data-cat="' + escAttr(inp.value.trim()) + '">+ 创建「' + esc(inp.value.trim()) + '」</button>';
       list.innerHTML = html;
       list.style.display = html ? 'block' : 'none';
+      if (html && getComputedStyle(list).position === 'absolute') list.style.left = inp.offsetLeft + 'px'; // 浮层左缘跟随输入框
     }
     inp.addEventListener('focus', render);
     inp.addEventListener('input', render);
@@ -1416,18 +1725,67 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     });
     document.addEventListener('click', function () { list.style.display = 'none'; }); // inp/list 自身的点击已 stopPropagation
   }
+  function dayTypeLabel(ty) { return DAY_TYPE_NAMES[ty] || ty || ''; } // 中文后台显示友好名，存的仍旧是 birthday/anniversary/event
+  function dayTypeValue(label) { // 输入框里的友好名 → 存回规范值，自定义分类原样保留
+    var s = String(label || '').trim();
+    return ({ '生日': 'birthday', '纪念日': 'anniversary', '重要日': 'event' }[s]) || s;
+  }
+  // 自动事件：从 BJD/色卡日期派生（与前台日历 genAutoEvents 同一链路：出生→买入→弄好；色卡 bought）
+  // 「前台展示」开关：统一存 site_settings.cal_hide，键 d:<id> 手动重要日子 / b:<i> BJD / c:<i> 色卡
+  function calHideList() {
+    try { var v = JSON.parse(SETTINGS['cal_hide'] || '[]'); return Array.isArray(v) ? v.filter(function (x) { return typeof x === 'string'; }) : []; } catch (e) { return []; }
+  }
+  function calHidden(key) { return calHideList().indexOf(key) !== -1; }
+  function setCalHidden(key, hidden) {
+    var list = calHideList();
+    var i = list.indexOf(key);
+    if (hidden && i === -1) list.push(key);
+    if (!hidden && i !== -1) list.splice(i, 1);
+    SETTINGS['cal_hide'] = JSON.stringify(list);
+    saveSetting('cal_hide', list).then(function (r) { if (!r.ok) throw new Error(); toast(hidden ? '前台不展示了' : '前台会展示'); })
+      .catch(function () { toast('保存失败，重试一下'); loadHome(); renderDays(); });
+  }
+  function calTgl(key) {
+    return '<button type="button" class="tgl cal-toggle' + (calHidden(key) ? '' : ' on') + '" data-cal="' + escAttr(key) + '" aria-pressed="' + (!calHidden(key)) + '" aria-label="前台展示"><span class="tgl-knob"></span></button>';
+  }
+  function autoDayRows() {
+    var out = [];
+    var push = function (kind, i, name, day, label) { if (name && day) out.push({ kind: kind, i: i, key: kind + ':' + i, name: name, day: day, label: label }); };
+    try { (JSON.parse(SETTINGS['bjds'] || '[]')).forEach(function (b, i) {
+      var birth = b.birth || ''; var buy = (b.purchase && b.purchase.date) || ''; var done = (b.faceup && b.faceup.date) || '';
+      if (birth) push('b', i, b.name, birth, '出生 → 自动生成生日 / 百天系列');
+      else if (buy) push('b', i, b.name, buy, '买入 → 自动生成纪念（无出生日期时的回退）');
+      else if (done) push('b', i, b.name, done, '弄好 → 自动生成纪念（无出生/买入日期时的回退）');
+    }); } catch (e) {}
+    try { (JSON.parse(SETTINGS['cards'] || '[]')).forEach(function (c, i) {
+      if (c.bought) push('c', i, c.name, c.bought, '买入 → 自动生成纪念');
+    }); } catch (e) {}
+    return out.sort(function (a, b) { return a.day < b.day ? -1 : 1; });
+  }
   function renderDays() {
     var box = document.getElementById('days-list');
-    box.innerHTML = DAYS.map(function (d) {
+    var autoRows = autoDayRows();
+    var autoHtml = autoRows.length ? '<div class="card" style="padding:12px 14px;margin-bottom:14px;"><b style="font-size:16px;">自动生成（来自 BJD / 色卡，前台日历已同步展示）</b>' +
+      autoRows.map(function (r) {
+        return '<div class="auto-row" data-cal="' + escAttr(r.key) + '" data-kind="' + r.kind + '" data-i="' + r.i + '" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;border-top:1px solid var(--card-hover);margin-top:9px;">' +
+          '<div style="flex:1;min-width:150px;">' +
+          '<b style="font-size:17px;">' + esc(r.name) + '</b>' +
+          '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + toDispDayAdmin(r.day) + ' · ' + (r.kind === 'b' ? 'BJD' : '色卡') + ' · ' + r.label + '</div>' +
+          '</div>' +
+          '<span class="tgl-label">' + calTgl(r.key) + '前台展示</span>' +
+          '<button class="btn-mini cal-edit">编辑</button>' +
+          '</div>';
+      }).join('') + '<div style="font-size:14px;color:var(--muted);margin-top:10px;">日期跟着 BJD / 色卡档案走；点「编辑」会跳到对应档案里改；不想出现在日历就把右边的「前台展示」关掉</div></div>' : '';
+    box.innerHTML = autoHtml + DAYS.map(function (d) {
       if (d.id === DAY_EDIT) {
         return '<div class="card day-item editing" data-id="' + d.id + '" style="padding:12px 14px;margin-bottom:10px;">' +
           '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
           '<input class="de-name" style="flex:1;min-width:140px;" value="' + escAttr(d.name) + '">' +
           '<input type="text" class="de-day date-pick" data-disp="1" value="' + escAttr(toDispDayAdmin(d.day)) + '" style="width:132px;flex-shrink:0;">' +
           '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:16px;">' +
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:15px;">' +
           '<span style="color:var(--muted);">分类</span>' +
-          '<input class="de-cat" value="' + escAttr(d.type || '') + '" placeholder="输入分类" autocomplete="off" style="width:170px;">' +
+          '<input class="de-cat" value="' + escAttr(dayTypeLabel(d.type)) + '" placeholder="输入分类" autocomplete="off" style="width:170px;">' +
           '<div class="dy-cat-list"></div>' +
           '<span style="color:var(--muted);margin-left:8px;">重复</span>' +
           [['none','不重复'],['daily','每天重复'],['weekly','每周重复'],['monthly','每月重复'],['yearly','每年重复']].map(function (o) {
@@ -1437,11 +1795,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<button class="btn-mini de-cancel">取消</button>' +
           '</div></div>';
       }
-      return '<div class="card day-item" data-id="' + d.id + '" style="display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:10px;">' +
-        '<div style="flex:1;min-width:0;">' +
-        '<b style="font-size:18px;">' + esc(d.name) + '</b>' +
-        '<div style="font-size:16px;color:var(--muted);margin-top:2px;">' + toDispDayAdmin(d.day) + ' · ' + (d.type || '重要日') + (d.repeat && d.repeat !== 'none' ? ' · ' + ({ daily: '每天重复', weekly: '每周重复', monthly: '每月重复', yearly: '每年重复' }[d.repeat] || d.repeat) : ' · 不重复') + '</div>' +
+      return '<div class="card day-item" data-id="' + d.id + '" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;margin-bottom:10px;">' +
+        '<div style="flex:1;min-width:150px;">' +
+        '<b style="font-size:17px;">' + esc(d.name) + '</b>' +
+        '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + toDispDayAdmin(d.day) + ' · ' + (dayTypeLabel(d.type) || '重要日') + (d.repeat && d.repeat !== 'none' ? ' · ' + ({ daily: '每天重复', weekly: '每周重复', monthly: '每月重复', yearly: '每年重复' }[d.repeat] || d.repeat) : ' · 不重复') + '</div>' +
         '</div>' +
+        '<span class="tgl-label">' + calTgl('d:' + d.id) + '前台展示</span>' +
         '<button class="btn-mini dy-edit">编辑</button>' +
         '<button class="btn-del dy-del">删除</button>' +
         '</div>';
@@ -1453,14 +1812,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     return {
       name: document.getElementById('dy-name').value.trim(),
       day: toInternalDayAdmin(document.getElementById('dy-day').value),
-      type: document.getElementById('dy-cat').value.trim() || '重要日',
+      type: dayTypeValue(document.getElementById('dy-cat').value) || '重要日',
       repeat: (document.querySelector('input[name="dy-repeat"]:checked') || {}).value || 'none'
     };
   }
   function setDayForm(d) {
     document.getElementById('dy-name').value = d ? d.name : '';
     document.getElementById('dy-day').value = d ? toDispDayAdmin(d.day) : '';
-    document.getElementById('dy-cat').value = d ? (d.type || '') : '';
+    document.getElementById('dy-cat').value = d ? dayTypeLabel(d.type) : '';
     document.querySelector('input[name="dy-repeat"][value="' + (d ? (d.repeat || 'none') : 'none') + '"]').checked = true;
     syncDayChips();
   }
@@ -1489,6 +1848,35 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     row.querySelectorAll('input[type="radio"]').forEach(function (r2) { r2.parentNode.classList.toggle('active', r2.checked); });
   });
   document.getElementById('days-list').addEventListener('click', function (e) {
+    var tg = e.target.closest('.cal-toggle');
+    if (tg) { // 前台展示开关：亮=展示，暗=不展示
+      var wasOn = tg.classList.contains('on');
+      tg.classList.toggle('on', !wasOn);
+      tg.setAttribute('aria-pressed', String(!wasOn));
+      setCalHidden(tg.getAttribute('data-cal'), wasOn);
+      return;
+    }
+    var ce = e.target.closest('.cal-edit');
+    if (ce) { // 自动项：跳到对应 BJD / 色卡档案，并把那一条展开成编辑状态
+      var arow = ce.closest('.auto-row');
+      if (arow) {
+        var ak = arow.getAttribute('data-kind');
+        var ai = parseInt(arow.getAttribute('data-i'), 10) || 0;
+        if (ak === 'b') {
+          BJDS_EDIT = ai; EDIT_TYPE = 'bjd';
+          var tb = document.querySelector('.tab-btn[data-tab="bjd"]');
+          if (tb) tb.click();
+          renderBjds();
+          goEditTop();
+        } else {
+          CARDS_EDIT = ai; EDIT_TYPE = 'card';
+          var tc = document.querySelector('.tab-btn[data-tab="cards"]');
+          if (tc) tc.click();
+          renderCards();
+        }
+      }
+      return;
+    }
     var card = e.target.closest('.day-item');
     if (!card) return;
     var id = card.getAttribute('data-id');
@@ -1503,7 +1891,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       var v2 = {
         name: row.querySelector('.de-name').value.trim(),
         day: toInternalDayAdmin(row.querySelector('.de-day').value),
-        type: row.querySelector('.de-cat').value.trim() || '重要日',
+        type: dayTypeValue(row.querySelector('.de-cat').value) || '重要日',
         repeat: (row.querySelector('input[name="de-repeat"]:checked') || {}).value || 'none'
       };
       if (!v2.name || !v2.day) { toast('名称和日期都要填哦（日期格式 YYYY/MM/DD）'); return; }
@@ -1531,7 +1919,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
   // ===== 照片管理 =====
   document.getElementById('ph-file').addEventListener('change', function () {
-    document.getElementById('ph-file-name').textContent = this.files && this.files[0] ? '已选择：' + this.files[0].name : '未选择图片';
+    document.getElementById('ph-file-name').textContent = this.files && this.files[0] ? '已选：' + this.files[0].name : '未选择图片';
   });
   document.getElementById('btn-add-photo').addEventListener('click', function () {
     var btn = this;
@@ -1543,7 +1931,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     var sort = document.getElementById('ph-sort').value.trim();
     if (!f) { toast('先选一张照片'); return; }
     btn.disabled = true; btn.textContent = '上传中…';
-    fetch(SUPABASE_URL + '/storage/v1/object/gallery/' + Date.now() + '-' + f.name.replace(/[^\w.\-]/g, '_'), {
+    authedFetch(SUPABASE_URL + '/storage/v1/object/gallery/' + Date.now() + '-' + f.name.replace(/[^\w.\-]/g, '_'), {
       method: 'POST',
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + ACCESS },
       body: f
@@ -1586,6 +1974,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   function refreshTagList() {
     comboRefresh(); // 标签数据变了：如果联想下拉正开着，刷新选项
+    if (document.getElementById('p-tag-chips')) renderShopTags(); // 顺便刷新「标签管理」那一排
   }
   function rememberTag(t) {
     t = (t || '').trim();
@@ -1607,14 +1996,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     document.getElementById('gl-sub-en').value = gc.sub_en || '';
     var secs = SECTIONS.filter(function (s) { return s.key !== 'bjd'; });
     document.getElementById('gl-sec-edit').innerHTML = secs.map(function (s) {
+      var keyTag = /^sec-/.test(s.key) ? '' : '<span style="font-size:15px;color:var(--muted);min-width:64px;">' + esc(s.key) + '</span>'; // 自动生成的乱码 key 不显示
       return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;align-items:center;">' +
-        '<span style="font-size:16px;color:var(--muted);min-width:64px;">' + esc(s.key) + '</span>' +
+        keyTag +
         '<input class="gs-zh" data-id="' + s.id + '" value="' + escAttr(s.name_zh) + '" placeholder="分类名称（中文）" style="flex:1;min-width:120px;">' +
         '<input class="gs-en" data-id="' + s.id + '" value="' + escAttr(s.name_en || '') + '" placeholder="分类名称（英文）" style="flex:1;min-width:120px;">' +
         '</div>';
     }).join('');
     document.getElementById('gl-sec-view').innerHTML = secs.map(function (s) {
-      return '<div>' + esc(s.name_zh) + (s.name_en ? ' <span style="color:var(--muted);font-size:16px;">' + esc(s.name_en) + '</span>' : '') + '</div>';
+      return '<div>' + esc(s.name_zh) + (s.name_en ? ' <span style="color:var(--muted);font-size:15px;">' + esc(s.name_en) + '</span>' : '') + '</div>';
     }).join('');
     refreshHmViews();
   }
@@ -1758,6 +2148,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
             '</div>' +
             '<div class="actions" style="justify-content:flex-start;display:none;">' +
             '<button class="btn-mini btn-save-photo">保存</button>' +
+            '<button class="btn-mini btn-cancel btn-cancel-photo">取消</button>' +
             '<button class="btn-del btn-del-photo">删除</button>' +
             '</div></div></div>';
         }).join('');
@@ -1790,6 +2181,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         .then(function (r) { if (!r.ok) throw new Error(); return setPhotoStyle(id, newStyle); })
         .then(function () { toast('已保存'); loadPhotoList(); })
         .catch(function () { toast('保存失败'); });
+    }
+    if (e.target.classList.contains('btn-cancel-photo')) {
+      loadPhotoList(); // 收起编辑框并丢弃未保存的改动
+      toast('已取消，没保存改动');
+      return;
     }
     if (e.target.classList.contains('btn-del-photo')) {
       uiConfirm('确定删除这张照片吗？', function () {
@@ -1888,9 +2284,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           if (CARDS.some(function (x) { return !x.id; })) saveCardsQuiet(function () {});
         }
         var b = parseSetting('bjds', null);
-        if (b) { BJDS = b.map(normBjd); BJDS_SAVED = JSON.parse(JSON.stringify(BJDS)); }
+        if (b) { BJDS = b.map(normBjd); BJDS_SAVED = JSON.parse(JSON.stringify(BJDS)); migrateBjdEyes(); }
         var bsz = parseSetting('bjd_sizes', null); // 自定义娃娃尺寸 / 种类（像色卡画师一样可增删）
         if (Array.isArray(bsz) && bsz.length) BJD_SIZES = bsz.map(function (s) { return String(s).trim(); }).filter(Boolean);
+        var bbt = parseSetting('bjd_body_types', null); // 自定义身体类型（跟尺寸同一套管理）
+        if (Array.isArray(bbt) && bbt.length) BJD_BODY_TYPES = bbt.map(function (s) { return String(s).trim(); }).filter(Boolean);
         var wk = parseSetting('works', null); // 稿件展示（和桓桓宝宝的稿件展示 /works/）
         if (wk) { WORKS = wk.map(normWork); WORKS_SAVED = JSON.parse(JSON.stringify(WORKS)); }
         var wm = parseSetting('work_meta', null); // 稿件种类 / 画师独立管理
@@ -1910,9 +2308,32 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
             if (ei >= 0 && CARDS[ei]) { CARDS_EDIT = ei; EDIT_TYPE = 'card'; PENDING_TAB = 'cards'; }
           }
         } catch (e) {}
+        // 前台「编辑娃」直达：BJD 档案没有 id，按位置编号打开对应娃娃的编辑状态
+        try {
+          var ebj = sessionStorage.getItem('admin-edit-bjd');
+          if (ebj) {
+            sessionStorage.removeItem('admin-edit-bjd');
+            var bj = -1;
+            for (var kb = 0; kb < BJDS.length; kb++) { if (BJDS[kb] && BJDS[kb].id != null && String(BJDS[kb].id) === ebj) { bj = kb; break; } }
+            if (bj < 0 && /^\d+$/.test(ebj)) bj = parseInt(ebj, 10); // 按位置编号
+            if (bj >= 0 && BJDS[bj]) { BJDS_EDIT = bj; EDIT_TYPE = 'bjd'; PENDING_TAB = 'bjd'; }
+          }
+        } catch (e) {}
         renderCards();
         renderBjds();
         renderWorks();
+        // 前台「编辑稿」直达：按位置编号打开对应稿件的编辑状态
+        try {
+          var ewk = sessionStorage.getItem('admin-edit-work');
+          if (ewk) {
+            sessionStorage.removeItem('admin-edit-work');
+            var wi2 = -1;
+            for (var kw = 0; kw < WORKS.length; kw++) { if (WORKS[kw] && WORKS[kw].id != null && String(WORKS[kw].id) === ewk) { wi2 = kw; break; } }
+            if (wi2 < 0 && /^\d+$/.test(ewk)) wi2 = parseInt(ewk, 10); // 兼容旧版位置编号
+            if (wi2 >= 0 && WORKS[wi2]) { WORKS_EDIT = wi2; EDIT_TYPE = 'work'; PENDING_TAB = 'works'; }
+          }
+        } catch (e) {}
+        if (BJDS_EDIT >= 0 || CARDS_EDIT >= 0 || WORKS_EDIT >= 0) goEditTop(); // 从前台「编辑」跳进来也回到最上面
       })
       .catch(function () { toast('主页数据加载失败，刷新试试'); });
   }
@@ -1950,7 +2371,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (!f) { toast('先选一张图'); return; }
     if (!ACCESS) { toast('请先登录'); return; }
     toast('上传中…');
-    fetch(SUPABASE_URL + '/storage/v1/object/site/' + Date.now() + '-' + f.name.replace(/[^\w.\-]/g, '_'), {
+    authedFetch(SUPABASE_URL + '/storage/v1/object/site/' + Date.now() + '-' + f.name.replace(/[^\w.\-]/g, '_'), {
       method: 'POST',
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + ACCESS, 'Content-Type': f.type || 'image/jpeg' },
       body: f
@@ -1966,12 +2387,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   document.getElementById('btn-cover').addEventListener('click', function () { uploadSite('hm-cover-file', 'cover'); });
   document.getElementById('hm-avatar-file').addEventListener('change', function () {
     var f = this.files[0];
-    document.getElementById('hm-avatar-name').textContent = f ? f.name : '';
+    document.getElementById('hm-avatar-name').textContent = f ? '已选：' + f.name : '未选择图片';
     if (f) { var r = new FileReader(); r.onload = function (e) { document.getElementById('hm-avatar-preview').src = e.target.result; }; r.readAsDataURL(f); } // 选图后立即预览
   });
   document.getElementById('hm-cover-file').addEventListener('change', function () {
     var f = this.files[0];
-    document.getElementById('hm-cover-name').textContent = f ? f.name : '';
+    document.getElementById('hm-cover-name').textContent = f ? '已选：' + f.name : '未选择图片';
     if (f) { var r2 = new FileReader(); r2.onload = function (e) { document.getElementById('hm-cover-preview').src = e.target.result; }; r2.readAsDataURL(f); }
   });
   function renderLinkList() {
@@ -2003,10 +2424,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<div style="display:flex;align-items:center;gap:12px;">' +
           '<button type="button" class="vis-chip' + (a.visible === false ? '' : ' vis-on') + '" title="点击切换显示/隐藏">' + (a.visible === false ? '已隐藏' : '显示中') + '</button>' +
           '<div style="flex:1;min-width:0;">' +
-          '<div style="font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(a.title_zh || '未命名区域') +
-          (a.title_en ? ' <span style="color:var(--muted);font-size:16px;">' + esc(a.title_en) + '</span>' : '') +
-          (isTpl ? '<span style="display:inline-block;font-size:15px;color:#fff;background:var(--accent-soft);border-radius:8px;padding:1px 8px;margin-left:6px;vertical-align:1px;">模板</span>' : '') + '</div>' +
-          (custom && (a.content_zh || a.content_en) ? '<div style="font-size:16px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(a.content_zh || a.content_en) + '</div>' : '') +
+          '<div style="font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(a.title_zh || '未命名区域') +
+          (a.title_en ? ' <span style="color:var(--muted);font-size:15px;">' + esc(a.title_en) + '</span>' : '') +
+          (isTpl ? '<span style="display:inline-block;font-size:14px;color:#fff;background:var(--accent-soft);border-radius:8px;padding:1px 8px;margin-left:6px;vertical-align:1px;">模板</span>' : '') + '</div>' +
+          (custom && (a.content_zh || a.content_en) ? '<div style="font-size:15px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(a.content_zh || a.content_en) + '</div>' : '') +
           '</div>' +
           '<button type="button" class="area-kebab" title="菜单">⋮</button>' +
           '</div></div>';
@@ -2125,6 +2546,21 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   var CARDS = [];
   var ART_TPL = {}; // 画师价格模板：独立固定存储，不随色卡保存/删除漂移
   var CARDS_SAVED = []; // 最近一次「正式保存」的快照：画师价格档案只从这里读取，草稿/自动保存不进档
+  // 一次性迁移：「眼珠」部件默认关掉；已经填过眼珠信息的娃娃保持打勾（什么都不删）
+  function migrateBjdEyes() {
+    if (SETTINGS['bjd_eyes_migrated']) return;
+    if (!Array.isArray(BJDS) || !BJDS.length) return;
+    var changed = 0;
+    BJDS.forEach(function (b) {
+      var e = b.eyes || {};
+      var has = !!(String(e.maker || '').trim() || String(e.source || '').trim() || String(e.size || '').trim() || String(e.iris || '').trim() || String(e.note || '').trim());
+      b.parts = b.parts || {};
+      if (b.parts.eyes !== has) { b.parts.eyes = has; changed++; }
+    });
+    SETTINGS['bjd_eyes_migrated'] = '1';
+    saveSetting('bjd_eyes_migrated', '1').catch(function () {});
+    if (changed) saveBjdsQuiet();
+  }
   var BJDS = [];
   var BJDS_SAVED = []; // 最近一次保存的快照：取消编辑时从这里还原
   var BJDS_EDIT = -1;
@@ -2163,23 +2599,24 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     delete b.size;
     b.parts = b.parts || {};
     b.parts.head = b.parts.head !== false; b.parts.body = b.parts.body !== false;
-    b.parts.eyes = b.parts.eyes !== false; b.parts.clothes = b.parts.clothes === true;
+    b.parts.eyes = b.parts.eyes === true; b.parts.clothes = b.parts.clothes === true; // 眼珠：没主动勾就不显示（迁移脚本会给已有眼珠信息的娃娃打上勾）
     b.homeShow = b.homeShow !== false; // 主页展示
     b.createdAt = b.createdAt || null;
     return b;
   }
   function opts(list, cur) {
-    return [''].concat(list).map(function (v) {
+    var all = (cur && list.indexOf(cur) === -1) ? [cur].concat(list) : list; // 当前值不在列表里也要留着，免得一保存被清掉
+    return [''].concat(all).map(function (v) {
       return '<option value="' + v + '"' + (v === cur ? ' selected' : '') + '>' + (v || '请选择') + '</option>';
     }).join('');
   }
   function bjdField(label, input) {
-    return '<div class="bjd-f" style="min-width:100%;flex:1;"><div style="font-size:16px;color:var(--muted);margin-bottom:3px;">' + label + '</div>' + input + '</div>';
+    return '<div class="bjd-f" style="min-width:100%;flex:1;"><div style="font-size:15px;color:var(--muted);margin-bottom:3px;">' + label + '</div>' + input + '</div>';
   }
   function bjdGroup(title, inner, part) {
     var hide = part && bjdParts && bjdParts[part] === false;
     return '<div' + (part ? ' data-part="' + part + '"' : '') + ' style="border-top:1px solid var(--card-hover);margin-top:12px;padding-top:10px;' + (hide ? 'display:none;' : '') + '">' +
-      '<div style="font-size:17px;font-weight:700;margin-bottom:8px;">' + title + '</div>' + inner + '</div>';
+      '<div style="font-size:16px;font-weight:700;margin-bottom:8px;">' + title + '</div>' + inner + '</div>';
   }
   var bjdParts = null; // 当前编辑娃娃的部件开关（渲染用）
   function normEntry(a) {
@@ -2294,12 +2731,72 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (!Array.isArray(c.photos)) c.photos = []; // 追加相册（主图 image 保留）
     return c;
   }
-  function photoStrip(photos, cls) { // 多图缩略条：主图外追加的相册，每张 ⋮ 可删
-    if (!photos || !photos.length) return '';
-    return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">' + photos.map(function (u, pi) {
-      return '<div style="width:64px;height:64px;border-radius:10px;overflow:hidden;position:relative;background:var(--card);flex-shrink:0;"><img src="' + escAttr(u) + '" style="width:100%;height:100%;object-fit:cover;display:block;"><button type="button" class="kebab ' + cls + '" data-pi="' + pi + '" title="菜单" style="position:absolute;top:3px;right:3px;width:20px;height:20px;font-size:15px;">⋮</button></div>';
+  function photoStrip(cover, photos, cls, kind, gi) { // 多图缩略条：第一张=封面，可拖动排序（与前台展示顺序一致）
+    photos = Array.isArray(photos) ? photos.filter(Boolean) : [];
+    var all = (cover ? [cover] : []).concat(photos);
+    if (!all.length) return '';
+    return '<div class="ph-strip" data-kind="' + kind + '" data-gi="' + gi + '" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">' + all.map(function (u, idx) {
+      var isC = idx === 0 && !!cover;
+      return '<div class="ph-tile' + (isC ? ' ph-cover' : '') + '" draggable="true" data-idx="' + idx + '" title="拖动可调整顺序" style="width:64px;height:64px;border-radius:10px;overflow:hidden;position:relative;background:var(--card);flex-shrink:0;cursor:grab;">' +
+        '<img src="' + escAttr(u) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;">' +
+        (isC ? '<span style="position:absolute;left:3px;bottom:3px;background:var(--accent);color:#fff;border-radius:999px;padding:0 7px;font-size:11px;line-height:16px;">封面</span>'
+             : '<button type="button" class="kebab ' + cls + '" data-pi="' + (idx - (cover ? 1 : 0)) + '" title="菜单" style="position:absolute;top:3px;right:3px;width:20px;height:20px;font-size:14px;">⋮</button>') +
+        '</div>';
     }).join('') + '</div>';
   }
+  function phItemArr(kind, gi) { // 取某个条目的合并图数组（封面在前），并返回写回函数
+    if (kind === 'card') { var c = normCard(CARDS[parseInt(gi, 10)]); if (!Array.isArray(c.photos)) c.photos = []; return { all: (c.image ? [c.image] : []).concat(c.photos.filter(Boolean)), write: function (a) { c.image = a[0] || ''; c.photos = a.slice(1); } }; }
+    if (kind === 'bjd') { var b = BJDS[parseInt(gi, 10)]; if (!b) return null; if (!Array.isArray(b.photos)) b.photos = []; return { all: (b.image ? [b.image] : []).concat(b.photos.filter(Boolean)), write: function (a) { b.image = a[0] || ''; b.photos = a.slice(1); } }; }
+    if (kind === 'work') { var w = normWork(WORKS[parseInt(gi, 10)]); if (!Array.isArray(w.photos)) w.photos = []; return { all: (w.image ? [w.image] : []).concat(w.photos.filter(Boolean)), write: function (a) { w.image = a[0] || ''; w.photos = a.slice(1); } }; }
+    return null;
+  }
+  function phAfterSave(kind, gi) { // 拖动后按区块各自的方式落库/重渲染
+    if (kind === 'card') renderCards();
+    else if (kind === 'bjd') { saveBjdsQuiet(); renderBjds(); }
+    else if (kind === 'work') { saveWorksQuiet(); renderWorks(); }
+  }
+  (function () { // 拖动排序：一次绑定，色卡/BJD/稿件/商品缩略条通用
+    var DRAG = null;
+    document.addEventListener('dragstart', function (e) {
+      var t = e.target.closest ? e.target.closest('.ph-tile') : null;
+      if (!t) return;
+      var strip = t.closest('.ph-strip');
+      if (!strip) return;
+      DRAG = { kind: strip.getAttribute('data-kind'), gi: strip.getAttribute('data-gi'), from: parseInt(t.getAttribute('data-idx'), 10), strip: strip };
+      try { e.dataTransfer.setData('text/plain', 'ph'); e.dataTransfer.effectAllowed = 'move'; } catch (err) {}
+    });
+    document.addEventListener('dragover', function (e) {
+      if (!DRAG || !e.target.closest) return;
+      var strip = e.target.closest('.ph-strip');
+      if (strip === DRAG.strip) e.preventDefault();
+    });
+    document.addEventListener('drop', function (e) {
+      if (!DRAG || !e.target.closest) return;
+      var strip = e.target.closest('.ph-strip');
+      if (strip !== DRAG.strip) return;
+      e.preventDefault();
+      var to = strip.querySelectorAll('.ph-tile').length - 1;
+      var hover = e.target.closest('.ph-tile');
+      if (hover) to = parseInt(hover.getAttribute('data-idx'), 10);
+      var from = DRAG.from;
+      if (from === to) { DRAG = null; return; }
+      if (DRAG.kind === 'pnew') { // 上架表单：待上传文件排序
+        var mvP = pendingFiles.splice(from, 1)[0];
+        pendingFiles.splice(to, 0, mvP);
+        renderPendingPreview();
+        DRAG = null; return;
+      }
+      if (DRAG.kind === 'product') { productImgReorder(strip, from, to); DRAG = null; return; }
+      var ctx = phItemArr(DRAG.kind, DRAG.gi);
+      if (!ctx) { DRAG = null; return; }
+      var moved = ctx.all.splice(from, 1)[0];
+      ctx.all.splice(to, 0, moved);
+      ctx.write(ctx.all);
+      phAfterSave(DRAG.kind, DRAG.gi);
+      DRAG = null;
+    });
+    document.addEventListener('dragend', function () { DRAG = null; });
+  })();
   function normCardsRaw(v) {
     var arr = Array.isArray(v) ? v : (v && v.artists ? v.artists : []);
     return arr.map(function (c) { return normCard(c); });
@@ -2333,6 +2830,37 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   function fmtMoney(v) {
     return (parseFloat(v) || 0).toFixed(2); // 金额统一两位小数，避免浮点长尾
+  }
+  function goEditTop() { // 打开编辑时自动滚到编辑卡最上面（娃娃名那一栏贴到顶栏下方）；双段校正等布局稳定
+    var go = function () {
+      try {
+        var el = document.querySelector('.bjd-item.editing, .editing');
+        if (!el) { var eg = document.querySelector('.edit-grid'); if (eg && eg.offsetHeight > 0) el = eg.closest('.card') || eg; }
+        if (el && el.getBoundingClientRect().height > 0) {
+          var y = el.getBoundingClientRect().top + window.pageYOffset - 74;
+          window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    };
+    setTimeout(function () { if (!go()) { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } } }, 80);
+    [400, 900, 1500].forEach(function (t) { setTimeout(function () { try { go && goInstant(); } catch (e) {} }, t); }); // 布局晚稳也兜住：多次瞬时校正
+    function goInstant() {
+      var el = document.querySelector('.bjd-item.editing, .editing');
+      if (!el) { var eg = document.querySelector('.edit-grid'); if (eg && eg.offsetHeight > 0) el = eg.closest('.card') || eg; }
+      if (el && el.getBoundingClientRect().height > 0) window.scrollTo(0, Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 74));
+    }
+  }
+  function bjdSumV(b) { // 与前台 bjdTotalV 同一套算法：各项价格加起来
+    var p = (b && b.price) || {}, parts = (b && b.parts) || {};
+    var sum = 0;
+    var add = function (v) { var m = String(v == null ? '' : v).replace(/[^\d.]/g, ''); if (m !== '' && !isNaN(parseFloat(m))) sum += parseFloat(m); };
+    if (parts.head !== false) { add(p.doll); add(p.faceup); }
+    if (parts.body !== false) add(p.body);
+    if (parts.eyes !== false) add(p.eyes);
+    if (parts.clothes === true) add(p.clothes);
+    return sum;
   }
   var HIST = [], RIST = [];    // 撤销 / 恢复栈（CARDS 深拷贝快照，最多 50 步）
   var aNameSnap = {};          // 画师名输入框聚焦时的原名，用于判断「已有画师→新增画师」
@@ -2551,15 +3079,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         return '<div class="sc-artist-block" data-ai="' + ai + '" style="border-top:1px solid var(--card-hover);margin-top:12px;padding-top:10px;position:relative;">' +
           '<button class="kebab sc-artist-menu" title="选项">⋮</button>' +
           '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-right:40px;">' +
-          '<span style="font-size:16px;color:var(--muted);flex-shrink:0;">画师 ' + (ai + 1) + '</span>' +
+          '<span style="font-size:15px;color:var(--muted);flex-shrink:0;">画师 ' + (ai + 1) + '</span>' +
           '<input class="a-name" style="flex:1;min-width:120px;" value="' + escAttr(a.name || '') + '" placeholder="画师名称（可输入或点输入框选已有画师）">' +
           '</div>' +
           '<div class="sc-rows" style="margin-top:8px;">' + rowsHtml + '</div>' +
           '<div class="actions" style="justify-content:flex-start;margin-top:4px;">' +
           '<button class="btn-mini sc-add-row">+ 添加项目</button>' +
           '</div>' +
-          '<div class="a-stats" style="margin-top:6px;font-size:16px;color:var(--muted);">张数统计（自动）：' + labelAgg(a) + ' · 共 ' + artistCount(a) + ' 张</div>' +
-          '<div class="a-sub" style="margin-top:2px;font-size:16px;color:var(--muted);">画师 ' + (ai + 1) + ' 小计：<b class="a-sub-v" style="color:var(--accent);">¥' + fmtMoney(artistSub(a)) + '</b></div>' +
+          '<div class="a-stats" style="margin-top:6px;font-size:15px;color:var(--muted);">张数统计（自动）：' + labelAgg(a) + ' · 共 ' + artistCount(a) + ' 张</div>' +
+          '<div class="a-sub" style="margin-top:2px;font-size:15px;color:var(--muted);">画师 ' + (ai + 1) + ' 小计：<b class="a-sub-v" style="color:var(--accent);">¥' + fmtMoney(artistSub(a)) + '</b></div>' +
           '</div>';
       }).join('');
       return '<div class="card sc-artist editing" data-i="' + i + '" style="position:relative;">' +
@@ -2571,19 +3099,18 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '</div>' +
         '<div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap;">' +
         (c.image ? '<img src="' + escAttr(c.image) + '" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0;">' : '') +
-        '<label class="btn-mini sc-file-btn">上传图片<input type="file" class="sc-file" accept="image/*" hidden></label>' +
-        '<label class="btn-mini">添加照片<input type="file" class="sc-photos" accept="image/*" multiple hidden></label>' +
+        '<label class="btn-mini hm-file-btn">上传图片<input type="file" class="sc-photos" accept="image/*" multiple hidden></label>' +
         '</div>' +
-        photoStrip(c.photos, 'c-photo-kebab') +
-        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:17px;">' +
-        '<label style="display:flex;align-items:center;gap:6px;flex-shrink:0;">购入日期<input type="text" class="c-bought date-pick" readonly value="' + escAttr(c.bought || '') + '" placeholder="选择日期" style="width:100px;padding:7px 10px;font-size:17px;cursor:pointer;"></label>' +
-        '<label style="display:flex;align-items:center;gap:6px;flex-shrink:0;">出生日期<input type="text" class="c-birth date-pick" readonly value="' + escAttr(c.birth || '') + '" placeholder="自动纪念日" style="width:100px;padding:7px 10px;font-size:17px;cursor:pointer;"></label>' +
-        '<label style="display:flex;align-items:center;gap:6px;flex-shrink:0;">收卡价格<input type="number" class="c-orig" min="0" value="' + escAttr(c.origPrice == null ? '' : c.origPrice) + '" placeholder="¥" style="width:90px;padding:7px 10px;font-size:17px;"></label>' +
-        '<label style="display:flex;align-items:center;gap:6px;flex-shrink:0;">最后记录<input type="text" class="c-lastrec date-pick" readonly value="' + escAttr(c.lastRec || '') + '" placeholder="自动更新" style="width:100px;padding:7px 10px;font-size:17px;cursor:pointer;"></label>' +
-        '<span style="color:var(--muted);font-size:16px;">保存时自动更新</span>' +
+        photoStrip(c.image, c.photos, 'c-photo-kebab', 'card', i) +
+        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:16px;">' +
+        '<label style="display:flex;align-items:center;gap:6px;flex-shrink:0;">购入日期<input type="text" class="c-bought date-pick" readonly value="' + escAttr(c.bought || '') + '" placeholder="选择日期" style="width:100px;padding:7px 10px;font-size:16px;cursor:pointer;"></label>' +
+        '<label style="display:flex;align-items:center;gap:6px;flex-shrink:0;">出生日期<input type="text" class="c-birth date-pick" readonly value="' + escAttr(c.birth || '') + '" placeholder="自动纪念日" style="width:100px;padding:7px 10px;font-size:16px;cursor:pointer;"></label>' +
+        '<label style="display:flex;align-items:center;gap:6px;flex-shrink:0;">收卡价格<input type="number" class="c-orig" min="0" value="' + escAttr(c.origPrice == null ? '' : c.origPrice) + '" placeholder="¥" style="width:90px;padding:7px 10px;font-size:16px;"></label>' +
+        '<label style="display:flex;align-items:center;gap:6px;flex-shrink:0;">最后记录<input type="text" class="c-lastrec date-pick" readonly value="' + escAttr(c.lastRec || '') + '" placeholder="自动更新" style="width:100px;padding:7px 10px;font-size:16px;cursor:pointer;"></label>' +
+        '<span style="color:var(--muted);font-size:15px;">保存时自动更新</span>' +
         '</div>' +
-        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:18px;">' +
-        '<span>色卡总价 <b class="sc-card-total" style="color:var(--accent);font-size:20px;">¥' + fmtMoney(cardFinal(c)) + '</b></span>' +
+        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:17px;">' +
+        '<span>色卡总价 <b class="sc-card-total" style="color:var(--accent);font-size:19px;">¥' + fmtMoney(cardFinal(c)) + '</b></span>' +
         '<span style="color:var(--muted);">总张数 <b class="sc-card-count">' + cardCount(c) + '</b> 张</span>' +
         '</div>' +
         '<div class="sc-artists" style="margin-top:4px;">' + blocks + '</div>' +
@@ -2616,34 +3143,23 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (done) done(); else toast('已保存');
     }).catch(function () { toast('保存失败'); });
   }
-  function toolbarSave() {
-    if (EDIT_TYPE === 'bjd') {
-      saveBjdsQuiet(function () {
-        BJDS_EDIT = -1; // 保存成功后退出编辑，自动收起
-        EDIT_TYPE = null;
-        renderBjds();
-        toast('已保存');
-      });
-      return;
-    }
-    if (EDIT_TYPE === 'card') {
-      saveCardsQuiet(function () {
-        CARDS_EDIT = -1; // 保存成功后退出编辑，这张卡自动收起
-        EDIT_TYPE = null;
-        renderCards();
-        toast('已保存');
-      });
-      return;
-    }
-    toast('先点「⋮ → 编辑」再保存');
+  function toolbarSave(kind) { // kind：'bjd' / 'cards'；不给就按当前在编辑的东西，没在编辑就两个都存
+    if (!kind) kind = EDIT_TYPE === 'bjd' ? 'bjd' : (EDIT_TYPE === 'card' ? 'cards' : 'both');
+    if (kind === 'bjd' || kind === 'both') { BJDS_EDIT = -1; saveBjdsQuiet(function () {}); }
+    if (kind === 'cards' || kind === 'both') { CARDS_EDIT = -1; saveCardsQuiet(function () {}); }
+    EDIT_TYPE = null;
+    renderBjds();
+    renderCards();
+    toast('已保存');
   }
-  document.getElementById('btn-bjd-save').addEventListener('click', toolbarSave);
+  document.getElementById('btn-bjd-save').addEventListener('click', function () { toolbarSave('bjd'); });
+  document.getElementById('btn-sc-save').addEventListener('click', function () { toolbarSave('cards'); }); // 色卡工具栏的保存
 
   document.getElementById('btn-sc-add').addEventListener('click', function () {
     // 新建只负责新建：加一张空卡（张数默认 0），不自动进入编辑
     BJDS_EDIT = -1;
     pushHist();
-    CARDS.unshift({ name: '', shop: '', image: '', homeShow: true, artists: [{ name: '', rows: [{ label: '', qty: 0 }] }] }); // 最新排最上面
+    CARDS.unshift({ name: '', shop: '', image: '', homeShow: false, artists: [{ name: '', rows: [{ label: '', qty: 0 }] }] }); // 最新排最上面；主页展示默认关
     popClose();
     renderCards();
     var el = document.querySelector('#sc-artist-list .sc-artist');
@@ -2653,12 +3169,24 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   // ===== 悬浮菜单（Popover）：固定定位，不推挤内容，⋮ 坐标永远不变 =====
   function popItems() {
     if (!SC_POP) return '';
-    if (SC_POP.type === 'bjd-ph' || SC_POP.type === 'card-ph') {
+    if (SC_POP.type === 'bjd-ph' || SC_POP.type === 'card-ph' || SC_POP.type === 'work-ph') {
       return '<button class="sc-opt sc-opt-del" data-opt="del">删除照片</button>' +
         '<button class="sc-opt" data-opt="cancel">✕ 取消</button>';
     }
+    if (SC_POP.type === 'work-meta-cats' || SC_POP.type === 'work-meta-artists') {
+      return '<button class="sc-opt" data-opt="rename">重命名</button>' +
+        '<button class="sc-opt sc-opt-del" data-opt="del">删除</button>' +
+        '<button class="sc-opt" data-opt="cancel">✕ 取消</button>';
+    }
     if (SC_POP.type === 'bjd-size') {
-      return '<button class="sc-opt sc-opt-del" data-opt="del">删除尺寸</button>' +
+      var wd = (SC_POP.ph && SC_POP.ph.word) || '尺寸';
+      return '<button class="sc-opt" data-opt="rename">重命名</button>' +
+        '<button class="sc-opt sc-opt-del" data-opt="del">删除' + wd + '</button>' +
+        '<button class="sc-opt" data-opt="cancel">✕ 取消</button>';
+    }
+    if (SC_POP.type === 'shop-tag') {
+      return '<button class="sc-opt" data-opt="rename">重命名</button>' +
+        '<button class="sc-opt sc-opt-del" data-opt="del">删除标签</button>' +
         '<button class="sc-opt" data-opt="cancel">✕ 取消</button>';
     }
     if (SC_POP.type === 'row') {
@@ -2680,20 +3208,18 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<button class="sc-opt" data-opt="cancel">✕ 取消</button>';
     }
     if (SC_POP.type === 'work' || SC_POP.type === 'work-e') {
-      return (SC_POP.type === 'work' ? '<button class="sc-opt" data-opt="edit">编辑</button>' : '') +
+      return (SC_POP.type === 'work' ? '<button class="sc-opt" data-opt="edit">编辑</button>' : '<button class="sc-opt" data-opt="collapse">收起编辑</button>') +
         '<button class="sc-opt sc-opt-del" data-opt="del">删除</button>' +
         '<button class="sc-opt" data-opt="up"' + (SC_POP.i === 0 ? ' disabled' : '') + '>↑ 往上移动</button>' +
         '<button class="sc-opt" data-opt="down"' + (SC_POP.i === WORKS.length - 1 ? ' disabled' : '') + '>↓ 往下移动</button>' +
-        (SC_POP.type === 'work' ? '<button class="sc-opt" data-opt="cancel">✕ 取消</button>'
-                               : '<button class="sc-opt" data-opt="collapse">收起编辑</button>');
+        (SC_POP.type === 'work' ? '<button class="sc-opt" data-opt="cancel">✕ 取消</button>' : '');
     }
     if (SC_POP.type === 'bjd' || SC_POP.type === 'bjd-e') {
-      return (SC_POP.type === 'bjd' ? '<button class="sc-opt" data-opt="edit">编辑</button>' : '') +
+      return (SC_POP.type === 'bjd' ? '<button class="sc-opt" data-opt="edit">编辑</button>' : '<button class="sc-opt" data-opt="collapse">收起编辑</button>') +
         '<button class="sc-opt sc-opt-del" data-opt="del">删除</button>' +
         '<button class="sc-opt" data-opt="up"' + (SC_POP.i === 0 ? ' disabled' : '') + '>↑ 往上移动</button>' +
         '<button class="sc-opt" data-opt="down"' + (SC_POP.i === BJDS.length - 1 ? ' disabled' : '') + '>↓ 往下移动</button>' +
-        (SC_POP.type === 'bjd' ? '<button class="sc-opt" data-opt="cancel">✕ 取消</button>'
-                               : '<button class="sc-opt" data-opt="collapse">收起编辑</button>');
+        (SC_POP.type === 'bjd' ? '<button class="sc-opt" data-opt="cancel">✕ 取消</button>' : '');
     }
     if (SC_POP.type === 'photo') {
       return (SC_POP.ph.pinned ? '<button class="sc-opt" data-opt="unpin">取消置顶</button>'
@@ -2717,8 +3243,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<button class="sc-opt" data-opt="cancel">✕ 取消</button>';
     }
     var last = SC_POP.type === 'card' ? '<button class="sc-opt" data-opt="cancel">✕ 取消</button>'
-                                      : '<button class="sc-opt" data-opt="collapse">收起编辑</button>';
-    return (SC_POP.type === 'card' ? '<button class="sc-opt" data-opt="edit">编辑色卡</button>' : '') +
+                                      : '';
+    return (SC_POP.type === 'card' ? '<button class="sc-opt" data-opt="edit">编辑色卡</button>' : '<button class="sc-opt" data-opt="collapse">收起编辑</button>') +
       '<button class="sc-opt" data-opt="copy">复制色卡</button>' +
       '<button class="sc-opt sc-opt-del" data-opt="del">删除色卡</button>' +
       '<button class="sc-opt" data-opt="up"' + (SC_POP.i === 0 ? ' disabled' : '') + '>↑ 往上移动</button>' +
@@ -2751,6 +3277,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (top + ph > window.innerHeight - 8 && r.top - ph - 6 > 8) top = r.top - ph - 6; // 下方放不下则向上弹
     pop.style.left = left + 'px';
     pop.style.top = Math.max(8, top) + 'px';
+    if (!window.__dpScrollBound) { // 页面滚动时日期弹层直接收起，避免 fixed 弹层飘走
+      window.__dpScrollBound = true;
+      window.addEventListener('scroll', function () { var p = document.getElementById('date-pop'); if (p && p.style.display === 'block') p.style.display = 'none'; }, { passive: true });
+    }
   }
   function dpRender() {
     var pop = document.getElementById('date-pop');
@@ -2758,20 +3288,39 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     pop.querySelector('.dp-title').textContent = DP.y + ' 年 ' + (DP.m + 1) + ' 月';
     var grid = pop.querySelector('.dp-grid');
     var ym = pop.querySelector('.dp-ym');
-    if (DP.mode === 'ym') { // 年月快速选择：年份列表可滚动 + 直接输入年份 + 12 月网格
+    if (DP.mode === 'ym') { // 年月快速选择：苹果式双滚轮（年 | 月）
       grid.style.display = 'none';
       ym.style.display = 'block';
-      if (!ym.innerHTML) {
-        var y1 = new Date().getFullYear() + 5, years = '';
-        for (var yy = y1; yy >= 2000; yy--) years += '<button type="button" class="dp-year" data-y="' + yy + '">' + yy + '</button>';
-        var ms = '';
-        for (var mm = 0; mm < 12; mm++) ms += '<button type="button" class="dp-mon" data-m="' + mm + '">' + (mm + 1) + ' 月</button>';
-        ym.innerHTML = '<div class="dp-ym-row"><input type="text" inputmode="numeric" class="dp-year-input" placeholder="输入年份"></div><div class="dp-years">' + years + '</div><div class="dp-months">' + ms + '</div>';
-      }
-      ym.querySelectorAll('.dp-year').forEach(function (b) { b.classList.toggle('cur', parseInt(b.getAttribute('data-y'), 10) === DP.y); });
-      ym.querySelectorAll('.dp-mon').forEach(function (b) { b.classList.toggle('cur', parseInt(b.getAttribute('data-m'), 10) === DP.m); });
-      var cur = ym.querySelector('.dp-year.cur');
-      if (cur) ym.querySelector('.dp-years').scrollTop = cur.offsetTop - 50;
+      var y1 = new Date().getFullYear() + 5, years = [];
+      for (var yy = y1; yy >= 2000; yy--) years.push(yy);
+      var months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      var yl = years.map(function (y) { return '<div class="wheel-item' + (y === DP.y ? ' cur' : '') + '" data-v="' + y + '">' + y + '</div>'; }).join('');
+      var ml = months.map(function (m) { return '<div class="wheel-item' + (m === DP.m ? ' cur' : '') + '" data-v="' + m + '">' + (m + 1) + ' 月</div>'; }).join('');
+      ym.innerHTML = '<div class="dp-wheel"><div class="wheel" data-k="y"><div class="wheel-list">' + yl + '</div></div><div class="wheel" data-k="m"><div class="wheel-list">' + ml + '</div></div><div class="wheel-band"></div></div>';
+      ym.querySelectorAll('.wheel').forEach(function (col) {
+        var isY = col.getAttribute('data-k') === 'y';
+        var vals = isY ? years : months;
+        var list = col.querySelector('.wheel-list');
+        var curIdx = isY ? years.indexOf(DP.y) : DP.m;
+        if (curIdx < 0) curIdx = 0;
+        list.scrollTop = curIdx * 36;
+        var wt = null;
+        list.addEventListener('scroll', function () {
+          clearTimeout(wt);
+          wt = setTimeout(function () {
+            var i = Math.max(0, Math.min(vals.length - 1, Math.round(list.scrollTop / 36)));
+            list.querySelectorAll('.wheel-item').forEach(function (c, j) { c.classList.toggle('cur', j === i); });
+            if (isY) DP.y = vals[i]; else DP.m = vals[i];
+            var pop2 = document.getElementById('date-pop');
+            pop2.querySelector('.dp-title').textContent = DP.y + ' 年 ' + (DP.m + 1) + ' 月';
+          }, 130);
+        });
+        list.addEventListener('click', function (e) {
+          var it = e.target.closest('.wheel-item'); if (!it) return;
+          var i = Array.prototype.indexOf.call(list.children, it);
+          list.scrollTo({ top: i * 36, behavior: 'smooth' });
+        });
+      });
       return;
     }
     ym.style.display = 'none';
@@ -3028,29 +3577,112 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       }
       return;
     }
-    if (ctx.type === 'bjd-size') {
+    if (ctx.type === 'work-meta-cats' || ctx.type === 'work-meta-artists') {
+      var wmArrName = ctx.type === 'work-meta-cats' ? 'cats' : 'artists';
+      var wmLabel = wmArrName === 'cats' ? '种类' : '画师';
+      var wmArr = WORK_META[wmArrName] || [];
+      var wmBoxId = wmArrName === 'cats' ? 'work-cat-chips' : 'work-artist-chips';
+      var wmCls = wmArrName === 'cats' ? 'work-cat-kebab' : 'work-artist-kebab';
+      var wmVi = ctx.i;
+      if (wmArr[wmVi] == null) return;
+      if (opt === 'rename') { // 就地改成输入框 + 保存/取消
+        var boxW = document.getElementById(wmBoxId);
+        var kbW = boxW && boxW.querySelector('.' + wmCls + '[data-vi="' + wmVi + '"]');
+        var wrapW = kbW ? kbW.parentElement : null;
+        if (wrapW) {
+          wrapW.innerHTML = '<input class="wm-edit" data-box="' + wmBoxId + '" data-vi="' + wmVi + '" value="' + escAttr(wmArr[wmVi]) + '" style="border:none;background:transparent;font-size:16px;width:92px;outline:none;color:var(--text);font-family:inherit;">' +
+            '<button type="button" class="btn-mini wm-save" data-box="' + wmBoxId + '" data-vi="' + wmVi + '" style="padding:2px 8px;font-size:14px;">保存</button>' +
+            '<button type="button" class="btn-mini wm-cancel" data-box="' + wmBoxId + '" style="padding:2px 8px;font-size:14px;">取消</button>';
+          var inpW = wrapW.querySelector('.wm-edit');
+          if (inpW) { inpW.focus(); inpW.select(); }
+        }
+        return;
+      }
       if (opt === 'del') {
-        var sName = BJD_SIZES[ctx.i];
-        uiConfirm('确定删除尺寸「' + sName + '」吗？已用它标注的娃娃不受影响。', function () {
-          var oldSizes = BJD_SIZES.slice();
-          BJD_SIZES.splice(ctx.i, 1);
-          saveSetting('bjd_sizes', BJD_SIZES.slice()).then(function (r) {
+        uiConfirm('确定删除' + wmLabel + '「' + wmArr[wmVi] + '」吗？已有稿件里填的值不会被改动。', function () {
+          var oldW = wmArr[wmVi];
+          wmArr.splice(wmVi, 1);
+          saveSetting('work_meta', JSON.parse(JSON.stringify(WORK_META))).then(function (r) {
+            if (!r.ok) throw new Error();
+            renderWorkMeta();
+            toast('已删除');
+          }).catch(function () {
+            wmArr.splice(wmVi, 0, oldW);
+            renderWorkMeta();
+            toast('保存失败');
+          });
+        });
+      }
+      return;
+    }
+    if (ctx.type === 'shop-tag') {
+      var tagArr = tagOptions();
+      var tagName = tagArr[ctx.i];
+      if (!tagName) return;
+      if (opt === 'rename') { // 改名：就地变成 输入框 + 保存/取消
+        var boxT = document.getElementById('p-tag-chips');
+        var kbT = boxT && boxT.querySelector('.shop-tag-kebab[data-ti="' + ctx.i + '"]');
+        var wrapT = kbT ? kbT.parentElement : null;
+        if (wrapT) {
+          wrapT.innerHTML = '<input class="shop-tag-edit" value="' + escAttr(tagName) + '" placeholder="新名字" style="border:none;background:transparent;font-size:16px;width:92px;outline:none;color:var(--text);font-family:inherit;">' +
+            '<button type="button" class="btn-mini shop-tag-save" data-ti="' + ctx.i + '" style="padding:2px 8px;font-size:14px;">保存</button>' +
+            '<button type="button" class="btn-mini shop-tag-cancel" data-ti="' + ctx.i + '" style="padding:2px 8px;font-size:14px;">取消</button>';
+          var inpT = wrapT.querySelector('.shop-tag-edit');
+          if (inpT) { inpT.focus(); inpT.select(); }
+        }
+        return;
+      }
+      if (opt === 'del') {
+        uiConfirm('确定删除标签「' + tagName + '」吗？用它的商品都会保留，只是变成「没有标签」。', function () {
+          var rest = tagArr.filter(function (x) { return x !== tagName; });
+          api('products?tag=eq.' + encodeURIComponent(tagName), { method: 'PATCH', body: JSON.stringify({ tag: '' }) })
+            .then(function (r) { if (!r.ok) throw new Error(); return saveSetting('tags', rest); })
+            .then(function (r) { if (!r.ok) throw new Error(); SETTINGS['tags'] = JSON.stringify(rest); toast('标签已删除，商品都还在'); loadProducts(); })
+            .catch(function () { toast('删除失败，稍后再试'); });
+        });
+      }
+      return;
+    }
+    if (ctx.type === 'bjd-size') { // 尺寸 / 身体类型共用这一套（ctx.ph.list 区分）
+      var cfgL = BJD_LISTS[(ctx.ph && ctx.ph.list) || 'size'];
+      var arrL = cfgL.get();
+      var nameL = arrL[ctx.i];
+      if (nameL == null) return;
+      if (opt === 'rename') { // 重命名：就地变成 输入框 + 保存/取消
+        var boxS = document.getElementById(cfgL.box);
+        var kbS = boxS && boxS.querySelector('.' + cfgL.chip + '[data-si="' + ctx.i + '"]');
+        var wrapS = kbS ? kbS.parentElement : null;
+        if (wrapS) {
+          wrapS.innerHTML = '<input class="' + cfgL.p + '-edit" value="' + escAttr(nameL) + '" placeholder="新名字" style="border:none;background:transparent;font-size:16px;width:92px;outline:none;color:var(--text);font-family:inherit;">' +
+            '<button type="button" class="btn-mini ' + cfgL.p + '-save" data-si="' + ctx.i + '" style="padding:2px 8px;font-size:14px;">保存</button>' +
+            '<button type="button" class="btn-mini ' + cfgL.p + '-cancel" data-si="' + ctx.i + '" style="padding:2px 8px;font-size:14px;">取消</button>';
+          var inpS = wrapS.querySelector('.' + cfgL.p + '-edit');
+          if (inpS) { inpS.focus(); inpS.select(); }
+        }
+        return;
+      }
+      if (opt === 'del') {
+        uiConfirm('确定删除' + cfgL.word + '「' + nameL + '」吗？用过它的娃娃都保留，只是这一项不再显示。', function () {
+          var oldArrL = cfgL.get().slice();
+          var aL = cfgL.get().slice();
+          aL.splice(ctx.i, 1);
+          cfgL.set(aL);
+          saveSetting(cfgL.key, cfgL.get().slice()).then(function (r) {
             if (!r.ok) throw new Error();
             toast('已删除');
-            renderBjdSizes();
+            renderBjdLists();
             renderBjds();
           }).catch(function () {
             toast('保存失败');
-            BJD_SIZES = oldSizes;
-            renderBjdSizes();
-            renderBjds();
+            cfgL.set(oldArrL);
+            renderBjdLists();
           });
         });
       }
       return;
     }
     if (ctx.type === 'bjd' || ctx.type === 'bjd-e') {
-      if (opt === 'edit') { CARDS_EDIT = -1; BJDS_EDIT = ctx.i; EDIT_TYPE = 'bjd'; renderBjds(); return; }
+      if (opt === 'edit') { CARDS_EDIT = -1; BJDS_EDIT = ctx.i; EDIT_TYPE = 'bjd'; renderBjds(); goEditTop(); return; }
       if (opt === 'up' && ctx.i > 0) { var u = BJDS[ctx.i - 1]; BJDS[ctx.i - 1] = BJDS[ctx.i]; BJDS[ctx.i] = u; if (BJDS_EDIT === ctx.i) BJDS_EDIT = ctx.i - 1; else if (BJDS_EDIT === ctx.i - 1) BJDS_EDIT = ctx.i; }
       if (opt === 'down' && ctx.i < BJDS.length - 1) { var dn = BJDS[ctx.i + 1]; BJDS[ctx.i + 1] = BJDS[ctx.i]; BJDS[ctx.i] = dn; if (BJDS_EDIT === ctx.i) BJDS_EDIT = ctx.i + 1; else if (BJDS_EDIT === ctx.i + 1) BJDS_EDIT = ctx.i; }
       if (opt === 'del') {
@@ -3067,7 +3699,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       return;
     }
     if (ctx.type === 'work' || ctx.type === 'work-e') {
-      if (opt === 'edit') { CARDS_EDIT = -1; WORKS_EDIT = ctx.i; EDIT_TYPE = 'work'; renderWorks(); return; }
+      if (opt === 'edit') { CARDS_EDIT = -1; WORKS_EDIT = ctx.i; EDIT_TYPE = 'work'; renderWorks(); goEditTop(); return; }
       if (opt === 'up' && ctx.i > 0) { var wu = WORKS[ctx.i - 1]; WORKS[ctx.i - 1] = WORKS[ctx.i]; WORKS[ctx.i] = wu; if (WORKS_EDIT === ctx.i) WORKS_EDIT = ctx.i - 1; else if (WORKS_EDIT === ctx.i - 1) WORKS_EDIT = ctx.i; }
       if (opt === 'down' && ctx.i < WORKS.length - 1) { var wd = WORKS[ctx.i + 1]; WORKS[ctx.i + 1] = WORKS[ctx.i]; WORKS[ctx.i] = wd; if (WORKS_EDIT === ctx.i) WORKS_EDIT = ctx.i + 1; else if (WORKS_EDIT === ctx.i + 1) WORKS_EDIT = ctx.i; }
       if (opt === 'del') {
@@ -3136,10 +3768,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         if (CARDS_EDIT === ctx.i) CARDS_EDIT = ctx.i + 1; else if (CARDS_EDIT === ctx.i + 1) CARDS_EDIT = ctx.i;
       }
       if (opt === 'del') {
-        uiConfirm('确定删除这张色卡吗？', function () {
+        uiConfirm('确定删除这张色卡吗？点了就真的删掉，找不回来。', function () {
           CARDS.splice(ctx.i, 1);
           if (CARDS_EDIT === ctx.i) CARDS_EDIT = -1; else if (CARDS_EDIT > ctx.i) CARDS_EDIT -= 1;
-          renderCards(); // ⋮ 操作只改内存，点「保存」才正式落库
+          renderCards();
+          saveCardsQuiet(function () { toast('已删除'); }); // ⋮ 里点删除就立刻落库，不用再点工具栏的保存
         });
       }
       if (opt === 'copy') {
@@ -3147,10 +3780,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         cc.id = newCardId(); // 副本拿新 id：主页「编辑卡」按 id 精准跳转，两卡互不影响
         CARDS.splice(ctx.i + 1, 0, cc);
         if (CARDS_EDIT > ctx.i) CARDS_EDIT += 1;
-        toast('已复制为新色卡，可继续修改');
+        saveCardsQuiet(function () { toast('已复制为新色卡，可以直接改'); }); // 同样立刻落库
       }
       if (opt === 'collapse') CARDS_EDIT = -1;
-      if (opt === 'edit') { BJDS_EDIT = -1; CARDS_EDIT = ctx.i; EDIT_TYPE = 'card'; renderCards(); return; } // 进入编辑：不动数据、不保存
+      if (opt === 'edit') { BJDS_EDIT = -1; CARDS_EDIT = ctx.i; EDIT_TYPE = 'card'; renderCards(); goEditTop(); return; } // 进入编辑：不动数据、不保存
     }
     renderCards(); // ⋮ 操作只改内存，点「保存」才正式落库（5 分钟无操作也会自动保存）
   }
@@ -3187,7 +3820,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (SC_POP) { popClose(); return; } // 菜单开着时点其他地方：只关菜单
     var c = normCard(CARDS[i]);
     if (i !== CARDS_EDIT && e.target.closest('.sc-name')) {
-      BJDS_EDIT = -1; CARDS_EDIT = i; EDIT_TYPE = 'card'; renderCards(); return; // 点色卡名称 → 直接打开这张卡的详情/编辑
+      window.open('/color-card/?card=' + i, '_blank'); return; // 点色卡名 → 打开前台检视页（跟主页点进去看到的一样）
     }
     if (i === CARDS_EDIT) {
       var blk2 = e.target.closest('.sc-artist-block');
@@ -3217,7 +3850,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (b && !b.disabled) popAct(b.getAttribute('data-opt'));
       return;
     }
-    if (e.target.closest('.sc-kebab, .sc-artist-menu, .sc-row-menu, .bjd-kebab, .bjd-ph-menu, .ph-kebab, .area-kebab, .c-photo-kebab, .b-photo-kebab, .bjd-size-kebab, .work-kebab, .w-photo-kebab')) return; // ⋮ 由列表处理器切换
+    if (e.target.closest('.sc-kebab, .sc-artist-menu, .sc-row-menu, .bjd-kebab, .bjd-ph-menu, .ph-kebab, .area-kebab, .c-photo-kebab, .b-photo-kebab, .bjd-size-kebab, .work-kebab, .w-photo-kebab, .work-cat-kebab, .work-artist-kebab, .shop-tag-kebab, .bjd-body-kebab')) return; // ⋮ 由列表处理器切换
     popClose();
   });
 
@@ -3336,24 +3969,6 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       delete aNameSnap[key];
       return;
     }
-    if (!e.target.classList.contains('sc-file')) return;
-    var card = e.target.closest('.sc-artist');
-    var c = normCard(CARDS[parseInt(card.getAttribute('data-i'), 10)]);
-    var f = e.target.files[0];
-    if (!f || !c) return;
-    if (!ACCESS) { toast('请先登录'); return; }
-    toast('上传中…');
-    fetch(SUPABASE_URL + '/storage/v1/object/site/' + Date.now() + '-' + f.name.replace(/[^\w.\-]/g, '_'), {
-      method: 'POST',
-      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + ACCESS, 'Content-Type': f.type || 'image/jpeg' },
-      body: f
-    }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-      .then(function (res) {
-        c.image = SUPABASE_URL + '/storage/v1/object/public/site/' + res.Key.split('/').slice(1).join('/');
-        toast('图已上传');
-        renderCards();
-      })
-      .catch(function () { toast('上传失败'); });
   if (e.target.classList.contains('sc-photos')) {
     var cardPh = e.target.closest('.sc-artist');
     var cPh = normCard(CARDS[parseInt(cardPh.getAttribute('data-i'), 10)]);
@@ -3361,14 +3976,16 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (!fsPh.length || !cPh) return;
     if (!ACCESS) { toast('请先登录'); return; }
     toast('上传中…');
-    fsPh.forEach(function (fPh) {
-      bjdUpload(fPh, function (url) {
-        cPh.photos = Array.isArray(cPh.photos) ? cPh.photos : [];
-        cPh.photos.push(url);
+    (function seqPh(k) { // 依次上传保持选择顺序；第一张默认设为封面
+      if (k >= fsPh.length) return;
+      bjdUpload(fsPh[k], function (url) {
+        if (!cPh.image) cPh.image = url;
+        else { cPh.photos = Array.isArray(cPh.photos) ? cPh.photos : []; cPh.photos.push(url); }
         toast('已添加');
         renderCards();
+        seqPh(k + 1);
       });
-    });
+    })(0);
     return;
   }
 });
@@ -3377,7 +3994,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   function bjdUpload(file, done) {
     if (!ACCESS) { toast('请先登录'); return; }
     toast('上传中…');
-    fetch(SUPABASE_URL + '/storage/v1/object/site/' + Date.now() + '-' + (file.name || 'img').replace(/[^\w.\-]/g, '_'), {
+    authedFetch(SUPABASE_URL + '/storage/v1/object/site/' + Date.now() + '-' + (file.name || 'img').replace(/[^\w.\-]/g, '_'), {
       method: 'POST',
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + ACCESS, 'Content-Type': file.type || 'image/jpeg' },
       body: file
@@ -3405,8 +4022,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '</div>' +
           '<div class="sc-info">' +
           '<b class="sc-name">' + esc(b.name || '未命名娃娃') + '</b>' +
-          '<div class="sc-shop">' + esc(bjdShortInfo(b)) + '</div>' +
-          (b.price.total ? '<div class="sc-price">' + esc(b.price.total) + '</div>' : '') +
+          '<div style="font-size:15px;color:var(--muted);margin-top:3px;line-height:1.65;white-space:normal;">' +
+          bjdInfoLines(b).map(function (r) { return '<span style="color:var(--muted);">' + esc(r[0]) + '：</span>' + esc(r[1]); }).join('<br>') +
+          '</div>' +
           '<span class="tgl-label" style="margin-top:7px;"><button type="button" class="tgl b-home-toggle' + (b.homeShow !== false ? ' on' : '') + '" aria-pressed="' + (b.homeShow !== false) + '" aria-label="主页展示"><span class="tgl-knob"></span></button>主页展示</span>' +
           '</div>' +
           '</div>';
@@ -3414,41 +4032,40 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       var sel = function (cls, listOpts, cur) { return '<select class="' + cls + '">' + opts(listOpts, cur) + '</select>'; };
       bjdParts = b.parts;
       var chk = function (cls, part, label) {
-        return '<span class="tgl-label" style="font-size:17px;"><button type="button" class="tgl ' + cls + '-tgl' + (b.parts[part] !== false ? ' on' : '') + '" data-part="' + part + '" aria-pressed="' + (b.parts[part] !== false) + '" aria-label="' + label + '"><span class="tgl-knob"></span></button>' + label + '</span>';
+        return '<span class="tgl-label" style="font-size:16px;"><button type="button" class="tgl ' + cls + '-tgl' + (b.parts[part] !== false ? ' on' : '') + '" data-part="' + part + '" aria-pressed="' + (b.parts[part] !== false) + '" aria-label="' + label + '"><span class="tgl-knob"></span></button>' + label + '</span>';
       };
       return '<div class="card bjd-item editing" data-i="' + i + '" style="position:relative;">' +
         '<button class="kebab bjd-kebab" title="菜单">⋮</button>' +
         '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-right:40px;">' +
         bjdField('娃娃名', '<input class="b-name" style="width:100%;" value="' + escAttr(b.name) + '" placeholder="娃娃名，如：Sakura">') +
         '</div>' +
-        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:17px;">' +
+        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:16px;">' +
         '<span class="tgl-label"><button type="button" class="tgl b-home-toggle" aria-pressed="' + (b.homeShow !== false) + '" aria-label="主页展示"><span class="tgl-knob"></span></button>主页展示</span>' +
         '<span style="color:var(--muted);">添加部件：</span>' +
         chk('b-part', 'head', '娃娃头') + chk('b-part', 'body', '身体') + chk('b-part', 'eyes', '眼珠') + chk('b-part', 'clothes', '衣服') +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap;">' +
         (b.image ? '<img src="' + escAttr(b.image) + '" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0;">' : '') +
-        '<label class="btn-mini b-file-btn">上传照片<input type="file" class="b-file" accept="image/*" hidden></label>' +
-        '<label class="btn-mini">添加照片<input type="file" class="b-photos" accept="image/*" multiple hidden></label>' +
+        '<label class="btn-mini hm-file-btn">上传图片<input type="file" class="b-photos" accept="image/*" multiple hidden></label>' +
         '</div>' +
-        photoStrip(b.photos, 'b-photo-kebab') +
+        photoStrip(b.image, b.photos, 'b-photo-kebab', 'bjd', i) +
+        '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px;">' +
+        bjdField('尺寸 / 种类', '<select class="b-head-size">' + opts(BJD_SIZES, b.head.size) + '</select>') +
+        '</div>' +
         bjdGroup('娃娃头', '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
           bjdField('厂家 / 品牌', '<input class="b-head-brand" style="width:100%;" value="' + escAttr(b.head.brand) + '" placeholder="如：大米自制">') +
           bjdField('型号 / Sculpt', '<input class="b-head-sculpt" style="width:100%;" value="' + escAttr(b.head.sculpt) + '" placeholder="如：XXX Head">') +
-          bjdField('娃娃头尺寸', '<select class="b-head-size">' + opts(BJD_SIZES, b.head.size) + '</select>') +
           bjdField('头部备注', '<input class="b-head-note" style="width:100%;" value="' + escAttr(b.head.note) + '" placeholder="自由填写">') +
           '</div>', 'head') +
         bjdGroup('身体', '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
           bjdField('厂家 / 品牌', '<input class="b-body-brand" style="width:100%;" value="' + escAttr(b.body.brand) + '" placeholder="如：熊蛋">') +
           bjdField('Body 型号', '<input class="b-body-model" style="width:100%;" value="' + escAttr(b.body.model) + '" placeholder="如：XXX Body">') +
-          bjdField('身体类型', '<select class="b-body-type">' + opts(BJD_BODY_TYPES, b.body.type) + '</select>') +
           bjdField('身体备注', '<input class="b-body-note" style="width:100%;" value="' + escAttr(b.body.note) + '" placeholder="自由填写">') +
           '</div>', 'body') +
         bjdGroup('眼珠', '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
           bjdField('商家 / 制作者', '<input class="b-eye-maker" style="width:100%;" value="' + escAttr(b.eyes.maker) + '" placeholder="如：XX工作室 / 自制">') +
           bjdField('来源', '<select class="b-eye-source">' + opts(BJD_EYE_SOURCES, b.eyes.source) + '</select>') +
           bjdField('眼珠尺寸', '<input class="b-eye-size" style="width:100%;" value="' + escAttr(b.eyes.size) + '" placeholder="如：14mm">') +
-          bjdField('虹膜尺寸', '<input class="b-eye-iris" style="width:100%;" value="' + escAttr(b.eyes.iris) + '" placeholder="如：7mm（可留空）">') +
           bjdField('眼珠备注', '<input class="b-eye-note" style="width:100%;" value="' + escAttr(b.eyes.note) + '" placeholder="自由填写">') +
           '</div>', 'eyes') +
         bjdGroup('衣服', '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
@@ -3461,12 +4078,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           bjdField('妆面完成时间', '<input type="text" class="b-fu-date" readonly data-dp="1" placeholder="选择日期" style="width:100%;cursor:pointer;" value="' + escAttr(b.faceup.date) + '">') +
           '</div>', 'head') +
         bjdGroup('价格', '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-          bjdField('娃娃价格（总价）', '<input class="b-price-total" style="width:100%;" value="' + escAttr(b.price.total) + '" placeholder="如：$500（选填）">') +
-          (b.parts.head !== false ? bjdField('价格：娃娃头', '<input class="b-cost-doll" style="width:100%;" value="' + escAttr(b.price.doll) + '" placeholder="选填">') : '') +
+          (b.parts.head !== false ? bjdField('价格：娃头', '<input class="b-cost-doll" style="width:100%;" value="' + escAttr(b.price.doll) + '" placeholder="选填">') : '') +
           (b.parts.body !== false ? bjdField('价格：身体', '<input class="b-cost-body" style="width:100%;" value="' + escAttr(b.price.body) + '" placeholder="选填">') : '') +
           (b.parts.eyes !== false ? bjdField('价格：眼珠', '<input class="b-cost-eyes" style="width:100%;" value="' + escAttr(b.price.eyes) + '" placeholder="选填">') : '') +
           (b.parts.clothes ? bjdField('价格：衣服', '<input class="b-cost-clothes" style="width:100%;" value="' + escAttr(b.price.clothes) + '" placeholder="选填">') : '') +
           (b.parts.head !== false ? bjdField('价格：妆面', '<input class="b-cost-faceup" style="width:100%;" value="' + escAttr(b.price.faceup) + '" placeholder="选填">') : '') +
+          bjdField('总价', '<input class="b-price-total" style="width:100%;" value="' + escAttr(b.price.total) + '" placeholder="填了各项价格会自动算出，也可手改">') +
           '</div>') +
         bjdGroup('购买信息（全部选填）', '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
           bjdField('购买日期', '<input type="text" class="b-buy-date" readonly data-dp="1" placeholder="选择日期" style="width:100%;cursor:pointer;" value="' + escAttr(b.purchase.date) + '">') +
@@ -3482,7 +4099,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '</div>';
     }).join('') || '<p class="empty">还没有 BJD 档案，点下面「+ 新增 BJD」</p>';
     document.getElementById('bjd-total').textContent = BJDS.length ? '共 ' + BJDS.length + ' 个娃娃' : '';
-    renderBjdSizes();
+    renderBjdLists(); // 尺寸 + 身体类型两排标签一起重建
     if (BJDS_EDIT >= 0) EDIT_TYPE = 'bjd'; else if (EDIT_TYPE === 'bjd') EDIT_TYPE = null;
     enhanceSelects();
     syncToolbarSaveLabel();
@@ -3500,42 +4117,119 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     bjdSaveTimer = setTimeout(function () { saveBjdsQuiet(function () {}); }, 800);
   }
   document.getElementById('btn-bjd-add').addEventListener('click', function () {
-    BJDS.push(normBjd({ createdAt: Date.now(), parts: { head: false, body: false, eyes: false, clothes: false } })); // 新娃娃默认四部件全不选，按需开启
+    BJDS.push(normBjd({ createdAt: Date.now(), homeShow: false, parts: { head: false, body: false, eyes: false, clothes: false } })); // 新娃娃默认四部件全不选，按需开启；主页展示默认关
     BJDS_EDIT = BJDS.length - 1;
     CARDS_EDIT = -1;
     popClose();
     renderBjds();
+    goEditTop();
   });
-  // ===== 娃娃尺寸 / 种类管理：像色卡画师一样可自由增删（存 site_settings.bjd_sizes）=====
-  function renderBjdSizes() {
-    var box = document.getElementById('bjd-size-chips');
+  // ===== 娃娃尺寸 / 身体类型管理：两排标签同一套（改名 / 删除 / 添加）=====
+  var BJD_LISTS = {
+    size: {
+      p: 'bjd-size', box: 'bjd-size-chips', chip: 'bjd-size-kebab', input: 'bjd-size-new', key: 'bjd_sizes', word: '尺寸',
+      get: function () { return BJD_SIZES; }, set: function (a) { BJD_SIZES = a; }, fieldKey: 'size'
+    }
+  };
+  function renderBjdList(which) {
+    var cfg = BJD_LISTS[which];
+    var box = document.getElementById(cfg.box);
     if (!box) return;
-    box.innerHTML = BJD_SIZES.map(function (s, si) {
-      return '<span style="display:inline-flex;align-items:center;gap:2px;background:var(--card);border-radius:999px;padding:5px 6px 5px 12px;font-size:17px;">' + esc(s) +
-        '<button type="button" class="kebab bjd-size-kebab" data-si="' + si + '" title="菜单" style="width:22px;height:22px;font-size:16px;">⋮</button></span>';
-    }).join('');
+    var arr = cfg.get();
+    box.innerHTML = arr.length ? arr.map(function (s, i) {
+      return '<span style="display:inline-flex;align-items:center;gap:2px;background:var(--card);border-radius:999px;padding:5px 6px 5px 12px;font-size:16px;">' + esc(s) +
+        '<button type="button" class="kebab ' + cfg.chip + '" data-si="' + i + '" title="菜单" style="width:22px;height:22px;font-size:15px;">⋮</button></span>';
+    }).join('') : '<span style="font-size:15px;color:var(--muted);">还没有，可在后面添加</span>';
   }
-  document.getElementById('bjd-size-chips').addEventListener('click', function (e) {
-    var kb = e.target.closest('.bjd-size-kebab');
-    if (!kb) return;
-    if (SC_POP && POP_BTN === kb) { popClose(); return; }
-    popOpen('bjd-size', parseInt(kb.getAttribute('data-si'), 10), -1, -1, kb);
-  });
-  document.getElementById('btn-bjd-size-add').addEventListener('click', function () {
-    var inp = document.getElementById('bjd-size-new');
-    var v = inp.value.trim();
-    if (!v) { toast('先填尺寸名'); return; }
-    if (BJD_SIZES.indexOf(v) !== -1) { toast('已经有这个尺寸了'); return; }
-    BJD_SIZES.push(v);
-    saveSetting('bjd_sizes', BJD_SIZES.slice()).then(function (r) {
-      if (!r.ok) throw new Error();
-      toast('已添加');
-      inp.value = '';
-      renderBjdSizes();
-      renderBjds();
-    }).catch(function () {
-      toast('保存失败');
-      BJD_SIZES.pop();
+  function renderBjdLists() { renderBjdList('size'); }
+  var renderBjdSizes = function () { renderBjdList('size'); }; // 侧旧：保存后重建尺寸那一排
+  function bjdInfoLines(b) { // 后台卡片显示的信息：跟前台 sub page 一致（含价格）
+    var j = function (arr) { return arr.filter(Boolean).join(' · '); };
+    var rows = [];
+    if (b.parts.head !== false) { var h = j([b.head.size, j([b.head.brand, b.head.sculpt]), b.head.note]); if (h) rows.push(['娃娃头', h]); }
+    if (b.parts.body !== false) { var bd = j([b.body.brand, b.body.model, b.body.type, b.body.note]); if (bd) rows.push(['身体', bd]); }
+    if (b.parts.eyes !== false) { var ey = j([b.eyes.maker, b.eyes.source, b.eyes.size, b.eyes.note]); if (ey) rows.push(['眼珠', ey]); }
+    if (b.parts.clothes) { var cl = j([b.clothes.brand, b.clothes.note]); if (cl) rows.push(['衣服', cl]); }
+    if (b.parts.head !== false) { var fu = j([b.faceup.faceup, b.faceup.artist, b.faceup.date]); if (fu) rows.push(['妆面', fu]); }
+    var pv = [];
+    if (b.price.total) pv.push('娃娃 ' + b.price.total);
+    if (b.parts.head !== false && b.price.doll) pv.push('娃娃头 ' + b.price.doll);
+    if (b.parts.head !== false && b.price.faceup) pv.push('妆面 ' + b.price.faceup);
+    if (b.parts.eyes !== false && b.price.eyes) pv.push('眼珠 ' + b.price.eyes);
+    if (b.parts.body !== false && b.price.body) pv.push('身体 ' + b.price.body);
+    if (b.parts.clothes === true && b.price.clothes) pv.push('衣服 ' + b.price.clothes);
+    var tv = bjdSumV(b);
+    if (tv > 0 || b.price.total) rows.push(['价格', (tv > 0 ? '总价 ¥' + fmtMoney(tv) : '') + (tv > 0 && pv.length ? '　' : '') + pv.join(' · ')]);
+    var pu = j([b.purchase.date, b.purchase.channel, b.purchase.status, b.birth]);
+    if (pu) rows.push(['购买', pu]);
+    if (b.notes) rows.push(['备注', b.notes]);
+    return rows;
+  }
+  ['size'].forEach(function (which) {
+    var cfg = BJD_LISTS[which];
+    var box = document.getElementById(cfg.box);
+    if (!box) return;
+    box.addEventListener('click', function (e) {
+      var saveBtn = e.target.closest('.' + cfg.p + '-save');
+      if (saveBtn) { // 改名 → 用过它的娃娃跟着改
+        var wrap = saveBtn.parentElement;
+        var inp = wrap ? wrap.querySelector('.' + cfg.p + '-edit') : null;
+        var si = parseInt(saveBtn.getAttribute('data-si'), 10);
+        var v = inp ? inp.value.trim() : '';
+        var arr = cfg.get();
+        if (!v) { toast('名字不能空着'); return; }
+        if (arr.indexOf(v) !== -1 && arr.indexOf(v) !== si) { toast('已经有这个了'); return; }
+        var oldArr = arr.slice();
+        var oldName = arr[si];
+        var a = arr.slice(); a[si] = v; cfg.set(a);
+        var touched = 0;
+        BJDS.forEach(function (b) {
+          var holder = cfg.fieldKey === 'size' ? b.head : b.body;
+          if (holder && holder[cfg.fieldKey] === oldName) { holder[cfg.fieldKey] = v; touched++; }
+        });
+        saveSetting(cfg.key, cfg.get().slice()).then(function (r) {
+          if (!r.ok) throw new Error();
+          if (touched) saveBjdsQuiet();
+          toast('已改名');
+          renderBjdList(which);
+          renderBjds();
+        }).catch(function () {
+          cfg.set(oldArr);
+          toast('保存失败');
+          renderBjdList(which);
+        });
+        return;
+      }
+      if (e.target.closest('.' + cfg.p + '-cancel')) { renderBjdList(which); return; }
+      var kb = e.target.closest('.' + cfg.chip);
+      if (!kb) return;
+      if (SC_POP && POP_BTN === kb) { popClose(); return; }
+      popOpen('bjd-size', parseInt(kb.getAttribute('data-si'), 10), -1, -1, kb, { list: which, word: cfg.word });
+    });
+    box.addEventListener('keydown', function (e) { // 改名框：回车保存 / Esc 取消
+      if (!e.target.classList.contains(cfg.p + '-edit')) return;
+      if (e.key === 'Enter') { var sb = box.querySelector('.' + cfg.p + '-save'); if (sb) sb.click(); }
+      if (e.key === 'Escape') renderBjdList(which);
+    });
+    document.getElementById('btn-' + cfg.p + '-add').addEventListener('click', function () {
+      var inp = document.getElementById(cfg.input);
+      var v = (inp.value || '').trim();
+      if (!v) { toast('先填个名字'); return; }
+      if (cfg.get().indexOf(v) !== -1) { toast('已经有这个了'); return; }
+      var a = cfg.get().slice();
+      a.push(v);
+      cfg.set(a);
+      saveSetting(cfg.key, cfg.get().slice()).then(function (r) {
+        if (!r.ok) throw new Error();
+        toast('已添加');
+        inp.value = '';
+        renderBjdList(which);
+        renderBjds();
+      }).catch(function () {
+        toast('保存失败');
+        cfg.set(cfg.get().slice(0, -1));
+        renderBjdList(which);
+      });
     });
   });
 
@@ -3555,9 +4249,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       var box = document.getElementById(boxId);
       if (!box) return;
       box.innerHTML = arr.length ? arr.map(function (v, vi) {
-        return '<span style="display:inline-flex;align-items:center;gap:2px;background:var(--card);border-radius:999px;padding:5px 6px 5px 12px;font-size:17px;">' + esc(v) +
-          '<button type="button" class="kebab ' + cls + '" data-vi="' + vi + '" title="菜单" style="width:22px;height:22px;font-size:16px;">⋮</button></span>';
-      }).join('') : '<span style="font-size:16px;color:var(--muted);">还没有，可在下面添加</span>';
+        return '<span style="display:inline-flex;align-items:center;gap:2px;background:var(--card);border-radius:999px;padding:5px 6px 5px 12px;font-size:16px;">' + esc(v) +
+          '<button type="button" class="kebab ' + cls + '" data-vi="' + vi + '" title="菜单" style="width:22px;height:22px;font-size:15px;">⋮</button></span>';
+      }).join('') : '<span style="font-size:15px;color:var(--muted);">还没有，可在下面添加</span>';
     };
     mk('work-cat-chips', WORK_META.cats, 'work-cat-kebab');
     mk('work-artist-chips', WORK_META.artists, 'work-artist-kebab');
@@ -3565,25 +4259,42 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   function bindWorkMeta(boxId, cls, arrName, label) {
     var box = document.getElementById(boxId);
     if (!box) return;
-    box.addEventListener('click', function (e) {
+    box.addEventListener('click', function (e) { // ⋮ → 重命名 / 删除
       var kb = e.target.closest('.' + cls);
       if (!kb) return;
-      var vi = parseInt(kb.getAttribute('data-vi'), 10);
-      var arr = WORK_META[arrName];
-      if (!arr || !arr[vi]) return;
-      uiConfirm('确定删除' + label + '「' + arr[vi] + '」吗？已有稿件里填的值不会被改动。', function () {
-        var old = arr[vi];
-        arr.splice(vi, 1);
+      if (SC_POP && POP_BTN === kb) { popClose(); return; }
+      popOpen(arrName === 'cats' ? 'work-meta-cats' : 'work-meta-artists', parseInt(kb.getAttribute('data-vi'), 10), -1, -1, kb);
+    });
+    box.addEventListener('click', function (e) { // 重命名里的保存/取消
+      var sv = e.target.closest('.wm-save');
+      if (sv) {
+        var wrap = sv.parentElement;
+        var inp = wrap ? wrap.querySelector('.wm-edit') : null;
+        var vi = parseInt(sv.getAttribute('data-vi'), 10);
+        var v = inp ? inp.value.trim() : '';
+        var arr = WORK_META[arrName];
+        if (!arr || arr[vi] == null) return;
+        if (!v) { toast('名字不能空着'); return; }
+        if (arr.indexOf(v) !== -1 && arr.indexOf(v) !== vi) { toast('已经有这个' + label + '了'); return; }
+        var oldName = arr[vi];
+        arr[vi] = v;
         saveSetting('work_meta', JSON.parse(JSON.stringify(WORK_META))).then(function (r) {
           if (!r.ok) throw new Error();
+          toast('已改名');
           renderWorkMeta();
-          toast('已删除');
         }).catch(function () {
-          arr.splice(vi, 0, old); // 保存失败回滚
+          arr[vi] = oldName;
           renderWorkMeta();
           toast('保存失败');
         });
-      });
+        return;
+      }
+      if (e.target.closest('.wm-cancel')) { renderWorkMeta(); return; }
+    });
+    box.addEventListener('keydown', function (e) {
+      if (!e.target.classList.contains('wm-edit')) return;
+      if (e.key === 'Enter') { var sb = document.querySelector('#' + boxId + ' .wm-save'); if (sb) sb.click(); }
+      if (e.key === 'Escape') renderWorkMeta();
     });
   }
   function bindWorkMetaAdd(inpId, btnId, arrName, label, renderFn) {
@@ -3655,10 +4366,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '</div>' +
         '<div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap;">' +
         (w.image ? '<img src="' + escAttr(w.image) + '" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0;">' : '') +
-        '<label class="btn-mini">上传图片<input type="file" class="w-file" accept="image/*" hidden></label>' +
-        '<label class="btn-mini">添加照片<input type="file" class="w-photos" accept="image/*" multiple hidden></label>' +
+        '<label class="btn-mini hm-file-btn">上传图片<input type="file" class="w-photos" accept="image/*" multiple hidden></label>' +
         '</div>' +
-        photoStrip(w.photos, 'w-photo-kebab') +
+        photoStrip(w.image, w.photos, 'w-photo-kebab', 'work', i) +
         '<div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">' +
         bjdField('日期', '<input type="text" class="wk-date date-pick" readonly data-dp="1" placeholder="选择日期" style="width:100%;cursor:pointer;" value="' + escAttr(w.date) + '">') +
         bjdField('价格（选填）', '<input type="text" class="wk-price" inputmode="decimal" placeholder="如 66" style="width:100%;" value="' + escAttr(w.price || '') + '">') +
@@ -3684,6 +4394,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     WORKS.push(normWork({ createdAt: Date.now() }));
     WORKS_EDIT = WORKS.length - 1;
     renderWorks();
+  });
+  document.getElementById('btn-work-save').addEventListener('click', function () { // 工具栏保存：存改动并自动收起编辑区，与色卡/BJD 同一套
+    if (EDIT_TYPE !== 'work') { toast('先点「⋮ → 编辑」再保存'); return; }
+    saveWorksQuiet(function () {
+      WORKS_EDIT = -1;
+      EDIT_TYPE = null;
+      renderWorks();
+      toast('已保存');
+    });
   });
   bindWorkMeta('work-cat-chips', 'work-cat-kebab', 'cats', '种类');
   bindWorkMeta('work-artist-chips', 'work-artist-kebab', 'artists', '画师');
@@ -3728,6 +4447,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       saveWorksQuiet();
       return;
     }
+    if (i !== WORKS_EDIT && e.target.closest('.sc-name')) {
+      window.open('/works/?id=' + i, '_blank'); return; // 点稿件名 → 打开前台检视页
+    }
     if (SC_POP) { popClose(); return; }
   });
   document.getElementById('works-list').addEventListener('input', function (e) {
@@ -3743,23 +4465,21 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (!card) return;
     var w = normWork(WORKS[parseInt(card.getAttribute('data-i'), 10)]);
     if (e.target.classList.contains('wk-date')) { w.date = e.target.value; saveWorksQuiet(); return; }
-    if (e.target.classList.contains('w-file')) {
-      var f0 = e.target.files[0];
-      if (f0) bjdUpload(f0, function (url) { w.image = url; toast('图已上传'); saveWorksQuiet(); renderWorks(); });
-      return;
-    }
     if (e.target.classList.contains('w-photos')) {
       var fsW = Array.prototype.slice.call(e.target.files);
       if (!fsW.length) return;
       toast('上传中…');
-      fsW.forEach(function (fW) {
-        bjdUpload(fW, function (url) {
-          w.photos.push(url);
+      (function seqW(k) { // 依次上传保持选择顺序；第一张默认设为封面
+        if (k >= fsW.length) return;
+        bjdUpload(fsW[k], function (url) {
+          if (!w.image) w.image = url;
+          else w.photos.push(url);
           saveWorksQuiet();
           renderWorks();
           toast('已添加');
+          seqW(k + 1);
         });
-      });
+      })(0);
       return;
     }
   });
@@ -3786,6 +4506,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       popOpen(i === BJDS_EDIT ? 'bjd-e' : 'bjd', i, -1, -1, kebab);
       return;
     }
+    if (i !== BJDS_EDIT && e.target.closest('.sc-name')) {
+      window.open('/bjd/?id=' + i, '_blank'); return; // 点娃娃名 → 打开前台检视页
+    }
     if (SC_POP) { popClose(); return; }
   });
   document.getElementById('bjd-list').addEventListener('input', function (e) {
@@ -3794,14 +4517,22 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     var b = normBjd(BJDS[parseInt(card.getAttribute('data-i'), 10)]);
     var map = { 'b-name': ['name'], 'b-head-brand': ['head', 'brand'], 'b-head-sculpt': ['head', 'sculpt'], 'b-head-note': ['head', 'note'],
       'b-body-brand': ['body', 'brand'], 'b-body-model': ['body', 'model'], 'b-body-note': ['body', 'note'],
-      'b-eye-maker': ['eyes', 'maker'], 'b-eye-size': ['eyes', 'size'], 'b-eye-iris': ['eyes', 'iris'], 'b-eye-note': ['eyes', 'note'],
+      'b-eye-maker': ['eyes', 'maker'], 'b-eye-size': ['eyes', 'size'], 'b-eye-note': ['eyes', 'note'],
       'b-cl-brand': ['clothes', 'brand'], 'b-cl-note': ['clothes', 'note'],
       'b-fu-faceup': ['faceup', 'faceup'], 'b-fu-artist': ['faceup', 'artist'],
-      'b-price-total': ['price', 'total'], 'b-cost-doll': ['price', 'doll'], 'b-cost-faceup': ['price', 'faceup'], 'b-cost-eyes': ['price', 'eyes'], 'b-cost-body': ['price', 'body'],
+      'b-price-total': ['price', 'total'], 'b-cost-doll': ['price', 'doll'], 'b-cost-faceup': ['price', 'faceup'], 'b-cost-eyes': ['price', 'eyes'], 'b-cost-body': ['price', 'body'], 'b-cost-clothes': ['price', 'clothes'],
       'b-buy-channel': ['purchase', 'channel'], 'b-notes': ['notes'] };
     var path = map[e.target.className];
     if (path) {
       if (path.length === 1) b[path[0]] = e.target.value; else b[path[0]][path[1]] = e.target.value;
+      // 填各项价格时自动算总价（总价仍可手改）
+      if (/^b-cost-/.test(e.target.className)) {
+        var t = bjdSumV(b);
+        if (t > 0) {
+          var ti = card.querySelector('.b-price-total');
+          if (ti) { ti.value = String(parseFloat(t.toFixed(2))); b.price.total = ti.value; }
+        }
+      }
       scheduleBjdSave();
     }
   });
@@ -3811,31 +4542,27 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     var b = normBjd(BJDS[parseInt(card.getAttribute('data-i'), 10)]);
     var cls = e.target.className;
     if (cls === 'b-head-size') b.head.size = e.target.value;
-    if (cls === 'b-body-type') b.body.type = e.target.value;
     if (cls === 'b-eye-source') b.eyes.source = e.target.value;
     if (cls === 'b-fu-date') b.faceup.date = e.target.value;
     if (cls === 'b-buy-date') b.purchase.date = e.target.value;
     if (cls === 'b-buy-status') b.purchase.status = e.target.value;
     if (e.target.classList.contains('b-birth')) { b.birth = e.target.value; scheduleBjdSave(); } // 出生日期 → 自动纪念日（前台日历）
     if (e.target.tagName === 'SELECT' || e.target.type === 'date') scheduleBjdSave();
-    if (cls === 'b-file') {
-      var f = e.target.files[0];
-      if (f) bjdUpload(f, function (url) { b.image = url; toast('图已上传'); scheduleBjdSave(); renderBjds(); });
-      return;
-    }
     if (cls === 'b-photos') {
       var fsB = Array.prototype.slice.call(e.target.files);
       if (!fsB.length) return;
       toast('上传中…');
-      fsB.forEach(function (fB) {
-        bjdUpload(fB, function (url) {
-          b.photos = Array.isArray(b.photos) ? b.photos : [];
-          b.photos.push(url);
+      (function seqB(k) { // 依次上传保持选择顺序；第一张默认设为封面
+        if (k >= fsB.length) return;
+        bjdUpload(fsB[k], function (url) {
+          if (!b.image) b.image = url;
+          else { b.photos = Array.isArray(b.photos) ? b.photos : []; b.photos.push(url); }
           scheduleBjdSave();
           renderBjds();
           toast('已添加');
+          seqB(k + 1);
         });
-      });
+      })(0);
       return;
     }
   });
