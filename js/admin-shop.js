@@ -273,6 +273,10 @@
         '<input class="sm-ship-note" placeholder="发货备注（可留空）" value="' + escAttr(o.ship_note || '') + '">' +
         '<button type="button" class="btn-save sm-act-ship">确认发货</button>' +
         '</div>' +
+        '<div class="sm-act"><span class="lbl">包裹</span>' +
+        '<div class="sm-pkgs" style="width:100%;display:flex;flex-direction:column;gap:6px;"><span style="font-size:14px;color:var(--muted);">加载中…</span></div>' +
+        '<button type="button" class="btn-mini sm-pkg-add">＋ 加一个包裹</button>' +
+        '</div>' +
         '<div class="sm-act"><span class="lbl">内部备注</span>' +
         '<textarea class="sm-admin-note" placeholder="只有你自己能看到">' + esc(o.admin_note || '') + '</textarea>' +
         '<button type="button" class="btn-mini sm-act-note">保存备注</button>' +
@@ -296,9 +300,35 @@
     if (!list) return;
     var rows = filteredOrders();
     list.innerHTML = rows.length ? rows.map(orderHtml).join('') : '<p class="sm-empty">没有符合条件的订单</p>';
-    // 已展开的行：补付款凭证签名图
+    // 已展开的行：补付款凭证签名图 + 包裹列表
     Array.prototype.forEach.call(list.querySelectorAll('img.sm-pay-img[data-paypath]'), function (img) {
       signedPay(img.getAttribute('data-paypath')).then(function (u) { if (u) img.src = u; });
+    });
+    Array.prototype.forEach.call(list.querySelectorAll('.sm-order.open'), function (card) { loadPkgs(card); });
+  }
+
+  // ── 包裹管理（多包裹物流，shop_packages 表）──
+  function pkgRowHtml(p) {
+    p = p || {};
+    return '<div class="sm-pkg-row" data-pkid="' + escAttr(p.id || '') + '" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;width:100%;background:var(--card,#fff2f7);border-radius:10px;padding:6px 8px;">' +
+      '<button type="button" class="sel-btn sm-carrier" data-v="' + escAttr(p.carrier || 'UPS') + '"><span class="pick-btn-label">' + esc(p.carrier || 'UPS') + '</span></button>' +
+      '<input class="sm-p-tracking" placeholder="单号" value="' + escAttr(p.tracking || '') + '" style="width:130px;">' +
+      '<input class="sm-p-url" placeholder="查件链接" value="' + escAttr(p.track_url || '') + '" style="width:150px;">' +
+      '<input class="sm-p-weight" type="number" step="0.1" min="0" placeholder="重量oz" value="' + escAttr(p.weight_oz == null ? '' : p.weight_oz) + '" style="width:80px;">' +
+      '<input class="sm-p-date" placeholder="发货日期" value="' + (p.shipped_at ? escAttr(String(p.shipped_at).slice(0, 10).replace(/-/g, '/')) : '') + '" style="width:110px;">' +
+      '<input class="sm-p-note" placeholder="备注" value="' + escAttr(p.note || '') + '" style="width:110px;">' +
+      '<button type="button" class="btn-mini sm-pkg-save">保存</button>' +
+      '<button type="button" class="btn-del sm-pkg-del">删除</button>' +
+      '</div>';
+  }
+  function loadPkgs(card) {
+    var o = byId(SM.orders, card.getAttribute('data-id')); if (!o) return;
+    var box = card.querySelector('.sm-pkgs'); if (!box) return;
+    api('shop_packages?select=*&order_id=eq.' + o.id + '&order=created_at.asc').then(function (r) { return r.json(); }).then(function (rows) {
+      rows = arr(rows);
+      box.innerHTML = rows.length ? rows.map(pkgRowHtml).join('') : '<span style="font-size:14px;color:var(--muted);">还没有包裹，点「＋ 加一个包裹」</span>';
+    }).catch(function () {
+      box.innerHTML = '<span style="font-size:14px;color:var(--muted);">包裹数据没连上（跑 SQL2 后可用）</span>';
     });
   }
 
@@ -701,6 +731,50 @@
       });
       return;
     }
+    if (e.target.classList.contains('sm-pkg-add')) { // 包裹：新增一行
+      var pkBox = card.querySelector('.sm-pkgs');
+      if (pkBox) {
+        var ph = pkBox.querySelector('span');
+        if (ph && ph.textContent.indexOf('还没有') !== -1) ph.remove();
+        pkBox.insertAdjacentHTML('beforeend', pkgRowHtml({}));
+      }
+      return;
+    }
+    if (e.target.classList.contains('sm-pkg-save')) { // 包裹：保存
+      var prow = e.target.closest('.sm-pkg-row');
+      var po = byId(SM.orders, card.getAttribute('data-id')); if (!po || !prow) return;
+      var pdate = prow.querySelector('.sm-p-date').value.trim();
+      var pbody = {
+        order_id: po.id,
+        carrier: prow.querySelector('.sm-carrier').getAttribute('data-v') || 'UPS',
+        tracking: prow.querySelector('.sm-p-tracking').value.trim(),
+        track_url: prow.querySelector('.sm-p-url').value.trim(),
+        weight_oz: parseFloat(prow.querySelector('.sm-p-weight').value) || null,
+        shipped_at: pdate ? dpToInternal(pdate) + 'T12:00:00Z' : null,
+        note: prow.querySelector('.sm-p-note').value.trim()
+      };
+      var pkid = prow.getAttribute('data-pkid');
+      var preq = pkid
+        ? api('shop_packages?id=eq.' + pkid, { method: 'PATCH', body: JSON.stringify(pbody) })
+        : api('shop_packages', { method: 'POST', body: JSON.stringify(pbody) });
+      preq.then(function (r) {
+        toast(r.ok ? '包裹已保存' : '保存失败（需要跑 SQL2）');
+        if (r.ok) loadPkgs(card);
+      }).catch(function () { toast('保存失败（需要跑 SQL2）'); });
+      return;
+    }
+    if (e.target.classList.contains('sm-pkg-del')) { // 包裹：删除
+      var drow = e.target.closest('.sm-pkg-row');
+      var did = drow ? drow.getAttribute('data-pkid') : '';
+      if (!did) { drow.remove(); return; }
+      uiConfirm('删除这个包裹的物流信息？', function () {
+        api('shop_packages?id=eq.' + did, { method: 'DELETE' }).then(function (r) {
+          toast(r.ok ? '已删除' : '删除失败');
+          if (r.ok) loadPkgs(card);
+        });
+      });
+      return;
+    }
     if (e.target.classList.contains('sm-act-note')) { // 内部备注
       patchOrder(id, { admin_note: card.querySelector('.sm-admin-note').value }, '内部备注已保存');
       return;
@@ -716,7 +790,7 @@
     card.querySelector('.sm-total-prev').textContent = '应付 $' + fmtMoney(ship);
   });
   oList.addEventListener('click', function (e) { // 发货日期：复用现有 dp 日期选择器
-    if (!e.target.classList.contains('sm-ship-date')) return;
+    if (!e.target.classList.contains('sm-ship-date') && !e.target.classList.contains('sm-p-date')) return;
     dpOpen(e.target);
   });
 

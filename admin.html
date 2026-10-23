@@ -2229,6 +2229,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     try { var v = JSON.parse(SETTINGS[key] || 'null'); return v == null ? fallback : v; } catch (e) { return fallback; }
   }
   function saveSetting(key, obj) {
+    // 柚子专属数据源同步（yuki_exclusive 表；失败不影响主保存，仅提示）
+    if (key === 'bjds' || key === 'cards' || key === 'works') {
+      api('yuki_exclusive', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates' },
+        body: JSON.stringify({ kind: key, payload: obj })
+      }).then(function (r) { if (!r.ok) toast('专属数据源未同步（需要跑 SQL2）'); })
+        .catch(function () { toast('专属数据源未同步（需要跑 SQL2）'); });
+    }
     return api('site_settings', {
       method: 'POST',
       headers: { 'Prefer': 'resolution=merge-duplicates' },
@@ -5101,7 +5110,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261023a"></script>
+<script src="js/admin-shop.js?v=20261023b"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

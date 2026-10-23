@@ -768,3 +768,111 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     navigator.serviceWorker.register('/sw.js').catch(function () {});
   });
 }
+
+// ═══════════ 柚子专属权限（白名单邮箱 chengyuki119@gmail.com；权威判断在后端 RPC yuki_exclusive_get）═══════════
+// 三态：true 白名单已登录 / false 无权限 / 'pending' 后端 RPC 未部署（SQL 未跑），页面自行决定放行与否
+var YK_EXCLUSIVE_MEMO = null; // 会话内缓存，避免每页多次 ping
+function ykSession() {
+  var s = null;
+  try { s = JSON.parse(localStorage.getItem('yuki-user-session') || 'null') || JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
+  return (s && s.a) ? s : null;
+}
+function ykStoreKey() { return localStorage.getItem('yuki-user-session') ? 'yuki-user-session' : 'yuki-admin-session'; }
+function ykRpc(p_kind) {
+  var s = ykSession();
+  if (!s || !s.a) { var e0 = new Error('请先登录'); e0.ykCode = 'nosession'; return Promise.reject(e0); }
+  var call = function (at) {
+    return fetch(DB_BASE + 'rpc/yuki_exclusive_get', {
+      method: 'POST',
+      headers: { 'apikey': DB_HEADERS.apikey, 'Authorization': 'Bearer ' + at, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_kind: p_kind })
+    }).then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); });
+  };
+  return call(s.a).then(function (res) {
+    if (res.status !== 401) return res;
+    // access token 过期 → 用 refresh token 续一次
+    if (!s.r) { var e1 = new Error('登录过期'); e1.ykCode = 'expired'; throw e1; }
+    return fetch('https://zajcglvlzsolygvjeumb.supabase.co/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { 'apikey': DB_HEADERS.apikey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: s.r })
+    }).then(function (rr) { return rr.ok ? rr.json() : null; }).then(function (d) {
+      if (!d || !d.access_token) { var e2 = new Error('登录过期'); e2.ykCode = 'expired'; throw e2; }
+      s.a = d.access_token; if (d.refresh_token) s.r = d.refresh_token;
+      try { localStorage.setItem(ykStoreKey(), JSON.stringify(s)); } catch (e) {}
+      return call(s.a);
+    });
+  }).then(function (res) {
+    var code = res.body && res.body.code;
+    if (res.status === 404 || code === 'PGRST202') { var e3 = new Error('RPC 未部署'); e3.ykCode = 'pending'; throw e3; }
+    if (res.status !== 200) {
+      var msg = (res.body && (res.body.message || res.body.msg)) || '查询失败';
+      if (msg.indexOf('仅限柚子专属') !== -1) { var e4 = new Error(msg); e4.ykCode = 'denied'; throw e4; }
+      var e5 = new Error(msg); e5.ykCode = 'error'; throw e5;
+    }
+    return res.body;
+  });
+}
+function ykExclusiveCheck() {
+  if (!ykSession()) return Promise.resolve({ ok: false, email: null });
+  if (YK_EXCLUSIVE_MEMO) return Promise.resolve({ ok: YK_EXCLUSIVE_MEMO, email: ykSession().email || null });
+  return ykRpc('ping').then(function (j) {
+    YK_EXCLUSIVE_MEMO = true;
+    return { ok: true, email: (j && j.email) || null };
+  }).catch(function (e) {
+    if (e && e.ykCode === 'pending') { YK_EXCLUSIVE_MEMO = 'pending'; return { ok: 'pending', email: null }; }
+    YK_EXCLUSIVE_MEMO = false;
+    return { ok: false, email: ykSession().email || null };
+  });
+}
+function ykExclusiveData(kind) {
+  return ykRpc(kind); // 返回 payload 原样（数组或对象，由调用方按 site_settings 同型处理）
+}
+function ykExclusiveLogout() {
+  var k = ykStoreKey();
+  try { localStorage.removeItem(k); } catch (e) {}
+  YK_EXCLUSIVE_MEMO = null;
+  location.reload();
+}
+// 页面门禁：resolve(true) = 可渲染；false = 已渲染权限提示页（调用方必须停止数据加载）
+function ykGatePage() {
+  return ykExclusiveCheck().then(function (res) {
+    if (res.ok === 'pending') {
+      var bar = document.createElement('div');
+      bar.style.cssText = 'position:sticky;top:0;z-index:99;background:var(--card,#fff2f7);color:var(--text,#5d6780);text-align:center;font-size:14px;padding:7px 12px;border-bottom:1px solid var(--accent-soft,#ffc8d6);';
+      bar.textContent = (window.LANG === 'en' ? 'Permission layer not active yet (waiting for SQL).' : '专属权限层尚未启用（等待 SQL），当前仅前端临时放行。');
+      document.body.insertBefore(bar, document.body.firstChild);
+      return true;
+    }
+    if (res.ok === true) return true;
+    // 权限提示页（与 404 页同款风格：粉色卡居中）
+    var en = window.LANG === 'en';
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'min-height:62vh;display:flex;align-items:center;justify-content:center;padding:30px 16px;';
+    var logged = !!ykSession();
+    var btns = '';
+    if (!logged) {
+      btns = '<a href="/shop/?sec=account&next=' + encodeURIComponent(location.pathname + location.search) + '" style="display:inline-block;background:var(--accent,#ff6fa5);color:#fff;border-radius:999px;padding:11px 26px;font-size:16px;text-decoration:none;">' + (en ? 'Go to Login' : '去登录') + '</a>';
+    } else {
+      btns = '<button id="yk-logout" style="background:var(--accent,#ff6fa5);color:#fff;border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Log Out' : '退出登录') + '</button>' +
+             ' <a href="/" style="display:inline-block;margin-left:10px;color:var(--muted,#9aa5bd);text-decoration:none;">' + (en ? 'Back to Home' : '返回主页') + '</a>';
+    }
+    wrap.innerHTML = '<div style="background:var(--card,#fff2f7);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
+      '<div style="font-size:34px;color:var(--accent,#ff6fa5);line-height:1;">♥</div>' +
+      '<h2 style="font-size:20px;color:var(--text,#5d6780);margin:14px 0 8px;">' + (en ? 'Yuki Members Only' : '此内容仅限柚子专属账号查看') + '</h2>' +
+      '<p style="font-size:15px;color:var(--muted,#9aa5bd);margin:0 0 22px;">' +
+        (logged
+          ? (en ? 'Current account: ' + escDb(res.email || '') + '. This area is only for Yuki\'s own account.' : '当前登录：' + escDb(res.email || '') + '，这里只有柚子的专属账号能进来哦')
+          : (en ? 'Please log in with the Yuki exclusive account first.' : '请先用柚子的专属账号登录再来哦')) +
+      '</p>' + btns + '</div>';
+    document.body.insertBefore(wrap, document.body.firstChild);
+    var others = document.querySelectorAll('body > *:not(:first-child)');
+    for (var i = 0; i < others.length; i++) others[i].style.display = 'none';
+    var lo = document.getElementById('yk-logout');
+    if (lo) lo.addEventListener('click', ykExclusiveLogout);
+    return false;
+  });
+}
+window.ykExclusiveCheck = ykExclusiveCheck;
+window.ykExclusiveData = ykExclusiveData;
+window.ykGatePage = ykGatePage;

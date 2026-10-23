@@ -141,6 +141,49 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   .buy-btn:hover { background: var(--accent); }
 
+  /* 顶栏入口：顺序固定 购物车 → 登录/我的账号 → 汉堡（圆形按钮与其他页一致） */
+  .tb-left, .tb-right { display: flex; align-items: center; gap: 10px; }
+  .tb-btn {
+    position: relative;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent-soft);
+    background: var(--card);
+    color: var(--accent);
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background .2s, color .2s;
+    padding: 0;
+  }
+  .tb-btn:hover { background: #f6d9e6; }
+  .tb-btn svg { width: 20px; height: 20px; display: block; }
+  #cart-badge {
+    position: absolute; top: -5px; right: -5px;
+    min-width: 19px; height: 19px; border-radius: 999px;
+    background: var(--accent); color: #fff;
+    font-size: 12px; line-height: 19px; text-align: center; padding: 0 5px;
+    display: none;
+  }
+  @media (max-width: 640px) {
+    .topbar .site-logo { display: none; }
+    .tb-left, .tb-right { gap: 8px; }
+  }
+
+  /* 收藏心心 */
+  .fav-btn {
+    border: none; background: rgba(255,252,253,.92);
+    color: var(--accent); cursor: pointer;
+    font-size: 18px; line-height: 1;
+    width: 34px; height: 34px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: transform .15s, background .2s;
+    font-family: inherit;
+  }
+  .fav-btn:hover { transform: scale(1.12); background: #ffe1ea; }
+  .product-img .fav-btn { position: absolute; top: 10px; right: 10px; z-index: 2; }
+  .product-img { position: relative; }
+  .fav-btn.detail-fav { width: 40px; height: 40px; font-size: 22px; vertical-align: middle; margin-left: 8px; }
+
   /* 售尽 / 仅展示：图片灰化，不放购买按钮 */
 
   .star { cursor: pointer; font-size:25px; color: #f0c3da; transition: color .15s; }
@@ -278,14 +321,26 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
 </head>
 <body>
 <header class="topbar">
-  <div class="lang-switch">
-    <button class="lang-btn" data-lang="zh">简体中文</button>
-    <button class="lang-btn" data-lang="en">English</button>
+  <div class="tb-left">
+    <button class="tb-btn" id="tb-cart" aria-label="购物车">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2.5 3h2l2.4 12.2a2 2 0 0 0 2 1.6h9.3a2 2 0 0 0 2-1.6L22 7H6"/></svg>
+      <span id="cart-badge">0</span>
+    </button>
+    <button class="tb-btn" id="tb-account" aria-label="登录">
+      <svg class="tb-ic-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      <svg class="tb-ic-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </button>
   </div>
   <a class="site-logo" href="/" aria-label="回主页"><img src="/logo.png" alt="logo"></a>
-  <button class="burger" id="burger" aria-label="菜单">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="tb-right">
+    <div class="lang-switch">
+      <button class="lang-btn" data-lang="zh">简体中文</button>
+      <button class="lang-btn" data-lang="en">English</button>
+    </div>
+    <button class="burger" id="burger" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </header>
 <div class="menu-mask" id="menu-mask"></div>
 <nav class="menu" id="menu"></nav>
@@ -300,7 +355,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
 
 <div class="shop-body">
   <div class="notice">
-    <b>怎么买：</b>点「找我下单」会自动复制微信号 <b>yuki_060119</b>，来微信告诉我要哪件就行；也欢迎发邮件到 <b>chengyuki119@gmail.com</b>。
+    <b><span data-zh="怎么买：" data-en="How to buy:">怎么买：</span></b><span data-zh="选好规格加入购物车 → 去结算 → 上传付款截图等柚子确认，或用 Stripe 在线付款。有疑问也欢迎邮件到 chengyuki119@gmail.com。" data-en="Pick options → add to cart → checkout → upload your payment screenshot for Yuki to confirm, or pay online with Stripe. Questions? Email chengyuki119@gmail.com.">选好规格加入购物车 → 去结算 → 上传付款截图等柚子确认，或用 Stripe 在线付款。有疑问也欢迎邮件到 chengyuki119@gmail.com。</span>
   </div>
 
   <div class="grid" id="product-grid">
@@ -363,7 +418,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
 <div class="toast" id="toast"></div>
 
 <script>
-  var WECHAT_ID = 'yuki_060119'; //  微信号在这里改
   var SUPABASE_URL = 'https://zajcglvlzsolygvjeumb.supabase.co';
   var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphamNnbHZsenNvbHlndmpldW1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMzI4NjUsImV4cCI6MjEwNjgwODg2NX0.7_Pthb3wPInb5v4o7IoWejozEvDZQgNPS8DgwikQ8ys';
   var ADMIN_LOGGED = false; // 登录过后台账号 → 商品卡上出现「编辑商品」按钮（与色卡 / BJD 页同一套）
@@ -454,7 +508,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     location.href = '/admin.html#shop';
   }, true);
 
-  // 下单：复制微信号
+  // 下单：新版购物车流程（旧微信复制流程已移除）
   function toast(msg) {
     var t = document.getElementById('toast');
     t.textContent = msg;
@@ -464,18 +518,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   function bindBuy(btn) {
     btn.addEventListener('click', function () {
       if (btn.closest('.sold')) { toast('这件已经售出啦'); return; }
-      function done() { toast('微信号已复制：' + WECHAT_ID + '，来找我下单吧'); }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(WECHAT_ID).then(done, function () { fallbackCopy(); done(); });
-      } else { fallbackCopy(); done(); }
-      function fallbackCopy() {
-        var ta = document.createElement('textarea');
-        ta.value = WECHAT_ID;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-      }
+      toast('请进商品页选规格加入购物车哦');
     });
   }
 
@@ -580,7 +623,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
       '<p>' + esc(p.description || '') + '</p>' +
       '<div class="product-row">' +
       '<span class="price">' + (p.price ? '<small>¥</small>' + esc(fmtPriceShop(p.price)) : '') + '</span>' +
-      (st === 'on' ? '<button class="buy-btn">' + t('找我下单','Contact to order') + '</button>' : '<span class="no-buy">' + (st === 'display' ? t('仅展示，不能下单','Not for sale') : '') + '</span>') +
+      (st === 'on' ? '<span class="no-buy" style="font-size:14px;">' + t('请进详情选购', 'Open to buy') + '</span>' : '<span class="no-buy">' + (st === 'display' ? t('仅展示，不能下单','Not for sale') : '') + '</span>') +
       productEditBtn(p) +
       '</div></div></div>';
   }
@@ -809,6 +852,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261023a"></script>
+<script src="/js/shop-app.js?v=20261023b"></script>
 </body>
 </html>

@@ -140,7 +140,8 @@
         '<div id="d-pager">' + pagerWrapHtml(imgs.map(normImg), p.name) + '</div>' +
         '<div>' +
           '<span class="product-tag">' + esc(p.tag || t('没有标签', 'Untagged')) + '</span>' +
-          '<h2 style="font-size:24px;margin:6px 0 4px;">' + esc(p.name) + '</h2>' +
+          '<h2 style="font-size:24px;margin:6px 0 4px;display:inline-block;">' + esc(p.name) + '</h2>' +
+          '<button type="button" class="fav-btn detail-fav' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '">' + (isFav(p.id) ? '♥' : '♡') + '</button>' +
           '<p style="color:var(--muted);font-size:17px;">' + esc(p.description || '') + '</p>' +
           '<div style="font-size:26px;color:var(--accent);font-weight:700;margin:10px 0;">¥' + money(price) + '</div>' +
           (skuText ? '<div style="font-size:15px;color:var(--muted);margin-bottom:6px;">SKU: ' + esc(skuText) + '</div>' : '') +
@@ -583,6 +584,21 @@
         if (u) { var img = document.createElement('img'); img.src = u; img.style.cssText = 'width:90px;height:90px;object-fit:cover;border-radius:10px;margin-top:8px;'; body.appendChild(img); }
       });
     }
+    // 包裹物流（多包裹：shop_packages；旧单回退订单自带字段）
+    var pkBox = document.createElement('div');
+    body.appendChild(pkBox);
+    api('shop_packages?select=*&order_id=eq.' + o.id + '&order=created_at.asc').then(function (r) { return r.json(); }).then(function (rows) {
+      var pks = arr(rows);
+      var list = pks.length ? pks.map(function (p) { return { carrier: p.carrier, tracking: p.tracking, track_url: p.track_url, shipped_at: p.shipped_at, note: p.note }; })
+        : (o.tracking ? [{ carrier: o.carrier, tracking: o.tracking, track_url: o.track_url, shipped_at: o.shipped_at, note: o.ship_note }] : []);
+      if (!list.length) return;
+      pkBox.innerHTML = '<div style="font-size:16px;font-weight:700;margin-top:10px;">' + t('包裹物流', 'Packages') + '</div>' + list.map(function (p, i) {
+        return '<div style="font-size:15px;color:var(--text);margin-top:6px;">' + t('包裹', 'Package') + ' ' + (i + 1) + '：' + esc(p.carrier || '') + ' ' + esc(p.tracking || '') +
+          (p.track_url ? ' <a href="' + escAttr(p.track_url) + '" target="_blank" rel="noopener" style="color:var(--accent);">' + t('查询', 'Track') + '</a>' : '') +
+          (p.shipped_at ? ' · ' + esc(String(p.shipped_at).slice(0, 10)) : '') +
+          (p.note ? ' · ' + esc(p.note) : '') + '</div>';
+      }).join('');
+    }).catch(function () {});
   }
   function confirmZh(msg) { return window.confirm(msg); }
   function renderPayUpload(o, box) {
@@ -747,11 +763,13 @@
         document.getElementById('pf-out').addEventListener('click', function () {
           USER = null; UID = null; saveUser();
           try { localStorage.setItem('yuki-cart-merge-done', '0'); } catch (e) {}
+          loadFavsLocal(); paintFavs(); paintAcctIcon();
           toast(t('已退出', 'Logged out'));
           renderAccount();
         });
         paintMyAddr();
         document.getElementById('pf-add').addEventListener('click', function () { addrForm('pf-addr-form', null, function () { loadAddr().then(paintMyAddr); }); });
+        renderFavsInAccount();
         showView('account');
       });
     });
@@ -827,6 +845,7 @@
     });
   }
   function afterLogin(addr, prof) {
+    paintAcctIcon(); loadFavs();
     // 本地购物车合并到云端（云端已有的拉下来合并）
     getUid().then(function (uid) {
       if (!uid) { route(); return; }
@@ -842,9 +861,95 @@
         var p2 = api('shop_profiles?on_conflict=id', { method: 'POST', headers: { 'Prefer': 'resolution=merge-duplicates' },
           body: JSON.stringify(Object.assign({ id: uid }, prof || {})) });
         var p3 = addr && addr.street ? api('shop_addresses', { method: 'POST', body: JSON.stringify(Object.assign({ user_id: uid }, addr)) }) : Promise.resolve();
-        Promise.all([p2, p3]).then(function () { route(); });
+        Promise.all([p2, p3]).then(function () { if (!goNextAfterLogin()) route(); });
       });
     });
+  }
+
+  // ===== 顶栏入口（顺序固定：购物车 → 登录/我的账号 → 汉堡）=====
+  function paintAcctIcon() {
+    var acct = document.getElementById('tb-account');
+    if (!acct) return;
+    var a = acct.querySelector('.tb-ic-in'), b2 = acct.querySelector('.tb-ic-out');
+    if (a) a.style.display = USER ? '' : 'none';
+    if (b2) b2.style.display = USER ? 'none' : '';
+  }
+  function bindTopbar() {
+    var cart = document.getElementById('tb-cart');
+    var acct = document.getElementById('tb-account');
+    if (cart) cart.addEventListener('click', function () { renderCart(); showView('cart'); });
+    if (acct) acct.addEventListener('click', function () { renderAccount(); showView('account'); });
+    paintAcctIcon();
+  }
+  function goNextAfterLogin() {
+    try {
+      var nx = new URLSearchParams(location.search).get('next');
+      if (nx && (/^\/[^/]/.test(nx) || nx.indexOf('https://chengyuki119.github.io') === 0)) { location.href = nx; return true; }
+    } catch (e) {}
+    return false;
+  }
+
+  // ===== 收藏（登录后云端 shop_favorites，未登录本地，登录时合并上云）=====
+  var FAVS = [];
+  function loadFavsLocal() { try { FAVS = JSON.parse(localStorage.getItem('yuki-favs') || '[]'); } catch (e) { FAVS = []; } if (!Array.isArray(FAVS)) FAVS = []; }
+  function saveFavsLocal() { try { localStorage.setItem('yuki-favs', JSON.stringify(FAVS)); } catch (e) {} }
+  function pushFavSrv(id) {
+    getUid().then(function (uid) {
+      if (!uid) return;
+      api('shop_favorites', { method: 'POST', headers: { 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ user_id: uid, product_id: id }) }).catch(function () {});
+    });
+  }
+  function loadFavs() {
+    loadFavsLocal();
+    if (!USER || !USER.a) { paintFavs(); return; }
+    api('shop_favorites?select=product_id').then(function (r) { return r.json(); }).then(function (rows) {
+      if (!Array.isArray(rows)) return;
+      var ids = rows.map(function (x) { return String(x.product_id); });
+      FAVS.forEach(function (id) { if (ids.indexOf(String(id)) === -1 && /^[0-9a-f-]{36}$/i.test(String(id))) pushFavSrv(id); }); // 本地合并上云（仅真实 uuid）
+      var merged = ids.slice();
+      FAVS.forEach(function (id) { if (merged.indexOf(String(id)) === -1) merged.push(String(id)); });
+      FAVS = merged; saveFavsLocal(); paintFavs();
+    }).catch(function () {});
+  }
+  function isFav(id) { return FAVS.map(String).indexOf(String(id)) !== -1; }
+  function toggleFav(id) {
+    var s = String(id);
+    if (isFav(s)) {
+      FAVS = FAVS.filter(function (x) { return String(x) !== s; });
+      if (USER) getUid().then(function (uid) { if (uid) api('shop_favorites?user_id=eq.' + uid + '&product_id=eq.' + s, { method: 'DELETE' }).catch(function () {}); });
+    } else {
+      FAVS.push(s);
+      if (USER) pushFavSrv(s);
+    }
+    saveFavsLocal(); paintFavs();
+  }
+  function paintFavs() {
+    document.querySelectorAll('[data-fav]').forEach(function (b) {
+      var on = isFav(b.getAttribute('data-fav'));
+      b.classList.toggle('on', on);
+      b.textContent = on ? '♥' : '♡';
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var f = e.target.closest ? e.target.closest('[data-fav]') : null;
+    if (!f) return;
+    e.preventDefault(); e.stopPropagation();
+    toggleFav(f.getAttribute('data-fav'));
+  }, true);
+  function renderFavsInAccount() {
+    var box = document.getElementById('view-account');
+    if (!box || !USER) return;
+    var old = document.getElementById('fav-section'); if (old) old.remove();
+    var sec = document.createElement('div');
+    sec.id = 'fav-section';
+    sec.style.cssText = 'background:var(--card);border-radius:var(--radius,18px);padding:16px;margin-top:14px;max-width:520px;';
+    var items = FAVS.map(function (id) { return PRODUCTS.filter(function (p) { return String(p.id) === String(id); })[0]; }).filter(Boolean);
+    sec.innerHTML = '<b style="font-size:17px;">' + t('我的收藏', 'Favorites') + '</b>' +
+      (items.length ? '<div class="grid" style="margin-top:10px;">' + items.map(productCardShop).join('') + '</div>'
+                    : '<p style="font-size:15px;color:var(--muted);margin:8px 0 0;">' + t('还没有收藏，去逛逛点 ♡ 收起来', 'Nothing saved yet — tap ♡ on any item') + '</p>');
+    box.appendChild(sec);
+    var g2 = sec.querySelector('.grid'); if (g2) bindCards(g2);
+    paintFavs();
   }
 
   // ===== 购物车视图 =====
@@ -935,7 +1040,8 @@
     var stCls = st === 'on' ? 'st-on' : st === 'display' ? 'st-display' : 'st-out';
     var off = st === 'on' ? '' : ' off';
     return '<div class="product' + off + '" data-pid="' + escAttr(p.id) + '" style="cursor:pointer;">' +
-      '<div class="product-img">' + img + '<span class="st ' + stCls + '">' + stText + '</span></div>' +
+      '<div class="product-img">' + img + '<span class="st ' + stCls + '">' + stText + '</span>' +
+      '<button type="button" class="fav-btn' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '">' + (isFav(p.id) ? '♥' : '♡') + '</button></div>' +
       '<div class="product-info">' +
       '<span class="product-tag">' + esc(p.tag || t('没有标签', 'Untagged')) + '</span>' +
       '<h3>' + esc(p.name) + '</h3>' +
@@ -949,7 +1055,7 @@
   function bindCards(scope) {
     scope.querySelectorAll('.product').forEach(function (card) {
       card.addEventListener('click', function (e) {
-        if (e.target.closest('.buy-btn, .card-edit-btn, .pg-btn, .pg-thumb')) return;
+        if (e.target.closest('.buy-btn, .card-edit-btn, .pg-btn, .pg-thumb, .fav-btn')) return;
         openDetail(card.getAttribute('data-pid'));
       });
       var quick = card.querySelector('.cart-quick');
@@ -971,16 +1077,14 @@
     var nav = document.createElement('div');
     nav.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;';
     nav.innerHTML =
-      '<a class="back-link" href="/shop/?sec=cart">' + t('购物车', 'Cart') + ' <span id="cart-badge" style="display:none;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:999px;background:var(--accent);color:#fff;font-size:13px;padding:0 5px;">0</span></a>' +
       '<a class="back-link" href="/shop/?sec=orders">' + t('我的订单', 'Orders') + '</a>' +
-      '<a class="back-link" href="/shop/?sec=groups">' + t('拼团', 'Groups') + '</a>' +
-      '<a class="back-link" href="/shop/?sec=account" id="nav-account">' + t('我的账号', 'Account') + '</a>';
+      '<a class="back-link" href="/shop/?sec=groups">' + t('拼团', 'Groups') + '</a>';
     bar.parentNode.insertBefore(nav, bar.nextSibling);
   }
 
   // ===== 路由入口 =====
   function route() {
-    loadCart(); paintCartBadge();
+    loadCart(); paintCartBadge(); bindTopbar(); loadFavs();
     var qs = new URLSearchParams(location.search);
     var id = qs.get('id'), gid = qs.get('gid'), sec = qs.get('sec') || '';
     if (id) return openDetail(id, qs.get('sku'));

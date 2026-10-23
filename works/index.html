@@ -70,7 +70,7 @@
 <div id="share-pop"></div>
 <div class="toast" id="toast"></div>
 
-<script src="/js/site-common.js?v=20261017c"></script>
+<script src="/js/site-common.js?v=20261023b"></script>
 <script>
   // ===== 稿件展示：独立子页（稿件墙 + 稿件详情 /works/?id=N）=====
   // 数据：site_settings.works（与后台「稿件管理」同一份，单一数据源）
@@ -188,9 +188,23 @@
       renderWorkView();
     }
   }
+  // 数据：柚子专属门禁（契约见 js/site-common.js ykGatePage / ykExclusiveData）
+  function ykStartLoad(kind, fn) {
+    if (!window.ykGatePage) { fn(); return; } // 旧缓存 site-common 无门禁模块时按 pending 放行
+    ykGatePage().then(function (ok) {
+      if (!ok) return;
+      if (window.ykExclusiveCheck && window.ykExclusiveData) {
+        ykExclusiveCheck().then(function (res) {
+          if (res.ok !== true) { fn(); return; }
+          ykExclusiveData(kind).then(function (v) { window.YK_RPC_DATA = v; fn(); }, function () { fn(); });
+        }).catch(function () { fn(); });
+      } else fn();
+    }).catch(function () {});
+  }
+  function ykLoadData() {
   dbFetch('site_settings?select=key,value&key=eq.works').then(function (rows) {
-    var raw = null;
-    try { raw = rows && rows[0] ? JSON.parse(rows[0].value) : null; } catch (e) {}
+    var raw = (window.YK_RPC_DATA !== undefined) ? window.YK_RPC_DATA : null;
+    if (window.YK_RPC_DATA === undefined) { try { raw = rows && rows[0] ? JSON.parse(rows[0].value) : null; } catch (e) {} }
     WORKS_CACHE = (Array.isArray(raw) ? raw : []).map(normWorkView).filter(function (w) { return w.visible !== false; });
     renderWorksWall();
     routeWorks();
@@ -198,6 +212,8 @@
     renderWorksWall();
     routeWorks();
   });
+  }
+  ykStartLoad('works', ykLoadData);
   ['wf-artist', 'wf-cat', 'wf-sort'].forEach(function (id) {
     var el = document.getElementById(id);
     if (!el) return;

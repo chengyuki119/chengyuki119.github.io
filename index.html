@@ -101,6 +101,19 @@
       <div id="cal-form"></div>
     </div>
 
+    <!-- 自制小铺（日历下方） -->
+    <section id="shop">
+      <h2>我的小铺</h2>
+      <a class="entry-card" href="/shop/">
+        
+        <div class="entry-info">
+          <h3>小柚的小铺</h3>
+          <p>自制小物上架中 · 点进去逛逛</p>
+        </div>
+        <div class="entry-arrow">›</div>
+      </a>
+    </section>
+
     <section id="sec-gallery">
       <h2 data-zh="照片墙" data-en="Photo Gallery">照片墙</h2>
       <div class="preview-grid">
@@ -128,19 +141,6 @@
       <h2 data-zh="稿件展示" data-en="Works">稿件展示</h2>
       <div id="works-home-grid"></div>
       <a class="home-long-btn" href="/works/"><span data-zh="查看全部稿件" data-en="View All Works">查看全部稿件</span></a>
-    </section>
-
-    <!-- 自制小铺 -->
-    <section id="shop">
-      <h2>我的小铺</h2>
-      <a class="entry-card" href="/shop/">
-        
-        <div class="entry-info">
-          <h3>小柚的小铺</h3>
-          <p>自制小物上架中 · 点进去逛逛</p>
-        </div>
-        <div class="entry-arrow">›</div>
-      </a>
     </section>
 
     <!-- 匿名提问箱：页面最下面 -->
@@ -207,7 +207,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261017c"></script>
+<script src="/js/site-common.js?v=20261023b"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -631,9 +631,40 @@
     netease: '<svg viewBox="0 0 24 24" fill="none" stroke="#e35d5d" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
     link: '<svg viewBox="0 0 24 24" fill="none" stroke="#b9a7b3" stroke-width="2"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7L12.5 19"/></svg>'
   };
+  // 柚子专属门禁：未授权剥离 BJD/色卡/稿件数据并隐藏区块；授权改用 RPC 数据；pending（SQL 未跑）按旧源放行
+  // 契约见 js/site-common.js ykExclusiveCheck() / ykExclusiveData(kind)
+  function ykGateApply(S) {
+    var strip = function () {
+      delete S.bjds; delete S.cards; delete S.works;
+      ['sec-bjd', 'sec-cards', 'sec-works'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) { el.style.display = 'none'; el.setAttribute('data-yk-hidden', '1'); }
+      });
+      return S;
+    };
+    if (!window.ykExclusiveCheck) return Promise.resolve(S); // 旧缓存 site-common 无新模块时按 pending 放行
+    return window.ykExclusiveCheck().then(function (res) {
+      if (res && res.ok === false) return strip();
+      if (res && res.ok === true && window.ykExclusiveData) {
+        return Promise.all(['bjds', 'cards', 'works'].map(function (k) {
+          return window.ykExclusiveData(k).catch(function () { return undefined; });
+        })).then(function (r) {
+          ['bjds', 'cards', 'works'].forEach(function (k, i) {
+            var v = r[i];
+            if (v === undefined || v === null) { delete S[k]; return; }
+            S[k] = (typeof v === 'string') ? v : JSON.stringify(v);
+          });
+          return S;
+        });
+      }
+      return S;
+    }).catch(function () { return S; });
+  }
   dbFetch('site_settings?select=key,value&limit=100').then(function (rows) {
     var S = {};
     (rows || []).forEach(function (r) { S[r.key] = r.value; });
+    return ykGateApply(S);
+  }).then(function (S) {
     function parseSetting(key, fallback) {
       try { var v = JSON.parse(S[key] || 'null'); return v == null ? fallback : v; } catch (e) { return fallback; }
     }
@@ -795,7 +826,7 @@
     if (areas.length) {
       var homeBody = document.querySelector('#page-home .page-body');
       var homeFooter = homeBody ? homeBody.querySelector('footer') : null;
-      var CANON = { gallery: 0, cards: 1, works: 2, shop: 3, anon: 4, links: 5 }; // 主页固定顺序；BJD 独立区块插在色卡前，稿件展示在色卡下、小铺上
+      var CANON = { shop: 0, gallery: 1, cards: 2, works: 3, anon: 4, links: 5 }; // 主页固定顺序（小铺在日历下方）：小铺 → 照片墙 → BJD → 色卡 → 稿件 → 提问箱 → 找到我
       areas.slice().sort(function (a, b) {
         var ka = a.key in CANON ? CANON[a.key] : 100 + (a.sort || 0);
         var kb = b.key in CANON ? CANON[b.key] : 100 + (b.sort || 0);
@@ -809,7 +840,7 @@
           el.innerHTML = '<h2></h2><div class="card" style="padding:18px 20px;"><p style="font-size:17px;line-height:1.8;white-space:pre-wrap;"></p></div>';
         }
         if (!el) return;
-        el.style.display = a.visible === false ? 'none' : '';
+        el.style.display = (a.visible === false || el.getAttribute('data-yk-hidden') === '1') ? 'none' : ''; // 柚子专属门禁隐藏优先
         var h2 = el.querySelector('h2');
         if (h2 && a.title_zh) {
           h2.setAttribute('data-zh', a.title_zh);
@@ -835,7 +866,10 @@
     // 主页区块顺序：Photo Gallery → BJD → 色卡 → 稿件展示 → 我的小铺 → 匿名提问箱 → 找到我
     var scSec = document.getElementById('sec-cards');
     var bjdSec = document.getElementById('sec-bjd');
-    if (bjdSec && scSec && scSec.parentNode) scSec.parentNode.insertBefore(bjdSec, scSec); // BJD 在色卡之前
+    if (bjdSec && scSec && scSec.parentNode) scSec.parentNode.insertBefore(bjdSec, scSec); // BJD 在色卡之前（门禁隐藏时也无妨）
+    var shopSec = document.getElementById('shop');
+    var galSec = document.getElementById('sec-gallery');
+    if (shopSec && galSec && galSec.parentNode) galSec.parentNode.insertBefore(shopSec, galSec); // 小铺紧跟日历（在照片墙之前）
     renderBjdHome();
     if (!document.getElementById('bjd-home-grid').dataset.bound) {
       document.getElementById('bjd-home-grid').dataset.bound = '1';
@@ -1024,6 +1058,18 @@
     });
     return out;
   }
+  function ykCalGate(S) {
+    if (!window.ykExclusiveCheck) return Promise.resolve(S);
+    return window.ykExclusiveCheck().then(function (res) {
+      if (res && res.ok === false) { S.bjds = []; S.cards = []; return S; }
+      if (res && res.ok === true && window.ykExclusiveData) {
+        return Promise.all(['bjds', 'cards'].map(function (k) {
+          return window.ykExclusiveData(k).catch(function () { return []; });
+        })).then(function (r) { S.bjds = r[0] || []; S.cards = r[1] || []; return S; });
+      }
+      return S;
+    }).catch(function () { return S; });
+  }
   function loadEvents() {
     Promise.all([
       dbFetch('important_days?select=*&order=day.asc&limit=200'),
@@ -1034,6 +1080,9 @@
       migrateOldBirthdays();
       var S = {};
       (res[1] || []).forEach(function (r) { try { S[r.key] = JSON.parse(r.value); } catch (e) {} });
+      return ykCalGate(S).then(function (S2) { return { S: S2, rows: rows }; });
+    }).then(function (out) {
+      var S = out.S, rows = out.rows;
       CAL_HIDE = Array.isArray(S.cal_hide) ? S.cal_hide.filter(function (x) { return typeof x === 'string'; }) : [];
       var showRows = rows.filter(function (d) { return CAL_HIDE.indexOf('d:' + d.id) === -1; });
       EVENTS = showRows.concat(genAutoEvents(S.bjds || [], S.cards || [], showRows));

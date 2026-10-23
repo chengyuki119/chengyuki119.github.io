@@ -90,7 +90,7 @@
 </div>
 <div id="share-pop"></div>
 <div class="toast" id="toast"></div>
-<script src="/js/site-common.js?v=20261017c"></script>
+<script src="/js/site-common.js?v=20261023b"></script>
 <script>
   // ===== 色卡：独立子页（列表 + 详情 /color-card/?card=N）=====
   var CURRENT_CARD = -1;
@@ -205,12 +205,25 @@
       '</div>';
   }
 
-  // 数据：与后台同一份
+  // 数据：柚子专属门禁（契约见 js/site-common.js ykGatePage / ykExclusiveData）
+  function ykStartLoad(kind, fn) {
+    if (!window.ykGatePage) { fn(); return; } // 旧缓存 site-common 无门禁模块时按 pending 放行
+    ykGatePage().then(function (ok) {
+      if (!ok) return;
+      if (window.ykExclusiveCheck && window.ykExclusiveData) {
+        ykExclusiveCheck().then(function (res) {
+          if (res.ok !== true) { fn(); return; }
+          ykExclusiveData(kind).then(function (v) { window.YK_RPC_DATA = v; fn(); }, function () { fn(); });
+        }).catch(function () { fn(); });
+      } else fn();
+    }).catch(function () {});
+  }
+  function ykLoadData() {
   dbFetch('site_settings?select=key,value&limit=100').then(function (rows) {
     var S = {};
     (rows || []).forEach(function (r) { S[r.key] = r.value; });
-    var cardsRaw = null;
-    try { cardsRaw = JSON.parse(S['cards'] || 'null'); } catch (e) {}
+    var cardsRaw = (window.YK_RPC_DATA !== undefined) ? window.YK_RPC_DATA : null;
+    if (window.YK_RPC_DATA === undefined) { try { cardsRaw = JSON.parse(S['cards'] || 'null'); } catch (e) {} }
     var cardsList = Array.isArray(cardsRaw) ? cardsRaw : (cardsRaw && cardsRaw.artists ? cardsRaw.artists : []);
     CARDS_CACHE = cardsList.map(function (c) { return normCardView(c); });
     // 筛选选项：按画师（现有数据无分类/标签字段，只做全部/按画师）
@@ -243,6 +256,8 @@
     var pc = e.target.closest('.sc-product');
     if (pc) location.href = '/color-card/?card=' + pc.getAttribute('data-i');
   });
+  }
+  ykStartLoad('cards', ykLoadData);
   if (window.SiteMenu) SiteMenu.notify('cards');
   applyLang(LANG);
 </script>
