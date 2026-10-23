@@ -941,7 +941,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   // ===== 认证 =====
   function saveSession(data) {
     ACCESS = data.access_token; REFRESH = data.refresh_token;
-    try { localStorage.setItem('yuki-admin-session', JSON.stringify({ r: REFRESH })); } catch (e) {}
+    try { localStorage.setItem('yuki-admin-session', JSON.stringify({ r: REFRESH, t: Date.now() })); } catch (e) {}
   }
   function api(path, options) {
     options = options || {};
@@ -5229,6 +5229,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       <a class="btn-mini" href="/photos/" target="_blank" rel="noopener">打开照片页</a>
     </div>
   </div>
+  <div class="card" style="max-width:640px; margin-top:14px;">
+    <h3 style="margin:0 0 12px;">专属权限自检</h3>
+    <div id="yk-self-check" style="font-size:16px; line-height:2; color:var(--muted);">检测中…</div>
+    <p style="color:var(--muted); font-size:13px; line-height:1.8; margin:10px 0 0;">
+      这里显示的是本浏览器当前真实登录的账号。如果「当前登录邮箱」不是 chengyuki119@gmail.com，
+      说明本机还留着另一个账号的登录（比如商城测试账号），前台会按这个账号判断权限；
+      退出登录或切换账号后前台即恢复正确。
+    </p>
+  </div>
 </div>
 
 <script>
@@ -5262,16 +5271,62 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         document.getElementById(el).style.color = '#d05a7a';
       });
   }
+  function jwtEmail(token) {
+    try {
+      var pl = JSON.parse(decodeURIComponent(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, ''))).replace(/[^\x00-\x7F]/g, ''));
+      return { email: pl.email || '(令牌里没有邮箱)', exp: pl.exp ? new Date(pl.exp * 1000).toLocaleString() : '' };
+    } catch (e) { return { email: '(令牌解析失败)', exp: '' }; }
+  }
+  function selfCheck() {
+    var box = document.getElementById('yk-self-check');
+    if (!box) return;
+    var u = null, m = null;
+    try { u = JSON.parse(localStorage.getItem('yuki-user-session') || 'null'); } catch (e) {}
+    try { m = JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
+    var lines = [];
+    var describe = function (name, s) {
+      if (!s || (!s.a && !s.r)) return name + '：无登录';
+      var t0 = s.t ? new Date(s.t).toLocaleString() : '旧版（无时间戳）';
+      return name + '：' + (s.email || '(邮箱未记录)') + ' · 登录于 ' + t0;
+    };
+    lines.push(describe('商城买家会话', u));
+    lines.push(describe('后台专属会话', m));
+    box.innerHTML = lines.map(function (l) { return '<div>' + l + '</div>'; }).join('');
+    // 用当前 access token 实调 ping，拿权威邮箱与权限结果
+    var ping = function (token) {
+      return fetch(URLBASE.replace(/rest\/.*/, '') + 'rest/v1/rpc/yuki_exclusive_get', {
+        method: 'POST', headers: { apikey: ANON, Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_kind: 'ping' })
+      }).then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); });
+    };
+    if (typeof ACCESS === 'undefined' || !ACCESS) {
+      box.innerHTML += '<div style="color:#c98a2b;">后台 access token 尚未就绪，稍后再试</div>';
+      return;
+    }
+    var info = jwtEmail(ACCESS);
+    box.innerHTML += '<div>当前令牌邮箱：<b>' + info.email + '</b>' + (info.exp ? '（有效期至 ' + info.exp + '）' : '') + '</div>';
+    ping(ACCESS).then(function (res) {
+      if (res.status === 200 && res.body && res.body.ok) {
+        box.innerHTML += '<div style="color:#3aa06a;">专属权限：<b>已确认（ping 通过）</b> · 后台识别邮箱：' + (res.body.email || '') + '</div>';
+      } else {
+        box.innerHTML += '<div style="color:#d05a7a;">专属权限：<b>未通过</b>（' + ((res.body && res.body.message) || ('HTTP ' + res.status)) + '）</div>' +
+          '<div style="color:var(--muted); font-size:14px;">如果邮箱确为 chengyuki119@gmail.com 仍未通过，请把这段文字发给 Cola。</div>';
+      }
+    }).catch(function () {
+      box.innerHTML += '<div style="color:#d05a7a;">专属权限：检测请求失败（网络原因）</div>';
+    });
+  }
   function boot() {
     var t = document.getElementById('tab-system');
     if (!t || t.dataset.booted) return;
     t.dataset.booted = '1';
     probe('site_settings', 'sys-db', '已连接', '已连接（暂无数据）', '连接失败');
+    selfCheck();
     probe('photos', 'sys-photo', '未开启（照片对所有人可见）', '已开启（匿名不可见 · SQL3 已生效）', '照片表不存在');
     probe('yuki_exclusive', 'sys-yk', '未同步（请执行 SQL2）', '已同步（SQL2 已生效 · 匿名被拦截属正常）', '未同步（请执行 SQL2）');
   }
   document.addEventListener('click', function (e) {
-    if (e.target.closest && e.target.closest('.tab-btn[data-tab="system"]')) setTimeout(boot, 50);
+    if (e.target.closest && e.target.closest('.tab-btn[data-tab="system"]')) setTimeout(function () { boot(); selfCheck(); }, 50);
   });
   if (location.hash === '#system') setTimeout(boot, 300);
 })();
@@ -5328,18 +5383,32 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   ['click', 'keydown', 'input', 'touchstart', 'mousemove', 'scroll'].forEach(function (ev) {
     document.addEventListener(ev, function () { last = Date.now(); }, { capture: true, passive: true });
   });
+  var idleWarned = false;
   setInterval(function () {
     var body = document.getElementById('admin-body');
-    if (body && body.style.display !== 'none' && Date.now() - last > IDLE_MS) {
+    if (!body || body.style.display === 'none') return;
+    if (Date.now() - last > IDLE_MS) {
       try { localStorage.removeItem('yuki-admin-session'); } catch (e) {}
       location.reload();
+      return;
     }
+    // 到期前 5 分钟提醒一次，给你留出保存的时间
+    if (!idleWarned && Date.now() - last > IDLE_MS - 300000) {
+      idleWarned = true;
+      var el = document.getElementById('toast');
+      if (el) {
+        el.textContent = '已经闲置很久啦，5 分钟后会自动退出，有没保存的内容先保存一下';
+        el.classList.add('show');
+        setTimeout(function () { el.classList.remove('show'); }, 6000);
+      }
+    }
+    if (Date.now() - last < IDLE_MS - 300000) idleWarned = false; // 恢复操作后撤回提醒状态
   }, 20000);
 })();
 </script>
 
 
-<script src="js/admin-shop.js?v=20261023c"></script>
+<script src="js/admin-shop.js?v=20261023d"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

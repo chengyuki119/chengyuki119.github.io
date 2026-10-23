@@ -141,33 +141,6 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   .buy-btn:hover { background: var(--accent); }
 
-  /* 顶栏入口：顺序固定 购物车 → 登录/我的账号 → 汉堡（圆形按钮与其他页一致） */
-  .tb-left, .tb-right { display: flex; align-items: center; gap: 10px; }
-  .tb-btn {
-    position: relative;
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: 1.5px solid var(--accent-soft);
-    background: var(--card);
-    color: var(--accent);
-    cursor: pointer;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: background .2s, color .2s;
-    padding: 0;
-  }
-  .tb-btn:hover { background: #f6d9e6; }
-  .tb-btn svg { width: 20px; height: 20px; display: block; }
-  #cart-badge {
-    position: absolute; top: -5px; right: -5px;
-    min-width: 19px; height: 19px; border-radius: 999px;
-    background: var(--accent); color: #fff;
-    font-size: 12px; line-height: 19px; text-align: center; padding: 0 5px;
-    display: none;
-  }
-  @media (max-width: 640px) {
-    .topbar .site-logo { display: none; }
-    .tb-left, .tb-right { gap: 8px; }
-  }
 
   /* 收藏心心 */
   .fav-btn {
@@ -317,30 +290,19 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
   <link rel="stylesheet" href="/site-menu.css">
-  <script src="/site-menu.js" defer></script>
+  <script src="/js/site-common.js?v=20261023d"></script>
+  <script src="/site-menu.js?v=20261023d" defer></script>
 </head>
 <body>
 <header class="topbar">
-  <div class="tb-left">
-    <button class="tb-btn" id="tb-cart" aria-label="购物车">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2.5 3h2l2.4 12.2a2 2 0 0 0 2 1.6h9.3a2 2 0 0 0 2-1.6L22 7H6"/></svg>
-      <span id="cart-badge">0</span>
-    </button>
-    <button class="tb-btn" id="tb-account" aria-label="登录">
-      <svg class="tb-ic-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-      <svg class="tb-ic-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </button>
+  <div class="lang-switch">
+    <button class="lang-btn" data-lang="zh">简体中文</button>
+    <button class="lang-btn" data-lang="en">English</button>
   </div>
   <a class="site-logo" href="/" aria-label="回主页"><img src="/logo.png" alt="logo"></a>
-  <div class="tb-right">
-    <div class="lang-switch">
-      <button class="lang-btn" data-lang="zh">简体中文</button>
-      <button class="lang-btn" data-lang="en">English</button>
-    </div>
-    <button class="burger" id="burger" aria-label="菜单">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
+  <button class="burger" id="burger" aria-label="菜单">
+    <span></span><span></span><span></span>
+  </button>
 </header>
 <div class="menu-mask" id="menu-mask"></div>
 <nav class="menu" id="menu"></nav>
@@ -852,6 +814,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261023c"></script>
+<script src="/js/shop-app.js?v=20261023d"></script>
 </body>
 </html>

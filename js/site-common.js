@@ -772,11 +772,15 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 // ═══════════ 柚子专属权限（白名单邮箱 chengyuki119@gmail.com；权威判断在后端 RPC yuki_exclusive_get）═══════════
 // 三态：true 白名单已登录 / false 无权限 / 'pending' 后端 RPC 未部署（SQL 未跑），页面自行决定放行与否
 var YK_EXCLUSIVE_MEMO = null; // 会话内缓存，避免每页多次 ping
+function ykReadKey(k) {
+  try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return (v && (v.a || v.r)) ? v : null; } catch (e) { return null; }
+}
 function ykSession() {
   // 支持两种形态：商城 {a,r,email} / 后台 {r}（仅 refresh token，access token 需换取）
-  var s = null;
-  try { s = JSON.parse(localStorage.getItem('yuki-user-session') || 'null') || JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
-  return (s && (s.a || s.r)) ? s : null;
+  // 双键共存（商城账号 + 后台账号）时，取最近登录的那个（t 时间戳），保证「切换账号」全站判断一致
+  var u = ykReadKey('yuki-user-session'), m = ykReadKey('yuki-admin-session');
+  if (u && m) return (m.t && (!u.t || m.t > u.t)) ? m : u;
+  return u || m;
 }
 function ykHasAT() { var s = ykSession(); return !!(s && s.a); }
 function ykToken() {
@@ -785,7 +789,11 @@ function ykToken() {
   if (s.a) return Promise.resolve(s.a);
   return getAuthToken(); // 后台 {r} 形态：用现有刷新逻辑换 access token（内部已缓存并回写）
 }
-function ykStoreKey() { return localStorage.getItem('yuki-user-session') ? 'yuki-user-session' : 'yuki-admin-session'; }
+function ykStoreKey() {
+  var u = ykReadKey('yuki-user-session'), m = ykReadKey('yuki-admin-session');
+  if (u && m) return (m.t && (!u.t || m.t > u.t)) ? 'yuki-admin-session' : 'yuki-user-session';
+  return u ? 'yuki-user-session' : 'yuki-admin-session';
+}
 function ykRpc(p_kind) {
   return ykToken().then(function (at) {
     if (!at) { var e0 = new Error('请先登录'); e0.ykCode = 'nosession'; throw e0; }
@@ -844,18 +852,28 @@ function ykExclusiveCheck() {
   }).catch(function (e) {
     if (e && e.ykCode === 'pending') { YK_EXCLUSIVE_MEMO = 'pending'; return { ok: 'pending', email: null }; }
     YK_EXCLUSIVE_MEMO = false;
-    return { ok: false, email: ykSession().email || null };
+    var sNow = ykSession();
+    return { ok: false, email: (sNow && sNow.email) || null };
   });
 }
 function ykExclusiveData(kind) {
   return ykRpc(kind); // 返回 payload 原样（数组或对象，由调用方按 site_settings 同型处理）
 }
 function ykExclusiveLogout() {
-  var k = ykStoreKey();
-  try { localStorage.removeItem(k); } catch (e) {}
+  try { localStorage.removeItem('yuki-user-session'); } catch (e) {}
+  try { localStorage.removeItem('yuki-admin-session'); } catch (e) {}
   YK_EXCLUSIVE_MEMO = null;
   location.reload();
 }
+// 跨标签页会话同步：任何一处登录/登出，其他页面的菜单与权限立即重建
+window.addEventListener('storage', function (e) {
+  if (e.key !== 'yuki-user-session' && e.key !== 'yuki-admin-session') return;
+  YK_EXCLUSIVE_MEMO = null;
+  window.__YK_MENU_OK = false;
+  window.__YK_MENU_CHECKED = false;
+  try { if (window.SiteMenu) SiteMenu.refresh(); } catch (err) {}
+  try { document.dispatchEvent(new CustomEvent('yk-session-changed')); } catch (err) {}
+});
 // 页面门禁：mode 'exclusive'（默认，柚子专属白名单）| 'photos'（任意登录用户可看）
 // resolve(true) = 可渲染；false = 已渲染权限提示页（调用方必须停止数据加载）
 function ykGatePage(mode) {

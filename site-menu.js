@@ -69,8 +69,28 @@
     return '<span data-zh="' + zh + '" data-en="' + en + '">' + t(zh, en) + '</span>';
   }
 
+  // ── 统一账户导航区域（Index 顶部：购物车 + 登录/我的账户）──
+  function readSession() {
+    var u = null, m = null;
+    try { u = JSON.parse(localStorage.getItem('yuki-user-session') || 'null'); } catch (e) {}
+    try { m = JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
+    var ok = function (v) { return v && (v.a || v.r); };
+    if (ok(u) && ok(m)) return (m.t && (!u.t || m.t > u.t)) ? m : u;
+    return ok(u) ? u : (ok(m) ? m : null);
+  }
+  function buildAcctArea() {
+    var s = readSession();
+    var badge = '<span class="menu-cart-badge" id="menu-cart-badge" style="display:none;">0</span>';
+    var user = s
+      ? '<a class="menu-acct-user is-in" href="/shop/?sec=account" data-acct="account">' + span('我的账户', 'My Account') + '</a>'
+      : '<a class="menu-acct-user" href="/shop/?sec=account&next=' + encodeURIComponent(location.pathname + location.search) + '" data-acct="account">' + span('登录', 'Log in') + '</a>';
+    return el('<div class="menu-acct" id="menu-acct">' +
+      '<a class="menu-acct-cart" href="/shop/?sec=cart" data-acct="cart">' + span('购物车', 'Cart') + badge + '</a>' +
+      user + '</div>');
+  }
   function buildMenu(nav) {
     var frag = document.createDocumentFragment();
+    frag.appendChild(buildAcctArea());
     nav.forEach(function (item) {
       if (item.group) {
         var g = el('<div class="menu-group" data-nav="' + item.nav + '" data-key="' + item.key + '"></div>');
@@ -93,11 +113,12 @@
     return itemMatchesCurrent(item);
   }
 
-  // 柚子专属：登录后是可展开分组（管理后台），没登录是普通链接
+  // 柚子专属：没登录是普通链接（后台登录入口）；专属账号登录后是可展开分组；普通买家登录后隐藏
   function buildOwner() {
-    var logged = false;
-    try { logged = !!localStorage.getItem('yuki-admin-session'); } catch (e) {}
-    if (logged) {
+    var s = readSession();
+    // 有权限模块的页面（前台/商城）：严格按专属确认结果；后台自身（无 site-common）维持原规则
+    if (s && window.ykExclusiveCheck && window.__YK_MENU_OK !== true) return el('<div style="display:none;"></div>');
+    if (s) {
       var g = el('<div class="menu-group" id="menu-owner-group" style="margin-top:auto;"></div>');
       g.appendChild(el('<button class="menu-toggle" type="button">' + span('柚子专属', 'Yuki\'s Personal') + '<span class="plus"></span></button>'));
       var sub = el('<div class="submenu"></div>');
@@ -224,6 +245,15 @@
     if (burger) { setMenu(!document.getElementById('menu').classList.contains('open')); return; }
     var toggle = e.target.closest('.menu-toggle');
     if (toggle && toggle.closest('#menu')) { toggle.closest('.menu-group').classList.toggle('open'); return; }
+    var aa = e.target.closest('#menu a[data-acct]');
+    if (aa) {
+      setMenu(false);
+      if (curPage === 'shop' && typeof window.__shopNav === 'function') {
+        e.preventDefault();
+        window.__shopNav(aa.getAttribute('data-acct'));
+      }
+      return;
+    }
     var a = e.target.closest('#menu a');
     if (a) {
       var sc = a.getAttribute('data-scroll');
@@ -278,7 +308,13 @@
     refresh: refresh,
     close: function () { setMenu(false); },
     notify: notify,
-    applyCurrent: applyCurrent
+    applyCurrent: applyCurrent,
+    setCartCount: function (n) {
+      var b = document.getElementById('menu-cart-badge');
+      if (!b) return;
+      b.textContent = n;
+      b.style.display = n ? 'inline-flex' : 'none';
+    }
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refresh);
   else refresh();

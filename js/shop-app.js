@@ -16,7 +16,12 @@
   // ===== 买家登录态 =====
   var USER = null; // {a: access, r: refresh, email}
   function loadUser() { try { USER = JSON.parse(localStorage.getItem('yuki-user-session') || 'null'); } catch (e) { USER = null; } }
-  function saveUser() { try { USER ? localStorage.setItem('yuki-user-session', JSON.stringify(USER)) : localStorage.removeItem('yuki-user-session'); } catch (e) {} }
+  function saveUser() {
+    try {
+      if (USER) { USER.t = Date.now(); localStorage.setItem('yuki-user-session', JSON.stringify(USER)); }
+      else localStorage.removeItem('yuki-user-session');
+    } catch (e) {}
+  }
   function refreshUser() {
     if (!USER || !USER.r) return Promise.resolve(false);
     return fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
@@ -83,8 +88,57 @@
   }
   function paintCartBadge() {
     var n = 0; CART.forEach(function (x) { n += x.qty; });
-    var el = document.getElementById('cart-badge');
-    if (el) { el.textContent = n; el.style.display = n ? 'inline-flex' : 'none'; }
+    try { if (window.SiteMenu) SiteMenu.setCartCount(n); } catch (e) {}
+  }
+
+  window.__rgNotifyWanted = false; // 注册时勾选的上新订阅，建号成功后写入资料
+
+  // ===== 输入框 / 选项卡统一样式（边界清晰、状态明确）=====
+  function styleInputs(root) {
+    (root || document).querySelectorAll('input, textarea').forEach(function (i) {
+      if (i.dataset.styled) return;
+      i.dataset.styled = '1';
+      i.style.cssText = 'width:100%;padding:11px 14px;font-size:17px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:12px;background:#fff;outline:none;color:var(--text,#5d6780);font-family:inherit;box-sizing:border-box;transition:border-color .15s;';
+      i.addEventListener('focus', function () { i.style.borderColor = 'var(--accent,#ff6fa5)'; });
+      i.addEventListener('blur', function () { i.style.borderColor = 'var(--accent-soft,#ffc8d6)'; });
+    });
+  }
+  function paintTabs(scope, active) {
+    scope.querySelectorAll('.acct-tab').forEach(function (x) {
+      var on = x === active;
+      x.style.background = on ? 'var(--accent,#ff6fa5)' : '#fff';
+      x.style.color = on ? '#fff' : 'var(--muted,#9aa5bd)';
+      x.style.boxShadow = on ? 'none' : 'inset 0 0 0 1.5px var(--accent-soft,#ffc8d6)';
+    });
+  }
+  function styleTabs(scope) { paintTabs(scope, scope.querySelector('.acct-tab.on')); }
+
+  // ===== 新品上架通知订阅（默认关闭；站内自定义开关，不用原生 checkbox）=====
+  function subRead() {
+    try { return localStorage.getItem('yuki-notify-new') === '1'; } catch (e) { return false; }
+  }
+  function subWrite(on, uid) {
+    try { localStorage.setItem('yuki-notify-new', on ? '1' : '0'); } catch (e) {}
+    if (!uid) return Promise.resolve(false);
+    return api('shop_profiles?on_conflict=id', { method: 'POST', headers: { 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ id: uid, notify_new: on }) }).then(function (r) {
+      return !!r.ok;
+    }).catch(function () { return false; });
+  }
+  function subToggleHtml(id, on) {
+    return '<button type="button" id="' + id + '" role="switch" aria-checked="' + (on ? 'true' : 'false') + '" style="width:46px;height:26px;border-radius:999px;border:none;cursor:pointer;padding:0;position:relative;transition:background .2s;font-family:inherit;background:' + (on ? 'var(--accent,#ff6fa5)' : '#e8d5de') + ';flex-shrink:0;">' +
+      '<span style="position:absolute;top:3px;left:' + (on ? '23px' : '3px') + ';width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 4px rgba(120,70,95,.25);"></span></button>';
+  }
+  function bindSubToggle(btn, getUidFn, onChange) {
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var on = btn.getAttribute('aria-checked') !== 'true';
+      btn.setAttribute('aria-checked', on ? 'true' : 'false');
+      btn.style.background = on ? 'var(--accent,#ff6fa5)' : '#e8d5de';
+      btn.querySelector('span').style.left = on ? '23px' : '3px';
+      var done = subWrite(on, getUidFn ? getUidFn() : null);
+      if (onChange) onChange(on);
+      if (done && done.then) done.then(function (ok) { if (!ok && on) toast(t('订阅已在本机保存（账号资料同步失败）', 'Saved on this device (account sync failed)')); });
+    });
   }
 
   // ===== 视图路由 =====
@@ -681,8 +735,8 @@
             '<button class="buy-btn acct-tab" data-v="reg" style="padding:8px 20px;background:#fff;">' + t('注册', 'Sign up') + '</button>' +
           '</div>' +
           '<div id="ac-login">' +
-            '<input id="li-email" placeholder="Email" style="width:100%;margin-bottom:8px;">' +
-            '<input id="li-pw" type="password" placeholder="' + t('密码', 'Password') + '" style="width:100%;margin-bottom:10px;">' +
+            '<input id="li-email" placeholder="Email" style="width:100%;margin-bottom:10px;">' +
+            '<input id="li-pw" type="password" placeholder="' + t('密码', 'Password') + '" style="width:100%;margin-bottom:14px;">' +
             '<button class="buy-btn" id="li-go" style="width:100%;padding:11px;background:var(--accent);color:#fff;font-size:17px;">' + t('登录', 'Log in') + '</button>' +
             '<button id="li-forgot" style="background:none;border:none;color:var(--muted);font-family:inherit;font-size:15px;margin-top:8px;cursor:pointer;">' + t('忘记密码？发重置邮件', 'Forgot password? Send reset email') + '</button>' +
           '</div>' +
@@ -697,14 +751,20 @@
             '</div>' +
             '<p style="font-size:16px;margin:10px 0 4px;">' + t('收货地址', 'Shipping address') + '</p>' +
             '<div id="rg-addr"></div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:10px 12px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:12px;background:#fff;">' +
+              '<span style="font-size:15px;color:var(--text,#5d6780);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:12px;color:var(--muted,#9aa5bd);">' + t('默认关闭 · 邮件通知服务尚未配置，启用前不会发送邮件', 'Off by default · email delivery not configured yet') + '</span></span>' +
+              subToggleHtml('rg-notify', false) +
+            '</div>' +
             '<button class="buy-btn" id="rg-go" style="width:100%;padding:11px;background:var(--accent);color:#fff;font-size:17px;margin-top:10px;">' + t('注册', 'Create account') + '</button>' +
           '</div>' +
         '</div>';
-      box.querySelectorAll('input').forEach(function (i) { i.style.cssText = 'width:100%;padding:10px 14px;font-size:17px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;'; });
+      styleInputs(box);
+      styleTabs(box);
+      var rgN = document.getElementById('rg-notify');
+      bindSubToggle(rgN, function () { return null; }, function (on) { window.__rgNotifyWanted = on; });
       box.querySelectorAll('.acct-tab').forEach(function (b) {
         b.addEventListener('click', function () {
-          box.querySelectorAll('.acct-tab').forEach(function (x) { x.style.background = '#fff'; });
-          b.style.background = 'var(--accent-soft)';
+          paintTabs(box, b);
           document.getElementById('ac-login').style.display = b.getAttribute('data-v') === 'login' ? '' : 'none';
           document.getElementById('ac-reg').style.display = b.getAttribute('data-v') === 'reg' ? '' : 'none';
         });
@@ -745,12 +805,19 @@
             '<button class="buy-btn" id="pf-save" style="margin-top:10px;padding:9px 20px;">' + t('保存资料', 'Save profile') + '</button> ' +
             '<button class="buy-btn" id="pf-out" style="padding:9px 20px;background:#fff;color:var(--muted);">' + t('退出登录', 'Log out') + '</button>' +
           '</div>' +
+          '<div class="card" style="padding:18px;max-width:560px;margin-bottom:14px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
+              '<span style="font-size:15px;color:var(--text,#5d6780);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:12px;color:var(--muted,#9aa5bd);">' + t('邮件通知服务尚未配置，启用前不会发送邮件', 'Email delivery not configured yet — no emails will be sent until enabled') + '</span></span>' +
+              subToggleHtml('pf-notify', !!(prof && prof.notify_new) || subRead()) +
+            '</div>' +
+          '</div>' +
           '<div class="card" style="padding:18px;max-width:560px;">' +
             '<b style="font-size:17px;">' + t('收货地址', 'Addresses') + '</b><div id="pf-addr" style="margin-top:8px;"></div>' +
             '<button class="buy-btn" id="pf-add" style="margin-top:8px;padding:7px 16px;">' + t('＋ 新地址', '+ New address') + '</button>' +
             '<div id="pf-addr-form"></div>' +
           '</div>';
-        box.querySelectorAll('input').forEach(function (i) { i.style.cssText = 'width:100%;padding:10px 14px;font-size:17px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;'; });
+        styleInputs(box);
+        bindSubToggle(document.getElementById('pf-notify'), function () { return uid; });
         document.getElementById('pf-save').addEventListener('click', function () {
           var body = {
             id: uid, name: document.getElementById('pf-name').value.trim(),
@@ -763,6 +830,9 @@
         document.getElementById('pf-out').addEventListener('click', function () {
           USER = null; UID = null; saveUser();
           try { localStorage.setItem('yuki-cart-merge-done', '0'); } catch (e) {}
+          window.__YK_MENU_OK = false; window.__YK_MENU_CHECKED = false;
+          try { window.YK_EXCLUSIVE_MEMO = null; } catch (e) {}
+          try { if (window.SiteMenu) SiteMenu.refresh(); } catch (e) {}
           loadFavsLocal(); paintFavs(); paintAcctIcon();
           toast(t('已退出', 'Logged out'));
           renderAccount();
@@ -846,6 +916,10 @@
   }
   function afterLogin(addr, prof) {
     paintAcctIcon(); loadFavs();
+    if (window.__rgNotifyWanted) {
+      getUid().then(function (uid) { if (uid) subWrite(true, uid); });
+      window.__rgNotifyWanted = false;
+    }
     // 本地购物车合并到云端（云端已有的拉下来合并）
     getUid().then(function (uid) {
       if (!uid) { route(); return; }
@@ -881,6 +955,11 @@
     if (acct) acct.addEventListener('click', function () { renderAccount(); showView('account'); });
     paintAcctIcon();
   }
+  // Index 统一账户区域在商城页内的直达入口（site-menu.js 调用）
+  window.__shopNav = function (which) {
+    if (which === 'cart') { renderCart(); showView('cart'); }
+    else { renderAccount(); showView('account'); }
+  };
   function goNextAfterLogin() {
     try {
       var nx = new URLSearchParams(location.search).get('next');
