@@ -165,7 +165,7 @@
     render();
     Promise.all([
       dbFetch('photo_sections?select=id,key,name_zh,name_en,sort&order=sort.asc,created_at.asc&limit=100'),
-      dbFetch('site_settings?select=key,value&key=in.(areas,bjds,cards)&limit=10')
+      (typeof window.ykAuthFetch === 'function' ? window.ykAuthFetch : dbFetch)('site_settings?select=key,value&key=in.(areas,bjds,cards)&limit=10') /* 私有键走登录态（无 site-common 的页面回退匿名）*/
     ]).then(function (res) {
       var sections = res[0] || [];
       var settings = {};

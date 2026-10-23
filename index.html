@@ -35,7 +35,7 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261023g">
+<link rel="stylesheet" href="/css/site.css?v=20261023h">
   <link rel="stylesheet" href="/site-menu.css">
     <script src="/site-menu.js" defer></script>
 </head>
@@ -209,7 +209,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261023g"></script>
+<script src="/js/site-common.js?v=20261023h"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -1098,7 +1098,7 @@
   function loadEvents() {
     Promise.all([
       dbFetch('important_days?select=*&order=day.asc&limit=200'),
-      dbFetch('site_settings?select=key,value&key=in.(bjds,cards,cal_hide)')
+      ykAuthFetch('site_settings?select=key,value&key=in.(bjds,cards,cal_hide)') /* 私有键走登录态 */
     ]).then(function (res) {
       var rows = res[0];
       if (!Array.isArray(rows)) { DB_POST_OK = false; rows = []; }
