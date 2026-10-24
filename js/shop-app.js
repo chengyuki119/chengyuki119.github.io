@@ -37,7 +37,13 @@
     if (!USER || !USER.r) return Promise.resolve(false);
     // 统一续期：单飞 + 并发竞态重试；只有会话真失效才清空
     if (window.ykRefreshSession) {
-      return window.ykRefreshSession().then(function (s) { USER = s || null; return !!s; });
+      return window.ykRefreshSession().then(function (s) {
+        if (s) { USER = s; return true; }
+        // 瞬时失败（网络抖动）≠ 会话失效：存储里会话还在就保持登录态，不降级成普通用户
+        var keep = window.ykSession ? ykSession() : null;
+        USER = keep || null;
+        return !!keep;
+      });
     }
     return fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
       method: 'POST', headers: { 'apikey': ANON, 'Content-Type': 'application/json' },

@@ -38,11 +38,19 @@ function ykWriteSession(s, prefer) {
   } catch (e) {}
 }
 var YK_REFRESHING = null; // 页内单飞：多处同时要刷新时只发一次请求
-function ykRefreshSession() { // 统一续期：成功写回原键并清理另一键；并发/竞态时重读最新 r 重试一次
+function ykATFresh(s) { // access token 还新鲜（余量 >120s）就不旋转 refresh token，避免多页/多标签无谓互踩
+  if (!s || !s.a) return false;
+  try {
+    var p = JSON.parse(atob(s.a.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return !!(p && p.exp && p.exp > Date.now() / 1000 + 120);
+  } catch (e) { return false; }
+}
+function ykRefreshSession() { // 统一续期：a 新鲜直接复用；否则刷新并写回原键；并发/竞态时重读最新 r 重试一次
   if (YK_REFRESHING) return YK_REFRESHING;
   var key = ykSessionKey();
   var s = ykReadKey(key);
   if (!s || !s.r) return Promise.resolve(null);
+  if (ykATFresh(s)) return Promise.resolve(s);
   var triedR = s.r;
   var callRefresh = function (r) {
     return fetch('https://zajcglvlzsolygvjeumb.supabase.co/auth/v1/token?grant_type=refresh_token', {
@@ -863,20 +871,29 @@ function ykRpc(p_kind) {
 function ykExclusiveCheck() {
   if (!ykSession()) return Promise.resolve({ ok: false, email: null });
   if (YK_EXCLUSIVE_MEMO) return Promise.resolve({ ok: YK_EXCLUSIVE_MEMO, email: ykSession().email || null });
-  return ykRpc('ping').then(function (j) {
-    YK_EXCLUSIVE_MEMO = true;
-    var s = ykSession();
-    if (s && !s.email && j && j.email) { // 后台 {r} 形态补记邮箱，提示卡/菜单都能用
-      s.email = j.email;
-      try { localStorage.setItem(ykStoreKey(), JSON.stringify(s)); } catch (e) {}
-    }
-    return { ok: true, email: (j && j.email) || null };
-  }).catch(function (e) {
-    if (e && e.ykCode === 'pending') { YK_EXCLUSIVE_MEMO = 'pending'; return { ok: 'pending', email: null }; }
-    YK_EXCLUSIVE_MEMO = false;
-    var sNow = ykSession();
-    return { ok: false, email: (sNow && sNow.email) || null };
-  });
+  var run = function (isRetry) {
+    return ykRpc('ping').then(function (j) {
+      YK_EXCLUSIVE_MEMO = true;
+      var s = ykSession();
+      if (s && !s.email && j && j.email) { // 后台 {r} 形态补记邮箱，提示卡/菜单都能用
+        s.email = j.email;
+        try { localStorage.setItem(ykStoreKey(), JSON.stringify(s)); } catch (e) {}
+      }
+      return { ok: true, email: (j && j.email) || null };
+    }).catch(function (e) {
+      if (e && e.ykCode === 'pending') { YK_EXCLUSIVE_MEMO = 'pending'; return { ok: 'pending', email: null }; }
+      // 明确拒绝（非白名单）才算降级；网络/服务抖动（error/expired）不算——返回 retry 并自动重试一次
+      var transient = e && (e.ykCode === 'error' || e.ykCode === 'expired');
+      if (transient && !isRetry) {
+        return new Promise(function (res) { setTimeout(res, 2500); }).then(function () { return run(true); });
+      }
+      if (transient) return { ok: 'retry', email: null }; // 不写 memo，下页/手动重试仍会再试
+      YK_EXCLUSIVE_MEMO = false;
+      var sNow = ykSession();
+      return { ok: false, email: (sNow && sNow.email) || null };
+    });
+  };
+  return run(false);
 }
 function ykExclusiveData(kind) {
   return ykRpc(kind); // 返回 payload 原样（数组或对象，由调用方按 site_settings 同型处理）
@@ -910,6 +927,22 @@ function ykGatePage(mode) {
       bar.textContent = (window.LANG === 'en' ? 'Permission layer not active yet (waiting for SQL).' : '专属权限层尚未启用（等待 SQL），当前仅前端临时放行。');
       document.body.insertBefore(bar, document.body.firstChild);
       return true;
+    }
+    if (res.ok === 'retry') {
+      // 网络/服务抖动：不下「普通用户」的结论，给重试入口
+      var wrapR = document.createElement('div');
+      wrapR.style.cssText = 'min-height:62vh;display:flex;align-items:center;justify-content:center;padding:30px 16px;';
+      wrapR.innerHTML = '<div style="background:var(--card,#fff2f7);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
+        '<div style="font-size:34px;color:var(--accent,#ff6fa5);line-height:1;">♥</div>' +
+        '<h2 style="font-size:20px;color:var(--text,#5d6780);margin:14px 0 8px;">' + (en ? 'Checking your identity…' : '身份确认没成功') + '</h2>' +
+        '<p style="font-size:15px;color:var(--muted,#9aa5bd);margin:0 0 22px;">' + (en ? 'Network hiccup — your login is safe. Tap to retry.' : '刚才网络抖了一下，你的登录还在，点下面重试就好。') + '</p>' +
+        '<button id="yk-retry" style="background:var(--accent,#ff6fa5);color:#fff;border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Retry' : '重试') + '</button>' +
+        '</div>';
+      document.body.insertBefore(wrapR, document.body.firstChild);
+      var othersR = document.querySelectorAll('body > *:not(:first-child)');
+      for (var jR = 0; jR < othersR.length; jR++) othersR[jR].style.display = 'none';
+      document.getElementById('yk-retry').addEventListener('click', function () { YK_EXCLUSIVE_MEMO = null; location.reload(); });
+      return false;
     }
     if (res.ok === true) return true;
     // 权限提示页（与 404 页同款风格：粉色卡居中）

@@ -1000,6 +1000,21 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   setInterval(function () { if (REFRESH) tryRefresh().catch(function () {}); }, 20 * 60 * 1000); // 挂着不动也自动续期，不会掉登录
   document.addEventListener('visibilitychange', function () { if (!document.hidden && REFRESH) tryRefresh().catch(function () {}); }); // 切回页面时顺手续期：离开一小时再回来还是登录状态
   window.addEventListener('focus', function () { if (REFRESH) tryRefresh().catch(function () {}); });
+  // 后台权限以数据库为准：RPC shop_is_admin（Security Definer，读 shop_admins），前端邮箱判断只作快路提示
+  function checkAdminPerm() {
+    if (!ACCESS) return Promise.resolve(false);
+    return fetch(SUPABASE_URL + '/rest/v1/rpc/shop_is_admin', {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + ACCESS, 'Content-Type': 'application/json' },
+      body: '{}'
+    }).then(function (r) { return r.ok ? r.json() : false; }).catch(function () { return false; });
+  }
+  function denyAdmin() { // 非管理员：清会话留在登录门，不展示后台壳
+    ACCESS = REFRESH = null;
+    try { localStorage.removeItem('yuki-admin-session'); } catch (e) {}
+    try { localStorage.removeItem('yuki-user-session'); } catch (e) {}
+    toast('这个账号没有后台权限');
+  }
   function enterAdmin() {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('admin-body').style.display = '';
@@ -1023,7 +1038,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email, password: pw })
     }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-      .then(function (data) { saveSession(data); enterAdmin(); toast('欢迎回来，柚子！'); })
+      .then(function (data) {
+        saveSession(data);
+        return checkAdminPerm().then(function (ok) {
+          if (!ok) { denyAdmin(); return; }
+          enterAdmin(); toast('欢迎回来，柚子！');
+        });
+      })
       .catch(function () { toast('登录失败，检查邮箱密码'); });
   });
   document.getElementById('btn-logout').addEventListener('click', function () {
@@ -1065,8 +1086,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       // 保险丝：不是专属邮箱的会话不自动进后台（防普通买家会话误入）
       if (saved.email && saved.email.toLowerCase() !== 'chengyuki119@gmail.com') return;
       REFRESH = saved.r;
-      if (saved.a) { ACCESS = saved.a; enterAdmin(); return; } // token 还新鲜就直接进，不额外旋转 r
-      tryRefresh().then(enterAdmin).catch(function () {
+      var bootIn = function () {
+        return checkAdminPerm().then(function (ok) {
+          if (ok) enterAdmin();
+          else { try { localStorage.removeItem('yuki-admin-session'); } catch (e) {} try { localStorage.removeItem('yuki-user-session'); } catch (e) {} }
+        });
+      };
+      if (saved.a) { ACCESS = saved.a; bootIn(); return; } // token 还新鲜就直接验权限进，不额外旋转 r
+      tryRefresh().then(bootIn).catch(function () {
         try { localStorage.removeItem('yuki-admin-session'); } catch (e) {}
         try { localStorage.removeItem('yuki-user-session'); } catch (e) {}
       });
@@ -5438,7 +5465,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261023i"></script>
+<script src="js/admin-shop.js?v=20261023j"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

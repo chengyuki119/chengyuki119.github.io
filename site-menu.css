@@ -164,3 +164,13 @@
   background: #fff; color: var(--accent, #ff6fa5);
   box-shadow: inset 0 0 0 1.5px var(--accent-soft, #ffc8d6);
 }
+
+/* 身份确认中占位（登录后权限 RPC 未返回前的过渡态，不提前降级显示） */
+.menu-owner-pending {
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--muted, #9aa5bd);
+  background: var(--card, #fff2f7);
+  text-align: center;
+}

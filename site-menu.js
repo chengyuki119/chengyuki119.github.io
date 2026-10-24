@@ -112,7 +112,11 @@
     var s = readSession();
     // 前台/商城（有权限模块）：未登录与普通买家一律不显示专属后台入口，仅专属确认后显示
     if (window.ykExclusiveCheck) {
-      if (window.__YK_MENU_OK !== true) return el('<div style="display:none;"></div>');
+      if (window.__YK_MENU_OK !== true) {
+        // 已登录但权限确认未完成：显示「身份确认中」占位，不提前降级成普通用户
+        if (s) return el('<div class="menu-owner-pending">' + span('身份确认中…', 'Checking identity…') + '</div>');
+        return el('<div style="display:none;"></div>');
+      }
     } else if (!s) {
       return el('<div style="display:none;"></div>'); // 后台自身未登录也不显示
     }
