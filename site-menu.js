@@ -25,8 +25,7 @@
     { key: 'works', zh: '稿件展示', en: 'Works', page: 'works', url: '/works/' },
     { key: 'shop', group: true, nav: 'shop', zh: '我的小铺', en: 'My Shop', items: [
       { key: 'shop', zh: '逛小铺', en: 'Shop', page: 'shop', url: '/shop/' },
-      { key: 'reviews', zh: '评价返图', en: 'Review', page: 'shop', url: '/shop/?sec=reviews', sec: 'reviews' },
-      { key: 'pay', zh: '付款方式', en: 'Payment', page: 'shop', url: '/shop/?sec=pay', sec: 'pay' }
+      { key: 'reviews', zh: '评价返图', en: 'Review', page: 'shop', url: '/shop/?sec=reviews', sec: 'reviews' }
     ]},
     { key: 'anon', zh: '匿名留言', en: 'Ask Box', page: 'askbox', url: '/askbox/' },
     { key: 'links', zh: '找到我', en: 'Find Me', page: 'index', url: '/', scrollTo: 'links', scroll: true }
@@ -80,19 +79,19 @@
   }
   function buildAcctBottom() {
     var s = readSession();
-    if (s) return el('<a class="menu-acct-bottom is-in" href="/shop/?sec=account" data-acct="account">' + span('我的账户', 'My Account') + '</a>');
-    return el('<a class="menu-acct-bottom" href="/shop/?sec=account&next=' + encodeURIComponent(location.pathname + location.search) + '" data-acct="account">' + span('登录', 'Log in') + '</a>');
+    if (s) return el('<a class="menu-acct-bottom is-in" href="/account/" data-acct="account">' + span('我的账户', 'My Account') + '</a>');
+    return el('<a class="menu-acct-bottom" href="/account/?next=' + encodeURIComponent(location.pathname + location.search) + '" data-acct="account">' + span('登录', 'Log in') + '</a>');
   }
   // 已登录点「我的账户」：按真实专属身份（RPC）决定去向——专属→后台、买家→普通账户页；验证中保持加载态不误跳
   function routeAccount(link) {
-    if (typeof window.ykExclusiveCheck !== 'function') { location.href = '/shop/?sec=account'; return; }
+    if (typeof window.ykExclusiveCheck !== 'function') { location.href = '/account/'; return; }
     var restore = link.innerHTML;
     link.classList.add('acct-loading');
     link.innerHTML = span('身份确认中…', 'Checking…');
     var go = function (exclusive) {
       if (exclusive) { location.href = '/admin.html'; return; }
-      if (curPage === 'shop' && typeof window.__shopNav === 'function') { window.__shopNav('account'); return; }
-      location.href = '/shop/?sec=account';
+      if (curPage === 'shop' && typeof window.__shopNav === 'function') { location.href = '/account/'; return; }
+      location.href = '/account/';
     };
     var fail = function () { link.classList.remove('acct-loading'); link.innerHTML = restore; };
     window.ykExclusiveCheck().then(function (res) {

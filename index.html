@@ -35,7 +35,7 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261024g">
+<link rel="stylesheet" href="/css/site.css?v=20261024i">
   <link rel="stylesheet" href="/site-menu.css">
     <script src="/site-menu.js" defer></script>
 </head>
@@ -214,7 +214,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261024g"></script>
+<script src="/js/site-common.js?v=20261024i"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -302,7 +302,7 @@
   .ai-input { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #fff; border-top: 1px solid var(--card-hover); flex-shrink: 0; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
   .ai-input input { flex: 1; border: 1px solid var(--card-hover); border-radius: 999px; background: var(--bg); padding: 9px 14px; font-size:16px; font-family: inherit; color: var(--text); outline: none; min-width: 0; }
   .ai-input input:focus { border-color: var(--accent-soft); }
-  .ai-input .send { width: 36px; height: 36px; flex-shrink: 0; border: none; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; transition: transform .12s; cursor: pointer; }
+  .ai-input .send { width: 36px; height: 36px; flex-shrink: 0; border: none; border-radius: 50%; background:#ffd9e6; color: #fff; display: flex; align-items: center; justify-content: center; transition: transform .12s; cursor: pointer; }
   .ai-input .send:active { transform: scale(.92); }
   .ai-input .send svg { width: 16px; height: 16px; fill: #fff; }
 
@@ -595,7 +595,7 @@
         bjdEditBtn(x.i) + // 登录后台后才出现
         '</div>' +
         (b.head.size ? '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + escDb(LANG === 'en' && window.sizeEnKeep ? sizeEnKeep(b.head.size) : b.head.size) + '</div>' : '') +
-        (pv ? '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;"><span style="flex:1;font-size:17px;color:var(--accent);font-weight:600;">' + (LANG === 'en' ? 'Total ¥' : '总价 ¥') + pv + '</span></div>' : '') +
+        (pv ? '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;"><span style="flex:1;font-size:17px;color:var(--text,#5d6780);font-weight:600;">' + (LANG === 'en' ? 'Total ¥' : '总价 ¥') + pv + '</span></div>' : '') +
         '</div></div>';
     }).join('');
   }
@@ -799,7 +799,7 @@
             '</div>' +
             '<div style="font-size:15px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (c.shop ? escDb(c.shop) : '&nbsp;') + '</div>' +
             '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">' +
-            '<span style="flex:1;font-size:17px;color:var(--accent);font-weight:600;">' + (LANG === 'en' ? 'Total ¥' : '总价 ¥') + fmtMoney(cardFinalV(c)) + '</span>' +
+            '<span style="flex:1;font-size:17px;color:var(--text,#5d6780);font-weight:600;">' + (LANG === 'en' ? 'Total ¥' : '总价 ¥') + fmtMoney(cardFinalV(c)) + '</span>' +
             cardEditBtn(i) +
             '</div>' +
             '</div></div>';
@@ -843,7 +843,7 @@
             workEditBtn(i, worksRaw) +
             '</div>' +
             (w.date ? '<div style="font-size:15px;color:var(--muted);margin-top:3px;">' + escDb(String(w.date).replace(/-/g, '/')) + '</div>' : '') +
-            (parseFloat(w.price) ? '<div style="font-size:17px;color:var(--accent);font-weight:600;margin-top:4px;">¥' + fmtMoney(w.price) + '</div>' : '') +
+            (parseFloat(w.price) ? '<div style="font-size:17px;color:var(--text,#5d6780);font-weight:600;margin-top:4px;">¥' + fmtMoney(w.price) + '</div>' : '') +
             '</div></div>';
         }).join('');
       }
@@ -1035,9 +1035,9 @@
     dbSend('site_settings', 'POST', { key: 'day_cats', value: JSON.stringify(DAY_CATS) }).catch(function () {});
   }
   function typeColor(r) {
-    var fixed = { birthday: '#ff6fa5', anniversary: '#b3ace0', event: '#9ecfae' }[r];
+    var fixed = { birthday: '#e8a0c8', anniversary: '#b3ace0', event: '#9ecfae' }[r];
     if (fixed) return fixed;
-    var palette = ['#ff6fa5', '#f5a25d', '#9ecfae', '#8fc7e8', '#b3ace0', '#e8a0c8']; // 新分类按名字固定取色
+    var palette = ['#e8a0c8', '#f5a25d', '#9ecfae', '#8fc7e8', '#b3ace0', '#7fa8d9']; // 新分类按名字固定取色
     var h = 0;
     for (var i = 0; i < (r || '').length; i++) h = (h * 31 + r.charCodeAt(i)) >>> 0;
     return palette[h % palette.length];

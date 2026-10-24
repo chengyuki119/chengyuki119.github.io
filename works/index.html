@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261024g">
+<link rel="stylesheet" href="/css/site.css?v=20261024i">
 <link rel="stylesheet" href="/site-menu.css">
 <script src="/site-menu.js" defer></script>
 </head>
@@ -76,7 +76,7 @@
 <div id="share-pop"></div>
 <div class="toast" id="toast"></div>
 
-<script src="/js/site-common.js?v=20261024g"></script>
+<script src="/js/site-common.js?v=20261024i"></script>
 <script>
   // ===== 稿件展示：独立子页（稿件墙 + 稿件详情 /works/?id=N）=====
   // 数据：site_settings.works（与后台「稿件管理」同一份，单一数据源）
@@ -160,7 +160,7 @@
         '</div>' +
         (w.date ? '<div style="font-size:15px;color:var(--muted);margin-top:3px;">' + escDb(fmtWorkDate(w.date)) + '</div>' : '') +
         (w.cat || w.artist ? '<div style="font-size:15px;color:var(--muted);margin-top:3px;">' + escDb([w.cat, w.artist].filter(Boolean).join(' · ')) + '</div>' : '') +
-        (parseFloat(w.price) ? '<div style="font-size:17px;color:var(--accent);font-weight:600;margin-top:4px;">¥' + fmtMoney(w.price) + '</div>' : '') +
+        (parseFloat(w.price) ? '<div style="font-size:17px;color:var(--text,#5d6780);font-weight:600;margin-top:4px;">¥' + fmtMoney(w.price) + '</div>' : '') +
         (workDesc(w) ? '<div style="font-size:16px;color:var(--text);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">' + escDb(workDesc(w)) + '</div>' : '') +
         '</div></div>';
     }).join('');
@@ -185,7 +185,7 @@
       '<span style="font-size:21px;font-weight:700;">' + escDb(w.name || t('未命名稿件', 'Untitled work')) + '</span>' +
       (w.date ? '<span style="color:var(--muted);font-size:17px;">　|　' + escDb(fmtWorkDate(w.date)) + '</span>' : '') +
       (w.cat || w.artist ? '<span style="color:var(--muted);font-size:17px;">　|　' + escDb([w.cat, w.artist].filter(Boolean).join(' · ')) + '</span>' : '') +
-      (parseFloat(w.price) ? '<span style="color:var(--accent);font-size:18px;font-weight:700;">　|　¥' + fmtMoney(w.price) + '</span>' : '') +
+      (parseFloat(w.price) ? '<span style="color:var(--text,#5d6780);font-size:18px;font-weight:700;">　|　¥' + fmtMoney(w.price) + '</span>' : '') +
       '</div>' +
       (workDesc(w) ? '<div class="card" style="padding:18px 20px;margin-bottom:14px;font-size:17px;line-height:1.9;white-space:pre-wrap;word-break:break-word;">' + escDb(workDesc(w)) + '</div>' : '');
   }

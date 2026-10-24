@@ -15,19 +15,19 @@
   css.textContent = [
     '#tab-shopmgr .sm-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }',
     '#tab-shopmgr .sm-stat { background:#fff; border-radius:var(--radius); padding:10px 14px; box-shadow:0 2px 10px rgba(180,120,150,.12); }',
-    '#tab-shopmgr .sm-stat b { display:block; font-size:23px; color:var(--accent); line-height:1.3; }',
+    '#tab-shopmgr .sm-stat b { display:block; font-size:23px; color:var(--text,#5d6780); line-height:1.3; }',
     '#tab-shopmgr .sm-stat span { font-size:14px; color:var(--muted); }',
     '#tab-shopmgr .sm-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }',
     '#tab-shopmgr .sm-tab { border:none; background:var(--card); color:var(--muted); font-size:16px; padding:7px 14px; border-radius:999px; cursor:pointer; font-family:inherit; transition:background .15s,color .15s; }',
     '#tab-shopmgr .sm-tab:hover { background:var(--card-hover); }',
-    '#tab-shopmgr .sm-tab.active { background:var(--accent-soft); color:#fff; }',
+    '#tab-shopmgr .sm-tab.active { background:#ffd9e6); color:#fff; }',
     '#tab-shopmgr .sm-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }',
     '#tab-shopmgr .sm-toolbar .dy-chips { flex:1; min-width:260px; }',
     '#tab-shopmgr .sm-toolbar input { width:230px; flex-shrink:0; }',
     '#tab-shopmgr .sm-o-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; cursor:pointer; }',
     '#tab-shopmgr .sm-o-no { font-weight:700; color:var(--text); }',
     '#tab-shopmgr .sm-o-mail { font-size:15px; color:var(--muted); word-break:break-all; }',
-    '#tab-shopmgr .sm-o-total { color:var(--accent); font-weight:600; }',
+    '#tab-shopmgr .sm-o-total { color:var(--text,#5d6780); font-weight:600; }',
     '#tab-shopmgr .sm-o-time, #tab-shopmgr .sm-o-cnt { font-size:15px; color:var(--muted); }',
     '#tab-shopmgr .sm-o-arrow { margin-left:auto; color:var(--muted); transition:transform .15s; }',
     '#tab-shopmgr .sm-order.open .sm-o-arrow { transform:rotate(90deg); }',
@@ -43,7 +43,7 @@
     '#tab-shopmgr .sm-act input, #tab-shopmgr .sm-act textarea { flex:1; min-width:120px; width:auto; }',
     '#tab-shopmgr .sm-act .sm-reject-reason { min-width:190px; }',
     '#tab-shopmgr .sm-act textarea { min-height:44px; }',
-    '#tab-shopmgr .sm-total-prev { color:var(--accent); font-size:15px; white-space:nowrap; }',
+    '#tab-shopmgr .sm-total-prev { color:var(--text,#5d6780); font-size:15px; white-space:nowrap; }',
     '#tab-shopmgr .sm-g-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }',
     '#tab-shopmgr .sm-g-meta { font-size:15px; color:var(--muted); margin-top:4px; }',
     '#tab-shopmgr .sm-mb-row { font-size:16px; padding:5px 0; border-bottom:1px dashed var(--card-hover); }',
@@ -102,7 +102,7 @@
     pending:   ['待付款',   '#c4bcb6'],
     reviewing: ['待审核',   '#f3b96d'],
     rejected:  ['凭证有误', '#e6a9c3'],
-    paid:      ['待发货',   '#ff6fa5'],
+    paid:      ['待发货',   '#e8a0c8'],
     shipped:   ['已发货',   '#b3ace0'],
     completed: ['已完成',   '#9ecfae'],
     cancelled: ['已取消',   '#c4bcb6'],
@@ -112,7 +112,7 @@
   var O_CHIPS = [['', '全部'], ['pending', '待付款'], ['reviewing', '待审核'], ['paid', '待发货'],
                  ['shipped', '已发货'], ['completed', '已完成'], ['rejected', '凭证有误'],
                  ['refunding', '退款中'], ['refunded', '已退款'], ['cancelled', '已取消']];
-  var G_ST = { open: ['进行中', '#ff6fa5'], success: ['已成团', '#9ecfae'], failed: ['已失败', '#c4bcb6'], cancelled: ['已取消', '#c4bcb6'] };
+  var G_ST = { open: ['进行中', '#e8a0c8'], success: ['已成团', '#9ecfae'], failed: ['已失败', '#c4bcb6'], cancelled: ['已取消', '#c4bcb6'] };
   var AS_ST = { open: ['待处理', '#f3b96d'], done: ['已结案', '#9ecfae'], rejected: ['已拒绝', '#c4bcb6'] };
 
   function badge(st, map) {

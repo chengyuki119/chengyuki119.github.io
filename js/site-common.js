@@ -933,10 +933,10 @@ function ykGatePage(mode) {
       var wrapR = document.createElement('div');
       wrapR.style.cssText = 'min-height:62vh;display:flex;align-items:center;justify-content:center;padding:30px 16px;';
       wrapR.innerHTML = '<div style="background:var(--card,#fff2f7);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
-        '<div style="font-size:34px;color:var(--accent,#ff6fa5);line-height:1;">♥</div>' +
+        '<div style="font-size:34px;color:var(--text,#5d6780);line-height:1;">♥</div>' +
         '<h2 style="font-size:20px;color:var(--text,#5d6780);margin:14px 0 8px;">' + (en ? 'Checking your identity…' : '身份确认没成功') + '</h2>' +
         '<p style="font-size:15px;color:var(--muted,#9aa5bd);margin:0 0 22px;">' + (en ? 'Network hiccup — your login is safe. Tap to retry.' : '刚才网络抖了一下，你的登录还在，点下面重试就好。') + '</p>' +
-        '<button id="yk-retry" style="background:var(--accent,#ff6fa5);color:#fff;border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Retry' : '重试') + '</button>' +
+        '<button id="yk-retry" style="background:#ffd9e6;color:#fff;border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Retry' : '重试') + '</button>' +
         '</div>';
       document.body.insertBefore(wrapR, document.body.firstChild);
       var othersR = document.querySelectorAll('body > *:not(:first-child)');
@@ -953,13 +953,13 @@ function ykGatePage(mode) {
     var title = (mode === 'photos') ? (en ? 'Photos are for logged-in visitors' : '照片展示要登录后才能看哦') : (en ? 'Yuki Members Only' : '此内容仅限柚子专属账号查看');
     var btns = '';
     if (!logged) {
-      btns = '<a href="/shop/?sec=account&next=' + encodeURIComponent(location.pathname + location.search) + '" style="display:inline-block;background:var(--accent,#ff6fa5);color:#fff;border-radius:999px;padding:11px 26px;font-size:16px;text-decoration:none;">' + (en ? 'Go to Login' : '去登录') + '</a>';
+      btns = '<a href="/account/?next=' + encodeURIComponent(location.pathname + location.search) + '" style="display:inline-block;background:#ffd9e6;color:#fff;border-radius:999px;padding:11px 26px;font-size:16px;text-decoration:none;">' + (en ? 'Go to Login' : '去登录') + '</a>';
     } else {
-      btns = '<button id="yk-logout" style="background:var(--accent,#ff6fa5);color:#fff;border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Log Out' : '退出登录') + '</button>' +
+      btns = '<button id="yk-logout" style="background:#ffd9e6;color:#fff;border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Log Out' : '退出登录') + '</button>' +
              ' <a href="/" style="display:inline-block;margin-left:10px;color:var(--muted,#9aa5bd);text-decoration:none;">' + (en ? 'Back to Home' : '返回主页') + '</a>';
     }
     wrap.innerHTML = '<div style="background:var(--card,#fff2f7);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
-      '<div style="font-size:34px;color:var(--accent,#ff6fa5);line-height:1;">♥</div>' +
+      '<div style="font-size:34px;color:var(--text,#5d6780);line-height:1;">♥</div>' +
       '<h2 style="font-size:20px;color:var(--text,#5d6780);margin:14px 0 8px;">' + title + '</h2>' +
       '<p style="font-size:15px;color:var(--muted,#9aa5bd);margin:0 0 22px;">' +
         (logged
