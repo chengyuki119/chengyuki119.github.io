@@ -161,7 +161,7 @@
 }
 .menu-acct-bottom:hover { opacity: .88; }
 .menu a.menu-acct-bottom.is-in {
-  background: #fff; color:var(--text,#5d6780);
+  background: var(--accent-soft, #ffc8d6); color: #fff; /* 与后台上传头像按钮同款：浅粉底白字 */
   box-shadow: none;
 }
 
