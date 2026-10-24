@@ -5073,12 +5073,17 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     var todo = local.filter(function (k) { return k.q && k.a && !exist[normQ(k.q)]; });
     if (!todo.length) { try { localStorage.setItem('yuki-ai-kb-imported', '1'); } catch (e) {} return Promise.resolve(); }
     var chain = Promise.resolve();
+    var fail = 0;
     todo.forEach(function (k) {
       chain = chain.then(function () {
-        return api('ai_kb', { method: 'POST', body: JSON.stringify({ q: k.q, a: k.a }) }).catch(function () { return null; });
+        return api('ai_kb', { method: 'POST', body: JSON.stringify({ q: k.q, a: k.a }) }).then(function (r) { if (!r.ok) fail++; }).catch(function () { fail++; });
       });
     });
     return chain.then(function () {
+      if (fail) { // 失败不写标志：下次进 AI tab 还会重试，不会悄悄丢数据
+        toast('旧知识库迁移有 ' + fail + ' 条没存上，下次再进 AI 对话页会自动重试');
+        return loadKb();
+      }
       try { localStorage.setItem('yuki-ai-kb-imported', '1'); } catch (e) {}
       toast('本机旧知识库 ' + todo.length + ' 条已迁入数据库，以后不会丢了');
       return loadKb();
@@ -5161,6 +5166,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     var t0 = today.getTime(), nowT = Date.now();
     var c = { today: 0, d7: 0, d30: 0, all: 0 };
     SESSIONS.forEach(function (s) {
+      if (s.demo) return; // 示例数据不算进统计
       var q = s.msgs.filter(function (m) { return m.role === 'user'; }).length;
       c.all += q;
       if (s.time >= t0) c.today += q;
@@ -5406,8 +5412,19 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   });
 
   render(); // 先渲染（用本地旧数据，不打断浏览）
-  loadSessions().then(render); // 再异步拉数据库真实会话
-  loadKb().then(function () { return migrateLocalKb(); }).then(render);
+  var aiLoaded = false;
+  function refreshAiData() {
+    if (aiLoaded) return;
+    aiLoaded = true;
+    loadSessions().then(render); // 登录态下拉数据库真实会话
+    loadKb().then(function () { return migrateLocalKb(); }).then(render);
+  }
+  // AI tab 首次被点开时再拉数据库（此时登录态已就绪）；若当前已在此 tab（直达）则立即拉
+  if (document.getElementById('tab-ai') && document.getElementById('tab-ai').style.display !== 'none') refreshAiData();
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.tab-btn');
+    if (b && b.textContent.trim() === 'AI 对话') refreshAiData();
+  }, true);
 })();
 </script>
 
@@ -5610,7 +5627,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261024a"></script>
+<script src="js/admin-shop.js?v=20261024b"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
