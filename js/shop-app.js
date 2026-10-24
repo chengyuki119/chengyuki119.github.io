@@ -119,16 +119,17 @@
     (root || document).querySelectorAll('input, textarea').forEach(function (i) {
       if (i.dataset.styled) return;
       i.dataset.styled = '1';
-      i.style.cssText = 'width:100%;padding:11px 14px;font-size:17px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:12px;background:#fff;outline:none;color:var(--text,#5d6780);font-family:inherit;box-sizing:border-box;transition:border-color .15s;';
-      i.addEventListener('focus', function () { i.style.borderColor = 'var(--accent,#ff6fa5)'; });
+      i.style.cssText = 'width:100%;padding:11px 14px;font-size:17px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:12px;background:#fff;outline:none;color:var(--text,#5d6780);font-family:inherit;box-sizing:border-box;transition:border-color .15s;box-shadow:0 2px 10px rgba(255,143,171,.06);';
+      i.addEventListener('focus', function () { i.style.borderColor = '#f79fbd'; });
       i.addEventListener('blur', function () { i.style.borderColor = 'var(--accent-soft,#ffc8d6)'; });
     });
   }
   function paintTabs(scope, active) {
     scope.querySelectorAll('.acct-tab').forEach(function (x) {
       var on = x === active;
-      x.style.background = on ? 'var(--accent,#ff6fa5)' : '#fff';
-      x.style.color = on ? '#fff' : 'var(--muted,#9aa5bd)';
+      // 柔和粉色系：选中浅粉底深玫瑰字，未选中白底软粉描边，不过分强烈
+      x.style.background = on ? '#ffd9e6' : '#fff';
+      x.style.color = on ? '#a04a68' : 'var(--muted,#9aa5bd)';
       x.style.boxShadow = on ? 'none' : 'inset 0 0 0 1.5px var(--accent-soft,#ffc8d6)';
     });
   }
@@ -1111,7 +1112,7 @@
     function tags() {
       var set = []; PRODUCTS.forEach(function (p) { if (p.tag && set.indexOf(p.tag) < 0) set.push(p.tag); });
       document.getElementById('q-tags').innerHTML = [''].concat(set).map(function (x) {
-        return '<button class="buy-btn q-tag" data-t="' + escAttr(x) + '" style="padding:6px 12px;font-size:14px;background:' + (x === tag ? 'var(--accent);color:#fff' : '#fff') + ';">' + esc(x || t('全部', 'All')) + '</button>';
+        return '<button class="buy-btn q-tag" data-t="' + escAttr(x) + '" style="padding:6px 12px;font-size:14px;border-radius:999px;background:' + (x === tag ? '#ffd9e6;color:#a04a68' : '#fff;color:var(--muted,#9aa5bd)') + ';box-shadow:' + (x === tag ? 'none' : 'inset 0 0 0 1.5px var(--accent-soft,#ffc8d6)') + ';">' + esc(x || t('全部', 'All')) + '</button>';
       }).join('');
       bar.querySelectorAll('.q-tag').forEach(function (b) { b.addEventListener('click', function () { tag = b.getAttribute('data-t'); paint(); }); });
     }
