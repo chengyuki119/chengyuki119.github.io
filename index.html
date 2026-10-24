@@ -35,7 +35,7 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261024d">
+<link rel="stylesheet" href="/css/site.css?v=20261024e">
   <link rel="stylesheet" href="/site-menu.css">
     <script src="/site-menu.js" defer></script>
 </head>
@@ -215,7 +215,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261024d"></script>
+<script src="/js/site-common.js?v=20261024e"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -1481,14 +1481,15 @@
   function cardHtml(p) {
     var imgs = pagerImgsOf({ images: p.images, image_url: p.image_url });
     var st = statusOf(p);
-    var stText = st === 'on' ? '在售' : st === 'display' ? '仅展示' : '售尽';
+    var stText = st === 'on' ? t('在售', 'On sale') : st === 'display' ? t('仅展示', 'Display only') : t('售尽', 'Sold out');
     return '<div class="hs-card' + (st === 'on' ? '' : ' off') + '" data-href="/shop/?id=' + encodeURIComponent(p.id) + '">' +
-      pagerWrapHtml(imgs, p.name || '') +
+      '<div class="hs-imgbox">' + pagerWrapHtml(imgs, p.name || '') +
+        '<span class="st st-' + st + '">' + stText + '</span></div>' +
       '<div class="hs-info">' +
         '<span class="hs-tag">' + escDb(p.tag || '没有标签') + '</span>' +
         '<b class="hs-name">' + escDb(p.name || '') + '</b>' +
         '<div class="hs-row"><span class="hs-price">' + (p.price ? hsPrice(p) : '') + '</span>' +
-        '<span class="hs-st">' + stText + '</span></div>' +
+        '</div>' +
       '</div></div>';
   }
   var grid = document.getElementById('home-shop-grid');

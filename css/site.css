@@ -606,6 +606,15 @@
 .hs-price { flex: 1; font-size: 17px; font-weight: 600; color: var(--accent); }
 .hs-price small { font-size: 13px; margin-right: 1px; }
 .hs-st { font-size: 13px; color: var(--muted); }
+/* 首页商品卡状态角标：与小铺页同款，图片右下角 */
+.home-shop-grid .hs-imgbox { position: relative; }
+.home-shop-grid .hs-imgbox .st {
+  position: absolute; bottom: 10px; right: 10px; z-index: 2;
+  font-size: 15px; padding: 3px 12px; border-radius: 999px; color: #fff;
+}
+.home-shop-grid .hs-imgbox .st-on { background: #9ecfae; }
+.home-shop-grid .hs-imgbox .st-display { background: #b3ace0; }
+.home-shop-grid .hs-imgbox .st-out { background: #c4bcb6; }
 .home-shop-more {
   display: inline-block; margin-top: 16px;
   font-size: 16px; color: var(--accent); text-decoration: none;
