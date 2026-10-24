@@ -779,14 +779,14 @@
             '<button class="buy-btn acct-tab" data-v="reg" style="padding:8px 20px;background:#fff;">' + t('注册', 'Sign up') + '</button>' +
           '</div>' +
           '<div id="ac-login">' +
-            '<input id="li-email" placeholder="Email" style="width:100%;margin-bottom:12px;">' +
-            '<input id="li-pw" type="password" placeholder="' + t('密码', 'Password') + '" style="width:100%;margin-bottom:12px;">' +
+            '<input id="li-email" placeholder="Email" style="width:100%;margin-bottom:14px;">' +
+            '<input id="li-pw" type="password" placeholder="' + t('密码', 'Password') + '" style="width:100%;margin-bottom:16px;">' +
             '<button class="buy-btn" id="li-go" style="width:100%;padding:11px;background:#ffd9e6;color:#a04a68;font-size:17px;">' + t('登录', 'Log in') + '</button>' +
-            '<button id="li-forgot" style="background:none;border:none;color:var(--muted);font-family:inherit;font-size:15px;margin-top:10px;cursor:pointer;">' + t('忘记密码？发重置邮件', 'Forgot password? Send reset email') + '</button>' +
+            '<button id="li-forgot" style="background:none;border:none;color:var(--muted);font-family:inherit;font-size:15px;margin-top:14px;cursor:pointer;">' + t('忘记密码？发重置邮件', 'Forgot password? Send reset email') + '</button>' +
           '</div>' +
           '<div id="ac-reg" style="display:none;">' +
             '<p style="font-size:14px;color:var(--muted);margin-bottom:8px;">' + t('注册即创建买家账号（邮箱可能需要点击验证邮件）。', 'Sign up creates your buyer account (email verification may be required).') + '</p>' +
-            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
               '<input id="rg-name" placeholder="' + t('姓名 *', 'Full name *') + '">' +
               '<input id="rg-nick" placeholder="' + t('昵称（选填）', 'Nickname (optional)') + '">' +
               '<input id="rg-email" placeholder="Email *" style="grid-column:1/-1;">' +
@@ -804,6 +804,11 @@
         '</div>';
       styleInputs(box);
       styleTabs(box);
+      // styleInputs 会整体覆盖内联样式，间距在这里补回来（登录表单元素之间的空隔）
+      var le = document.getElementById('li-email');
+      var lp = document.getElementById('li-pw');
+      if (le) le.style.marginBottom = '14px';
+      if (lp) lp.style.marginBottom = '16px';
       var rgN = document.getElementById('rg-notify');
       bindSubToggle(rgN, function () { return null; }, function (on) { window.__rgNotifyWanted = on; });
       box.querySelectorAll('.acct-tab').forEach(function (b) {
@@ -1061,7 +1066,7 @@
     });
   }
   function afterLogin(addr, prof) {
-    paintAcctIcon(); loadFavs();
+    paintAcctIcon(); loadFavs(); paintNav(); // 登录成功：顶部「我的订单」入口此时才出现
     if (window.__rgNotifyWanted) {
       getUid().then(function (uid) { if (uid) subWrite(true, uid); });
       window.__rgNotifyWanted = false;
@@ -1303,10 +1308,16 @@
     });
   }
 
-  // ===== 顶部快捷入口 =====
+  // ===== 顶部快捷入口（登录后才有：未登录不展示「我的订单」等入口；可重复调用）=====
   function paintNav() {
+    if (document.getElementById('shop-quick-nav')) { // 已存在则按登录态切显示
+      document.getElementById('shop-quick-nav').style.display = USER ? '' : 'none';
+      return;
+    }
+    if (!USER) return;
     var bar = document.querySelector('.notice');
     var nav = document.createElement('div');
+    nav.id = 'shop-quick-nav';
     nav.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;';
     nav.innerHTML =
       '<a class="back-link" href="/shop/?sec=orders">' + t('我的订单', 'Orders') + '</a>';
@@ -1338,7 +1349,6 @@
   window.__shopDebug = { openDetail: openDetail, openGroupDetail: openGroupDetail, renderAccount: renderAccount, placeOrder: placeOrder, cartAdd: cartAdd }; // 测试钩子
   loadUser();
   loadCart();
-  paintNav();
   enhanceList();
-  refreshUser().then(function () { UID = null; route(); });
+  refreshUser().then(function () { UID = null; paintNav(); route(); });
 })();

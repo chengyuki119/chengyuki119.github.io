@@ -149,18 +149,18 @@
   font-size: 12px; line-height: 19px; text-align: center; padding: 0 5px;
   font-weight: 600; box-sizing: border-box;
 }
-.menu-acct-bottom {
+.menu a.menu-acct-bottom {
   margin-top: auto;
   display: flex; align-items: center; justify-content: center;
   min-height: 44px;
   border-radius: 12px;
   font-size: 17px;
   text-decoration: none;
-  background: var(--accent, #ff6fa5); color: #fff;
+  background: #ffd9e6; color: #a04a68; /* 登录按钮统一规范色：浅粉底深玫瑰字（提高优先级压过 .menu a 的继承色） */
   transition: opacity .2s;
 }
 .menu-acct-bottom:hover { opacity: .88; }
-.menu-acct-bottom.is-in {
+.menu a.menu-acct-bottom.is-in {
   background: #fff; color: var(--accent, #ff6fa5);
   box-shadow: inset 0 0 0 1.5px var(--accent-soft, #ffc8d6);
 }
