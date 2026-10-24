@@ -174,3 +174,4 @@
   background: var(--card, #fff2f7);
   text-align: center;
 }
+.menu-acct-bottom.acct-loading { pointer-events: none; opacity: .75; }

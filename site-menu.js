@@ -83,6 +83,32 @@
     if (s) return el('<a class="menu-acct-bottom is-in" href="/shop/?sec=account" data-acct="account">' + span('我的账户', 'My Account') + '</a>');
     return el('<a class="menu-acct-bottom" href="/shop/?sec=account&next=' + encodeURIComponent(location.pathname + location.search) + '" data-acct="account">' + span('登录', 'Log in') + '</a>');
   }
+  // 已登录点「我的账户」：按真实专属身份（RPC）决定去向——专属→后台、买家→普通账户页；验证中保持加载态不误跳
+  function routeAccount(link) {
+    if (typeof window.ykExclusiveCheck !== 'function') { location.href = '/shop/?sec=account'; return; }
+    var restore = link.innerHTML;
+    link.classList.add('acct-loading');
+    link.innerHTML = span('身份确认中…', 'Checking…');
+    var go = function (exclusive) {
+      if (exclusive) { location.href = '/admin.html'; return; }
+      if (curPage === 'shop' && typeof window.__shopNav === 'function') { window.__shopNav('account'); return; }
+      location.href = '/shop/?sec=account';
+    };
+    var fail = function () { link.classList.remove('acct-loading'); link.innerHTML = restore; };
+    window.ykExclusiveCheck().then(function (res) {
+      if (res && res.ok === 'pending') {
+        setTimeout(function () {
+          try { window.YK_EXCLUSIVE_MEMO = null; } catch (e) {}
+          window.ykExclusiveCheck().then(function (r2) {
+            if (r2 && r2.ok === 'pending') { fail(); return; } // 仍未就绪：回原样，不误跳
+            go(!!(r2 && r2.ok === true));
+          }).catch(fail);
+        }, 2500);
+        return;
+      }
+      go(!!(res && res.ok === true));
+    }).catch(function () { fail(); go(false); });
+  }
   function buildMenu(nav) {
     var frag = document.createDocumentFragment();
     nav.forEach(function (item) {
@@ -257,6 +283,12 @@
     var aa = e.target.closest('#menu a[data-acct]');
     if (aa) {
       setMenu(false);
+      if (aa.classList.contains('menu-acct-bottom') && readSession()) {
+        // 已登录：先过真实专属身份验证再决定去向（专属→后台 / 买家→账户页）
+        e.preventDefault();
+        routeAccount(aa);
+        return;
+      }
       if (curPage === 'shop' && typeof window.__shopNav === 'function') {
         e.preventDefault();
         window.__shopNav(aa.getAttribute('data-acct'));
