@@ -91,6 +91,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   .acc-item:hover { background: var(--card, #fff2f7); }
   .acc-item.on { background: #ffd9e6; color: #fff; font-weight: 600; }
+  .acc-logout {
+    display: block; width: 100%; text-align: center; border: none;
+    background: #ffd9e6; color: #fff; font-size: 17px; font-weight: 600;
+    padding: 11px 12px; border-radius: 12px; cursor: pointer; font-family: inherit;
+    transition: background .15s;
+  }
+  .acc-logout:hover { background: #ffc8d6; }
   @media (max-width: 760px) {
     #acc-shell { flex-direction: column; }
     #acc-menu { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 4px; padding: 10px; }
@@ -98,6 +105,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     .acc-group + .acc-group { margin-top: 0; padding-top: 0; border-top: none; margin-left: 10px; }
     .acc-group-title { width: 100%; padding-bottom: 2px; }
     .acc-item { width: auto; }
+    .acc-logout { width: auto; padding: 10px 22px; }
   }
 
   .shop-body {
@@ -318,9 +326,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   #view-detail, #view-cart, #view-checkout, #view-orders, #view-account, #view-groups { display: none; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261024l">
-  <script src="/js/site-common.js?v=20261024l"></script>
-  <script src="/site-menu.js?v=20261024l" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261024m">
+  <script src="/js/site-common.js?v=20261024m"></script>
+  <script src="/site-menu.js?v=20261024m" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -857,6 +865,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261024l"></script>
+<script src="/js/shop-app.js?v=20261024m"></script>
 </body>
 </html>

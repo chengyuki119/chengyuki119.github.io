@@ -861,8 +861,7 @@
               row(t('姓名', 'Name'), p.name || '') +
               row(t('昵称', 'Nickname'), p.nickname || '') +
               row(t('电话', 'Phone'), p.phone || '') +
-            '</div>' +
-            '<button class="buy-btn" id="pf-out" style="margin-top:14px;padding:9px 20px;background:#fff;color:var(--muted);">' + t('退出登录', 'Log out') + '</button>';
+            '</div>'; // 退出登录已挪到左侧栏常驻显眼按钮（doLogout）
         }
         function profileEdit(p, errMsg) {
           return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">' +
@@ -902,17 +901,6 @@
           } else {
             card.querySelector('#pf-edit').addEventListener('click', function () { paintProfile(p, true); });
           }
-          var out = card.querySelector('#pf-out');
-          if (out) out.addEventListener('click', function () {
-            USER = null; UID = null; saveUser(); // 统一清空双键，退出即全站退出
-            try { localStorage.setItem('yuki-cart-merge-done', '0'); } catch (e) {}
-            window.__YK_MENU_OK = false; window.__YK_MENU_CHECKED = false;
-            try { window.YK_EXCLUSIVE_MEMO = null; } catch (e) {}
-            try { if (window.SiteMenu) SiteMenu.refresh(); } catch (e) {}
-            loadFavsLocal(); paintFavs(); paintAcctIcon();
-            toast(t('已退出', 'Logged out'));
-            renderAccount();
-          });
         }
         box.innerHTML =
           '<h2 style="font-size:22px;margin-bottom:14px;">' + t('Profile 编辑', 'Profile') + '</h2>' +
@@ -1070,7 +1058,7 @@
     });
   }
   function afterLogin(addr, prof) {
-    paintAcctIcon(); loadFavs(); paintNav(); // 登录成功：顶部「我的订单」入口此时才出现
+    paintAcctIcon(); loadFavs(); paintNav(); paintAccountMenu(); // 登录成功：顶部「我的订单」入口和侧栏订单/评价/留言此时才出现
     if (window.__rgNotifyWanted) {
       getUid().then(function (uid) { if (uid) subWrite(true, uid); });
       window.__rgNotifyWanted = false;
@@ -1341,7 +1329,7 @@
     if (sec === 'orders') return openOrders();
     if (sec === 'groups') return openGroups();
     if (window.__ACCOUNT_DEFAULT_SEC) { // 独立账号页：分组侧栏面板（同柚子专属后台的交互风格）
-      paintAccountShell();
+      paintAccountShell(); paintAccountMenu(); // 侧栏按登录态画：未登录不显示订单/评价/留言
       if (sec === 'orders') { accNav('orders'); return; }
       if (sec === 'my-reviews') { accNav('myreviews'); return; }
       if (sec === 'my-questions') { accNav('myquestions'); return; }
@@ -1363,18 +1351,41 @@
     var ids = myIds(key);
     if (id && ids.indexOf(id) === -1) { ids.push(id); try { localStorage.setItem(key, JSON.stringify(ids.slice(-100))); } catch (e) {} }
   }
+  function accLoggedIn() { return !!(USER && USER.a); }
+  function paintAccountMenu() { // 登录门：未登录只看到 Profile，登录后才出现订单/评价/留言和退出按钮
+    var menu = document.getElementById('acc-menu');
+    if (!menu) return;
+    var inn = '<div class="acc-group"><div class="acc-group-title">' + t('账户', 'Account') + '</div>' +
+      '<button type="button" class="acc-item" data-v="account">' + t('Profile 编辑', 'Profile') + '</button>';
+    if (accLoggedIn()) {
+      inn +=
+        '<button type="button" class="acc-item" data-v="orders">' + t('我的订单', 'My Orders') + '</button></div>' +
+        '<div class="acc-group"><div class="acc-group-title">' + t('互动', 'Activity') + '</div>' +
+        '<button type="button" class="acc-item" data-v="myreviews">' + t('评价', 'Reviews') + '</button>' +
+        '<button type="button" class="acc-item" data-v="myquestions">' + t('留言', 'Messages') + '</button></div>' +
+        '<div class="acc-group"><button type="button" class="acc-logout" id="acc-logout">' + t('退出登录', 'Log out') + '</button></div>';
+    } else {
+      inn += '</div>';
+    }
+    menu.innerHTML = inn;
+  }
+  function doLogout() { // 退出登录：侧栏常驻显眼按钮，清空双键即全站退出
+    USER = null; UID = null; saveUser();
+    try { localStorage.setItem('yuki-cart-merge-done', '0'); } catch (e) {}
+    window.__YK_MENU_OK = false; window.__YK_MENU_CHECKED = false;
+    try { window.YK_EXCLUSIVE_MEMO = null; } catch (e) {}
+    try { if (window.SiteMenu) SiteMenu.refresh(); } catch (e) {}
+    loadFavsLocal(); paintFavs(); paintAcctIcon(); paintNav();
+    paintAccountMenu();
+    toast(t('已退出', 'Logged out'));
+    renderAccount();
+  }
   function paintAccountShell() {
     var menu = document.getElementById('acc-menu');
     if (!menu || menu.dataset.bound) return;
     menu.dataset.bound = '1';
-    menu.innerHTML =
-      '<div class="acc-group"><div class="acc-group-title">' + t('账户', 'Account') + '</div>' +
-        '<button type="button" class="acc-item" data-v="account">' + t('Profile 编辑', 'Profile') + '</button>' +
-        '<button type="button" class="acc-item" data-v="orders">' + t('我的订单', 'My Orders') + '</button></div>' +
-      '<div class="acc-group"><div class="acc-group-title">' + t('互动', 'Activity') + '</div>' +
-        '<button type="button" class="acc-item" data-v="myreviews">' + t('发出去的评价', 'My Reviews') + '</button>' +
-        '<button type="button" class="acc-item" data-v="myquestions">' + t('发出去的留言', 'My Messages') + '</button></div>';
     menu.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('.acc-logout')) { doLogout(); return; }
       var it = e.target.closest('.acc-item');
       if (it) accNav(it.getAttribute('data-v'));
     });
@@ -1394,14 +1405,14 @@
     showView('myreviews');
     var ids = myIds('yuki-my-reviews');
     if (!ids.length) {
-      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的评价', 'My Reviews') + '</h2>' +
+      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('评价', 'Reviews') + '</h2>' +
         '<p style="color:var(--muted);text-align:center;padding:30px 0;font-size:17px;">' + t('还没有发过评价。在小铺「评价返图」发的会显示在这里（按这台设备记录）。', 'No reviews yet. Ones you post in Reviews will show up here (recorded on this device).') + '</p>';
       return;
     }
-    box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的评价', 'My Reviews') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载中…', 'Loading…') + '</p>';
+    box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('评价', 'Reviews') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载中…', 'Loading…') + '</p>';
     api('reviews?select=*&id=in.(' + ids.join(',') + ')&order=created_at.desc').then(function (r) { return r.json(); }).then(function (rows) {
       rows = rows || [];
-      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的评价', 'My Reviews') + '</h2>' +
+      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('评价', 'Reviews') + '</h2>' +
         (rows.length ? rows.map(function (rv) {
           return '<div class="card" style="padding:16px;margin-bottom:12px;">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b style="font-size:16px;">' + esc(rv.name || t('匿名', 'Anonymous')) + '</b>' +
@@ -1413,7 +1424,7 @@
             '</div>';
         }).join('') : '<p style="color:var(--muted);text-align:center;padding:20px 0;font-size:16px;">' + t('评价可能在后台审核中被隐藏了', 'Your reviews may be hidden for moderation') + '</p>');
     }).catch(function () {
-      box.innerHTML = '<h2 style="font-size:22px;">' + t('发出去的评价', 'My Reviews') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载失败，稍后再试', 'Failed to load') + '</p>';
+      box.innerHTML = '<h2 style="font-size:22px;">' + t('评价', 'Reviews') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载失败，稍后再试', 'Failed to load') + '</p>';
     });
   }
   function renderMyQuestions() {
@@ -1422,14 +1433,14 @@
     showView('myquestions');
     var ids = myIds('yuki-my-questions');
     if (!ids.length) {
-      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的留言', 'My Messages') + '</h2>' +
+      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('留言', 'Messages') + '</h2>' +
         '<p style="color:var(--muted);text-align:center;padding:30px 0;font-size:17px;">' + t('还没有发过留言。在「匿名留言」投递的会显示在这里（按这台设备记录，仍是匿名的）。', 'No messages yet. Ones you send in Ask Box will show up here (recorded on this device, still anonymous).') + '</p>';
       return;
     }
-    box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的留言', 'My Messages') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载中…', 'Loading…') + '</p>';
+    box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('留言', 'Messages') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载中…', 'Loading…') + '</p>';
     api('questions?select=id,content,reply,created_at,replied_at&id=in.(' + ids.join(',') + ')&order=created_at.desc').then(function (r) { return r.json(); }).then(function (rows) {
       rows = rows || [];
-      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的留言', 'My Messages') + '</h2>' +
+      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('留言', 'Messages') + '</h2>' +
         (rows.length ? rows.map(function (q) {
           return '<div class="card" style="padding:16px;margin-bottom:12px;">' +
             '<p style="font-size:16px;line-height:1.7;">' + esc(q.content) + '</p>' +
@@ -1440,7 +1451,7 @@
             '</div>';
         }).join('') : '<p style="color:var(--muted);text-align:center;padding:20px 0;font-size:16px;">' + t('留言可能已被删除', 'Messages may have been removed') + '</p>');
     }).catch(function () {
-      box.innerHTML = '<h2 style="font-size:22px;">' + t('发出去的留言', 'My Messages') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载失败，稍后再试', 'Failed to load') + '</p>';
+      box.innerHTML = '<h2 style="font-size:22px;">' + t('留言', 'Messages') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载失败，稍后再试', 'Failed to load') + '</p>';
     });
   }
 
