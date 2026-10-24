@@ -156,7 +156,7 @@
   border-radius: 12px;
   font-size: 17px;
   text-decoration: none;
-  background: #ffd9e6; color: #a04a68; /* 登录按钮统一规范色：浅粉底深玫瑰字（提高优先级压过 .menu a 的继承色） */
+  background: var(--accent, #ff6fa5); color: #fff; /* 登录按钮：玫粉底白字，跟加入购物车等大多数按钮同一套 */
   transition: opacity .2s;
 }
 .menu-acct-bottom:hover { opacity: .88; }

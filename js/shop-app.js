@@ -1228,7 +1228,7 @@
     var bar = document.createElement('div');
     bar.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;';
     bar.innerHTML =
-      '<input id="q-search" placeholder="' + t('搜索商品…', 'Search…') + '" style="flex:1;min-width:150px;padding:10px 14px;font-size:17px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;box-shadow:0 2px 10px rgba(180,120,150,.08);">' +
+      '<input id="q-search" placeholder="' + t('搜索商品…', 'Search…') + '" style="flex:1;min-width:150px;padding:10px 14px;font-size:17px;border:none;border-radius:12px;background:var(--accent,#ff6fa5);outline:none;color:#fff;font-family:inherit;box-shadow:0 2px 10px rgba(255,111,165,.25);">' +
       '<div id="q-tags" style="display:flex;gap:6px;flex-wrap:wrap;"></div>' +
       '<button id="q-sort" class="buy-btn" style="padding:8px 14px;background:#fff;">' + t('最新', 'Newest') + '</button>';
     var grid = document.getElementById('product-grid');

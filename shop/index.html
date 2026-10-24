@@ -38,6 +38,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   body.lang-en .product.sold::after { content: "Sold"; }
 
   /* 状态标签：在售 / 仅展示 / 售尽（图片右下角，避开右上角的收藏心形） */
+  /* 搜索框：粉底白字（跟加入购物车同一套） */
+  #q-search::placeholder { color: #fff; opacity: .85; }
+  #q-search { caret-color: #fff; }
   .st {
     position: absolute;
     top: auto; bottom: 10px; right: 10px;
@@ -55,23 +58,23 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   button { font-family: inherit; }
 
   .shop-header {
-    background: #ffdfe9;
+    background: var(--accent, #ff6fa5); /* 横幅改玫粉底，白字跟大多数粉底白字胶囊同一套 */
     padding: 84px 0 40px;
     position: relative;
   }
   .shop-header-inner { max-width: 1000px; margin: 0 auto; padding: 0 24px; } /* 与主页照片页同宽，同一条左边线 */
-  .shop-header h1 { font-size:31px; margin: 20px 0 6px; }
-  .shop-header p { color: var(--muted); font-size:17px; }
+  .shop-header h1 { font-size:31px; margin: 20px 0 6px; color: #fff; }
+  .shop-header p { color: #fff; opacity: .92; font-size:17px; }
   .back-link {
     display: inline-flex; align-items: center; gap: 8px;
-    color: var(--text);
+    color: #fff;
     font-size:17px;
     padding: 8px 14px;
     border-radius: 999px;
-    background: var(--card);
+    background: #ff9dbf; /* 横幅上比主粉浅一档的同系粉，白字清晰 */
     transition: background .2s;
   }
-  .back-link:hover { background: var(--card-hover); }
+  .back-link:hover { background: #ff8ab2; }
 
   .shop-body {
     max-width: 1000px;
@@ -291,8 +294,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
   <link rel="stylesheet" href="/site-menu.css">
-  <script src="/js/site-common.js?v=20261024e"></script>
-  <script src="/site-menu.js?v=20261024e" defer></script>
+  <script src="/js/site-common.js?v=20261024f"></script>
+  <script src="/site-menu.js?v=20261024f" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -821,6 +824,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261024e"></script>
+<script src="/js/shop-app.js?v=20261024f"></script>
 </body>
 </html>
