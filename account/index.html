@@ -73,6 +73,33 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   .back-link:hover { background: var(--card-hover); }
 
+  /* ===== 独立账号页：分组侧栏面板（同柚子专属后台的交互风格） ===== */
+  #acc-shell { display: flex; gap: 18px; align-items: flex-start; }
+  #acc-menu {
+    width: 230px; flex-shrink: 0;
+    background: #fff; border-radius: var(--radius);
+    padding: 14px; position: sticky; top: 74px;
+  }
+  #acc-views { flex: 1; min-width: 0; }
+  .acc-group + .acc-group { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--card-hover, #ffe4ee); }
+  .acc-group-title { font-size: 13px; color: var(--muted); padding: 4px 10px 8px; }
+  .acc-item {
+    display: block; width: 100%; text-align: left; border: none;
+    background: none; font-size: 17px; color: var(--text);
+    padding: 10px 12px; border-radius: 12px; cursor: pointer;
+    font-family: inherit; transition: background .15s;
+  }
+  .acc-item:hover { background: var(--card, #fff2f7); }
+  .acc-item.on { background: #ffd9e6; color: #fff; font-weight: 600; }
+  @media (max-width: 760px) {
+    #acc-shell { flex-direction: column; }
+    #acc-menu { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 4px; padding: 10px; }
+    .acc-group { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+    .acc-group + .acc-group { margin-top: 0; padding-top: 0; border-top: none; margin-left: 10px; }
+    .acc-group-title { width: 100%; padding-bottom: 2px; }
+    .acc-item { width: auto; }
+  }
+
   .shop-body {
     max-width: 1000px;
     margin: 0 auto;
@@ -292,8 +319,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
   <link rel="stylesheet" href="/site-menu.css?v=20261024j">
-  <script src="/js/site-common.js?v=20261024i"></script>
-  <script src="/site-menu.js?v=20261024i" defer></script>
+  <script src="/js/site-common.js?v=20261024j"></script>
+  <script src="/site-menu.js?v=20261024j" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -375,12 +402,19 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     <img src="/img/pay-methods.jpg" alt="微信 / 支付宝收款码">
   </div>
 
-  <div id="view-detail"></div>
-  <div id="view-cart"></div>
-  <div id="view-checkout"></div>
-  <div id="view-orders"></div>
-  <div id="view-account"></div>
-  <div id="view-groups"></div>
+  <div id="acc-shell">
+    <div id="acc-menu"></div>
+    <div id="acc-views">
+      <div id="view-detail"></div>
+      <div id="view-cart"></div>
+      <div id="view-checkout"></div>
+      <div id="view-orders"></div>
+      <div id="view-account"></div>
+      <div id="view-groups"></div>
+      <div id="view-myreviews" style="display:none;"></div>
+      <div id="view-myquestions" style="display:none;"></div>
+    </div>
+  </div>
 
   <footer>© 2026 Yuki · 小柚的小铺 · Made with Cola</footer>
 </div>
@@ -823,6 +857,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261024i"></script>
+<script src="/js/shop-app.js?v=20261024j"></script>
 </body>
 </html>

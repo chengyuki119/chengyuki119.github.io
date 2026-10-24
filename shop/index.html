@@ -260,8 +260,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
   <link rel="stylesheet" href="/site-menu.css?v=20261024j">
-  <script src="/js/site-common.js?v=20261024i"></script>
-  <script src="/site-menu.js?v=20261024i" defer></script>
+  <script src="/js/site-common.js?v=20261024j"></script>
+  <script src="/site-menu.js?v=20261024j" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -721,11 +721,20 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     upload.then(function (imageUrl) {
       return fetch(SUPABASE_URL + '/rest/v1/reviews', {
         method: 'POST',
-        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
         body: JSON.stringify({ name: name, content: text, rating: RATING, image_url: imageUrl })
       });
     }).then(function (r) {
       if (!r.ok) throw new Error();
+      return r.json().catch(function () { return null; });
+    }).then(function (rows) {
+      // 记住本机发出去的评价（不绑账号，只在本机「发出去的评价」里展示）
+      try {
+        if (rows && rows[0] && rows[0].id) {
+          var ids = JSON.parse(localStorage.getItem('yuki-my-reviews') || '[]');
+          if (Array.isArray(ids) && ids.indexOf(rows[0].id) === -1) { ids.push(rows[0].id); localStorage.setItem('yuki-my-reviews', JSON.stringify(ids.slice(-100))); }
+        }
+      } catch (e) {}
       toast(t('评价提交成功，谢谢你～', 'Review submitted, thank you~'));
       document.getElementById('r-name').value = '';
       document.getElementById('r-text').value = '';
@@ -751,6 +760,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261024i"></script>
+<script src="/js/shop-app.js?v=20261024j"></script>
 </body>
 </html>

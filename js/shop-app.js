@@ -172,7 +172,7 @@
   var LIST_SELS = ['.notice', '#product-grid', '#past', '#reviews', '#pay'];
   function showView(name) {
     LIST_SELS.forEach(function (s) { var el = document.querySelector(s); if (el) el.style.display = (name === 'list') ? '' : 'none'; });
-    ['detail', 'cart', 'checkout', 'orders', 'account', 'groups'].forEach(function (v) {
+    ['detail', 'cart', 'checkout', 'orders', 'account', 'groups', 'myreviews', 'myquestions'].forEach(function (v) {
       var el = document.getElementById('view-' + v);
       if (el) el.style.display = (v === name) ? 'block' : 'none';
     });
@@ -642,6 +642,10 @@
         esc([addr.street, addr.city, addr.state, addr.zip, addr.country].filter(Boolean).join(', ')) +
       '</div>' +
       (o.reject_reason ? '<p style="font-size:15px;color:#d96570;margin-top:6px;">' + t('凭证有误：', 'Proof rejected: ') + esc(o.reject_reason) + '</p>' : '') +
+      ((o.note || o.coupon) ? '<div style="font-size:15px;color:var(--muted);margin-top:6px;">' +
+        (o.note ? t('订单备注', 'Note') + '：' + esc(o.note) : '') +
+        (o.note && o.coupon ? '　·　' : '') +
+        (o.coupon ? t('优惠码', 'Coupon') + '：' + esc(o.coupon) : '') + '</div>' : '') +
       (o.carrier ? '<p style="font-size:15px;margin-top:6px;">' + t('物流', 'Shipping') + '：' + esc(o.carrier) + ' <a href="' + escAttr(trackUrlOf(o.carrier, o.tracking)) + '" target="_blank" style="color:var(--text,#5d6780);">' + esc(o.tracking) + ' ↗</a>' +
         (o.shipped_at ? ' · ' + new Date(o.shipped_at).toLocaleDateString() : '') + '</p>' : '') +
       '<div style="font-size:15px;color:var(--muted);margin-top:6px;">' + t('明细', 'Breakdown') + '：' + sym(o.currency) + money(o.subtotal) + (o.discount > 0 ? ' − 优惠 ' + sym(o.currency) + money(o.discount) : '') + ' + 运费 ' + sym(o.currency) + money(o.shipping_actual != null ? o.shipping_actual : o.shipping_est) + ' + 服务费 ' + sym(o.currency) + money(o.service_fee) + '</div>' +
@@ -772,7 +776,7 @@
     var box = document.getElementById('view-account');
     if (!USER) {
       box.innerHTML =
-        '<h2 style="font-size:22px;margin-bottom:14px;">' + t('我的账号', 'My Account') + '</h2>' +
+        '<h2 style="font-size:22px;margin-bottom:14px;">' + t('Profile 编辑', 'Profile') + '</h2>' +
         '<div class="card" style="padding:18px;">' +
           '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
             '<button class="buy-btn acct-tab on" data-v="login" style="padding:8px 20px;">' + t('登录', 'Log in') + '</button>' +
@@ -911,7 +915,7 @@
           });
         }
         box.innerHTML =
-          '<h2 style="font-size:22px;margin-bottom:14px;">' + t('我的账号', 'My Account') + '</h2>' +
+          '<h2 style="font-size:22px;margin-bottom:14px;">' + t('Profile 编辑', 'Profile') + '</h2>' +
           '<div class="card" id="pf-card" style="padding:18px;margin-bottom:14px;"></div>' +
           '<div class="card" style="padding:18px;margin-bottom:14px;">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
@@ -1198,7 +1202,7 @@
       '<h2 style="font-size:22px;margin-bottom:14px;">' + t('购物车', 'Cart') + '</h2>' +
       CART.map(function (x, i) {
         return '<div class="card" style="padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:center;">' +
-          '<span class="ck-box" data-i="' + i + '" style="width:20px;height:20px;border-radius:6px;border:2px solid var(--muted,#9aa5bd);flex-shrink:0;cursor:pointer;background:' + (x.checked !== false ? '#ffd9e6' : 'transparent') + ';"></span>' +
+          '<span class="ck-box" data-i="' + i + '" style="width:20px;height:20px;border-radius:6px;border:2px solid var(--muted,#9aa5bd);flex-shrink:0;cursor:pointer;background:' + (x.checked !== false ? '#ffd9e6' : 'transparent') + ';display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1;color:var(--text,#5d6780);">' + (x.checked !== false ? '✓' : '') + '</span>' +
           (x.image ? '<img src="' + escAttr(normImg(x.image)) + '" style="width:56px;height:56px;border-radius:12px;object-fit:cover;">' : '') +
           '<div style="flex:1;min-width:0;"><div style="font-size:16px;">' + esc(x.name) + '</div><div style="font-size:16px;color:var(--text,#5d6780);">' + sym(curOf(null, x)) + money(x.price) + '</div></div>' +
           '<button class="qty-btn cart-q" data-i="' + i + '" data-d="-1">−</button><b>' + x.qty + '</b><button class="qty-btn cart-q" data-i="' + i + '" data-d="1">＋</button>' +
@@ -1336,6 +1340,13 @@
     if (sec === 'checkout') return renderCheckout();
     if (sec === 'orders') return openOrders();
     if (sec === 'groups') return openGroups();
+    if (window.__ACCOUNT_DEFAULT_SEC) { // 独立账号页：分组侧栏面板（同柚子专属后台的交互风格）
+      paintAccountShell();
+      if (sec === 'orders') { accNav('orders'); return; }
+      if (sec === 'my-reviews') { accNav('myreviews'); return; }
+      if (sec === 'my-questions') { accNav('myquestions'); return; }
+      accNav('account'); return;
+    }
     if (sec === 'account') return renderAccount();
     showView('list');
     if (sec === 'reviews') {
@@ -1344,6 +1355,93 @@
         if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 74, behavior: 'smooth' });
       }, 300);
     }
+  }
+
+  // ===== 独立账号页：分组侧栏面板（同柚子专属后台的交互风格） =====
+  function myIds(key) { try { var v = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+  function rememberMine(key, id) {
+    var ids = myIds(key);
+    if (id && ids.indexOf(id) === -1) { ids.push(id); try { localStorage.setItem(key, JSON.stringify(ids.slice(-100))); } catch (e) {} }
+  }
+  function paintAccountShell() {
+    var menu = document.getElementById('acc-menu');
+    if (!menu || menu.dataset.bound) return;
+    menu.dataset.bound = '1';
+    menu.innerHTML =
+      '<div class="acc-group"><div class="acc-group-title">' + t('账户', 'Account') + '</div>' +
+        '<button type="button" class="acc-item" data-v="account">' + t('Profile 编辑', 'Profile') + '</button>' +
+        '<button type="button" class="acc-item" data-v="orders">' + t('我的订单', 'My Orders') + '</button></div>' +
+      '<div class="acc-group"><div class="acc-group-title">' + t('互动', 'Activity') + '</div>' +
+        '<button type="button" class="acc-item" data-v="myreviews">' + t('发出去的评价', 'My Reviews') + '</button>' +
+        '<button type="button" class="acc-item" data-v="myquestions">' + t('发出去的留言', 'My Messages') + '</button></div>';
+    menu.addEventListener('click', function (e) {
+      var it = e.target.closest('.acc-item');
+      if (it) accNav(it.getAttribute('data-v'));
+    });
+  }
+  function accNav(v) {
+    if (v === 'account') renderAccount();
+    else if (v === 'orders') openOrders();
+    else if (v === 'myreviews') renderMyReviews();
+    else if (v === 'myquestions') renderMyQuestions();
+    document.querySelectorAll('#acc-menu .acc-item').forEach(function (b) {
+      b.classList.toggle('on', b.getAttribute('data-v') === v);
+    });
+  }
+  function renderMyReviews() {
+    var box = document.getElementById('view-myreviews');
+    if (!box) return;
+    showView('myreviews');
+    var ids = myIds('yuki-my-reviews');
+    if (!ids.length) {
+      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的评价', 'My Reviews') + '</h2>' +
+        '<p style="color:var(--muted);text-align:center;padding:30px 0;font-size:17px;">' + t('还没有发过评价。在小铺「评价返图」发的会显示在这里（按这台设备记录）。', 'No reviews yet. Ones you post in Reviews will show up here (recorded on this device).') + '</p>';
+      return;
+    }
+    box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的评价', 'My Reviews') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载中…', 'Loading…') + '</p>';
+    api('reviews?select=*&id=in.(' + ids.join(',') + ')&order=created_at.desc').then(function (r) { return r.json(); }).then(function (rows) {
+      rows = rows || [];
+      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的评价', 'My Reviews') + '</h2>' +
+        (rows.length ? rows.map(function (rv) {
+          return '<div class="card" style="padding:16px;margin-bottom:12px;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b style="font-size:16px;">' + esc(rv.name || t('匿名', 'Anonymous')) + '</b>' +
+            '<span style="font-size:14px;color:var(--muted);">' + new Date(rv.created_at).toLocaleDateString() + '</span></div>' +
+            '<div style="font-size:17px;color:#e2b100;letter-spacing:2px;margin-top:4px;">' + '★★★★★'.slice(0, rv.rating || 0) + '☆☆☆☆☆'.slice(0, 5 - (rv.rating || 0)) + '</div>' +
+            (rv.content ? '<p style="font-size:16px;line-height:1.7;margin-top:6px;">' + esc(rv.content) + '</p>' : '') +
+            (rv.image_url ? '<img src="' + escAttr(normImg(rv.image_url)) + '" style="max-width:180px;border-radius:12px;margin-top:8px;display:block;">' : '') +
+            (rv.reply ? '<div style="margin-top:10px;padding:10px 12px;background:var(--card,#fff2f7);border-radius:12px;font-size:15px;"><b>' + t('柚子 回复：', 'Yuki replied:') + '</b> ' + esc(rv.reply) + '</div>' : '') +
+            '</div>';
+        }).join('') : '<p style="color:var(--muted);text-align:center;padding:20px 0;font-size:16px;">' + t('评价可能在后台审核中被隐藏了', 'Your reviews may be hidden for moderation') + '</p>');
+    }).catch(function () {
+      box.innerHTML = '<h2 style="font-size:22px;">' + t('发出去的评价', 'My Reviews') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载失败，稍后再试', 'Failed to load') + '</p>';
+    });
+  }
+  function renderMyQuestions() {
+    var box = document.getElementById('view-myquestions');
+    if (!box) return;
+    showView('myquestions');
+    var ids = myIds('yuki-my-questions');
+    if (!ids.length) {
+      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的留言', 'My Messages') + '</h2>' +
+        '<p style="color:var(--muted);text-align:center;padding:30px 0;font-size:17px;">' + t('还没有发过留言。在「匿名留言」投递的会显示在这里（按这台设备记录，仍是匿名的）。', 'No messages yet. Ones you send in Ask Box will show up here (recorded on this device, still anonymous).') + '</p>';
+      return;
+    }
+    box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的留言', 'My Messages') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载中…', 'Loading…') + '</p>';
+    api('questions?select=id,content,reply,created_at,replied_at&id=in.(' + ids.join(',') + ')&order=created_at.desc').then(function (r) { return r.json(); }).then(function (rows) {
+      rows = rows || [];
+      box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('发出去的留言', 'My Messages') + '</h2>' +
+        (rows.length ? rows.map(function (q) {
+          return '<div class="card" style="padding:16px;margin-bottom:12px;">' +
+            '<p style="font-size:16px;line-height:1.7;">' + esc(q.content) + '</p>' +
+            '<div style="font-size:13px;color:var(--muted);margin-top:6px;">' + new Date(q.created_at).toLocaleString() + '</div>' +
+            (q.reply
+              ? '<div style="margin-top:10px;padding:10px 12px;background:var(--card,#fff2f7);border-radius:12px;font-size:15px;"><b>' + t('柚子 回复：', 'Yuki replied:') + '</b> ' + esc(q.reply) + '</div>'
+              : '<div style="margin-top:10px;font-size:15px;color:var(--muted);">' + t('已收到，等柚子回复哦～', 'Received! Yuki will reply soon~') + '</div>') +
+            '</div>';
+        }).join('') : '<p style="color:var(--muted);text-align:center;padding:20px 0;font-size:16px;">' + t('留言可能已被删除', 'Messages may have been removed') + '</p>');
+    }).catch(function () {
+      box.innerHTML = '<h2 style="font-size:22px;">' + t('发出去的留言', 'My Messages') + '</h2><p style="color:var(--muted);text-align:center;">' + t('加载失败，稍后再试', 'Failed to load') + '</p>';
+    });
   }
 
   // ===== 启动 =====

@@ -285,6 +285,13 @@ h2::after { content: " ♥"; font-size: .75em; }
       if (!r.ok) throw new Error('insert failed');
       return r.json();
     }).then(function (rows) {
+      // 记住本机发出去的留言（匿名不绑账号，只在本机「发出去的留言」里展示）
+      try {
+        if (rows && rows[0] && rows[0].id) {
+          var ids = JSON.parse(localStorage.getItem('yuki-my-questions') || '[]');
+          if (Array.isArray(ids) && ids.indexOf(rows[0].id) === -1) { ids.push(rows[0].id); localStorage.setItem('yuki-my-questions', JSON.stringify(ids.slice(-100))); }
+        }
+      } catch (e) {}
       if (contact && rows && rows[0] && rows[0].id) {
         return api('contacts', {
           method: 'POST',
