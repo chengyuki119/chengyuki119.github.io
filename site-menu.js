@@ -97,7 +97,7 @@
         frag.appendChild(g);
       } else {
         var attrs = [];
-        if (item.scroll && curPage === item.page) attrs.push('data-scroll="' + item.scrollTo + '"');
+        if (item.scroll) attrs.push('data-scroll="' + item.scrollTo + '"'); // 跨页也带上：不在主页时点菜单会带 ?scroll= 回主页定位
         frag.appendChild(el('<a class="menu-link" data-key="' + item.key + '" href="' + hrefOf(item) + '" ' + attrs.join(' ') + '>' + span(item.zh, item.en) + '</a>'));
       }
     });
@@ -267,6 +267,12 @@
     if (a) {
       var sc = a.getAttribute('data-scroll');
       setMenu(false);
+      if (sc && curPage !== 'index') {
+        // 子页点「日历/找到我」：先回主页再精准定位到区块（含顶栏偏移，主页端统一处理）
+        e.preventDefault();
+        location.href = '/?scroll=' + encodeURIComponent(sc);
+        return;
+      }
       if (sc && typeof window.__menuScroll === 'function') {
         e.preventDefault();
         window.__menuScroll(sc);

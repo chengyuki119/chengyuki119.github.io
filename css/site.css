@@ -616,3 +616,7 @@
 @media (max-width: 640px) {
   .home-shop-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
+
+  /* 「找到我」是主页最后一个区块：底部留白让它能滚到顶栏正下方（菜单精准定位用） */
+  body.home::after { content: ""; display: block; height: 380px; }
+  @media (max-width: 700px) { body.home::after { height: 300px; } }

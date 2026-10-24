@@ -760,10 +760,10 @@
             '<button class="buy-btn acct-tab" data-v="reg" style="padding:8px 20px;background:#fff;">' + t('注册', 'Sign up') + '</button>' +
           '</div>' +
           '<div id="ac-login">' +
-            '<input id="li-email" placeholder="Email" style="width:100%;margin-bottom:10px;">' +
-            '<input id="li-pw" type="password" placeholder="' + t('密码', 'Password') + '" style="width:100%;margin-bottom:14px;">' +
-            '<button class="buy-btn" id="li-go" style="width:100%;padding:11px;background:var(--accent);color:#fff;font-size:17px;">' + t('登录', 'Log in') + '</button>' +
-            '<button id="li-forgot" style="background:none;border:none;color:var(--muted);font-family:inherit;font-size:15px;margin-top:8px;cursor:pointer;">' + t('忘记密码？发重置邮件', 'Forgot password? Send reset email') + '</button>' +
+            '<input id="li-email" placeholder="Email" style="width:100%;margin-bottom:12px;">' +
+            '<input id="li-pw" type="password" placeholder="' + t('密码', 'Password') + '" style="width:100%;margin-bottom:12px;">' +
+            '<button class="buy-btn" id="li-go" style="width:100%;padding:11px;background:#ffd9e6;color:#a04a68;font-size:17px;">' + t('登录', 'Log in') + '</button>' +
+            '<button id="li-forgot" style="background:none;border:none;color:var(--muted);font-family:inherit;font-size:15px;margin-top:10px;cursor:pointer;">' + t('忘记密码？发重置邮件', 'Forgot password? Send reset email') + '</button>' +
           '</div>' +
           '<div id="ac-reg" style="display:none;">' +
             '<p style="font-size:14px;color:var(--muted);margin-bottom:8px;">' + t('注册即创建买家账号（邮箱可能需要点击验证邮件）。', 'Sign up creates your buyer account (email verification may be required).') + '</p>' +
@@ -780,7 +780,7 @@
               '<span style="font-size:16px;color:var(--text,#5d6780);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:13px;color:var(--muted,#9aa5bd);">' + t('默认关闭 · 邮件通知服务尚未配置，启用前不会发送邮件', 'Off by default · email delivery not configured yet') + '</span></span>' +
               subToggleHtml('rg-notify', false) +
             '</div>' +
-            '<button class="buy-btn" id="rg-go" style="width:100%;padding:11px;background:var(--accent);color:#fff;font-size:17px;margin-top:10px;">' + t('注册', 'Create account') + '</button>' +
+            '<button class="buy-btn" id="rg-go" style="width:100%;padding:11px;background:#ffd9e6;color:#a04a68;font-size:17px;margin-top:14px;">' + t('注册', 'Create account') + '</button>' +
           '</div>' +
         '</div>';
       styleInputs(box);
