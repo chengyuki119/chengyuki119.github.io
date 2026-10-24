@@ -37,10 +37,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   body.lang-en .product.sold::after { content: "Sold"; }
 
-  /* 状态标签：在售 / 仅展示 / 售尽 */
+  /* 状态标签：在售 / 仅展示 / 售尽（图片右下角，避开右上角的收藏心形） */
   .st {
     position: absolute;
-    top: 10px; right: 10px;
+    top: auto; bottom: 10px; right: 10px;
     font-size:15px;
     padding: 3px 12px;
     border-radius: 999px;
@@ -291,8 +291,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
   <link rel="stylesheet" href="/site-menu.css">
-  <script src="/js/site-common.js?v=20261024c"></script>
-  <script src="/site-menu.js?v=20261024c" defer></script>
+  <script src="/js/site-common.js?v=20261024d"></script>
+  <script src="/site-menu.js?v=20261024d" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -821,6 +821,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261024c"></script>
+<script src="/js/shop-app.js?v=20261024d"></script>
 </body>
 </html>
