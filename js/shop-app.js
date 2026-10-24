@@ -500,11 +500,18 @@
       var def = ADDR.filter(function (x) { return x.is_default; })[0] || ADDR[0];
       ckAddrId = def.id;
     }
-    box.innerHTML = ADDR.map(function (a) {
-      return '<label style="display:flex;gap:8px;align-items:flex-start;padding:10px;border-radius:12px;background:' + (a.id === ckAddrId ? 'var(--card-hover)' : '#fff') + ';margin-bottom:6px;cursor:pointer;" data-aid="' + escAttr(a.id) + '">' +
-        '<span class="addr-dot" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--accent);margin-top:4px;flex-shrink:0;background:' + (a.id === ckAddrId ? 'var(--accent)' : 'transparent') + ';"></span>' +
-        '<span style="font-size:16px;">' + esc(a.name) + ' · ' + esc(a.phone) + '<br><span style="color:var(--muted);">' + esc(a.street + ', ' + a.city + ', ' + a.state + ' ' + a.zip + ', ' + a.country) + '</span></span></label>';
-    }).join('');
+    var g = azGroups(ADDR, function (a) { return a.name || ''; });
+    var html = '';
+    g.order.forEach(function (L) {
+      html += '<div class="az-group" id="az-g-' + L + '"><div class="az-head">' + (L === '#' ? '其他' : L) + '</div>' +
+        g.map[L].map(function (a) {
+          return '<label style="display:flex;gap:8px;align-items:flex-start;padding:10px;border-radius:12px;background:' + (a.id === ckAddrId ? 'var(--card-hover)' : '#fff') + ';margin-bottom:6px;cursor:pointer;" data-aid="' + escAttr(a.id) + '">' +
+            '<span class="addr-dot" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--accent);margin-top:4px;flex-shrink:0;background:' + (a.id === ckAddrId ? 'var(--accent)' : 'transparent') + ';"></span>' +
+            '<span style="font-size:16px;">' + esc(a.name) + ' · ' + esc(a.phone) + '<br><span style="color:var(--muted);">' + esc(a.street + ', ' + a.city + ', ' + a.state + ' ' + a.zip + ', ' + a.country) + '</span></span></label>';
+        }).join('') + '</div>';
+    });
+    box.innerHTML = '<div class="az-box" style="padding-right:20px;">' + html + azNavHtml(g.map) + '</div>';
+    bindAzNav(box);
     box.querySelectorAll('[data-aid]').forEach(function (lab) {
       lab.addEventListener('click', function () { ckAddrId = lab.getAttribute('data-aid'); paintAddrPicker(); });
     });
@@ -859,14 +866,18 @@
             styleInputs(card);
             card.querySelector('#pf-cancel').addEventListener('click', function () { paintProfile(p, false); });
             card.querySelector('#pf-save').addEventListener('click', function () {
+              var btn = card.querySelector('#pf-save');
+              if (btn.dataset.busy) return; // 防重复提交
+              btn.dataset.busy = '1'; btn.disabled = true; btn.textContent = t('保存中…', 'Saving…');
+              var restoreBtn = function () { btn.dataset.busy = ''; btn.disabled = false; btn.textContent = t('保存', 'Save'); };
               var body = {
                 id: uid, name: card.querySelector('#pf-name').value.trim(),
                 nickname: card.querySelector('#pf-nick').value.trim(), phone: card.querySelector('#pf-phone').value.trim()
               };
               api('shop_profiles?on_conflict=id', { method: 'POST', headers: { 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify(body) }).then(function (r) {
                 if (r.ok) { prof0 = body; paintProfile(body, false); toast(t('已保存', 'Saved')); }
-                else { r.text().then(function () { paintProfile(body, true, t('保存失败，请检查网络后重试', 'Save failed — check your connection and retry')); }); }
-              }).catch(function () { paintProfile(p, true, t('保存失败，请检查网络后重试', 'Save failed — check your connection and retry')); });
+                else { restoreBtn(); paintProfile(body, true, t('保存失败，请检查网络后重试', 'Save failed — check your connection and retry')); }
+              }).catch(function () { restoreBtn(); paintProfile(p, true, t('保存失败，请检查网络后重试', 'Save failed — check your connection and retry')); });
             });
           } else {
             card.querySelector('#pf-edit').addEventListener('click', function () { paintProfile(p, true); });
@@ -907,17 +918,72 @@
       });
     });
   }
+  // ── A–Z 字母索引（地址/联系人列表：拼音分组 + 右侧导航）──
+  var AZ_COLL = (function () { try { return new Intl.Collator('zh-u-co-pinyin'); } catch (e) { return null; } })();
+  // ICU 的 zh 拼音排序中全部汉字排在拉丁字母之前，首字母需用汉字代表字做分界
+  var AZ_BD = [['A','阿'],['B','八'],['C','擦'],['D','搭'],['E','蛾'],['F','发'],['G','噶'],['H','哈'],['J','鸡'],['K','喀'],['L','垃'],['M','妈'],['N','拿'],['O','哦'],['P','啪'],['Q','七'],['R','然'],['S','撒'],['T','塌'],['W','挖'],['X','西'],['Y','压'],['Z','匝']];
+  function azInitial(name) {
+    var s = String(name || '').trim();
+    if (!s) return '#';
+    if (/[a-zA-Z]/.test(s[0])) return s[0].toUpperCase();
+    if (!AZ_COLL) return '#';
+    if (AZ_COLL.compare(s, AZ_BD[0][1]) < 0) return '#';
+    for (var i = 0; i < AZ_BD.length; i++) {
+      if (AZ_COLL.compare(s, AZ_BD[i][1]) >= 0 && (i + 1 >= AZ_BD.length || AZ_COLL.compare(s, AZ_BD[i + 1][1]) < 0)) return AZ_BD[i][0];
+    }
+    return '#';
+  }
+  function azGroups(items, nameFn) {
+    var sorted = items.slice().sort(function (a, b) {
+      var ia = azInitial(nameFn(a)), ib = azInitial(nameFn(b));
+      if (ia !== ib) return ia === '#' ? 1 : ib === '#' ? -1 : ia.localeCompare(ib);
+      var an = String(nameFn(a) || ''), bn = String(nameFn(b) || '');
+      return (AZ_COLL ? AZ_COLL.compare(an, bn) : an.localeCompare(bn)) || an.localeCompare(bn);
+    });
+    var map = {}, order = [];
+    sorted.forEach(function (it) {
+      var L = azInitial(nameFn(it));
+      if (!map[L]) { map[L] = []; order.push(L); }
+      map[L].push(it);
+    });
+    order.sort(function (a, b) { if (a === '#') return -1; if (b === '#') return 1; return a.localeCompare(b); });
+    return { map: map, order: order };
+  }
+  function azNavHtml(map) {
+    var out = '<div class="az-nav" aria-hidden="true">';
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(function (L) {
+      out += '<span class="az-letter' + (map[L] ? ' az-has' : ' az-off') + '" data-l="' + L + '">' + L + '</span>';
+    });
+    return out + '</div>';
+  }
+  function bindAzNav(root) {
+    root.querySelectorAll('.az-letter.az-has').forEach(function (sp) {
+      sp.addEventListener('click', function () {
+        root.querySelectorAll('.az-cur').forEach(function (x) { x.classList.remove('az-cur'); });
+        sp.classList.add('az-cur');
+        var g = root.querySelector('#az-g-' + sp.getAttribute('data-l'));
+        if (g) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
   function paintMyAddr() {
     var box = document.getElementById('pf-addr');
     if (!ADDR.length) { box.innerHTML = '<p style="color:var(--muted);font-size:15px;">' + t('还没有地址', 'No addresses yet') + '</p>'; return; }
-    box.innerHTML = ADDR.map(function (a) {
-      return '<div style="display:flex;gap:8px;align-items:center;padding:10px;border-radius:12px;background:#fff;margin-bottom:6px;">' +
-        '<div style="flex:1;font-size:15px;">' + esc(a.name) + ' · ' + esc(a.phone) + (a.is_default ? ' <span style="color:var(--accent);font-size:13px;">' + t('默认', 'Default') + '</span>' : '') + '<br><span style="color:var(--muted);">' + esc(a.street + ', ' + a.city + ', ' + a.state + ' ' + a.zip + ', ' + a.country) + '</span></div>' +
-        '<button class="buy-btn ad-def" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;">' + t('设默认', 'Default') + '</button>' +
-        '<button class="buy-btn ad-edit" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;">' + t('编辑', 'Edit') + '</button>' +
-        '<button class="buy-btn ad-del" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;background:#fff;color:#d96570;">' + t('删除', 'Del') + '</button>' +
-      '</div>';
-    }).join('');
+    var g = azGroups(ADDR, function (a) { return a.name || ''; });
+    var html = '';
+    g.order.forEach(function (L) {
+      html += '<div class="az-group" id="az-g-' + L + '"><div class="az-head">' + (L === '#' ? '其他' : L) + '</div>' +
+        g.map[L].map(function (a) {
+          return '<div style="display:flex;gap:8px;align-items:center;padding:10px;border-radius:12px;background:#fff;margin-bottom:6px;">' +
+            '<div style="flex:1;font-size:15px;min-width:0;">' + esc(a.name) + ' · ' + esc(a.phone) + (a.is_default ? ' <span style="color:var(--accent);font-size:13px;">' + t('默认', 'Default') + '</span>' : '') + '<br><span style="color:var(--muted);">' + esc(a.street + ', ' + a.city + ', ' + a.state + ' ' + a.zip + ', ' + a.country) + '</span></div>' +
+            '<button class="buy-btn ad-def" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;">' + t('设默认', 'Default') + '</button>' +
+            '<button class="buy-btn ad-edit" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;">' + t('编辑', 'Edit') + '</button>' +
+            '<button class="buy-btn ad-del" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;background:#fff;color:#d96570;">' + t('删除', 'Del') + '</button>' +
+          '</div>';
+        }).join('') + '</div>';
+    });
+    box.innerHTML = '<div class="az-box" style="padding-right:20px;">' + html + azNavHtml(g.map) + '</div>';
+    bindAzNav(box);
     box.querySelectorAll('.ad-def').forEach(function (b) { b.addEventListener('click', function () {
       var id = b.getAttribute('data-id');
       api('shop_addresses?user_id=eq.' + UID, { method: 'PATCH', body: JSON.stringify({ is_default: false }) }).then(function () {

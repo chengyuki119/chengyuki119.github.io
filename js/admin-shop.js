@@ -234,6 +234,53 @@
         '</div>';
     }).join('');
   }
+  // ── 订单商品编辑（从现有商品中选择，自动重算金额）──
+  function ieProdOpts(selName) {
+    return '<option value="">选择商品…</option>' + SM.products.map(function (p) {
+      return '<option value="' + escAttr(p.id) + '" data-name="' + escAttr(p.name || '') + '" data-price="' + escAttr(p.price != null ? p.price : '') + '"' + (p.name === selName ? ' selected' : '') + '>' + esc((p.name || '（未命名）') + ' · $' + fmtMoney(p.price)) + '</option>';
+    }).join('');
+  }
+  function itemEditRow(it) {
+    it = it || {};
+    return '<div class="sm-ie-row" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;background:var(--card,#fff2f7);border-radius:10px;padding:6px 8px;margin-bottom:6px;">' +
+      '<select class="sm-ie-prod" style="flex:1;min-width:170px;max-width:280px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:10px;padding:6px 8px;font-family:inherit;font-size:14px;background:#fff;color:var(--text,#5d6780);">' + ieProdOpts(it.name) + '</select>' +
+      '<label style="font-size:13px;color:var(--muted);">单价 $<input class="sm-ie-price" type="number" step="0.01" min="0" value="' + escAttr(it.price != null ? it.price : '') + '" style="width:74px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
+      '<label style="font-size:13px;color:var(--muted);">×<input class="sm-ie-qty" type="number" min="1" step="1" value="' + (it.qty || 1) + '" style="width:52px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
+      '<span class="sm-ie-line" style="font-size:14px;min-width:64px;text-align:right;"></span>' +
+      '<button type="button" class="btn-del sm-ie-del">删除</button>' +
+    '</div>';
+  }
+  function ieReadRows(card) {
+    var rows = [];
+    Array.prototype.forEach.call(card.querySelectorAll('.sm-ie-row'), function (r) {
+      var sel = r.querySelector('.sm-ie-prod');
+      var opt = sel.selectedOptions[0];
+      if (!opt || !opt.value) return; // 未选商品的行不算
+      rows.push({
+        product_id: opt.value,
+        name: opt.getAttribute('data-name') || '',
+        price: parseFloat(r.querySelector('.sm-ie-price').value) || 0,
+        qty: Math.max(1, parseInt(r.querySelector('.sm-ie-qty').value, 10) || 1),
+        image: (SM.products.filter(function (p) { return String(p.id) === String(opt.value); })[0] || {}).image || ''
+      });
+    });
+    return rows;
+  }
+  function iePaintSum(card, o) {
+    var items = ieReadRows(card);
+    var sub = items.reduce(function (s, it) { return s + it.price * it.qty; }, 0);
+    var ship = num(o.shipping_actual != null ? o.shipping_actual : o.shipping_est);
+    var total = sub - num(o.discount) + ship + num(o.service_fee);
+    var el = card.querySelector('.sm-ie-sum');
+    if (el) el.innerHTML = '新小计 $' + fmtMoney(sub) + '（原 $' + fmtMoney(o.subtotal) + '）· 优惠 -$' + fmtMoney(o.discount) + ' · 运费 $' + fmtMoney(ship) + ' · 服务费 $' + fmtMoney(o.service_fee) + ' → 新总价 <b>$' + fmtMoney(total) + '</b>（原 $' + fmtMoney(o.total) + '）';
+    return { items: items, sub: sub, total: total };
+  }
+  function ieRowLine(row) {
+    if (!row) return;
+    var p = parseFloat(row.querySelector('.sm-ie-price').value) || 0;
+    var q = parseInt(row.querySelector('.sm-ie-qty').value, 10) || 1;
+    row.querySelector('.sm-ie-line').textContent = '$' + fmtMoney(p * q);
+  }
   function addrHtml(a) {
     a = a || {};
     var parts = [a.name, a.phone, a.street, a.city, a.state, a.zip, a.country].filter(function (x) { return x; });
@@ -246,7 +293,15 @@
     var body = '';
     if (open) {
       body = '<div class="sm-o-body">' +
-        '<div>' + itemsHtml(o) + '</div>' +
+        '<div style="min-width:0;">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;"><b style="font-size:15px;">商品</b>' +
+          (o.status !== 'rejected'
+            ? '<button type="button" class="btn-mini sm-item-edit">编辑商品</button>'
+            : '<span style="font-size:13px;color:var(--muted);">凭证有误订单不可编辑商品</span>') +
+          '</div>' +
+          '<div class="sm-items-view">' + itemsHtml(o) + '</div>' +
+          '<div class="sm-items-edit" style="display:none;"></div>' +
+        '</div>' +
         '<div class="sm-line"><span class="lbl">收货</span>' + addrHtml(o.address) + '</div>' +
         (o.note ? '<div class="sm-line"><span class="lbl">买家留言</span>' + esc(o.note) + '</div>' : '') +
         '<div class="sm-line"><span class="lbl">付款</span>' +
@@ -680,6 +735,13 @@
     var o = byId(SM.orders, id);
     if (!o) return;
 
+    // 后台保存类按钮：防重复提交（成功后 renderOrders 重绘节点自动恢复，4s 兕底）
+    var tBtn = e.target.closest('button');
+    if (tBtn && (tBtn.classList.contains('btn-save') || tBtn.classList.contains('btn-mini') || tBtn.classList.contains('btn-del')) && !tBtn.dataset.busy) {
+      tBtn.dataset.busy = '1'; tBtn.disabled = true;
+      setTimeout(function () { if (tBtn.isConnected) { tBtn.dataset.busy = ''; tBtn.disabled = false; } }, 4000);
+    }
+
     // 展开 / 收起（点头部；点操作区不收起）
     if (e.target.closest('.sm-o-head')) {
       SM.oopen[id] = !SM.oopen[id];
@@ -775,19 +837,81 @@
       });
       return;
     }
+    if (e.target.classList.contains('sm-item-edit')) { // 订单商品：进入编辑模式
+      var ieBox = card.querySelector('.sm-items-edit');
+      if (!ieBox) return;
+      ieBox.innerHTML = arr(o.items).map(itemEditRow).join('') +
+        '<button type="button" class="btn-mini sm-ie-add">＋ 加商品</button>' +
+        '<div class="sm-ie-sum" style="margin:8px 0;font-size:14px;"></div>' +
+        '<div style="display:flex;gap:8px;"><button type="button" class="btn-save sm-ie-save">保存商品变更</button>' +
+        '<button type="button" class="btn-mini sm-ie-cancel">取消</button></div>';
+      ieBox.style.display = '';
+      card.querySelector('.sm-items-view').style.display = 'none';
+      Array.prototype.forEach.call(ieBox.querySelectorAll('.sm-ie-row'), ieRowLine);
+      iePaintSum(card, o);
+      return;
+    }
+    if (e.target.classList.contains('sm-ie-add')) { // 加一行商品
+      var addBtn = card.querySelector('.sm-ie-add');
+      if (addBtn) addBtn.insertAdjacentHTML('beforebegin', itemEditRow({}));
+      return;
+    }
+    if (e.target.classList.contains('sm-ie-cancel')) { // 取消编辑：回到展示，不写库
+      card.querySelector('.sm-items-edit').style.display = 'none';
+      card.querySelector('.sm-items-view').style.display = '';
+      return;
+    }
+    if (e.target.classList.contains('sm-ie-del')) {
+      e.target.closest('.sm-ie-row').remove();
+      iePaintSum(card, o);
+      return;
+    }
+    if (e.target.classList.contains('sm-ie-save')) { // 保存：确认变更 → PATCH 重算金额
+      var calc = iePaintSum(card, o);
+      if (!calc.items.length) { toast('至少保留一件商品（选好商品再保存）'); return; }
+      var paidWarn = (['paid', 'shipped', 'completed'].indexOf(o.status) !== -1 && o.pay_amount != null && o.pay_amount !== '')
+        ? '\n\n注意：该订单已付款 $' + fmtMoney(o.pay_amount) + '，付款记录不会自动修改；金额有变请走退款/补款流程确认。' : '';
+      uiConfirm('确认保存商品变更？\n\n' + (o.order_no || '') + '\n小计 $' + fmtMoney(o.subtotal) + ' → $' + fmtMoney(calc.sub) + '\n总价 $' + fmtMoney(o.total) + ' → $' + fmtMoney(calc.total) + paidWarn, function () {
+        patchOrder(id, { items: calc.items, subtotal: fmtMoney(calc.sub), total: fmtMoney(calc.total) },
+          '商品已更新，金额已重算', 'edit_items',
+          '商品编辑：' + calc.items.length + ' 件，小计 $' + fmtMoney(o.subtotal) + '→$' + fmtMoney(calc.sub) + '，总价 $' + fmtMoney(o.total) + '→$' + fmtMoney(calc.total));
+        // 成功后 patchOrder→renderOrders 重绘回展示态；失败则保留编辑框内容
+      });
+      return;
+    }
     if (e.target.classList.contains('sm-act-note')) { // 内部备注
       patchOrder(id, { admin_note: card.querySelector('.sm-admin-note').value }, '内部备注已保存');
       return;
     }
   });
-  oList.addEventListener('input', function (e) { // 运费输入时实时预览应付
-    if (!e.target.classList.contains('sm-ship-actual')) return;
+  oList.addEventListener('input', function (e) {
     var card = e.target.closest('.sm-order');
+    if (!card) return;
     var o = byId(SM.orders, card.getAttribute('data-id'));
+    if (e.target.classList.contains('sm-ie-price') || e.target.classList.contains('sm-ie-qty')) { // 商品编辑：行小计+汇总实时重算
+      if (!o) return;
+      ieRowLine(e.target.closest('.sm-ie-row'));
+      iePaintSum(card, o);
+      return;
+    }
+    if (!e.target.classList.contains('sm-ship-actual')) return;
     if (!o) return;
     var v = parseFloat(e.target.value);
     var ship = num(o.subtotal) - num(o.discount) + (isFinite(v) ? v : num(o.shipping_est)) + num(o.service_fee);
     card.querySelector('.sm-total-prev').textContent = '应付 $' + fmtMoney(ship);
+  });
+  oList.addEventListener('change', function (e) { // 商品选择：带入现有商品单价
+    if (!e.target.classList.contains('sm-ie-prod')) return;
+    var card = e.target.closest('.sm-order');
+    var row = e.target.closest('.sm-ie-row');
+    var opt = e.target.selectedOptions[0];
+    if (opt && opt.value) {
+      var dp = opt.getAttribute('data-price');
+      if (dp !== null && dp !== '') row.querySelector('.sm-ie-price').value = dp;
+    }
+    ieRowLine(row);
+    var o = byId(SM.orders, card.getAttribute('data-id'));
+    if (o) iePaintSum(card, o);
   });
   oList.addEventListener('click', function (e) { // 发货日期：复用现有 dp 日期选择器
     if (!e.target.classList.contains('sm-ship-date') && !e.target.classList.contains('sm-p-date')) return;
