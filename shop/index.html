@@ -112,6 +112,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     overflow: hidden;
   }
   .product-img img { width: 100%; height: 100%; object-fit: cover; }
+  .product-img .pg-img { object-fit: cover !important; } /* 卡片图正方形填满（内联 contain 会留白边，用 !important 压过） */
   .product-info { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
   .product-tag {
     align-self: flex-start;
@@ -290,8 +291,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
   <link rel="stylesheet" href="/site-menu.css">
-  <script src="/js/site-common.js?v=20261023n"></script>
-  <script src="/site-menu.js?v=20261023n" defer></script>
+  <script src="/js/site-common.js?v=20261024a"></script>
+  <script src="/site-menu.js?v=20261024a" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -573,7 +574,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     pgSet(wrap, i + (t.classList.contains('pg-next') ? 1 : -1));
   }, true);
   function fmtPriceShop(v) {
-    var s = String(v == null ? '' : v).trim().replace(/^¥+/, '');
+    var s = String(v == null ? '' : v).trim().replace(/^[¥$]+/, '');
     if (s === '') return '';
     return /^\d+(\.\d+)?$/.test(s.replace(/[,\s]/g, '')) ? (parseFloat(s) || 0).toFixed(2) : s;
   }
@@ -590,7 +591,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
       '<h3>' + esc(p.name) + '</h3>' +
       '<p>' + esc(p.description || '') + '</p>' +
       '<div class="product-row">' +
-      '<span class="price">' + (p.price ? '<small>¥</small>' + esc(fmtPriceShop(p.price)) : '') + '</span>' +
+      '<span class="price">' + (p.price ? '<small>' + ((p.currency || 'USD') === 'CNY' ? '¥' : '$') + '</small>' + esc(fmtPriceShop(p.price)) : '') + '</span>' +
       (st === 'on' ? '<span class="no-buy" style="font-size:14px;">' + t('请进详情选购', 'Open to buy') + '</span>' : '<span class="no-buy">' + (st === 'display' ? t('仅展示，不能下单','Not for sale') : '') + '</span>') +
       productEditBtn(p) +
       '</div></div></div>';
@@ -617,7 +618,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   }
 
   function fetchProducts() { // images 列还没建时自动降级，不阻塞小铺页
-    var sel = 'id,name,price,description,tag,image_url,images,sold,stock,display_only';
+    var sel = 'id,name,price,currency,description,tag,image_url,images,sold,stock,display_only';
     return fetch(SUPABASE_URL + '/rest/v1/products?select=' + sel + '&order=created_at.desc&limit=100', {
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
     }).then(function (r) { return r.json(); }).then(function (rows) {
@@ -820,6 +821,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261023n"></script>
+<script src="/js/shop-app.js?v=20261024a"></script>
 </body>
 </html>

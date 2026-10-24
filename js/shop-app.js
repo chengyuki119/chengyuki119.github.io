@@ -10,6 +10,11 @@
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
   function arr(x) { return Array.isArray(x) ? x : []; } // REST 报错/表未建时优雅兜底
   function money(v) { var n = parseFloat(v); return isNaN(n) ? '0.00' : n.toFixed(2); }
+  /* ═══ 货币：商品可分别使用 CNY(¥) / USD($)；金额永不自动换算，符号跟商品 currency 字段走（小铺统一 $，无字段默认 USD，兼容旧购物车数据）═══ */
+  var CURS = { CNY: '¥', USD: '$' };
+  function sym(c) { return CURS[c] || '¥'; }
+  function curOf(p, v) { var c = (v && v.currency) || (p && p.currency) || 'USD'; return CURS[c] ? c : 'USD'; }
+  function priceHtml(c, v) { return '<small>' + sym(c) + '</small>' + money(v); }
   function normImg(u) { u = String(u || ''); return /^(https?:\/\/|data:)/.test(u) ? u : '/' + u.replace(/^\/+/, ''); }
   function t(zh, en) { return (window.LANG === 'en') ? en : zh; }
 
@@ -104,7 +109,7 @@
     var k = cartKey(item.id, item.sku);
     var hit = CART.filter(function (x) { return cartKey(x.id, x.sku) === k; })[0];
     if (hit) hit.qty += qty || 1;
-    else CART.push({ id: item.id, sku: item.sku || '', name: item.name, image: item.image || '', price: item.price, qty: qty || 1, checked: true });
+    else CART.push({ id: item.id, sku: item.sku || '', name: item.name, image: item.image || '', price: item.price, currency: item.currency || 'USD', qty: qty || 1, checked: true });
     saveCart();
   }
   function paintCartBadge() {
@@ -219,7 +224,7 @@
           '<h2 style="font-size:24px;margin:6px 0 4px;display:inline-block;">' + esc(p.name) + '</h2>' +
           '<button type="button" class="fav-btn detail-fav' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '">' + (isFav(p.id) ? '♥' : '♡') + '</button>' +
           '<p style="color:var(--muted);font-size:17px;">' + esc(p.description || '') + '</p>' +
-          '<div style="font-size:26px;color:var(--accent);font-weight:700;margin:10px 0;">¥' + money(price) + '</div>' +
+          '<div style="font-size:26px;color:var(--accent);font-weight:700;margin:10px 0;">' + sym(curOf(p, v)) + money(price) + '</div>' +
           (skuText ? '<div style="font-size:15px;color:var(--muted);margin-bottom:6px;">SKU: ' + esc(skuText) + '</div>' : '') +
           (vs ?
             '<div style="margin:10px 0;"><div style="font-size:16px;margin-bottom:6px;">' + t('规格', 'Option') + '</div><div id="d-variants" style="display:flex;gap:8px;flex-wrap:wrap;">' +
@@ -236,8 +241,7 @@
             '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;">' +
               '<button class="buy-btn" id="d-add" style="padding:10px 22px;">' + t('加入购物车', 'Add to cart') + '</button>' +
               '<button class="buy-btn" id="d-buy" style="padding:10px 22px;background:var(--accent);color:#fff;">' + t('立即购买', 'Buy now') + '</button>' +
-            '</div>' +
-            '<button class="buy-btn" id="d-group" style="padding:9px 20px;background:#fff;border:2px solid var(--accent);color:var(--accent);">' + t('发起拼团', 'Start a group buy') + '</button>'
+            '</div>'
           : '<p class="no-buy" style="margin:14px 0;">' + (st === 'out' ? t('已售罄，看看别的吧～', 'Sold out — take a look at other items~') : t('仅展示，不能下单', 'Not for sale')) + '</p>') +
         '</div>' +
       '</div>' +
@@ -276,14 +280,12 @@
     if (add) add.addEventListener('click', function () { addCartFromDetail(false); });
     var buy = document.getElementById('d-buy');
     if (buy) buy.addEventListener('click', function () { addCartFromDetail(true); });
-    var gb = document.getElementById('d-group');
-    if (gb) gb.addEventListener('click', openGroupForm);
   }
   function addCartFromDetail(goCheckout) {
     var d = DETAIL, p = d.p, vs = variantsOf(p), v = vs ? currentVariant(p, d.sku) : null;
     var price = v ? (v.price != null ? v.price : p.price) : p.price;
     var img = v && Array.isArray(v.images) && v.images.length ? v.images[0] : (Array.isArray(p.images) && p.images.length ? p.images[0] : p.image_url);
-    cartAdd({ id: p.id, sku: d.sku, name: p.name + (v ? ' · ' + (v.name || d.sku) : ''), image: img, price: price }, d.qty);
+    cartAdd({ id: p.id, sku: d.sku, name: p.name + (v ? ' · ' + (v.name || d.sku) : ''), image: img, price: price, currency: curOf(p, v) }, d.qty);
     toast(t('已加入购物车', 'Added to cart'));
     if (goCheckout) { renderCart(); showView('cart'); }
   }
@@ -296,7 +298,7 @@
     box.style.display = '';
     box.innerHTML =
       '<h3 style="font-size:19px;margin-bottom:10px;">' + t('发起拼团', 'Start a group buy') + '</h3>' +
-      '<p style="font-size:15px;color:var(--muted);margin-bottom:10px;">' + t('拼团价 ¥' + money(price) + ' · 你是团长，把链接分享给小伙伴，人满即成团', 'Group price ¥' + money(price) + ' · You are the leader. Share the link — group closes when full.') + '</p>' +
+      '<p style="font-size:15px;color:var(--muted);margin-bottom:10px;">' + t('拼团价 ' + sym(p.currency) + money(price) + ' · 你是团长，把链接分享给小伙伴，人满即成团', 'Group price ' + sym(p.currency) + money(price) + ' · You are the leader. Share the link — group closes when full.') + '</p>' +
       '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">' +
         '<label style="font-size:16px;">' + t('目标人数', 'Target') + ' <input id="g-target" type="number" min="2" max="50" value="2" style="width:70px;padding:8px;border:none;border-radius:10px;background:#fff;font-family:inherit;font-size:17px;"></label>' +
         '<label style="font-size:16px;">' + t('有效小时数', 'Hours open') + ' <input id="g-hours" type="number" min="1" max="720" value="48" style="width:70px;padding:8px;border:none;border-radius:10px;background:#fff;font-family:inherit;font-size:17px;"></label>' +
@@ -344,7 +346,7 @@
                 '<span class="st" style="background:' + st[1] + ';">' + st[0] + '</span></div>' +
               '<div class="product-info"><span class="product-tag">' + t('拼团价', 'Group price') + '</span>' +
                 '<h3>' + esc(g.name || g.product_name) + '</h3>' +
-                '<div style="font-size:22px;color:var(--accent);font-weight:700;">¥' + money(g.price) + '</div>' +
+                '<div style="font-size:22px;color:var(--accent);font-weight:700;">' + sym(g.currency) + money(g.price) + '</div>' +
                 '<div style="font-size:15px;color:var(--muted);margin-top:4px;">' + g.joined + '/' + g.target + ' ' + t('人', 'joined') +
                 (g.status === 'open' ? ' · ' + t('截止', 'Ends') + ' ' + new Date(g.deadline).toLocaleString() : '') + '</div>' +
                 (g.status === 'open' && !full ? '<div class="product-row"><button class="buy-btn">' + t('去参团', 'Join') + '</button></div>' : '') +
@@ -374,7 +376,7 @@
               '<div style="display:grid;grid-template-columns:180px 1fr;gap:18px;">' +
                 (g.product_image ? '<img src="' + escAttr(normImg(g.product_image)) + '" style="width:180px;height:180px;object-fit:cover;border-radius:14px;">' : '') +
                 '<div><h2 style="font-size:22px;">' + esc(g.name || g.product_name) + '</h2>' +
-                  '<div style="font-size:26px;color:var(--accent);font-weight:700;margin:6px 0;">¥' + money(g.price) + '</div>' +
+                  '<div style="font-size:26px;color:var(--accent);font-weight:700;margin:6px 0;">' + sym(g.currency) + money(g.price) + '</div>' +
                   '<div style="font-size:16px;">' + t('已参团', 'Joined') + ' <b>' + g.joined + '</b> / ' + g.target + ' ' + t('人', 'people') + '</div>' +
                   '<div style="font-size:16px;color:var(--muted);margin-top:4px;">' + (g.status === 'open' ? t('截止', 'Ends') + ' <b id="g-countdown"></b>' : stText) + '</div>' +
                 '</div>' +
@@ -452,6 +454,15 @@
     var sel = CART.filter(function (x) { return x.checked !== false; });
     var box = document.getElementById('view-checkout');
     if (!sel.length) { box.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px 0;">' + t('没有勾选要结算的商品', 'Nothing selected to check out') + '</p>'; showView('checkout'); return; }
+    // 一单一币：美元和人民币不直接相加，混合时提示分开下单
+    var curs = {}; sel.forEach(function (x) { curs[curOf(null, x)] = 1; });
+    var curList = Object.keys(curs);
+    if (curList.length > 1) {
+      box.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px 0;">' +
+        t('购物车里同时有美元和人民币的商品，不能一起结算，请分开下单～', 'Your cart mixes USD and CNY items — they cannot be checked out together. Please place separate orders.') + '</p>';
+      showView('checkout'); return;
+    }
+    var cur = curList[0] || 'CNY';
     var sub = 0; sel.forEach(function (x) { sub += x.price * x.qty; });
     Promise.all([loadAddr(), fetch(SUPABASE_URL + '/rest/v1/site_settings?select=value&key=eq.shop_ship', { headers: { 'apikey': ANON } }).then(function (r) { return r.json(); })]).then(function (res) {
       var ship = {}; try { ship = JSON.parse((res[1] && res[1][0] && res[1][0].value) || '{}'); } catch (e) {}
@@ -460,8 +471,8 @@
       box.innerHTML =
         '<h2 style="font-size:22px;margin-bottom:14px;">' + t('确认订单', 'Checkout') + '</h2>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('商品', 'Items') + '</b>' +
-          sel.map(function (x) { return '<div style="display:flex;justify-content:space-between;font-size:16px;margin-top:6px;"><span>' + esc(x.name) + ' × ' + x.qty + '</span><span>¥' + money(x.price * x.qty) + '</span></div>'; }).join('') +
-          '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:10px;border-top:1px dashed var(--accent-soft);padding-top:8px;"><span>' + t('商品小计', 'Subtotal') + '</span><b>¥' + money(sub) + '</b></div>' +
+          sel.map(function (x) { return '<div style="display:flex;justify-content:space-between;font-size:16px;margin-top:6px;"><span>' + esc(x.name) + ' × ' + x.qty + '</span><span>' + sym(cur) + money(x.price * x.qty) + '</span></div>'; }).join('') +
+          '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:10px;border-top:1px dashed var(--accent-soft);padding-top:8px;"><span>' + t('商品小计', 'Subtotal') + '</span><b>' + sym(cur) + money(sub) + '</b></div>' +
         '</div>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('收货地址', 'Shipping address') + '</b><div id="ck-addr" style="margin-top:8px;"></div>' +
           '<button class="buy-btn" id="ck-new-addr" style="margin-top:8px;padding:7px 16px;">' + t('＋ 新地址', '+ New address') + '</button>' +
@@ -469,14 +480,14 @@
         '</div>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('运费', 'Shipping') + '</b>' +
           '<p style="font-size:15px;color:var(--muted);margin-top:4px;">' + t('按 Pirate Ship 实际运费收取：结算显示估算，发货前按实际运费确认，另加服务费。', 'Shipping = actual Pirate Ship cost (estimated below, confirmed before shipment) + service fee.') + '</p>' +
-          '<div style="display:flex;justify-content:space-between;font-size:16px;margin-top:8px;"><span>' + t('运费（估算）', 'Shipping (est.)') + '</span><span>¥' + money(est) + '</span></div>' +
-          '<div style="display:flex;justify-content:space-between;font-size:16px;"><span>' + t('服务费', 'Service fee') + '</span><span>¥' + money(fee) + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:16px;margin-top:8px;"><span>' + t('运费（估算）', 'Shipping (est.)') + '</span><span>' + sym(cur) + money(est) + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:16px;"><span>' + t('服务费', 'Service fee') + '</span><span>' + sym(cur) + money(fee) + '</span></div>' +
         '</div>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('优惠码', 'Coupon') + '</b>' +
           '<div style="display:flex;gap:8px;margin-top:8px;"><input id="ck-coupon" placeholder="' + t('有优惠码就填这里', 'Coupon code') + '" style="flex:1;padding:10px 14px;font-size:17px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;"></div>' +
           '<label style="display:block;margin-top:10px;font-size:16px;">' + t('订单备注', 'Order note') + '<textarea id="ck-note" style="width:100%;min-height:60px;border:none;border-radius:12px;background:#fff;padding:10px 14px;font-family:inherit;font-size:17px;color:var(--text);resize:none;outline:none;margin-top:4px;"></textarea></label>' +
         '</div>' +
-        '<div class="card" style="padding:18px;"><div style="display:flex;justify-content:space-between;font-size:19px;"><b>' + t('预估合计', 'Estimated total') + '</b><b style="color:var(--accent);">¥' + money(sub + est + fee) + '</b></div>' +
+        '<div class="card" style="padding:18px;"><div style="display:flex;justify-content:space-between;font-size:19px;"><b>' + t('预估合计', 'Estimated total') + '</b><b style="color:var(--accent);">' + sym(cur) + money(sub + est + fee) + '</b></div>' +
           '<p style="font-size:14px;color:var(--muted);margin-top:4px;">' + t('以服务端验证后的金额为准；实际运费由后台确认后更新。', 'Final amount is validated server-side; shipping updates once confirmed.') + '</p>' +
           '<button class="buy-btn" id="ck-submit" style="width:100%;margin-top:12px;padding:12px;background:var(--accent);color:#fff;font-size:18px;">' + t('提交订单', 'Place order') + '</button>' +
         '</div>';
@@ -602,10 +613,10 @@
       (o.items || []).map(function (it) {
         return '<div style="display:flex;gap:10px;align-items:center;margin-top:8px;">' +
           (it.image ? '<img src="' + escAttr(normImg(it.image)) + '" style="width:44px;height:44px;border-radius:10px;object-fit:cover;">' : '') +
-          '<span style="flex:1;font-size:16px;">' + esc(it.name) + ' × ' + it.qty + '</span><span style="font-size:16px;">¥' + money(it.price * it.qty) + '</span></div>';
+          '<span style="flex:1;font-size:16px;">' + esc(it.name) + ' × ' + it.qty + '</span><span style="font-size:16px;">' + sym(o.currency) + money(it.price * it.qty) + '</span></div>';
       }).join('') +
       '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:8px;border-top:1px dashed var(--accent-soft);padding-top:8px;">' +
-        '<span>' + t('应付', 'Total') + '</span><b style="color:var(--accent);">¥' + money(o.total) + '</b></div>' +
+        '<span>' + t('应付', 'Total') + '</span><b style="color:var(--accent);">' + sym(o.currency) + money(o.total) + '</b></div>' +
       '<div id="oc-body-' + o.id + '" style="display:none;margin-top:10px;"></div>' +
       '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">' +
         '<button class="buy-btn oc-more" data-oid="' + escAttr(o.id) + '" style="padding:7px 16px;">' + t('详情 / 付款', 'Details / Pay') + '</button></div>' +
@@ -633,7 +644,7 @@
       (o.reject_reason ? '<p style="font-size:15px;color:#d96570;margin-top:6px;">' + t('凭证有误：', 'Proof rejected: ') + esc(o.reject_reason) + '</p>' : '') +
       (o.carrier ? '<p style="font-size:15px;margin-top:6px;">' + t('物流', 'Shipping') + '：' + esc(o.carrier) + ' <a href="' + escAttr(trackUrlOf(o.carrier, o.tracking)) + '" target="_blank" style="color:var(--accent);">' + esc(o.tracking) + ' ↗</a>' +
         (o.shipped_at ? ' · ' + new Date(o.shipped_at).toLocaleDateString() : '') + '</p>' : '') +
-      '<div style="font-size:15px;color:var(--muted);margin-top:6px;">' + t('明细', 'Breakdown') + '：¥' + money(o.subtotal) + (o.discount > 0 ? ' − 优惠 ¥' + money(o.discount) : '') + ' + 运费 ¥' + money(o.shipping_actual != null ? o.shipping_actual : o.shipping_est) + ' + 服务费 ¥' + money(o.service_fee) + '</div>' +
+      '<div style="font-size:15px;color:var(--muted);margin-top:6px;">' + t('明细', 'Breakdown') + '：' + sym(o.currency) + money(o.subtotal) + (o.discount > 0 ? ' − 优惠 ' + sym(o.currency) + money(o.discount) : '') + ' + 运费 ' + sym(o.currency) + money(o.shipping_actual != null ? o.shipping_actual : o.shipping_est) + ' + 服务费 ' + sym(o.currency) + money(o.service_fee) + '</div>' +
       '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">';
     if (o.status === 'pending' || o.status === 'rejected') {
       html += '<button class="buy-btn oc-pay" style="padding:8px 18px;background:var(--accent);color:#fff;">' + t('上传付款截图', 'Upload payment proof') + '</button>';
@@ -1167,23 +1178,30 @@
   }
 
   // ===== 购物车视图 =====
+  function cartCur(list) { // 勾选项统一币种（混合时返回多数派用于小计显示，结算时仍会拦）
+    var c = null, n = 0, seen = {};
+    list.forEach(function (x) { var k = curOf(null, x); seen[k] = (seen[k] || 0) + 1; if (seen[k] > n) { n = seen[k]; c = k; } });
+    return c || 'USD';
+  }
   function renderCart() {
     var box = document.getElementById('view-cart');
     if (!CART.length) { box.innerHTML = '<h2 style="font-size:22px;margin-bottom:14px;">' + t('购物车', 'Cart') + '</h2><p style="color:var(--muted);text-align:center;padding:30px 0;">' + t('购物车空空的，去小铺逛逛～', 'Cart is empty — go shopping~') + '</p>'; showView('cart'); return; }
-    var sub = 0; CART.forEach(function (x) { if (x.checked !== false) sub += x.price * x.qty; });
+    var selI = CART.filter(function (x) { return x.checked !== false; });
+    var sub = 0, subCur = cartCur(selI);
+    selI.forEach(function (x) { sub += x.price * x.qty; });
     box.innerHTML =
       '<h2 style="font-size:22px;margin-bottom:14px;">' + t('购物车', 'Cart') + '</h2>' +
       CART.map(function (x, i) {
         return '<div class="card" style="padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:center;">' +
           '<span class="ck-box" data-i="' + i + '" style="width:20px;height:20px;border-radius:6px;border:2px solid var(--accent);flex-shrink:0;cursor:pointer;background:' + (x.checked !== false ? 'var(--accent)' : 'transparent') + ';"></span>' +
           (x.image ? '<img src="' + escAttr(normImg(x.image)) + '" style="width:56px;height:56px;border-radius:12px;object-fit:cover;">' : '') +
-          '<div style="flex:1;min-width:0;"><div style="font-size:16px;">' + esc(x.name) + '</div><div style="font-size:16px;color:var(--accent);">¥' + money(x.price) + '</div></div>' +
+          '<div style="flex:1;min-width:0;"><div style="font-size:16px;">' + esc(x.name) + '</div><div style="font-size:16px;color:var(--accent);">' + sym(curOf(null, x)) + money(x.price) + '</div></div>' +
           '<button class="qty-btn cart-q" data-i="' + i + '" data-d="-1">−</button><b>' + x.qty + '</b><button class="qty-btn cart-q" data-i="' + i + '" data-d="1">＋</button>' +
           '<button class="buy-btn cart-rm" data-i="' + i + '" style="padding:5px 10px;font-size:14px;background:#fff;color:#d96570;">' + t('删除', 'Remove') + '</button>' +
         '</div>';
       }).join('') +
       '<div class="card" style="padding:14px;display:flex;justify-content:space-between;align-items:center;">' +
-        '<span style="font-size:17px;">' + t('已选小计', 'Selected subtotal') + '</span><b style="font-size:20px;color:var(--accent);">¥' + money(sub) + '</b></div>' +
+        '<span style="font-size:17px;">' + t('已选小计', 'Selected subtotal') + '</span><b style="font-size:20px;color:var(--accent);">' + sym(subCur) + money(sub) + '</b></div>' +
       '<button class="buy-btn" id="cart-go" style="width:100%;margin-top:12px;padding:12px;background:var(--accent);color:#fff;font-size:18px;">' + t('去结算', 'Check out') + '</button>';
     box.querySelectorAll('.ck-box').forEach(function (el) { el.addEventListener('click', function () {
       var x = CART[+el.getAttribute('data-i')]; x.checked = x.checked === false; saveCart(); renderCart();
@@ -1261,7 +1279,7 @@
       '<h3>' + esc(p.name) + '</h3>' +
       '<p>' + esc(p.description || '') + '</p>' +
       '<div class="product-row">' +
-      '<span class="price">' + (p.price ? '<small>¥</small>' + esc(fmtPriceShop(p.price)) : '') + '</span>' +
+      '<span class="price">' + (p.price ? priceHtml(curOf(p), fmtPriceShop(p.price)) : '') + '</span>' +
       (st === 'on' ? '<button class="buy-btn cart-quick">' + t('加入购物车', 'Add to cart') + '</button>' : '<span class="no-buy">' + (st === 'display' ? t('仅展示，不能下单', 'Not for sale') : '') + '</span>') +
       productEditBtn(p) +
       '</div></div></div>';
@@ -1279,7 +1297,7 @@
         var vs = variantsOf(p);
         if (vs) { openDetail(p.id); toast(t('先选规格再加入购物车', 'Pick an option first')); return; }
         var img = Array.isArray(p.images) && p.images.length ? p.images[0] : p.image_url;
-        cartAdd({ id: p.id, sku: '', name: p.name, image: img, price: parseFloat(p.price) || 0 }, 1);
+        cartAdd({ id: p.id, sku: '', name: p.name, image: img, price: parseFloat(p.price) || 0, currency: curOf(p) }, 1);
         toast(t('已加入购物车', 'Added to cart'));
       });
     });
@@ -1291,8 +1309,7 @@
     var nav = document.createElement('div');
     nav.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;';
     nav.innerHTML =
-      '<a class="back-link" href="/shop/?sec=orders">' + t('我的订单', 'Orders') + '</a>' +
-      '<a class="back-link" href="/shop/?sec=groups">' + t('拼团', 'Groups') + '</a>';
+      '<a class="back-link" href="/shop/?sec=orders">' + t('我的订单', 'Orders') + '</a>';
     bar.parentNode.insertBefore(nav, bar.nextSibling);
   }
 

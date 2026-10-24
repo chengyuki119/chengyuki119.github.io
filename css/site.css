@@ -584,7 +584,7 @@
   gap: 16px;
   margin-top: 18px;
 }
-.home-shop-grid .pg-img { object-fit: cover; } /* 卡片图统一正方形填满 */
+.home-shop-grid .pg-img { object-fit: cover !important; } /* 卡片图统一正方形填满（内联 contain 需 !important 压过） */
 .home-shop-grid .hs-card {
   display: block; text-decoration: none;
   background: #fff; border-radius: 18px; overflow: hidden;

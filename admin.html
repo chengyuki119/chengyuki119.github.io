@@ -383,6 +383,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .section-item .sec-meta { font-size:15px; color: var(--muted); margin-top: 3px; }
   .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; min-width: 0; }
   .edit-grid .e-desc, .edit-grid .e-file { grid-column: 1 / -1; }
+  /* 商品货币选择：自定义胶囊（¥/美元），不用原生 select */
+  .cur-chip { border: 1.5px solid var(--accent-soft,#ffc8d6); background: #fff; color: #9aa5bd; font-size: 15px; padding: 5px 14px; border-radius: 999px; cursor: pointer; font-family: inherit; }
+  .cur-chip.on { background: #ffd9e6; color: #a04a68; border-color: #ffd9e6; }
   /* 照片管理列表：紧凑一行卡（缩略图 72px + 信息） */
   /* 照片管理：4 列照片卡片网格（与前台同一套视觉；管理操作全在卡片内） */
   #photo-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -616,6 +619,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <div class="form-grid">
           <input id="p-name" placeholder="商品名称 *">
           <input id="p-price" placeholder="价格，如 39.9（可留空）">
+          <div class="full fld-inline"><span style="font-size:15px;color:var(--muted);margin-right:6px;">货币</span><button type="button" class="cur-chip" data-cur="CNY">¥ 人民币</button><button type="button" class="cur-chip on" data-cur="USD">$ 美元</button><span style="font-size:13px;color:var(--muted);margin-left:8px;">每件商品各自选，金额不会自动换算</span></div>
           <input id="p-stock" type="number" min="0" placeholder="库存数量（0 = 售尽）">
           <input id="p-cost" type="number" min="0" step="0.01" placeholder="成本，只有你自己能看到">
           <input id="p-tag" placeholder="标签，如 手作 / 毛线 / 黏土（点输入框可选已有标签）">
@@ -1289,6 +1293,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         .then(function (res) { return SUPABASE_URL + '/storage/v1/object/public/shop/' + res.Key.split('/').slice(1).join('/'); });
     }));
   }
+  var pCur = 'USD'; // 新增商品的货币选择（每件商品独立，不换算）
+  document.getElementById('tab-shop').addEventListener('click', function (e) {
+    var chip = e.target.closest('.cur-chip');
+    if (!chip || !chip.closest('.form-grid')) return; // 只响应上架表单里的胶囊
+    pCur = chip.getAttribute('data-cur') || 'USD';
+    chip.parentNode.querySelectorAll('.cur-chip').forEach(function (x) { x.classList.toggle('on', x === chip); });
+  });
   document.getElementById('btn-add-product').addEventListener('click', function () {
     var btn = this;
     var name = document.getElementById('p-name').value.trim();
@@ -1301,20 +1312,27 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     btn.disabled = true; btn.textContent = '上架中…';
 
     uploadShopFiles(pendingFiles).then(function (urls) {
-      var body = { name: name, price: price, description: desc, tag: tag, image_url: urls[0] || null, stock: stock === '' ? 1 : parseInt(stock, 10), cost: cost === '' ? null : parseFloat(cost) };
+      var body = { name: name, price: price, description: desc, tag: tag, image_url: urls[0] || null, stock: stock === '' ? 1 : parseInt(stock, 10), cost: cost === '' ? null : parseFloat(cost), currency: pCur };
       if (urls.length > 1) body.images = urls; // 多图：images 列还没建时下面会自动降级为只存主图
-      return api('products', { method: 'POST', body: JSON.stringify(body) }).then(function (r) {
-        if (r.ok) return r;
-        if (body.images) {
-          delete body.images;
-          return api('products', { method: 'POST', body: JSON.stringify(body) }).then(function (r2) {
-            if (!r2.ok) throw new Error();
-            toast('多图列还没建，已先存主图；跑「小铺多图.sql」后重传即可');
-            return r2;
-          });
-        }
-        throw new Error();
-      });
+      var tryPost = function (b, triedCur) {
+        return api('products', { method: 'POST', body: JSON.stringify(b) }).then(function (r) {
+          if (r.ok) return r;
+          if (b.currency && !triedCur) { // currency 列还没建（未跑 SQL9）：去掉货币字段重试，价格照常入库
+            var b2 = Object.assign({}, b); delete b2.currency;
+            return tryPost(b2, true);
+          }
+          if (b.images) {
+            delete b.images;
+            return tryPost(b, true).then(function (r2) {
+              if (!r2.ok) throw new Error();
+              toast('多图列还没建，已先存主图；跑「小铺多图.sql」后重传即可');
+              return r2;
+            });
+          }
+          throw new Error();
+        });
+      };
+      return tryPost(body, false);
     }).then(function () {
       toast('上架成功！小铺页面已经能看到啦');
       document.getElementById('p-name').value = '';
@@ -1388,12 +1406,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     }).catch(function () { toast('保存失败'); });
   });
   function loadProducts() {
-    var tryLoad = function (withImages) {
-      return api('products?select=id,name,price,description,tag,image_url' + (withImages ? ',images' : '') + ',sold,stock,cost,display_only,created_at&order=created_at.desc&limit=200')
+    var tryLoad = function (withImages, withCur) {
+      return api('products?select=id,name,price' + (withCur ? ',currency' : '') + ',description,tag,image_url' + (withImages ? ',images' : '') + ',sold,stock,cost,display_only,created_at&order=created_at.desc&limit=200')
         .then(function (r) { return r.json(); })
         .then(function (rows) { if (!Array.isArray(rows)) throw new Error(); return rows; });
     };
-    tryLoad(true).catch(function () { return tryLoad(false); })
+    // currency 列还没建（未跑 SQL9）时逐层降级：多图 → 单图 → 无货币列
+    tryLoad(true, true).catch(function () { return tryLoad(false, true); })
+      .catch(function () { return tryLoad(false, false); })
       .then(function (rows) {
         var list = document.getElementById('product-list');
         PRODUCT_CACHE = {};
@@ -1419,7 +1439,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
             '<div class="thumb">' + thumb + '</div>' +
             '<div class="info">' +
             '<h3>' + esc(p.name) + '<span class="sold-badge ' + st[1] + '">' + st[0] + '</span></h3>' +
-            '<p>' + esc(p.price ? '¥' + p.price + ' · ' : '') + esc(p.description || '') + '</p>' +
+            '<p>' + esc(p.price ? (p.currency === 'USD' ? '$' : '¥') + p.price + ' · ' : '') + esc(p.description || '') + '</p>' +
             '<div class="private-line">' + stockInfo + ' · ' + costInfo + '（成本只有你自己能看到）</div>' +
             '<div class="actions" style="justify-content:flex-start;">' +
             '<button class="btn-mini btn-display">' + (p.display_only ? '恢复在售' : '设为仅展示') + '</button>' +
@@ -1480,6 +1500,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (!p) return;
       var base0 = (Array.isArray(p.images) && p.images.length) ? p.images.filter(Boolean) : (p.image_url ? [p.image_url] : []);
       card.__imgItems = base0.map(function (u) { return { u: u }; }); // 全部图：第一张=封面，可拖动排序
+      card.__cur = (p.currency === 'CNY') ? 'CNY' : 'USD'; // 编辑中货币（无 currency 数据时默认美元：小铺统一 $）
       var thumbHtml = p.image_url ? '<img src="' + esc(p.image_url) + '">' : '';
       card.innerHTML =
         '<div class="thumb">' + thumbHtml + '</div>' +
@@ -1488,6 +1509,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<div class="edit-grid">' +
         '<input class="e-name" value="' + escAttr(p.name) + '" placeholder="商品名称">' +
         '<input class="e-price" value="' + escAttr(p.price) + '" placeholder="价格">' +
+        '<div style="grid-column:1/-1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:14px;color:var(--muted);">货币</span>' +
+          '<button type="button" class="cur-chip' + (card.__cur !== 'USD' ? ' on' : '') + '" data-cur="CNY">¥ 人民币</button>' +
+          '<button type="button" class="cur-chip' + (card.__cur === 'USD' ? ' on' : '') + '" data-cur="USD">$ 美元</button>' +
+          '<span style="font-size:13px;color:var(--muted);margin-left:8px;">规格价格跟商品同一货币</span></div>' +
         '<input class="e-tag" value="' + escAttr(p.tag) + '" placeholder="标签（点输入框可选已有标签）">' +
         '<input class="e-stock" type="number" min="0" value="' + (p.stock == null ? '' : p.stock) + '" placeholder="库存">' +
         '<input class="e-cost" type="number" step="0.01" value="' + (p.cost == null ? '' : p.cost) + '" placeholder="成本（仅自己可见）">' +
@@ -1499,6 +1524,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<button class="btn-save btn-save-edit">保存修改</button>' +
         '<button class="btn-mini btn-cancel-edit">取消</button>' +
         '</div></div>';
+      card.querySelectorAll('.cur-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          card.__cur = chip.getAttribute('data-cur') || 'CNY';
+          card.querySelectorAll('.cur-chip').forEach(function (x) { x.classList.toggle('on', x === chip); });
+        });
+      });
       card.querySelector('.e-file').addEventListener('change', function () {
         var fs = Array.prototype.slice.call(this.files || []);
         if (!fs.length) return;
@@ -1519,17 +1550,22 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         tag: card.querySelector('.e-tag').value.trim(),
         stock: card.querySelector('.e-stock').value === '' ? null : parseInt(card.querySelector('.e-stock').value, 10),
         cost: card.querySelector('.e-cost').value === '' ? null : parseFloat(card.querySelector('.e-cost').value),
-        description: card.querySelector('.e-desc').value.trim()
+        description: card.querySelector('.e-desc').value.trim(),
+        currency: card.__cur || 'CNY'
       };
       if (!body.name) { toast('名称不能为空'); return; }
       e.target.disabled = true; e.target.textContent = '保存中…';
       var items2 = Array.isArray(card.__imgItems) ? card.__imgItems : null;
-      var tryPatch = function (b) {
+      var tryPatch = function (b, triedCur) {
         return api('products?id=eq.' + id, { method: 'PATCH', body: JSON.stringify(b) }).then(function (r) {
           if (r.ok) return r;
+          if (b.currency && !triedCur) { // currency 列还没建：去掉货币字段重试，其余照常保存
+            var b2 = Object.assign({}, b); delete b2.currency;
+            return tryPatch(b2, true);
+          }
           if (b.images) { // images 列还没建：降级为只存主图
             delete b.images;
-            return tryPatch(b);
+            return tryPatch(b, true);
           }
           throw new Error();
         });
@@ -1834,11 +1870,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     return ({ '生日': 'birthday', '纪念日': 'anniversary', '重要日': 'event' }[s]) || s;
   }
   // 自动事件：从 BJD/色卡日期派生（与前台日历 genAutoEvents 同一链路：出生→买入→弄好；色卡 bought）
-  // 「前台展示」开关：统一存 site_settings.cal_hide，键 d:<id> 手动重要日子 / b:<i> BJD / c:<i> 色卡
+  // 「前台展示」开关键：bn:/cn: 按名字（排序/删除后不错位）；d:<id> 手动重要日子；旧 b:<i>/c:<i> 下标键仍兼容读取
   function calHideList() {
     try { var v = JSON.parse(SETTINGS['cal_hide'] || '[]'); return Array.isArray(v) ? v.filter(function (x) { return typeof x === 'string'; }) : []; } catch (e) { return []; }
   }
-  function calHidden(key) { return calHideList().indexOf(key) !== -1; }
+  function calHidden(key, oldKey) { var l = calHideList(); return l.indexOf(key) !== -1 || (oldKey ? l.indexOf(oldKey) !== -1 : false); }
   function setCalHidden(key, hidden) {
     var list = calHideList();
     var i = list.indexOf(key);
@@ -1848,12 +1884,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     saveSetting('cal_hide', list).then(function (r) { if (!r.ok) throw new Error(); toast(hidden ? '前台不展示了' : '前台会展示'); })
       .catch(function () { toast('保存失败，重试一下'); loadHome(); renderDays(); });
   }
-  function calTgl(key) {
-    return '<button type="button" class="tgl cal-toggle' + (calHidden(key) ? '' : ' on') + '" data-cal="' + escAttr(key) + '" aria-pressed="' + (!calHidden(key)) + '" aria-label="前台展示"><span class="tgl-knob"></span></button>';
+  function calTgl(key, oldKey) {
+    return '<button type="button" class="tgl cal-toggle' + (calHidden(key, oldKey) ? '' : ' on') + '" data-cal="' + escAttr(key) + '" aria-pressed="' + (!calHidden(key, oldKey)) + '" aria-label="前台展示"><span class="tgl-knob"></span></button>';
   }
   function autoDayRows() {
     var out = [];
-    var push = function (kind, i, name, day, label) { if (name && day) out.push({ kind: kind, i: i, key: kind + ':' + i, name: name, day: day, label: label }); };
+    var push = function (kind, i, name, day, label) { if (name && day) out.push({ kind: kind, i: i, key: kind + 'n:' + name, oldKey: kind + ':' + i, name: name, day: day, label: label }); };
     try { (JSON.parse(SETTINGS['bjds'] || '[]')).forEach(function (b, i) {
       var birth = b.birth || ''; var buy = (b.purchase && b.purchase.date) || ''; var done = (b.faceup && b.faceup.date) || '';
       if (birth) push('b', i, b.name, birth, '出生 → 自动生成生日 / 百天系列');
@@ -1875,7 +1911,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<b style="font-size:17px;">' + esc(r.name) + '</b>' +
           '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + toDispDayAdmin(r.day) + ' · ' + (r.kind === 'b' ? 'BJD' : '色卡') + ' · ' + r.label + '</div>' +
           '</div>' +
-          '<span class="tgl-label">' + calTgl(r.key) + '前台展示</span>' +
+          '<span class="tgl-label">' + calTgl(r.key, r.oldKey) + '前台展示</span>' +
           '<button class="btn-mini cal-edit">编辑</button>' +
           '</div>';
       }).join('') + '<div style="font-size:14px;color:var(--muted);margin-top:10px;">日期跟着 BJD / 色卡档案走；点「编辑」会跳到对应档案里改；不想出现在日历就把右边的「前台展示」关掉</div></div>' : '';
@@ -1941,8 +1977,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     var req = DAYS_EDIT
       ? api('important_days?id=eq.' + DAYS_EDIT, { method: 'PATCH', body: JSON.stringify(v) })
       : api('important_days', { method: 'POST', body: JSON.stringify(v) });
-    req.then(function (r) { if (!r.ok) throw new Error(); toast('已保存'); DAYS_EDIT = null; setDayForm(null); loadDays(); })
-      .catch(function () { toast('保存失败'); });
+    req.then(function (r) { if (!r.ok) throw new Error(); toast('已保存，已从数据库重新读取'); DAYS_EDIT = null; setDayForm(null); loadDays(); })
+      .catch(function () { toast('保存失败：数据库没连上或权限不够，内容还在输入框里'); });
   });
   document.getElementById('days-list').addEventListener('change', function (e) {
     if (e.target.type !== 'radio') return;
@@ -2000,8 +2036,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (!v2.name || !v2.day) { toast('名称和日期都要填哦（日期格式 YYYY/MM/DD）'); return; }
       saveDayCatAdmin(v2.type);
       api('important_days?id=eq.' + id, { method: 'PATCH', body: JSON.stringify(v2) })
-        .then(function (r2) { if (!r2.ok) throw new Error(); toast('已保存'); DAY_EDIT = null; loadDays(); })
-        .catch(function () { toast('保存失败'); });
+        .then(function (r2) { if (!r2.ok) throw new Error(); toast('已保存，已从数据库重新读取'); DAY_EDIT = null; loadDays(); })
+        .catch(function () { toast('保存失败：数据库没连上或权限不够'); });
       return;
     }
     if (e.target.classList.contains('de-cancel')) {
@@ -4274,13 +4310,22 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         var body = { name: t.ce.name, day: t.ce.day, type: t.ce.type || '纪念日', repeat: t.ce.repeat || 'yearly' };
         var p;
         if (t.ce._dbid) {
-          p = api('important_days?id=eq.' + t.ce._dbid, { method: 'PATCH', body: JSON.stringify(body) });
+          p = api('important_days?id=eq.' + t.ce._dbid, { method: 'PATCH', body: JSON.stringify(body) }).then(function (r) {
+            if (!r.ok) toast('日历事项「' + t.ce.name + '」保存失败：数据库没连上或权限不够');
+          });
         } else {
           p = api('important_days', { method: 'POST', headers: { 'Prefer': 'return=representation' }, body: JSON.stringify(body) })
             .then(function (r) { return r.json ? r.json().catch(function () { return null; }) : null; })
             .then(function (rows) {
-              if (Array.isArray(rows) && rows[0] && rows[0].id) { t.ce._dbid = rows[0].id; changed = true; }
-            });
+              if (Array.isArray(rows) && rows[0] && rows[0].id) { t.ce._dbid = rows[0].id; changed = true; return; }
+              // representation 没拿回 id：按 名称+日期 回读，拿不到就明确提示，不静默假成功
+              return api('important_days?select=id,name,day&name=eq.' + encodeURIComponent(t.ce.name) + '&day=eq.' + encodeURIComponent(t.ce.day) + '&order=id.desc&limit=1')
+                .then(function (r2) { return r2.json(); })
+                .then(function (back) {
+                  if (Array.isArray(back) && back[0] && back[0].id) { t.ce._dbid = back[0].id; changed = true; }
+                  else toast('日历事项「' + t.ce.name + '」可能没存上，请到「重要日子」页检查');
+                }).catch(function () { toast('日历事项「' + t.ce.name + '」保存状态未知，请到「重要日子」页检查'); });
+            }).catch(function () { toast('日历事项「' + t.ce.name + '」保存失败：数据库没连上或权限不够'); });
         }
         return p.catch(function () {});
       });
@@ -4876,14 +4921,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 <script>
-/* ═══ AI 对话（测试版：模拟数据 + 主页本地记录 + 知识库，未接数据库）═══ */
+/* ═══ AI 对话（数据库版：知识库存 ai_kb 表、对话副本存 ai_chat_msgs；版本更新/换浏览器不丢。
+    未跑 SQL10 或断网时退回本地旧数据并明确提示。模拟数据只作「示例」徽章展示，不冒充真实）═══ */
 (function () {
   var DAY = 86400000;
   var FALLBACK = '我现在还是测试版本，暂时只回答少量网站相关问题。';
   var PAGE_SIZE = 10, KB_PAGE_SIZE = 5;
   var ST_KEY = 'yuki-ai-admin-state';
 
-  // ── 模拟会话（待补充 = AI 回了兜底文案的提问）──
+  // ── 模拟会话（示例数据，带「示例」徽章，不冒充真实对话）──
   var now = Date.now();
   var MOCK = [
     { id: 'm1', time: now - 2 * 3600000, msgs: [
@@ -4926,39 +4972,117 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     ]}
   ];
 
-  // ── 主页真实会话（localStorage，含标准回复命中记录）──
+  // ── 主页真实会话：从 ai_chat_msgs 表聚合（真实访客提问）；未建表/失败退回本机旧记录 ──
   var LIVE = [];
-  try {
-    LIVE = (JSON.parse(localStorage.getItem('yuki-ai-log') || '[]') || [])
-      .filter(function (s) { return s && s.msgs && s.msgs.length; })
-      .map(function (s, i) {
-        return { id: 'live-' + i + '-' + s.start, time: s.start, live: true, msgs: s.msgs.map(function (m) {
-          return { role: m.role === 'me' ? 'user' : 'ai', text: m.text, time: m.time };
-        }) };
-      });
-  } catch (e) {}
+  function localLive() {
+    try {
+      return (JSON.parse(localStorage.getItem('yuki-ai-log') || '[]') || [])
+        .filter(function (s) { return s && s.msgs && s.msgs.length; })
+        .map(function (s, i) {
+          return { id: 'live-' + i + '-' + s.start, time: s.start, live: true, msgs: s.msgs.map(function (m) {
+            return { role: m.role === 'me' ? 'user' : 'ai', text: m.text, time: m.time };
+          }) };
+        });
+    } catch (e) { return []; }
+  }
+  function loadSessions() {
+    return api('ai_chat_msgs?select=session_key,role,text,created_at&order=id.asc&limit=500')
+      .then(function (r) { return r.json(); })
+      .then(function (rows) {
+        if (!Array.isArray(rows)) throw new Error('bad');
+        var byK = {};
+        rows.forEach(function (m) {
+          var arr = byK[m.session_key] = byK[m.session_key] || [];
+          arr.push({ role: m.role, text: m.text, time: new Date(m.created_at).getTime() });
+        });
+        LIVE = Object.keys(byK).map(function (k) {
+          return { id: 'live-' + k, time: byK[k][0].time, live: true, msgs: byK[k] };
+        }).filter(function (s) { return s.msgs.length; });
+      })
+      .catch(function () { LIVE = localLive(); });
+  }
 
+  MOCK.forEach(function (m) { m.demo = true; });
   var SESSIONS = LIVE.concat(MOCK).sort(function (a, b) { return b.time - a.time; });
 
-  // ── 知识库 ──
-  function kbAll() {
+  // ── 知识库（数据库 ai_kb 表；uses 从 ai_kb_uses 日志聚合；未建表/失败退回本地旧数据并提示）──
+  var KB = [];
+  var KB_DB_OK = false;
+  function localKb() {
     try { return JSON.parse(localStorage.getItem('yuki-ai-kb') || '[]') || []; } catch (e) { return []; }
   }
-  function kbSave(kb) {
-    try { localStorage.setItem('yuki-ai-kb', JSON.stringify(kb)); } catch (e) {}
+  function loadKb() {
+    return api('ai_kb?select=id,q,a,created_at&order=id.desc&limit=200')
+      .then(function (r) { return r.json(); })
+      .then(function (rows) {
+        if (!Array.isArray(rows)) throw new Error('bad');
+        var ids = rows.map(function (x) { return x.id; });
+        var usesP = ids.length
+          ? api('ai_kb_uses?select=kb_id&kb_id=in.(' + ids.join(',') + ')').then(function (r2) { return r2.json(); }).catch(function () { return []; })
+          : Promise.resolve([]);
+        return usesP.then(function (usesRows) {
+          var cnt = {};
+          (Array.isArray(usesRows) ? usesRows : []).forEach(function (u) { cnt[u.kb_id] = (cnt[u.kb_id] || 0) + 1; });
+          KB = rows.map(function (x) {
+            return { id: 'kb-' + x.id, dbId: x.id, q: x.q, a: x.a, createdAt: new Date(x.created_at).getTime(), uses: cnt[x.id] || 0 };
+          });
+          KB_DB_OK = true;
+        });
+      })
+      .catch(function () {
+        KB = localKb();
+        KB_DB_OK = false;
+      });
   }
-  function kbAdd(q, a) {
-    var kb = kbAll();
-    kb.push({ id: 'kb-' + Date.now(), q: q, a: a, uses: 0, createdAt: Date.now() });
-    kbSave(kb);
+  function kbAll() { return KB; }
+  function kbAdd(q, a, done) {
+    if (!KB_DB_OK) { toast('数据库没连上（SQL10 还没跑或网络问题），先不要保存'); done && done(false); return; }
+    api('ai_kb', { method: 'POST', body: JSON.stringify({ q: q, a: a }) }).then(function (r) {
+      if (!r.ok) { toast('保存失败：数据库没连上或权限不够，内容还在输入框里'); done && done(false); return; }
+      toast('已保存，以后遇到类似问题 AI 会用这条回复');
+      loadKb().then(function () { done && done(true); });
+    }).catch(function () { toast('保存失败：数据库没连上'); done && done(false); });
   }
-  function kbUpdate(id, q, a) {
-    var kb = kbAll();
-    kb.forEach(function (k) { if (k.id === id) { k.q = q; k.a = a; k.updatedAt = Date.now(); } });
-    kbSave(kb);
+  function kbUpdate(id, q, a, done) {
+    if (!KB_DB_OK) { toast('数据库没连上（SQL10 还没跑或网络问题）'); done && done(false); return; }
+    var k = kbAll().filter(function (x) { return x.id === id; })[0];
+    if (!k || !k.dbId) { toast('这条是本地旧数据，数据库里没有，重新添加一条即可'); done && done(false); return; }
+    api('ai_kb?id=eq.' + k.dbId, { method: 'PATCH', body: JSON.stringify({ q: q, a: a, updated_at: new Date().toISOString() }) }).then(function (r) {
+      if (!r.ok) { toast('保存失败：数据库没连上或权限不够'); done && done(false); return; }
+      toast('已保存');
+      loadKb().then(function () { done && done(true); });
+    }).catch(function () { toast('保存失败：数据库没连上'); done && done(false); });
   }
-  function kbDel(id) {
-    kbSave(kbAll().filter(function (k) { return k.id !== id; }));
+  function kbDel(id, done) {
+    if (!KB_DB_OK) { toast('数据库没连上，删除没有生效'); done && done(false); return; }
+    var k = kbAll().filter(function (x) { return x.id === id; })[0];
+    if (!k || !k.dbId) { toast('这条是本地旧数据，数据库里没有'); done && done(false); return; }
+    api('ai_kb?id=eq.' + k.dbId, { method: 'DELETE' }).then(function (r) {
+      if (!r.ok) { toast('删除失败：数据库没连上或权限不够'); done && done(false); return; }
+      loadKb().then(function () { done && done(true); });
+    }).catch(function () { toast('删除失败：数据库没连上'); done && done(false); });
+  }
+  // 一次性迁移：把这台浏览器 localStorage 里的旧知识库导入数据库（按问题去重；原数据保留作备份）
+  function migrateLocalKb() {
+    var local = localKb();
+    var done = false;
+    try { done = !!localStorage.getItem('yuki-ai-kb-imported'); } catch (e) {}
+    if (!local.length || done || !KB_DB_OK) return Promise.resolve();
+    var exist = {};
+    KB.forEach(function (k) { exist[normQ(k.q)] = 1; });
+    var todo = local.filter(function (k) { return k.q && k.a && !exist[normQ(k.q)]; });
+    if (!todo.length) { try { localStorage.setItem('yuki-ai-kb-imported', '1'); } catch (e) {} return Promise.resolve(); }
+    var chain = Promise.resolve();
+    todo.forEach(function (k) {
+      chain = chain.then(function () {
+        return api('ai_kb', { method: 'POST', body: JSON.stringify({ q: k.q, a: k.a }) }).catch(function () { return null; });
+      });
+    });
+    return chain.then(function () {
+      try { localStorage.setItem('yuki-ai-kb-imported', '1'); } catch (e) {}
+      toast('本机旧知识库 ' + todo.length + ' 条已迁入数据库，以后不会丢了');
+      return loadKb();
+    });
   }
   function normQ(s) { return String(s || '').toLowerCase().replace(/[\s，。？！?!,.'\"“”‘’、~～·：:;；]/g, ''); }
   function similar(a, b) {
@@ -5130,6 +5254,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       return '<div class="aix-session' + (activeId === s.id ? ' active' : '') + '" data-id="' + s.id + '">' +
         '<div class="aix-s-top">' +
         (pend.length ? '<span class="aix-badge warn">待补充答案 ×' + pend.length + '</span>' : '') +
+        (s.demo ? '<span class="aix-badge" style="background:var(--card-hover);color:var(--muted);">示例</span>' : '') +
         (s.live ? '<span class="aix-badge">主页实时</span>' : '') +
         '<span class="aix-s-time">' + fmtTime(s.time) + '</span>' +
         '<span class="aix-s-q">' + esc(firstUser(s)) + '</span>' +
@@ -5233,13 +5358,19 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       var q = form.querySelector('.fx-q').value.trim();
       var a = form.querySelector('.fx-a').value.trim();
       if (!q || !a) { toast('问题和回复都要填'); return; }
-      if (form.dataset.mode === 'edit') { kbUpdate(form.dataset.id, q, a); toast('已保存'); }
-      else { kbAdd(q, a); toast('已保存，以后遇到类似问题 AI 会用这条回复'); }
-      formQ = null; kbEditId = null;
-      stSave(); render(); return;
+      var finish = function (ok) { if (!ok) return; formQ = null; kbEditId = null; stSave(); render(); };
+      if (form.dataset.mode === 'edit') kbUpdate(form.dataset.id, q, a, finish);
+      else kbAdd(q, a, finish);
+      return;
     }
     if (t.classList.contains('fx-cancel')) { formQ = null; kbEditId = null; render(); return; }
-    if (t.classList.contains('fx-del-yes')) { kbDel(t.dataset.id); kbDelArm = null; toast('已删除这条标准回复'); stSave(); render(); return; }
+    if (t.classList.contains('fx-del-yes')) {
+      kbDel(t.dataset.id, function (ok) {
+        if (!ok) return;
+        kbDelArm = null; toast('已删除这条标准回复'); stSave(); render();
+      });
+      return;
+    }
     if (t.classList.contains('fx-del-no')) { kbDelArm = null; render(); return; }
     if (t.classList.contains('aix-add')) { formQ = t.dataset.q; render(); return; }
     if (t.classList.contains('ke-edit')) { kbEditId = t.dataset.id; kbDelArm = null; render(); return; }
@@ -5274,7 +5405,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     x.classList.toggle('active', x.getAttribute('data-f') === filter);
   });
 
-  render();
+  render(); // 先渲染（用本地旧数据，不打断浏览）
+  loadSessions().then(render); // 再异步拉数据库真实会话
+  loadKb().then(function () { return migrateLocalKb(); }).then(render);
 })();
 </script>
 
@@ -5477,7 +5610,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261023n"></script>
+<script src="js/admin-shop.js?v=20261024a"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

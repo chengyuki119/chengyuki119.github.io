@@ -101,9 +101,9 @@ function dbSend(path, method, body) {
 function fmtMoney(v) {
   return (parseFloat(v) || 0).toFixed(2); // 金额统一两位小数，避免浮点长尾
 }
-// 兼容纯文本价格：能提取到数字就统一两位小数，纯文字备注原样保留
+// 兼容纯文本价格：能提取到数字就统一两位小数，纯文字备注原样保留（兼容带 $/¥ 符号的旧数据）
 function fmtPriceText(s) {
-  var str = String(s == null ? '' : s).trim().replace(/^¥+/, '');
+  var str = String(s == null ? '' : s).trim().replace(/^[¥$]+/, '');
   if (str === '') return '';
   var num = parseFloat(str.replace(/[,\s]/g, ''));
   return isFinite(num) && /^\d+(\.\d+)?$/.test(str.replace(/[,\s]/g, '')) ? fmtMoney(num) : str;
