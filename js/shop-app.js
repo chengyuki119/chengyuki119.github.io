@@ -134,7 +134,7 @@
       var on = x === active;
       // 柔和粉色系：选中浅粉底深玫瑰字，未选中白底软粉描边，不过分强烈
       x.style.background = on ? '#ffd9e6' : '#fff';
-      x.style.color = on ? '#a04a68' : 'var(--muted,#9aa5bd)';
+      x.style.color = on ? '#fff' : 'var(--muted,#9aa5bd)';
       x.style.boxShadow = on ? 'none' : 'inset 0 0 0 1.5px var(--accent-soft,#ffc8d6)';
     });
   }
@@ -781,7 +781,7 @@
           '<div id="ac-login">' +
             '<input id="li-email" placeholder="Email" style="width:100%;margin-bottom:14px;">' +
             '<input id="li-pw" type="password" placeholder="' + t('密码', 'Password') + '" style="width:100%;margin-bottom:16px;">' +
-            '<button class="buy-btn" id="li-go" style="width:100%;padding:11px;background:#ffd9e6;color:#a04a68;font-size:17px;">' + t('登录', 'Log in') + '</button>' +
+            '<button class="buy-btn" id="li-go" style="width:100%;padding:11px;background:#ffd9e6;color:#fff;font-size:17px;">' + t('登录', 'Log in') + '</button>' +
             '<button id="li-forgot" style="background:none;border:none;color:var(--muted);font-family:inherit;font-size:15px;margin-top:14px;cursor:pointer;">' + t('忘记密码？发重置邮件', 'Forgot password? Send reset email') + '</button>' +
           '</div>' +
           '<div id="ac-reg" style="display:none;">' +
@@ -799,7 +799,7 @@
               '<span style="font-size:16px;color:var(--text,#5d6780);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:13px;color:var(--muted,#9aa5bd);">' + t('默认关闭 · 邮件通知服务尚未配置，启用前不会发送邮件', 'Off by default · email delivery not configured yet') + '</span></span>' +
               subToggleHtml('rg-notify', false) +
             '</div>' +
-            '<button class="buy-btn" id="rg-go" style="width:100%;padding:11px;background:#ffd9e6;color:#a04a68;font-size:17px;margin-top:14px;">' + t('注册', 'Create account') + '</button>' +
+            '<button class="buy-btn" id="rg-go" style="width:100%;padding:11px;background:#ffd9e6;color:#fff;font-size:17px;margin-top:14px;">' + t('注册', 'Create account') + '</button>' +
           '</div>' +
         '</div>';
       styleInputs(box);
@@ -1228,7 +1228,7 @@
     var bar = document.createElement('div');
     bar.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;';
     bar.innerHTML =
-      '<input id="q-search" placeholder="' + t('搜索商品…', 'Search…') + '" style="flex:1;min-width:150px;padding:10px 14px;font-size:17px;border:none;border-radius:12px;background:var(--accent,#ff6fa5);outline:none;color:#fff;font-family:inherit;box-shadow:0 2px 10px rgba(255,111,165,.25);">' +
+      '<input id="q-search" placeholder="' + t('搜索商品…', 'Search…') + '" style="flex:1;min-width:150px;padding:10px 14px;font-size:17px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;box-shadow:0 2px 10px rgba(180,120,150,.08);">' +
       '<div id="q-tags" style="display:flex;gap:6px;flex-wrap:wrap;"></div>' +
       '<button id="q-sort" class="buy-btn" style="padding:8px 14px;background:#fff;">' + t('最新', 'Newest') + '</button>';
     var grid = document.getElementById('product-grid');

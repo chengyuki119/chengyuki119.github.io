@@ -38,9 +38,6 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   body.lang-en .product.sold::after { content: "Sold"; }
 
   /* 状态标签：在售 / 仅展示 / 售尽（图片右下角，避开右上角的收藏心形） */
-  /* 搜索框：粉底白字（跟加入购物车同一套） */
-  #q-search::placeholder { color: #fff; opacity: .85; }
-  #q-search { caret-color: #fff; }
   .st {
     position: absolute;
     top: auto; bottom: 10px; right: 10px;
@@ -58,23 +55,23 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   button { font-family: inherit; }
 
   .shop-header {
-    background: var(--accent, #ff6fa5); /* 横幅改玫粉底，白字跟大多数粉底白字胶囊同一套 */
+    background: #ffdfe9;
     padding: 84px 0 40px;
     position: relative;
   }
   .shop-header-inner { max-width: 1000px; margin: 0 auto; padding: 0 24px; } /* 与主页照片页同宽，同一条左边线 */
-  .shop-header h1 { font-size:31px; margin: 20px 0 6px; color: #fff; }
-  .shop-header p { color: #fff; opacity: .92; font-size:17px; }
+  .shop-header h1 { font-size:31px; margin: 20px 0 6px; }
+  .shop-header p { color: var(--muted); font-size:17px; }
   .back-link {
     display: inline-flex; align-items: center; gap: 8px;
-    color: #fff;
+    color: var(--text);
     font-size:17px;
     padding: 8px 14px;
     border-radius: 999px;
-    background: #ff9dbf; /* 横幅上比主粉浅一档的同系粉，白字清晰 */
+    background: var(--card);
     transition: background .2s;
   }
-  .back-link:hover { background: #ff8ab2; }
+  .back-link:hover { background: var(--card-hover); }
 
   .shop-body {
     max-width: 1000px;
@@ -93,9 +90,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
   }
+  @media (max-width: 640px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; } } /* 手机上跟色卡同宽，一行能排四个 */
   .product {
     background: #fff;
     border-radius: var(--radius);
@@ -294,8 +292,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
   <link rel="stylesheet" href="/site-menu.css">
-  <script src="/js/site-common.js?v=20261024f"></script>
-  <script src="/site-menu.js?v=20261024f" defer></script>
+  <script src="/js/site-common.js?v=20261024g"></script>
+  <script src="/site-menu.js?v=20261024g" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -824,6 +822,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261024f"></script>
+<script src="/js/shop-app.js?v=20261024g"></script>
 </body>
 </html>

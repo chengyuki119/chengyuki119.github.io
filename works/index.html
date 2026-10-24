@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261024f">
+<link rel="stylesheet" href="/css/site.css?v=20261024g">
 <link rel="stylesheet" href="/site-menu.css">
 <script src="/site-menu.js" defer></script>
 </head>
@@ -76,7 +76,7 @@
 <div id="share-pop"></div>
 <div class="toast" id="toast"></div>
 
-<script src="/js/site-common.js?v=20261024f"></script>
+<script src="/js/site-common.js?v=20261024g"></script>
 <script>
   // ===== 稿件展示：独立子页（稿件墙 + 稿件详情 /works/?id=N）=====
   // 数据：site_settings.works（与后台「稿件管理」同一份，单一数据源）
@@ -149,8 +149,9 @@
     var list = worksFiltered();
     grid.innerHTML = list.map(function (x) {
       var w = x.w;
+      var imgs = (Array.isArray(w.photos) && w.photos.length) ? w.photos.filter(Boolean) : (w.image ? [w.image] : []);
       return '<div class="card work-card" data-i="' + x.i + '" style="margin-bottom:0;padding:0;overflow:hidden;cursor:pointer;">' +
-        pagerWrapHtml(pagerImgsOf({ photos: w.photos, image: w.image }), w.name) +
+        (imgs.length ? '<div style="width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--card);"><img src="' + escAttrDb(normImg(imgs[0])) + '" style="width:100%;height:100%;object-fit:cover;display:block;" alt="' + escAttrDb(w.name || '') + '" loading="lazy"></div>' : '<div style="width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:var(--card);color:var(--muted);font-size:15px;">' + t('暂无图片', 'No photo') + '</div>') +
         '<div style="padding:12px 14px;">' +
         '<div style="display:flex;align-items:center;gap:8px;">' +
         '<b style="flex:1;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escDb(w.name || t('未命名稿件', 'Untitled work')) + '</b>' +
@@ -173,10 +174,13 @@
     var title = document.getElementById('works-view-title');
     if (title) title.textContent = w.name || t('未命名稿件', 'Untitled work');
     body.innerHTML =
-      (w.image ? '<div style="width:100%;max-width:420px;aspect-ratio:1/1;margin:0 auto 18px;overflow:hidden;border-radius:var(--radius);background:var(--card);"><img src="' + escAttrDb(normImg(w.image)) + '" style="width:100%;height:100%;object-fit:cover;display:block;" alt="' + escAttrDb(w.name) + '"></div>' : '') +
-      ((w.photos && w.photos.length) ? '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:420px;margin:0 auto 18px;">' + w.photos.map(function (u) {
-        return '<div class="album-img" style="width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:12px;background:var(--card);"><img src="' + escAttrDb(normImg(u)) + '" style="width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;" alt="' + escAttrDb(w.name) + '" loading="lazy"></div>';
-      }).join('') + '</div>' : '') +
+      // 详情：大图 + ‹› + 圆点 + 缩略图条（检视所有图片从第一张开始，进入详情才有）
+      '<div style="max-width:420px;margin:0 auto 18px;">' +
+      (function () {
+        var urls = (Array.isArray(w.photos) ? w.photos : []).map(function (u) { return normImg(u); }).filter(Boolean);
+        if (w.image && urls.indexOf(normImg(w.image)) === -1) urls.unshift(normImg(w.image)); // 封面不在照片里才放最前
+        return pagerWrapHtml(urls, w.name);
+      })() + '</div>' +
       '<div style="text-align:center;margin-bottom:18px;">' +
       '<span style="font-size:21px;font-weight:700;">' + escDb(w.name || t('未命名稿件', 'Untitled work')) + '</span>' +
       (w.date ? '<span style="color:var(--muted);font-size:17px;">　|　' + escDb(fmtWorkDate(w.date)) + '</span>' : '') +
