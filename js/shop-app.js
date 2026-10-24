@@ -15,8 +15,19 @@
 
   // ===== 买家登录态 =====
   var USER = null; // {a: access, r: refresh, email}
-  function loadUser() { try { USER = JSON.parse(localStorage.getItem('yuki-user-session') || 'null'); } catch (e) { USER = null; } }
+  var YK_EXCLUSIVE_EMAIL = 'chengyuki119@gmail.com';
+  function loadUser() {
+    // 统一会话源：读双键中最近登录的那把（管理员/买家同一套判断，全站一致）
+    if (window.ykSession) { USER = ykSession(); return; }
+    try { USER = JSON.parse(localStorage.getItem('yuki-user-session') || 'null'); } catch (e) { USER = null; }
+  }
   function saveUser() {
+    // 统一写入点：专属邮箱写后台键，其他写买家键，并清掉另一把（不再双拷贝）
+    if (window.ykWriteSession) {
+      if (USER) { USER.t = Date.now(); ykWriteSession(USER, USER.email && USER.email.toLowerCase() === YK_EXCLUSIVE_EMAIL ? 'yuki-admin-session' : 'yuki-user-session'); }
+      else ykWriteSession(null);
+      return;
+    }
     try {
       if (USER) { USER.t = Date.now(); localStorage.setItem('yuki-user-session', JSON.stringify(USER)); }
       else localStorage.removeItem('yuki-user-session');
@@ -24,6 +35,10 @@
   }
   function refreshUser() {
     if (!USER || !USER.r) return Promise.resolve(false);
+    // 统一续期：单飞 + 并发竞态重试；只有会话真失效才清空
+    if (window.ykRefreshSession) {
+      return window.ykRefreshSession().then(function (s) { USER = s || null; return !!s; });
+    }
     return fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
       method: 'POST', headers: { 'apikey': ANON, 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token: USER.r })
@@ -832,7 +847,7 @@
           });
         });
         document.getElementById('pf-out').addEventListener('click', function () {
-          USER = null; UID = null; saveUser();
+          USER = null; UID = null; saveUser(); // 统一清空双键，退出即全站退出
           try { localStorage.setItem('yuki-cart-merge-done', '0'); } catch (e) {}
           window.__YK_MENU_OK = false; window.__YK_MENU_CHECKED = false;
           try { window.YK_EXCLUSIVE_MEMO = null; } catch (e) {}
@@ -883,9 +898,8 @@
     }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (res) {
       if (!res.ok || !res.j.access_token) { toast((res.j.msg) || t('登录失败，检查邮箱密码', 'Login failed')); return; }
       USER = { a: res.j.access_token, r: res.j.refresh_token, email: email }; saveUser();
-      // 柚子专属账号：写入后台会话并直接进入原有专属后台，不落普通买家账户页
-      if (email.toLowerCase() === 'chengyuki119@gmail.com') {
-        try { localStorage.setItem('yuki-admin-session', JSON.stringify({ r: res.j.refresh_token, t: Date.now() })); } catch (e) {}
+      // 柚子专属账号：直接进入原有专属后台，不落普通买家账户页（会话已由 saveUser 统一写入后台键）
+      if (email.toLowerCase() === YK_EXCLUSIVE_EMAIL) {
         toast(t('专属身份已确认，正在进入后台…', 'Yuki mode — opening admin…'));
         setTimeout(function () { location.href = '/admin.html'; }, 500);
         return;

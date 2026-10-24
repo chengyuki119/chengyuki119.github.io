@@ -21,26 +21,62 @@ function dbFetch(path) {
   return fetch(DB_BASE + path, { headers: DB_HEADERS }).then(function (r) { return r.ok ? r.json() : []; });
 }
 var AUTH_TOKEN = null;
-function getAuthToken() { // 用后台登录态（refresh token）换 access token，让前台写入走 authenticated
-  if (AUTH_TOKEN) return Promise.resolve(AUTH_TOKEN);
-  var s = null;
-  try { s = JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
+function ykSessionKey() { // 与 ykSession 同判，返回命中的键名（刷新后写回同一把，避免双拷贝互踩）
+  var u = ykReadKey('yuki-user-session'), m = ykReadKey('yuki-admin-session');
+  if (u && m) return (m.t && (!u.t || m.t > u.t)) ? 'yuki-admin-session' : 'yuki-user-session';
+  return u ? 'yuki-user-session' : 'yuki-admin-session';
+}
+function ykWriteSession(s, prefer) {
+  // 全站唯一会话写入点：会话只存一把钥匙，写入时清掉另一把，
+  // 杜绝同一 refresh token 的两份拷贝互相作废（身份在不同页面不一致的根因）
+  try {
+    if (!s) { localStorage.removeItem('yuki-user-session'); localStorage.removeItem('yuki-admin-session'); AUTH_TOKEN = null; return; }
+    var k = prefer || ykSessionKey();
+    localStorage.setItem(k, JSON.stringify(s));
+    localStorage.removeItem(k === 'yuki-user-session' ? 'yuki-admin-session' : 'yuki-user-session');
+    AUTH_TOKEN = null;
+  } catch (e) {}
+}
+var YK_REFRESHING = null; // 页内单飞：多处同时要刷新时只发一次请求
+function ykRefreshSession() { // 统一续期：成功写回原键并清理另一键；并发/竞态时重读最新 r 重试一次
+  if (YK_REFRESHING) return YK_REFRESHING;
+  var key = ykSessionKey();
+  var s = ykReadKey(key);
   if (!s || !s.r) return Promise.resolve(null);
-  return fetch('https://zajcglvlzsolygvjeumb.supabase.co/auth/v1/token?grant_type=refresh_token', {
-    method: 'POST',
-    headers: { 'apikey': DB_HEADERS.apikey, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refresh_token: s.r })
-  }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
-    if (data && data.access_token) {
-      AUTH_TOKEN = data.access_token;
-      if (data.refresh_token) {
-        s.r = data.refresh_token;
-        try { localStorage.setItem('yuki-admin-session', JSON.stringify(s)); } catch (e) {}
-      }
-      return AUTH_TOKEN;
+  var triedR = s.r;
+  var callRefresh = function (r) {
+    return fetch('https://zajcglvlzsolygvjeumb.supabase.co/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { 'apikey': DB_HEADERS.apikey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: r })
+    }).then(function (resp) { return resp.json().then(function (j) { return { ok: resp.ok, j: j }; }); });
+  };
+  var apply = function (res, base, k) {
+    if (res && res.ok && res.j && res.j.access_token) {
+      var s2 = { a: res.j.access_token, r: res.j.refresh_token || base.r, email: base.email || (res.j.user && res.j.user.email) || null, t: base.t || Date.now() };
+      ykWriteSession(s2, k);
+      AUTH_TOKEN = s2.a;
+      return s2;
     }
     return null;
-  }).catch(function () { return null; });
+  };
+  YK_REFRESHING = callRefresh(triedR).then(function (res) {
+    var done = apply(res, s, key);
+    if (done) return done;
+    // 失败先别下结论：别的页面可能刚把 r 换新（并发刷新），重读重试一次
+    var sNow = ykReadKey(key);
+    if (sNow && sNow.r && sNow.r !== triedR) return callRefresh(sNow.r).then(function (res2) { return apply(res2, sNow, key); });
+    // r 没变还被拒：会话真失效了（含 refresh token 被旋转后超窗），清干净避免半死状态
+    var err = (res.j && (res.j.error || res.j.error_code || res.j.msg)) || '';
+    if (res.j && res.j.error_description && res.j.error_description.indexOf('invalid') !== -1) err = 'invalid';
+    if (err === 'invalid_grant' || err === 'refresh_token_not_found' || err === 'invalid' || res.j && res.j.error === 'invalid_grant') ykWriteSession(null);
+    return null;
+  }).catch(function () { return null; /* 网络抖动：保会话，下次再试 */ }).then(function (v) { YK_REFRESHING = null; return v; });
+  return YK_REFRESHING;
+}
+function getAuthToken() { // 用登录态（refresh token）换 access token，让前台写入走 authenticated
+  if (AUTH_TOKEN) return Promise.resolve(AUTH_TOKEN);
+  return ykRefreshSession().then(function (s) { return s ? s.a : null; });
 }
 function dbSend(path, method, body) {
   return getAuthToken().then(function (tk) {
@@ -806,25 +842,11 @@ function ykRpc(p_kind) {
     };
     return call(at).then(function (res) {
       if (res.status !== 401) return res;
-      // access token 过期 → 强制重换一次再试
+      // access token 过期 → 走统一续期（单飞+竞态重试）再试一次
       AUTH_TOKEN = null;
-      var s = ykSession();
-      if (!s || (!s.r && !ykHasAT())) { var e1 = new Error('登录过期'); e1.ykCode = 'expired'; throw e1; }
-      if (s.a && s.r) {
-        return fetch('https://zajcglvlzsolygvjeumb.supabase.co/auth/v1/token?grant_type=refresh_token', {
-          method: 'POST',
-          headers: { 'apikey': DB_HEADERS.apikey, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ refresh_token: s.r })
-        }).then(function (rr) { return rr.ok ? rr.json() : null; }).then(function (d) {
-          if (!d || !d.access_token) { var e2 = new Error('登录过期'); e2.ykCode = 'expired'; throw e2; }
-          s.a = d.access_token; if (d.refresh_token) s.r = d.refresh_token;
-          try { localStorage.setItem(ykStoreKey(), JSON.stringify(s)); } catch (e) {}
-          return call(s.a);
-        });
-      }
-      return getAuthToken().then(function (t2) {
-        if (!t2) { var e3 = new Error('登录过期'); e3.ykCode = 'expired'; throw e3; }
-        return call(t2);
+      return ykRefreshSession().then(function (s2) {
+        if (!s2 || !s2.a) { var e1 = new Error('登录过期'); e1.ykCode = 'expired'; throw e1; }
+        return call(s2.a);
       });
     });
   }).then(function (res) {
@@ -926,6 +948,9 @@ function ykGatePage(mode) {
 window.ykExclusiveCheck = ykExclusiveCheck;
 window.ykExclusiveData = ykExclusiveData;
 window.ykGatePage = ykGatePage;
+window.ykRefreshSession = ykRefreshSession;
+window.ykWriteSession = ykWriteSession;
+window.ykSessionKey = ykSessionKey;
 // 登录态取数：有会话用 access token，否则 anon（照片页等登录可见数据用）
 function ykAuthFetch(path) {
   return ykToken().then(function (at) {

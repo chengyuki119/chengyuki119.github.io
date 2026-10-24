@@ -126,46 +126,41 @@
   .site-logo, .site-logo img { height: 40px; }
 }
 
-/* ═══ 统一账户导航区域（Index 顶部：购物车 + 登录/我的账户，全站同一套）═══ */
-.menu-acct {
-  display: flex; gap: 8px;
-  margin: 0 0 10px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--card-hover, #ffe4ee);
+/* ═══ 顶部导航栏右侧：购物车（Logo 右、汉堡左）+ 菜单底部账户入口，全站同一套 ═══ */
+/* logo 本身绝对定位居中（site.css），右侧组用 flex 两端对齐即可 */
+.topbar-right {
+  display: flex; align-items: center; gap: 10px;
 }
-.menu-acct a {
-  flex: 1;
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  min-height: 40px;
-  border-radius: 999px;
-  font-size: 16px;
-  text-decoration: none;
-  padding: 8px 12px;
-  box-sizing: border-box;
-  line-height: 1.3;
-}
-.menu-acct-cart {
+.topbar-cart {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px;
+  border-radius: 12px;
   background: var(--card, #fff2f7);
   color: var(--text, #5d6780);
-  position: relative;
   transition: background .2s;
 }
-.menu-acct-cart:hover { background: var(--card-hover, #ffe4ee); }
-.menu-acct-user {
-  background: var(--accent, #ff6fa5);
-  color: #fff;
-  transition: opacity .2s;
-}
-.menu-acct-user:hover { opacity: .88; }
-.menu-acct-user.is-in {
-  background: #fff;
-  color: var(--accent, #ff6fa5);
-  box-shadow: inset 0 0 0 1.5px var(--accent-soft, #ffc8d6);
-}
-.menu-cart-badge {
+.topbar-cart:hover { background: var(--card-hover, #ffe4ee); }
+.topbar-cart svg { display: block; }
+.topbar-cart-badge {
+  position: absolute; top: -5px; right: -5px;
   min-width: 19px; height: 19px; border-radius: 999px;
   background: var(--accent, #ff6fa5); color: #fff;
   font-size: 12px; line-height: 19px; text-align: center; padding: 0 5px;
+  font-weight: 600; box-sizing: border-box;
 }
-.menu-acct-user.is-in + .menu-acct-cart .menu-cart-badge,
-.menu-acct .menu-acct-cart .menu-cart-badge { font-weight: 600; }
+.menu-acct-bottom {
+  margin-top: auto;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 44px;
+  border-radius: 12px;
+  font-size: 17px;
+  text-decoration: none;
+  background: var(--accent, #ff6fa5); color: #fff;
+  transition: opacity .2s;
+}
+.menu-acct-bottom:hover { opacity: .88; }
+.menu-acct-bottom.is-in {
+  background: #fff; color: var(--accent, #ff6fa5);
+  box-shadow: inset 0 0 0 1.5px var(--accent-soft, #ffc8d6);
+}

@@ -69,7 +69,7 @@
     return '<span data-zh="' + zh + '" data-en="' + en + '">' + t(zh, en) + '</span>';
   }
 
-  // ── 统一账户导航区域（Index 顶部：购物车 + 登录/我的账户）──
+  // ── 顶部导航栏购物车（Logo 右侧、汉堡左侧）+ 菜单底部账户入口 ──
   function readSession() {
     var u = null, m = null;
     try { u = JSON.parse(localStorage.getItem('yuki-user-session') || 'null'); } catch (e) {}
@@ -78,19 +78,13 @@
     if (ok(u) && ok(m)) return (m.t && (!u.t || m.t > u.t)) ? m : u;
     return ok(u) ? u : (ok(m) ? m : null);
   }
-  function buildAcctArea() {
+  function buildAcctBottom() {
     var s = readSession();
-    var badge = '<span class="menu-cart-badge" id="menu-cart-badge" style="display:none;">0</span>';
-    var user = s
-      ? '<a class="menu-acct-user is-in" href="/shop/?sec=account" data-acct="account">' + span('我的账户', 'My Account') + '</a>'
-      : '<a class="menu-acct-user" href="/shop/?sec=account&next=' + encodeURIComponent(location.pathname + location.search) + '" data-acct="account">' + span('登录', 'Log in') + '</a>';
-    return el('<div class="menu-acct" id="menu-acct">' +
-      '<a class="menu-acct-cart" href="/shop/?sec=cart" data-acct="cart">' + span('购物车', 'Cart') + badge + '</a>' +
-      user + '</div>');
+    if (s) return el('<a class="menu-acct-bottom is-in" href="/shop/?sec=account" data-acct="account">' + span('我的账户', 'My Account') + '</a>');
+    return el('<a class="menu-acct-bottom" href="/shop/?sec=account&next=' + encodeURIComponent(location.pathname + location.search) + '" data-acct="account">' + span('登录', 'Log in') + '</a>');
   }
   function buildMenu(nav) {
     var frag = document.createDocumentFragment();
-    frag.appendChild(buildAcctArea());
     nav.forEach(function (item) {
       if (item.group) {
         var g = el('<div class="menu-group" data-nav="' + item.nav + '" data-key="' + item.key + '"></div>');
@@ -123,14 +117,14 @@
       return el('<div style="display:none;"></div>'); // 后台自身未登录也不显示
     }
     if (s) {
-      var g = el('<div class="menu-group" id="menu-owner-group" style="margin-top:auto;"></div>');
+      var g = el('<div class="menu-group" id="menu-owner-group"></div>');
       g.appendChild(el('<button class="menu-toggle" type="button">' + span('柚子专属', 'Yuki\'s Personal') + '<span class="plus"></span></button>'));
       var sub = el('<div class="submenu"></div>');
       sub.appendChild(el('<a class="menu-link" data-key="admin" href="/admin.html">' + span('管理后台', 'Admin') + '</a>'));
       g.appendChild(sub);
       return g;
     }
-    return el('<a class="menu-owner" id="menu-owner-link" href="/admin.html" style="margin-top:auto;">' + span('柚子专属', 'Yuki\'s Personal') + '</a>');
+    return el('<a class="menu-owner" id="menu-owner-link" href="/admin.html">' + span('柚子专属', 'Yuki\'s Personal') + '</a>');
   }
 
   // 权限过滤：照片=任意登录可见；BJD/色卡/稿件=柚子专属（未确认前先隐藏，确认后自动出现）
@@ -150,6 +144,7 @@
     menu.innerHTML = '';
     menu.appendChild(buildMenu(permFilter(list || NAV)));
     menu.appendChild(buildOwner());
+    menu.appendChild(buildAcctBottom());
   }
 
   // ── 数据库同步（全站同一份数据：照片分区 / 区域标题与显隐 / BJD 名单 / 色卡名单）──
@@ -245,6 +240,12 @@
     return mask;
   }
   document.addEventListener('click', function (e) {
+    var tc = e.target.closest('.topbar-cart');
+    if (tc) {
+      setMenu(false);
+      if (curPage === 'shop' && typeof window.__shopNav === 'function') { e.preventDefault(); window.__shopNav('cart'); }
+      return;
+    }
     var burger = e.target.closest('.burger');
     if (burger) { setMenu(!document.getElementById('menu').classList.contains('open')); return; }
     var toggle = e.target.closest('.menu-toggle');
@@ -314,10 +315,12 @@
     notify: notify,
     applyCurrent: applyCurrent,
     setCartCount: function (n) {
-      var b = document.getElementById('menu-cart-badge');
-      if (!b) return;
-      b.textContent = n;
-      b.style.display = n ? 'inline-flex' : 'none';
+      [['topbar-cart-badge', 'topbar-cart'], ['menu-cart-badge', null]].forEach(function (pair) {
+        var b = document.getElementById(pair[0]);
+        if (!b) return;
+        b.textContent = n;
+        b.style.display = n ? 'inline-flex' : 'none';
+      });
     }
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refresh);

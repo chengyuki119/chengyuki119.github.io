@@ -454,9 +454,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 <header class="topbar">
   <a class="back-link" href="/">← 返回主页</a>
   <a class="site-logo" href="/" aria-label="回主页"><img src="logo.png" alt="logo"></a>
-  <button class="burger" id="burger" aria-label="菜单">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="topbar-right">
+    <a class="topbar-cart" id="topbar-cart" href="/shop/?sec=cart" aria-label="购物车">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1.2 10.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 7z"/><path d="M9 7V6a3 3 0 0 1 6 0v1"/></svg>
+      <span class="topbar-cart-badge" id="topbar-cart-badge" style="display:none;">0</span>
+    </a>
+    <button class="burger id="burger"" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </header>
 <div class="menu-mask" id="menu-mask"></div>
 <nav class="menu" id="menu"></nav>
@@ -941,7 +947,17 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   // ===== 认证 =====
   function saveSession(data) {
     ACCESS = data.access_token; REFRESH = data.refresh_token;
-    try { localStorage.setItem('yuki-admin-session', JSON.stringify({ r: REFRESH, t: Date.now() })); } catch (e) {}
+    var prev = null;
+    try { prev = JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
+    // 全站统一会话源：完整会话（含 a/email）只存后台键，并清掉买家键，避免同一 refresh token 双拷贝互踩
+    try {
+      localStorage.setItem('yuki-admin-session', JSON.stringify({
+        a: ACCESS, r: REFRESH,
+        email: (prev && prev.email) || (data.user && data.user.email) || null,
+        t: (prev && prev.t) || Date.now()
+      }));
+    } catch (e) {}
+    try { localStorage.removeItem('yuki-user-session'); } catch (e) {}
   }
   function api(path, options) {
     options = options || {};
@@ -957,7 +973,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token: REFRESH })
     }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-      .then(function (data) { saveSession(data); });
+      .then(function (data) { saveSession(data); })
+      .catch(function () {
+        // 并发刷新竞态：别的页面可能刚把 r 换新，重读最新存档重试一次
+        var s = null;
+        try { s = JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
+        if (s && s.r && s.r !== REFRESH) { REFRESH = s.r; if (s.a) ACCESS = s.a; return tryRefresh(); }
+        throw new Error('refresh failed');
+      });
   }
   // 带鉴权的 fetch：token 过期（401）时自动续期并重试一次，避免登录久了保存静默失败
   function authedFetch(url, options) {
@@ -1014,6 +1037,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     document.getElementById('lo-yes').addEventListener('click', function () {
       ACCESS = REFRESH = null;
       try { localStorage.removeItem('yuki-admin-session'); } catch (e) {}
+      try { localStorage.removeItem('yuki-user-session'); } catch (e) {}
       location.reload();
     });
     // 通用删除确认小弹窗（统一替代原生 confirm，视觉与退出登录弹窗一致）
@@ -1036,10 +1060,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   (function () {
     var saved = null;
     try { saved = JSON.parse(localStorage.getItem('yuki-admin-session') || 'null'); } catch (e) {}
+    if (!saved || !saved.r) { try { saved = JSON.parse(localStorage.getItem('yuki-user-session') || 'null'); } catch (e) {} } // 旧版兼容
     if (saved && saved.r) {
+      // 保险丝：不是专属邮箱的会话不自动进后台（防普通买家会话误入）
+      if (saved.email && saved.email.toLowerCase() !== 'chengyuki119@gmail.com') return;
       REFRESH = saved.r;
+      if (saved.a) { ACCESS = saved.a; enterAdmin(); return; } // token 还新鲜就直接进，不额外旋转 r
       tryRefresh().then(enterAdmin).catch(function () {
         try { localStorage.removeItem('yuki-admin-session'); } catch (e) {}
+        try { localStorage.removeItem('yuki-user-session'); } catch (e) {}
       });
     }
   })();
@@ -5389,6 +5418,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (!body || body.style.display === 'none') return;
     if (Date.now() - last > IDLE_MS) {
       try { localStorage.removeItem('yuki-admin-session'); } catch (e) {}
+      try { localStorage.removeItem('yuki-user-session'); } catch (e) {}
       location.reload();
       return;
     }
@@ -5408,7 +5438,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261023h"></script>
+<script src="js/admin-shop.js?v=20261023i"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
