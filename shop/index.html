@@ -90,10 +90,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
   }
-  @media (max-width: 640px) { .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; } } /* 手机上跟色卡同宽，一行能排四个 */
+  @media (max-width: 640px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } } /* 手机上一行两个，好认 */
   .product {
     background: #fff;
     border-radius: var(--radius);
@@ -129,7 +129,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .product-row { display: flex; align-items: center; justify-content: space-between; }
   .card-edit-btn { border: none; background: var(--card-hover); color:var(--text,#5d6780); font-size:14px; cursor: pointer; padding: 4px 12px; border-radius: 999px; font-family: inherit; transition: background .2s, color .2s; }
   .card-edit-btn:hover { background: var(--accent-soft); color: #fff; }
-  .price { font-size:21px; font-weight: 700; color:var(--text,#5d6780); font-family: "Millo Body", -apple-system, "PingFang SC", sans-serif; }
+  .price { font-size:21px; font-weight: 700; color:#ff6fa5; font-family: "Millo Body", -apple-system, "PingFang SC", sans-serif; }
   .price small { font-size:15px; font-weight: 400; }
   .buy-btn {
     border: none;
@@ -259,9 +259,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   #view-detail, #view-cart, #view-checkout, #view-orders, #view-account, #view-groups { display: none; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261024j">
-  <script src="/js/site-common.js?v=20261024j"></script>
-  <script src="/site-menu.js?v=20261024j" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261024l">
+  <script src="/js/site-common.js?v=20261024l"></script>
+  <script src="/site-menu.js?v=20261024l" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -760,6 +760,6 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261024j"></script>
+<script src="/js/shop-app.js?v=20261024l"></script>
 </body>
 </html>

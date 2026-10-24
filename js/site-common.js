@@ -180,25 +180,29 @@ function pagerWrapHtml(urls, alt) {
   urls = urls || [];
   if (!urls.length) return '<div style="width:100%;aspect-ratio:1/1;background:var(--card);"></div>';
   var multi = urls.length > 1;
-  return '<div class="pg-wrap" data-i="0" style="position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--card);">' +
-    '<img class="pg-img" src="' + escAttrDb(urls[0]) + '" data-urls="' + escAttrDb(JSON.stringify(urls)) + '" style="width:100%;height:100%;object-fit:contain;display:block;" alt="' + escAttrDb(alt || '') + '" loading="lazy">' +
+  // 圆点 + 缩略图条放在图片下方（不覆盖在图片上），箭头保留在图两侧
+  return '<div class="pg-holder">' +
+    '<div class="pg-wrap" data-i="0" style="position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--card);">' +
+      '<img class="pg-img" src="' + escAttrDb(urls[0]) + '" data-urls="' + escAttrDb(JSON.stringify(urls)) + '" style="width:100%;height:100%;object-fit:contain;display:block;" alt="' + escAttrDb(alt || '') + '" loading="lazy">' +
+      (multi ? '<button type="button" class="pg-btn pg-prev" aria-label="上一张">‹</button><button type="button" class="pg-btn pg-next" aria-label="下一张">›</button>' : '') +
+    '</div>' +
     (multi ?
-      '<button type="button" class="pg-btn pg-prev" aria-label="上一张">‹</button><button type="button" class="pg-btn pg-next" aria-label="下一张">›</button>' +
       '<div class="pg-dots">' + urls.map(function (_, k) { return '<span class="pg-dot' + (k === 0 ? ' on' : '') + '"></span>'; }).join('') + '</div>' +
       '<div class="pg-thumbs">' + urls.map(function (u, k) { return '<img class="pg-thumb' + (k === 0 ? ' on' : '') + '" src="' + escAttrDb(u) + '" data-k="' + k + '" alt="" loading="lazy">'; }).join('') + '</div>'
       : '') +
     '</div>';
 }
-function pgSet(wrap, i) { // 统一切换：大图 + 极简圆点（当前是长条） + 底部小图预览（自动滚到当前，也可手动左右划、点小图跳转）
+function pgSet(wrap, i) { // 统一切换：大图 + 下方圆点（当前长条） + 图下小图预览（自动滚到当前，也可点小图跳转）
   var img = wrap.querySelector('.pg-img');
+  var holder = wrap.closest('.pg-holder') || wrap;
   var urls = [];
   try { urls = JSON.parse(img.getAttribute('data-urls') || '[]'); } catch (err) {}
   if (!urls.length) return;
   i = (i + urls.length) % urls.length;
   wrap.setAttribute('data-i', String(i));
   img.src = urls[i];
-  wrap.querySelectorAll('.pg-dot').forEach(function (d, k) { d.classList.toggle('on', k === i); });
-  wrap.querySelectorAll('.pg-thumb').forEach(function (t, k) {
+  holder.querySelectorAll('.pg-dot').forEach(function (d, k) { d.classList.toggle('on', k === i); });
+  holder.querySelectorAll('.pg-thumb').forEach(function (t, k) {
     t.classList.toggle('on', k === i);
     if (k === i) { try { t.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); } catch (err) { t.scrollIntoView(); } } // 小图条自动滑到当前张
   });
@@ -207,7 +211,9 @@ document.addEventListener('click', function (e) { // 捕获阶段拦下箭头/�
   var t = e.target.closest ? e.target.closest('.pg-btn, .pg-thumb') : null;
   if (!t) return;
   e.preventDefault(); e.stopPropagation();
-  var wrap = t.closest('.pg-wrap');
+  var holder = t.closest('.pg-holder');
+  var wrap = holder ? holder.querySelector('.pg-wrap') : t.closest('.pg-wrap');
+  if (!wrap) return;
   var urls = [];
   try { urls = JSON.parse(wrap.querySelector('.pg-img').getAttribute('data-urls') || '[]'); } catch (err) {}
   if (urls.length < 2) return;

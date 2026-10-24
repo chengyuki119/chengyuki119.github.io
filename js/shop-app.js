@@ -224,7 +224,7 @@
           '<h2 style="font-size:24px;margin:6px 0 4px;display:inline-block;">' + esc(p.name) + '</h2>' +
           '<button type="button" class="fav-btn detail-fav' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '">' + (isFav(p.id) ? '♥' : '♡') + '</button>' +
           '<p style="color:var(--muted);font-size:17px;">' + esc(p.description || '') + '</p>' +
-          '<div style="font-size:26px;color:var(--text,#5d6780);font-weight:700;margin:10px 0;">' + sym(curOf(p, v)) + money(price) + '</div>' +
+          '<div style="font-size:26px;color:#ff6fa5;font-weight:700;margin:10px 0;">' + sym(curOf(p, v)) + money(price) + '</div>' +
           (skuText ? '<div style="font-size:15px;color:var(--muted);margin-bottom:6px;">SKU: ' + esc(skuText) + '</div>' : '') +
           (vs ?
             '<div style="margin:10px 0;"><div style="font-size:16px;margin-bottom:6px;">' + t('规格', 'Option') + '</div><div id="d-variants" style="display:flex;gap:8px;flex-wrap:wrap;">' +
@@ -346,7 +346,7 @@
                 '<span class="st" style="background:' + st[1] + ';">' + st[0] + '</span></div>' +
               '<div class="product-info"><span class="product-tag">' + t('拼团价', 'Group price') + '</span>' +
                 '<h3>' + esc(g.name || g.product_name) + '</h3>' +
-                '<div style="font-size:22px;color:var(--text,#5d6780);font-weight:700;">' + sym(g.currency) + money(g.price) + '</div>' +
+                '<div style="font-size:22px;color:#ff6fa5;font-weight:700;">' + sym(g.currency) + money(g.price) + '</div>' +
                 '<div style="font-size:15px;color:var(--muted);margin-top:4px;">' + g.joined + '/' + g.target + ' ' + t('人', 'joined') +
                 (g.status === 'open' ? ' · ' + t('截止', 'Ends') + ' ' + new Date(g.deadline).toLocaleString() : '') + '</div>' +
                 (g.status === 'open' && !full ? '<div class="product-row"><button class="buy-btn">' + t('去参团', 'Join') + '</button></div>' : '') +
@@ -376,7 +376,7 @@
               '<div style="display:grid;grid-template-columns:180px 1fr;gap:18px;">' +
                 (g.product_image ? '<img src="' + escAttr(normImg(g.product_image)) + '" style="width:180px;height:180px;object-fit:cover;border-radius:14px;">' : '') +
                 '<div><h2 style="font-size:22px;">' + esc(g.name || g.product_name) + '</h2>' +
-                  '<div style="font-size:26px;color:var(--text,#5d6780);font-weight:700;margin:6px 0;">' + sym(g.currency) + money(g.price) + '</div>' +
+                  '<div style="font-size:26px;color:#ff6fa5;font-weight:700;margin:6px 0;">' + sym(g.currency) + money(g.price) + '</div>' +
                   '<div style="font-size:16px;">' + t('已参团', 'Joined') + ' <b>' + g.joined + '</b> / ' + g.target + ' ' + t('人', 'people') + '</div>' +
                   '<div style="font-size:16px;color:var(--muted);margin-top:4px;">' + (g.status === 'open' ? t('截止', 'Ends') + ' <b id="g-countdown"></b>' : stText) + '</div>' +
                 '</div>' +
