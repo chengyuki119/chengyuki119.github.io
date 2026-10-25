@@ -511,7 +511,7 @@
       var est = shipBase(ckZip(), woz);
       function updateShip() {
         est = shipBase(ckZip(), woz);
-        var l = document.getElementById('ck-ship-line'); if (l) l.textContent = sym(cur) + money(est + fee);
+        var l = document.getElementById('ck-ship-line'); if (l) l.textContent = ckZip() ? (sym(cur) + money(est + fee)) : t('选好收货地址后显示', 'Pick an address first');
         var tt = document.getElementById('ck-total'); if (tt) tt.textContent = sym(cur) + money(sub + est + fee);
       }
       var joinGid = sessionStorage.getItem('yuki-join-group') || '';
