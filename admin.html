@@ -257,6 +257,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
   /* 上架表单 */
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  /* 她说上架页挤（2026-10-25）：拉开行距、输入框加高、货币行呼吸感 */
+  #tab-shop .form-grid { gap: 14px; row-gap: 18px; }
+  #tab-shop .form-grid input, #tab-shop .form-grid textarea { padding: 11px 14px; font-size: 16px; }
+  #tab-shop .form-grid .fld-inline { margin: 2px 0; }
+  #tab-shop .form-grid .cur-chip { padding: 9px 18px; }
   .form-grid .full { grid-column: 1 / -1; }
   /* 上架预览：小方图缩略条（跟色卡/照片管理同一套尺寸，不用整屏大预览框） */
   .p-preview { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
@@ -5636,7 +5641,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261025b"></script>
+<script src="js/admin-shop.js?v=20261025c"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

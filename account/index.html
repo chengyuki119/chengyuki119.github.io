@@ -161,8 +161,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   .product-info h3 { font-size:19px; }
   .product-info p { color: var(--muted); font-size:16px; margin: 4px 0 12px; flex: 1; }
-  .product-row { display: flex; align-items: center; justify-content: space-between; }
-  .card-edit-btn { border: none; background: var(--card-hover); color:var(--text,#5d6780); font-size:14px; cursor: pointer; padding: 4px 12px; border-radius: 999px; font-family: inherit; transition: background .2s, color .2s; }
+  .product-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; row-gap: 8px; }
+  .product-row .buy-btn, .product-row .card-edit-btn, .product-row .no-buy, .product-row .price { white-space: nowrap; flex-shrink: 0; }
+  .card-edit-btn { border: none; background: var(--card-hover); color:var(--text,#5d6780); font-size:14px; cursor: pointer; padding: 4px 12px; border-radius: 999px; font-family: inherit; transition: background .2s, color .2s; white-space: nowrap; }
   .card-edit-btn:hover { background: var(--accent-soft); color: #fff; }
   .price { font-size:21px; font-weight: 700; color:var(--text,#5d6780); font-family: "Millo Body", -apple-system, "PingFang SC", sans-serif; }
   .price small { font-size:15px; font-weight: 400; }
@@ -326,9 +327,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   #view-detail, #view-cart, #view-checkout, #view-orders, #view-account, #view-groups { display: none; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261025b">
-  <script src="/js/site-common.js?v=20261025b"></script>
-  <script src="/site-menu.js?v=20261025b" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261025c">
+  <script src="/js/site-common.js?v=20261025c"></script>
+  <script src="/site-menu.js?v=20261025c" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -865,6 +866,13 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261025b"></script>
+<script src="/js/shop-app.js?v=20261025c"></script>
+<script src="/js/site-footer.js?v=20261025c"></script>
+<script>
+  // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
+  function initSiteFooter() { renderSiteFooter(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSiteFooter);
+  else initSiteFooter();
+</script>
 </body>
 </html>

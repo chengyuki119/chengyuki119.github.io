@@ -244,6 +244,12 @@
               return '<button type="button" class="sku-chip' + (x.sku === d.sku ? ' on' : '') + (out ? ' dis' : '') + '" data-sku="' + escAttr(x.sku) + '">' + esc(x.name || x.sku) + (out ? ' · ' + t('缺货', 'Out') : '') + '</button>';
             }).join('') + '</div></div>' : '') +
           (st === 'on' ?
+            '<div class="card" style="padding:12px 14px;margin:12px 0;background:#fff7fa;border:1.5px solid var(--accent-soft,#ffc8d6);">' +
+              '<b style="font-size:15px;">' + t('购买须知 ♡', 'Before You Order ♡') + '</b>' +
+              '<p style="font-size:14px;color:var(--muted);margin:6px 0 0;line-height:1.7;">' +
+                t('下单前请仔细阅读商品描述与图片。手工制品与键帽可能存在轻微瑕疵或正常工艺差异，与描述一致的轻微差异不构成退款理由。详细规则见', 'Please review the description and photos carefully. Handmade items and keycaps may have minor imperfections or variations; minor variations consistent with the description are not grounds for refund. See our ') +
+                '<a href="/return-policy/" style="color:#ff6fa5;text-decoration:underline;">' + t('《退货与退款政策》', 'Return & Refund Policy') + '</a>' + t('。', '.') + '</p>' +
+            '</div>' +
             '<div style="display:flex;align-items:center;gap:12px;margin:12px 0;">' +
               '<span style="font-size:16px;">' + t('数量', 'Qty') + '</span>' +
               '<button type="button" class="qty-btn" data-d="-1">−</button><b id="d-qty">1</b><button type="button" class="qty-btn" data-d="1">＋</button>' +

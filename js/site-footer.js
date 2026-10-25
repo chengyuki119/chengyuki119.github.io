@@ -1,0 +1,118 @@
+/* ═══════════ 全站统一 Footer（双语文案 · 粉色系 · 手机单栏 / 电脑两栏）═══════════
+   用法：页面引入本文件后调用 window.renderSiteFooter()。
+   - 页面里已有 <footer>：保留原 <footer> 标签（避免破坏原样式选择器），只把内容替换成统一 Footer。
+   - 页面里没有 <footer>：在 </body> 前插入一个。
+   - 语言：读取 window.LANG（localStorage 'yuki-lang'，'zh'/'en'）；
+     监听 document 上 .lang-btn 的 click，延迟 50ms 重渲染（site-common 本身会整页刷新，这里做兜底）。 */
+(function () {
+  'use strict';
+
+  var STYLE_ID = 'sy-footer-style';
+
+  var TEXT = {
+    zh: {
+      service: '客户服务',
+      policies: '网站政策',
+      contact: '联系我们',
+      faq: '常见问题',
+      'return-policy': '退货与退款政策',
+      'shipping-policy': '配送政策',
+      'privacy-policy': '隐私政策',
+      'terms-of-service': '服务条款',
+      copy: '© 2026 SnowYuzu. 保留所有权利。'
+    },
+    en: {
+      service: 'Customer Service',
+      policies: 'Policies',
+      contact: 'Contact Us',
+      faq: 'FAQ',
+      'return-policy': 'Return & Refund Policy',
+      'shipping-policy': 'Shipping Policy',
+      'privacy-policy': 'Privacy Policy',
+      'terms-of-service': 'Terms of Service',
+      copy: '© 2026 SnowYuzu. All rights reserved.'
+    }
+  };
+
+  var LINKS = {
+    service: [['contact', '/askbox/'], ['faq', '/faq/']],
+    policies: [
+      ['return-policy', '/return-policy/'],
+      ['shipping-policy', '/shipping-policy/'],
+      ['privacy-policy', '/privacy-policy/'],
+      ['terms-of-service', '/terms-of-service/']
+    ]
+  };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function currentLang() {
+    if (window.LANG === 'zh' || window.LANG === 'en') return window.LANG;
+    try {
+      var l = localStorage.getItem('yuki-lang');
+      if (l === 'en') return 'en';
+    } catch (e) {}
+    return 'zh';
+  }
+
+  function ensureStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+    var st = document.createElement('style');
+    st.id = STYLE_ID;
+    st.textContent =
+      '.sy-footer{max-width:1080px;margin:0 auto;padding:8px 24px 34px;font-family:inherit;}' +
+      '.sy-footer-cols{display:grid;grid-template-columns:1fr 1fr;gap:28px 40px;}' +
+      '@media (max-width:639px){.sy-footer-cols{grid-template-columns:1fr;gap:20px;}}' +
+      '.sy-footer-head{font-size:17px;font-weight:700;color:var(--text,#5d6780);margin-bottom:10px;}' +
+      '.sy-footer-links{display:flex;flex-wrap:wrap;gap:8px 10px;}' +
+      '.sy-footer-link{display:inline-block;background:#ffd9e6;color:var(--text,#5d6780);font-size:16px;line-height:1.4;padding:7px 16px;border-radius:999px;text-decoration:none;transition:background .2s;}' +
+      '.sy-footer-link:hover{background:#ffe4ee;}' +
+      '.sy-footer-copy{margin-top:20px;text-align:center;font-size:16px;color:var(--muted,#9aa5bd);}';
+    document.head.appendChild(st);
+  }
+
+  function buildHtml() {
+    var lang = currentLang();
+    var txt = TEXT[lang] || TEXT.zh;
+    var col = function (titleKey, items) {
+      return '<div class="sy-footer-col">' +
+        '<div class="sy-footer-head">' + esc(txt[titleKey]) + '</div>' +
+        '<div class="sy-footer-links">' +
+        items.map(function (p) {
+          return '<a class="sy-footer-link" href="' + esc(p[1]) + '">' + esc(txt[p[0]]) + '</a>';
+        }).join('') +
+        '</div></div>';
+    };
+    return '<div class="sy-footer">' +
+      '<div class="sy-footer-cols">' + col('service', LINKS.service) + col('policies', LINKS.policies) + '</div>' +
+      '<div class="sy-footer-copy">' + esc(txt.copy) + '</div>' +
+      '</div>';
+  }
+
+  window.renderSiteFooter = function () {
+    ensureStyle();
+    var html = buildHtml();
+    var footer = document.querySelector('footer');
+    if (footer) {
+      // 保留原 <footer> 标签（页面已有 footer 样式不冲突），只替换内容，避免出现两个可见 footer
+      footer.innerHTML = html;
+      return;
+    }
+    // 页面没有 footer：新建一个插到 </body> 前
+    var el = document.createElement('footer');
+    el.innerHTML = html;
+    document.body.appendChild(el);
+  };
+
+  // 语言切换时跟随更新（延迟 50ms，等页面自身逻辑先跑）
+  if (!window.__syFooterLangBound) {
+    window.__syFooterLangBound = true;
+    document.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('.lang-btn') : null;
+      if (!btn) return;
+      setTimeout(function () { window.renderSiteFooter(); }, 50);
+    });
+  }
+})();

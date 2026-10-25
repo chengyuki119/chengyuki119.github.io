@@ -328,7 +328,7 @@
   #bjd-home-grid .bjd-card:hover img, #cards-home-grid .sc-product:hover img, #works-home-grid .work-card:hover img, #cards-grid .sc-product:hover img, #bjd-grid .bjd-card:hover img { transform: scale(1.05); }
   .share-btn.share-inline { position: static; width: 30px; height: 30px; flex-shrink: 0; }
   @media (max-width: 640px) { #bjd-home-grid, #cards-home-grid, #works-home-grid { grid-template-columns: repeat(2, 1fr); } } /* 手机上保持两张一行，好认 */
-  .card-edit-btn { border: none; background: var(--card-hover); color:var(--text,#5d6780); font-size:14px; cursor: pointer; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; transition: background .2s, color .2s; }
+  .card-edit-btn { border: none; background: var(--card-hover); color:var(--text,#5d6780); font-size:14px; cursor: pointer; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; transition: background .2s, color .2s; white-space: nowrap; }
   .card-edit-btn:hover { background: var(--accent-soft); color: #fff; }
   /* Apple Calendar 式月历 + 重要日子 */
   #home-cal { margin: 0 0 32px; display: flex; gap: 14px; align-items: stretch; }

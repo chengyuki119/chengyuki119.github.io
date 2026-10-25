@@ -53,13 +53,16 @@
     '#tab-shopmgr .sm-c-code { font-weight:700; color:var(--text); }',
     '#tab-shopmgr .sm-b-mail { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:6px 0; border-bottom:1px dashed var(--card-hover); font-size:16px; }',
     '#tab-shopmgr .sm-b-mail:last-child { border-bottom:none; }',
-    '#tab-shopmgr .sm-var-row { display:grid; grid-template-columns: 1fr 1fr 84px 64px auto; gap:6px; align-items:center; margin-bottom:6px; }',
-    '#tab-shopmgr .sm-var-row input { padding:7px 10px; font-size:15px; }',
-    '#tab-shopmgr .sm-var-imgs { display:flex; gap:6px; flex-wrap:wrap; align-items:center; grid-column:1 / -1; }',
-    '#tab-shopmgr .sm-var-imgs img { width:44px; height:44px; border-radius:8px; object-fit:cover; background:var(--card); }',
+    '#tab-shopmgr .sm-var-row { background:#fff; border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 2px 10px rgba(180,120,150,.10); }',
+    '#tab-shopmgr .sm-var-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }',
+    '#tab-shopmgr .sm-var-grid label { display:block; font-size:13px; color:var(--muted,#9aa5bd); margin-bottom:5px; line-height:1.4; }',
+    '#tab-shopmgr .sm-var-grid input { width:100%; box-sizing:border-box; padding:10px 12px; font-size:15px; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:10px; background:#fff; outline:none; color:var(--text); font-family:inherit; }',
+    '#tab-shopmgr .sm-var-grid input:focus { border-color:var(--card-hover,#ffe4ee); }',
+    '#tab-shopmgr .sm-var-imgs { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }',
+    '#tab-shopmgr .sm-var-imgs img { width:52px; height:52px; border-radius:10px; object-fit:cover; background:var(--card); }',
     '#tab-shopmgr .sm-var-imgdel { position:absolute; top:-6px; right:-6px; width:18px; height:18px; border:none; border-radius:50%; background:var(--accent-soft); color:#fff; font-size:12px; line-height:1; cursor:pointer; }',
     '#tab-shopmgr .sm-empty { text-align:center; color:var(--muted); font-size:17px; padding:24px 0; }',
-    '@media (max-width:640px) { #tab-shopmgr .sm-stats { grid-template-columns:repeat(2,1fr); } #tab-shopmgr .sm-var-row { grid-template-columns:1fr 1fr; } }'
+    '@media (max-width:640px) { #tab-shopmgr .sm-stats { grid-template-columns:repeat(2,1fr); } #tab-shopmgr .sm-var-grid { grid-template-columns:1fr 1fr; } }'
   ].join('\n');
   document.head.appendChild(css);
 
@@ -341,6 +344,7 @@
     }
     return '<div class="card sm-order' + (open ? ' open' : '') + '" data-id="' + escAttr(o.id) + '">' +
       '<div class="sm-o-head">' +
+      '<span class="ck-box sm-osel' + (SM.osel[o.id] ? ' on' : '') + '" data-id="' + escAttr(o.id) + '" style="width:18px;height:18px;border-radius:6px;border:2px solid var(--muted,#9aa5bd);flex-shrink:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;color:var(--text,#5d6780);background:' + (SM.osel[o.id] ? '#ffd9e6' : 'transparent') + '">' + (SM.osel[o.id] ? '✓' : '') + '</span>' +
       '<span class="sm-o-no">' + esc(o.order_no || '') + '</span>' +
       '<span class="sold-badge" style="background:' + st[1] + ';">' + esc(st[0]) + '</span>' +
       '<span class="sm-o-mail">' + esc(o.email || '') + '</span>' +
@@ -589,10 +593,10 @@
       block.style.gridColumn = '1 / -1';
       block.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
         '<b style="font-size:16px;color:var(--text);">商品规格</b>' +
-        '<span class="hint" style="flex:1;">多规格商品商城下单必须选规格；留空 = 单规格</span>' +
-        '<button type="button" class="btn-mini sm-var-add">＋ 添加规格</button></div>' +
+        '<span class="hint" style="flex:1;min-width:180px;">一个规格＝买家看到的一个选项（比如一个颜色款）；全部留空＝单规格</span>' +
+        '<button type="button" class="btn-mini sm-var-add" style="background:#ffd9e6;color:#fff;padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
         '<div class="sm-var-rows"></div>' +
-        '<p class="hint" style="margin:4px 0 0;">每行：规格名即买家看到的选项；SKU 用来区分（唯一）；价格/库存留空则用商品本身的；可传多张图（第一张为该选项封面）</p>';
+        '<p class="hint" style="margin:6px 0 0;">每个规格可以传自己的图，第一张就是这个选项的封面；详情页点选项会换图、换价、换库存。</p>';
       g2.appendChild(block);
       smVarRenderRows(card);
     };
@@ -618,17 +622,20 @@
   function smVarRenderRows(card) {
     var box = card.querySelector('.sm-var-rows');
     if (!box) return;
-    box.innerHTML = arr(card.__variants).map(function (v, i) {
+    box.innerHTML = arr(card.__variants).length ? arr(card.__variants).map(function (v, i) {
       return '<div class="sm-var-row" data-i="' + i + '">' +
-        '<input class="sv-sku" placeholder="SKU" value="' + escAttr(v.sku || '') + '">' +
-        '<input class="sv-name" placeholder="规格名" value="' + escAttr(v.name || '') + '">' +
-        '<input class="sv-price" type="number" step="0.01" min="0" placeholder="价格" value="' + escAttr(v.price == null ? '' : v.price) + '">' +
-        '<input class="sv-stock" type="number" min="0" placeholder="库存" value="' + escAttr(v.stock == null ? '' : v.stock) + '">' +
-        '<button type="button" class="btn-del sm-var-del" data-i="' + i + '">删</button>' +
+        '<div class="sm-var-grid">' +
+          '<div><label>规格名（买家看到的）</label><input class="sv-name" placeholder="如：粉色款" value="' + escAttr(v.name || '') + '"></div>' +
+          '<div><label>SKU（区分用·唯一）</label><input class="sv-sku" placeholder="如：PINK-1" value="' + escAttr(v.sku || '') + '"></div>' +
+          '<div><label>价格 $（留空用商品价）</label><input class="sv-price" type="number" step="0.01" min="0" placeholder="0.00" value="' + escAttr(v.price == null ? '' : v.price) + '"></div>' +
+          '<div><label>库存（留空用商品库存）</label><input class="sv-stock" type="number" min="0" placeholder="如：5" value="' + escAttr(v.stock == null ? '' : v.stock) + '"></div>' +
+        '</div>' +
         '<div class="sm-var-imgs">' + smVarImgHtml(v, i) +
-        '<label class="btn-mini">＋图<input type="file" class="sm-var-file" data-i="' + i + '" accept="image/*" multiple hidden></label></div>' +
+          '<label class="btn-mini" style="cursor:pointer;">＋ 上传图片<input type="file" class="sm-var-file" data-i="' + i + '" accept="image/*" multiple hidden></label>' +
+          '<button type="button" class="btn-del sm-var-del" data-i="' + i + '" style="padding:6px 14px;font-size:14px;margin-left:auto;">删除此规格</button>' +
+        '</div>' +
         '</div>';
-    }).join('');
+    }).join('') : '<p class="hint" style="background:var(--card,#fdf2f6);border-radius:12px;padding:14px;text-align:center;">还没有规格，点上面「＋ 添加规格」加第一个选项</p>';
   }
   function saveProductExtra(card) {
     var vlist = arr(card.__variants);
@@ -670,7 +677,9 @@
     '</div>' +
     '<div id="sm-sec-orders">' +
     '<div class="sm-toolbar"><div class="dy-chips" id="sm-o-chips"></div>' +
-    '<input id="sm-o-search" placeholder="搜订单号 / 邮箱" autocomplete="off"></div>' +
+    '<input id="sm-o-search" placeholder="搜订单号 / 邮箱" autocomplete="off">' +
+    '<button type="button" class="btn-mini" id="sm-o-new" style="white-space:nowrap;">＋ 手动建单</button>' +
+    '<button type="button" class="btn-mini" id="sm-o-export" style="white-space:nowrap;">导出 CSV</button></div>' +
     '<div id="sm-o-list"><p class="sm-empty">加载中…</p></div>' +
     '</div>' +
     '<div id="sm-sec-groups" style="display:none;">' +
@@ -722,7 +731,13 @@
     if (!b) return;
     var on = b.dataset.tab === 'shopmgr';
     root.style.display = on ? '' : 'none';
-    if (on && !SM.loaded) loadAll();
+    if (on && !SM.loaded) loadAll().then(function () {
+      // 兼容偶发加载时序：订单一个都没拿到就自动重试一次（她 2026-10-25 遇到卡「加载中」）
+      if (!SM.orders.length && !SM._retried) {
+        SM._retried = true; SM.loaded = false;
+        setTimeout(function () { if (!SM.loaded) loadAll(); }, 2500);
+      }
+    });
   }, true); // capture：在现有 tab 切换逻辑之外独立控制本容器
   document.getElementById('sm-tabs').addEventListener('click', function (e) {
     var b = e.target.closest('.sm-tab');
@@ -1177,6 +1192,464 @@
   if (location.hash.replace('#', '') === 'shopmgr') {
     var tb = document.querySelector('.tab-btn[data-tab="shopmgr"]');
     if (tb) tb.click();
+  }
+
+  /* ════════ 手动建单 / 批量导出 / 政策内容编辑（她 2026-10-25 规格）════════ */
+  SM.osel = SM.osel || {};
+  var SOURCE_LABEL = { online: '线上下单', admin: '后台手动创建' };
+
+  // ── 勾选框（捕获阶段，别触发行展开）──
+  root.addEventListener('click', function (e) {
+    var box = e.target.closest('.sm-osel');
+    if (!box) return;
+    e.stopPropagation(); e.preventDefault();
+    var id = box.getAttribute('data-id');
+    SM.osel[id] = !SM.osel[id];
+    renderOrders();
+  }, true);
+
+  // ── 手动建单 ──
+  var MO_ITEMS = [];
+  function genOrderNo() {
+    var d = new Date();
+    var ymd = ('' + d.getFullYear()).slice(2) + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+    var hex = ''; for (var i = 0; i < 6; i++) hex += '0123456789ABCDEF'[Math.floor(Math.random() * 16)];
+    return 'YK' + ymd + '-' + hex;
+  }
+  function moItemRowHtml(it, i) {
+    var p = it.pid ? byId(SM.products, it.pid) : null;
+    var label = p ? (p.name || '（未命名商品）') : (it.custom ? '自定义商品' : '选择商品');
+    return '<div class="mo-item" data-i="' + i + '" style="display:grid;grid-template-columns:1fr 74px 88px;gap:6px;align-items:center;margin-bottom:6px;">' +
+      '<div style="display:flex;gap:6px;align-items:center;min-width:0;flex-wrap:wrap;">' +
+        '<button type="button" class="sel-btn mo-pick" data-i="' + i + '"><span class="pick-btn-label">' + esc(label) + '</span></button>' +
+        (it.pid && p && arr(p.variants).length ? '<button type="button" class="sel-btn mo-vpick" data-i="' + i + '"><span class="pick-btn-label">' + esc(it.sku ? (currentVariantName(p, it.sku)) : '规格（可选）') + '</span></button>' : '') +
+        (it.custom ? '<input class="mo-name" data-i="' + i + '" placeholder="自定义商品名 *" value="' + escAttr(it.name || '') + '" style="max-width:160px;">' : '') +
+      '</div>' +
+      '<input class="mo-qty" data-i="' + i + '" type="number" min="1" step="1" value="' + escAttr(it.qty == null ? 1 : it.qty) + '">' +
+      '<input class="mo-price" data-i="' + i + '" type="number" min="0" step="0.01" value="' + escAttr(it.price == null ? '' : it.price) + '" placeholder="单价">' +
+      '<button type="button" class="btn-del mo-del" data-i="' + i + '" style="grid-column:1/-1;justify-self:start;padding:3px 10px;font-size:13px;">删除此行</button>' +
+      '</div>';
+  }
+  function currentVariantName(p, sku) {
+    var v = arr(p.variants).filter(function (x) { return x.sku === sku; })[0];
+    return v ? (v.name || v.sku) : '规格（可选）';
+  }
+  function applyMoPick(i, v) {
+    if (!MO_ITEMS[i]) return;
+    if (v === '__custom__') { MO_ITEMS[i] = { pid: '', sku: '', qty: MO_ITEMS[i].qty || 1, price: MO_ITEMS[i].price || '', custom: true, name: MO_ITEMS[i].name || '' }; return; }
+    var pp = byId(SM.products, v);
+    MO_ITEMS[i] = { pid: v, sku: '', qty: MO_ITEMS[i].qty || 1, price: pp ? String(pp.price) : '', custom: false, name: '' };
+  }
+  function moCalc() {
+    var sub = 0;
+    MO_ITEMS.forEach(function (it) { sub += num(it.qty) * num(it.price); });
+    var disc = num(document.querySelector('#mo-form .mo-discount').value);
+    var ship = num(document.querySelector('#mo-form .mo-ship').value);
+    var fee = num(document.querySelector('#mo-form .mo-fee').value);
+    var total = sub - disc + ship + fee;
+    var el = document.querySelector('#mo-form .mo-sum');
+    if (el) el.innerHTML = '小计 $' + fmtMoney(sub) + ' · 折扣 -$' + fmtMoney(disc) + ' · 运费 $' + fmtMoney(ship) + ' · 服务费 $' + fmtMoney(fee) + ' → 总价 <b>$' + fmtMoney(total) + '</b>';
+    return { sub: sub, disc: disc, ship: ship, fee: fee, total: total };
+  }
+  function moRenderItems() {
+    var box = document.querySelector('#mo-form .mo-items');
+    if (box) box.innerHTML = MO_ITEMS.length ? MO_ITEMS.map(moItemRowHtml).join('') : '<p class="hint">还没加商品，点下面「＋ 添加商品」</p>';
+  }
+  function openManualOrder() {
+    MO_ITEMS = [{ pid: '', sku: '', qty: 1, price: '', custom: false, name: '' }];
+    if (!SM.products.length) loadProducts().then(function () { if (document.querySelector('#mo-form')) moRenderItems(); });
+    var now = new Date();
+    var pad = function (n) { return ('0' + n).slice(-2); };
+    var local = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+    var mask = document.createElement('div');
+    mask.id = 'mo-mask';
+    mask.style.cssText = 'position:fixed;inset:0;background:rgba(90,80,90,.45);z-index:9998;overflow:auto;padding:30px 10px;';
+    mask.innerHTML =
+      '<div id="mo-form" style="max-width:640px;margin:0 auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 10px 40px rgba(120,80,100,.25);">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><h3 style="margin:0;font-size:19px;">手动创建订单</h3>' +
+      '<button type="button" class="btn-mini mo-close">关闭</button></div>' +
+      '<div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+        '<input class="mo-no" value="' + genOrderNo() + '">' +
+        '<input class="mo-time" type="datetime-local" value="' + local + '">' +
+        '<button type="button" class="sel-btn mo-status" data-v="pending"><span class="pick-btn-label">状态：待付款</span></button>' +
+        '<button type="button" class="sel-btn mo-cur" data-v="USD"><span class="pick-btn-label">货币：USD</span></button>' +
+        '<input class="mo-email" placeholder="买家邮箱（可空）" style="grid-column:1/-1;">' +
+        '<input class="mo-bname" placeholder="买家姓名（可空）">' +
+        '<input class="mo-bphone" placeholder="联系电话（可空）">' +
+        '<input class="mo-addr-name" placeholder="收件人姓名 *">' +
+        '<input class="mo-addr-street" placeholder="街道地址 *">' +
+        '<input class="mo-addr-city" placeholder="城市 *">' +
+        '<input class="mo-addr-state" placeholder="州/省">' +
+        '<input class="mo-addr-zip" placeholder="ZIP Code">' +
+        '<input class="mo-addr-country" placeholder="国家（默认 United States）">' +
+        '<input class="mo-note" placeholder="买家备注（可空）" style="grid-column:1/-1;">' +
+        '<input class="mo-adminnote" placeholder="管理员备注（只有你能看）" style="grid-column:1/-1;">' +
+      '</div>' +
+      '<div style="margin:12px 0 6px;"><b style="font-size:16px;">订单商品</b>' +
+      '<div class="mo-items" style="margin-top:6px;"></div>' +
+      '<button type="button" class="btn-mini mo-additem">＋ 添加商品</button>' +
+      '<p class="hint" style="margin:4px 0 0;">从商品列表选，或选「自定义商品」录临时商品；价格留空会自动用商品价</p></div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0;">' +
+        '<input class="mo-discount" type="number" min="0" step="0.01" placeholder="折扣金额" value="0">' +
+        '<input class="mo-ship" type="number" min="0" step="0.01" placeholder="运费" value="0">' +
+        '<input class="mo-fee" type="number" min="0" step="0.01" placeholder="服务费" value="2">' +
+      '</div>' +
+      '<div class="mo-sum" style="font-size:15px;color:var(--text,#5d6780);margin-bottom:10px;"></div>' +
+      '<button type="button" class="btn-mini mo-save" style="background:#ffd9e6;color:#fff;padding:10px 26px;font-size:16px;">保存订单</button>' +
+      '<span class="hint" style="margin-left:10px;">默认「待付款」，不会自动标成已付款；来源自动记为「后台手动创建」</span>' +
+      '</div>';
+    root.appendChild(mask);
+    moRenderItems(); moCalc();
+    mask.addEventListener('click', function (e) {
+      if (e.target === mask) { mask.remove(); return; }
+      if (e.target.classList.contains('mo-close')) { mask.remove(); return; }
+      var card = mask.querySelector('#mo-form');
+      if (e.target.classList.contains('mo-additem')) { MO_ITEMS.push({ pid: '', sku: '', qty: 1, price: '', custom: false, name: '' }); moRenderItems(); return; }
+      var del = e.target.closest('.mo-del');
+      if (del) { MO_ITEMS.splice(parseInt(del.getAttribute('data-i'), 10), 1); moRenderItems(); moCalc(); return; }
+      var pick = e.target.closest('.mo-pick');
+      if (pick) {
+        var i = parseInt(pick.getAttribute('data-i'), 10);
+        if (!SM.products.length) { // 商品列表还没加载完就点选择 → 现拉，别让买家只能选自定义（她 2026-10-25）
+          loadProducts().then(function () {
+            if (!MO_ITEMS[i]) return;
+            pickPop(pick, [{ v: '__custom__', label: '✍️ 自定义商品' }].concat(SM.products.map(function (pp) {
+              return { v: pp.id, label: (pp.name || '未命名') + ' · $' + fmtMoney(pp.price) };
+            })), MO_ITEMS[i].pid || '', function (v) {
+              applyMoPick(i, v); moRenderItems(); moCalc();
+            });
+          });
+          return;
+        }
+        pickPop(pick, [{ v: '__custom__', label: '✍️ 自定义商品' }].concat(SM.products.map(function (pp) {
+          return { v: pp.id, label: (pp.name || '未命名') + ' · $' + fmtMoney(pp.price) };
+        })), MO_ITEMS[i].pid || '', function (v) {
+          applyMoPick(i, v); moRenderItems(); moCalc();
+        });
+        return;
+      }
+      var vp = e.target.closest('.mo-vpick');
+      if (vp) {
+        var j = parseInt(vp.getAttribute('data-i'), 10);
+        var pj = byId(SM.products, MO_ITEMS[j].pid);
+        if (!pj) return;
+        pickPop(vp, [{ v: '', label: '无规格' }].concat(arr(pj.variants).map(function (vv) {
+          return { v: vv.sku || '', label: (vv.name || vv.sku) + (vv.price != null ? ' · $' + fmtMoney(vv.price) : '') };
+        })), MO_ITEMS[j].sku, function (v) {
+          MO_ITEMS[j].sku = v;
+          var vv = arr(pj.variants).filter(function (x) { return x.sku === v; })[0];
+          if (vv && vv.price != null) MO_ITEMS[j].price = String(vv.price);
+          moRenderItems(); moCalc();
+        });
+        return;
+      }
+      var stBtn = e.target.closest('.mo-status');
+      if (stBtn) {
+        var STS = [['pending', '待付款'], ['reviewing', '待审核'], ['paid', '已付款·待发货'], ['shipped', '已发货'], ['completed', '已完成']];
+        pickPop(stBtn, STS.map(function (s) { return { v: s[0], label: s[1] }; }), stBtn.getAttribute('data-v'), function (v) {
+          stBtn.setAttribute('data-v', v);
+          stBtn.querySelector('.pick-btn-label').textContent = '状态：' + (STS.filter(function (s) { return s[0] === v; })[0] || ['', v])[1];
+        });
+        return;
+      }
+      var curBtn = e.target.closest('.mo-cur');
+      if (curBtn) {
+        pickPop(curBtn, [{ v: 'USD', label: 'USD $' }, { v: 'CNY', label: 'CNY ¥' }], curBtn.getAttribute('data-v'), function (v) {
+          curBtn.setAttribute('data-v', v);
+          curBtn.querySelector('.pick-btn-label').textContent = '货币：' + v;
+        });
+        return;
+      }
+    });
+    mask.addEventListener('input', function (e) {
+      var t = e.target;
+      if (t.classList.contains('mo-qty') || t.classList.contains('mo-price')) {
+        var it = MO_ITEMS[parseInt(t.getAttribute('data-i'), 10)];
+        if (it) { if (t.classList.contains('mo-qty')) it.qty = t.value; else it.price = t.value; }
+        moCalc();
+      }
+      if (t.classList.contains('mo-discount') || t.classList.contains('mo-ship') || t.classList.contains('mo-fee')) moCalc();
+      if (t.classList.contains('mo-name')) { var it2 = MO_ITEMS[parseInt(t.getAttribute('data-i'), 10)]; if (it2) it2.name = t.value; }
+    });
+    mask.querySelector('.mo-save').addEventListener('click', function () {
+      var btn = this;
+      if (btn.disabled) return;
+      var f = mask.querySelector('#mo-form');
+      var addr = {
+        name: f.querySelector('.mo-addr-name').value.trim(),
+        street: f.querySelector('.mo-addr-street').value.trim(),
+        city: f.querySelector('.mo-addr-city').value.trim(),
+        state: f.querySelector('.mo-addr-state').value.trim(),
+        zip: f.querySelector('.mo-addr-zip').value.trim(),
+        country: f.querySelector('.mo-addr-country').value.trim() || 'United States'
+      };
+      if (!addr.name || !addr.street || !addr.city) { toast('收件人 / 街道 / 城市要填哦'); return; }
+      var items = [];
+      for (var k = 0; k < MO_ITEMS.length; k++) {
+        var it = MO_ITEMS[k];
+        var pp = it.pid ? byId(SM.products, it.pid) : null;
+        var name = pp ? (pp.name || '') + (it.sku ? ' · ' + currentVariantName(pp, it.sku) : '') : (it.name || '').trim();
+        var price = it.price === '' || it.price == null ? (pp ? num(pp.price) : NaN) : num(it.price);
+        var qty = parseInt(it.qty, 10) || 0;
+        if (!name) { toast('第 ' + (k + 1) + ' 行商品名没填'); return; }
+        if (!(price >= 0) || qty < 1) { toast('第 ' + (k + 1) + ' 行数量/单价不合法'); return; }
+        items.push({ id: it.pid || null, name: name, image: pp ? (pp.image || pp.image_url || '') : '', sku: it.sku || '', variant: it.sku || '', price: fmtMoney(price), qty: qty });
+      }
+      if (!items.length) { toast('至少要有一个商品'); return; }
+      var c = moCalc();
+      if (c.total < 0) { toast('总价不能是负数'); return; }
+      var orderNo = f.querySelector('.mo-no').value.trim() || genOrderNo();
+      var created = f.querySelector('.mo-time').value;
+      var body = {
+        order_no: orderNo,
+        email: f.querySelector('.mo-email').value.trim(),
+        items: items,
+        subtotal: fmtMoney(c.sub),
+        discount: fmtMoney(c.disc),
+        coupon_code: '',
+        shipping_est: fmtMoney(c.ship),
+        service_fee: fmtMoney(c.fee),
+        total: fmtMoney(c.total),
+        status: f.querySelector('.mo-status').getAttribute('data-v') || 'pending',
+        address: addr,
+        note: f.querySelector('.mo-note').value.trim(),
+        admin_note: f.querySelector('.mo-adminnote').value.trim(),
+        currency: f.querySelector('.mo-cur').getAttribute('data-v') || 'USD',
+        order_source: 'admin'
+      };
+      var dt = created ? new Date(created) : null;
+      if (dt && !isNaN(dt.getTime())) body.created_at = dt.toISOString();
+      btn.disabled = true; btn.textContent = '保存中…';
+      api('shop_orders', { method: 'POST', body: JSON.stringify(body) }).then(function (r) {
+        btn.disabled = false; btn.textContent = '保存订单';
+        if (!r.ok) {
+          r.json().then(function (d) {
+            toast('保存失败：' + ((d && (d.message || d.msg)) || '数据库拒绝，检查订单号是否重复'));
+          }).catch(function () { toast('保存失败：数据库拒绝'); });
+          return;
+        }
+        api('shop_order_logs', { method: 'POST', body: JSON.stringify({ order_id: null, actor: 'admin', action: 'create', detail: '后台手动建单 ' + orderNo }) }).catch(function () {});
+        toast('订单已保存：' + orderNo);
+        mask.remove();
+        loadOrders().then(renderOrders);
+      }).catch(function () { btn.disabled = false; btn.textContent = '保存订单'; toast('保存失败：网络异常，重试一下'); });
+    });
+  }
+
+  // ── 批量导出 CSV ──
+  function csvCell(v) {
+    var s = (v == null ? '' : String(v));
+    return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function csvEscapeCh(v) { return v; }
+  function fetchAllOrders() {
+    var all = [];
+    function page(offset) {
+      return restGet('shop_orders?select=*&order=created_at.desc&limit=1000&offset=' + offset)
+        .then(function (rows) {
+          all = all.concat(arr(rows));
+          if (arr(rows).length === 1000) return page(offset + 1000);
+          return all;
+        });
+    }
+    return page(0);
+  }
+  function exportOrdersCSV(sel) {
+    // sel: {mode:'all'|'selected'|'filtered', from, to, status, source}
+    var btn = document.getElementById('sm-o-export');
+    if (btn) { btn.disabled = true; btn.textContent = '导出中…'; }
+    fetchAllOrders().then(function (all) {
+      var rows = all;
+      if (sel.mode === 'selected') rows = rows.filter(function (o) { return SM.osel[o.id]; });
+      if (sel.mode === 'filtered') {
+        var q = (document.getElementById('sm-o-search').value || '').toLowerCase();
+        rows = rows.filter(function (o) {
+          if (sel.status && o.status !== sel.status) return false;
+          if (sel.source && (o.order_source || 'online') !== sel.source) return false;
+          var d = (o.created_at || '').slice(0, 10);
+          if (sel.from && d < sel.from) return false;
+          if (sel.to && d > sel.to) return false;
+          if (q && String(o.order_no || '').toLowerCase().indexOf(q) === -1 && String(o.email || '').toLowerCase().indexOf(q) === -1) return false;
+          return true;
+        });
+      }
+      if (!rows.length) {
+        toast('没有符合条件的订单，没有导出文件');
+        if (btn) { btn.disabled = false; btn.textContent = '导出 CSV'; }
+        return;
+      }
+      var PAY = { pending: '待付款', reviewing: '待审核付款', rejected: '凭证有误', paid: '已付款', shipped: '已付款', completed: '已付款', cancelled: '已取消', refunding: '退款处理中', refunded: '已退款' };
+      var head = ['Order ID', 'Order Number', 'Order Date', 'Order Status', 'Payment Status', 'Order Source', 'Currency', 'Subtotal', 'Discount', 'Shipping Fee', 'Service Fee', 'Total Amount', 'Admin Notes', 'Customer Notes', 'Customer ID', 'Customer Name', 'Email', 'Phone', 'Recipient Name', 'Shipping Address', 'City', 'State', 'ZIP Code', 'Country', 'Product ID', 'SKU', 'Product Name', 'Variant', 'Quantity', 'Unit Price', 'Line Total'];
+      var lines = [head.map(csvCell).join(',')];
+      rows.forEach(function (o) {
+        var a = o.address || {};
+        var base = [
+          o.id, o.order_no, o.created_at, o.status, PAY[o.status] || o.status,
+          SOURCE_LABEL[o.order_source || 'online'] || (o.order_source || 'online'),
+          o.currency || 'USD', fmtMoney(o.subtotal), fmtMoney(o.discount),
+          fmtMoney(o.shipping_actual != null && o.shipping_actual !== '' ? o.shipping_actual : o.shipping_est),
+          fmtMoney(o.service_fee), fmtMoney(o.total), o.admin_note || '', o.note || '',
+          o.user_id || '', a.name || '', o.email || '', a.phone || '', a.name || '',
+          a.street || '', a.city || '', a.state || '', a.zip || '', a.country || ''
+        ];
+        var its = arr(o.items);
+        if (!its.length) { lines.push(base.map(csvCell).join(',')); return; }
+        its.forEach(function (it) {
+          lines.push(base.concat([
+            (it && it.id) || '', (it && it.sku) || '', (it && it.name) || '', (it && (it.variant || it.sku)) || '',
+            (it && it.qty) || '', it ? fmtMoney(it.price) : '', it ? fmtMoney(num(it.price) * num(it.qty)) : ''
+          ]).map(csvCell).join(','));
+        });
+      });
+      var blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+      var a = document.createElement('a');
+      var today = (new Date()).toISOString().slice(0, 10);
+      a.href = URL.createObjectURL(blob);
+      a.download = 'SnowYuzu_Orders_' + today + '.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      var detailRows = lines.length - 1;
+      toast('已导出 ' + rows.length + ' 笔订单（' + detailRows + ' 行明细）');
+      if (btn) { btn.disabled = false; btn.textContent = '导出 CSV'; }
+    }).catch(function () {
+      toast('导出失败：读取订单数据出错，重试一下');
+      if (btn) { btn.disabled = false; btn.textContent = '导出 CSV'; }
+    });
+  }
+  function openExport() {
+    var mask = document.createElement('div');
+    mask.id = 'ex-mask';
+    mask.style.cssText = 'position:fixed;inset:0;background:rgba(90,80,90,.45);z-index:9998;overflow:auto;padding:40px 10px;';
+    mask.innerHTML =
+      '<div style="max-width:520px;margin:0 auto;background:#fff;border-radius:18px;padding:22px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><h3 style="margin:0;font-size:19px;">批量导出订单</h3>' +
+      '<button type="button" class="btn-mini ex-close">关闭</button></div>' +
+      '<b style="font-size:15px;">范围</b>' +
+      '<div style="display:flex;gap:8px;margin:6px 0 12px;flex-wrap:wrap;">' +
+        '<button type="button" class="sel-btn ex-mode" data-v="all"><span class="pick-btn-label">全部订单</span></button>' +
+        '<button type="button" class="sel-btn ex-mode" data-v="selected"><span class="pick-btn-label">勾选的订单（' + Object.keys(SM.osel).filter(function (k) { return SM.osel[k]; }).length + '）</span></button>' +
+        '<button type="button" class="sel-btn ex-mode" data-v="filtered"><span class="pick-btn-label">按筛选</span></button>' +
+      '</div>' +
+      '<div class="ex-filters" style="display:none;">' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">' +
+          '<input class="ex-from" placeholder="开始日期 YYYY-MM-DD">' +
+          '<input class="ex-to" placeholder="结束日期 YYYY-MM-DD">' +
+          '<button type="button" class="sel-btn ex-status" data-v=""><span class="pick-btn-label">状态：全部</span></button>' +
+          '<button type="button" class="sel-btn ex-source" data-v=""><span class="pick-btn-label">来源：全部</span></button>' +
+        '</div>' +
+        '<p class="hint" style="margin:0 0 8px;">也会套用当前订单搜索关键字；跨页导出会包含所有符合条件的记录</p>' +
+      '</div>' +
+      '<p class="hint">CSV 为 UTF-8（带 BOM），Excel 可直接打开；每个商品一行，订单信息重复以便筛选</p>' +
+      '<button type="button" class="btn-mini ex-go" style="background:#ffd9e6;color:#fff;padding:10px 26px;font-size:16px;">导出</button>' +
+      '</div>';
+    root.appendChild(mask);
+    var mode = 'all';
+    mask.addEventListener('click', function (e) {
+      if (e.target === mask || e.target.classList.contains('ex-close')) { mask.remove(); return; }
+      var m = e.target.closest('.ex-mode');
+      if (m) {
+        mode = m.getAttribute('data-v');
+        mask.querySelectorAll('.ex-mode').forEach(function (b) { b.style.background = b === m ? '#ffd9e6' : ''; b.style.color = b === m ? '#fff' : ''; });
+        mask.querySelector('.ex-filters').style.display = mode === 'filtered' ? '' : 'none';
+        return;
+      }
+      var stb = e.target.closest('.ex-status');
+      if (stb) {
+        pickPop(stb, [['', '全部']].concat(O_CHIPS.slice(1)).map(function (s) { return { v: s[0], label: s[1] }; }), stb.getAttribute('data-v'), function (v) {
+          stb.setAttribute('data-v', v);
+          stb.querySelector('.pick-btn-label').textContent = '状态：' + (v === '' ? '全部' : v);
+        });
+        return;
+      }
+      var srb = e.target.closest('.ex-source');
+      if (srb) {
+        pickPop(srb, [{ v: '', label: '全部' }, { v: 'online', label: '线上下单' }, { v: 'admin', label: '后台手动创建' }], srb.getAttribute('data-v'), function (v) {
+          srb.setAttribute('data-v', v);
+          srb.querySelector('.pick-btn-label').textContent = '来源：' + (v === '' ? '全部' : SOURCE_LABEL[v]);
+        });
+        return;
+      }
+      if (e.target.classList.contains('ex-go')) {
+        var sel = { mode: mode, from: (mask.querySelector('.ex-from').value || '').trim(), to: (mask.querySelector('.ex-to').value || '').trim(), status: mask.querySelector('.ex-status').getAttribute('data-v') || '', source: mask.querySelector('.ex-source').getAttribute('data-v') || '' };
+        if (mode === 'selected' && !Object.keys(SM.osel).some(function (k) { return SM.osel[k]; })) { toast('先在订单列表里勾选要导出的订单'); return; }
+        mask.remove();
+        exportOrdersCSV(sel);
+      }
+    });
+  }
+
+  // ── 政策内容后台编辑（存 site_settings，policy_<key>_<lang>）──
+  var POLICY_KEYS = [['faq', '常见问题 FAQ', '/faq/'], ['return', '退货与退款政策', '/return-policy/'], ['shipping', '配送政策', '/shipping-policy/'], ['privacy', '隐私政策', '/privacy-policy/'], ['terms', '服务条款', '/terms-of-service/']];
+  function policyEditorHtml() {
+    return '<div class="card" id="sm-policy-editor" style="margin-top:14px;">' +
+      '<h3 style="margin:0 0 8px;font-size:17px;">政策页面内容（中 / 英）</h3>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">' +
+        '<button type="button" class="sel-btn po-page" data-v=""><span class="pick-btn-label">选择页面</span></button>' +
+        '<a class="btn-mini po-preview" href="/faq/" target="_blank" style="text-decoration:none;display:none;">预览</a>' +
+      '</div>' +
+      '<textarea class="po-zh" placeholder="简体中文内容（留空 = 使用内置默认；支持 <p> <ul> <li> <a> <strong> <br>）" style="width:100%;min-height:140px;box-sizing:border-box;"></textarea>' +
+      '<textarea class="po-en" placeholder="English content (leave empty = built-in default)" style="width:100%;min-height:140px;box-sizing:border-box;margin-top:8px;"></textarea>' +
+      '<div style="display:flex;gap:8px;margin-top:8px;align-items:center;">' +
+        '<button type="button" class="btn-mini po-save" style="background:#ffd9e6;color:#fff;">保存并发布</button>' +
+        '<button type="button" class="btn-mini po-reset">恢复内置默认</button>' +
+        '<span class="hint">保存后前台立即生效；「联系我们」页面就是留言板，不需要在这里编辑</span>' +
+      '</div></div>';
+  }
+  var PO_STATE = { key: '' };
+  function poLoad() {
+    if (!PO_STATE.key) return;
+    restGet('site_settings?select=key,value&key=in.(policy_' + PO_STATE.key + '_zh,policy_' + PO_STATE.key + '_en)')
+      .then(function (rows) {
+        var zh = '', en = '';
+        arr(rows).forEach(function (r) { if (r.key === 'policy_' + PO_STATE.key + '_zh') zh = r.value || ''; if (r.key === 'policy_' + PO_STATE.key + '_en') en = r.value || ''; });
+        var box = document.getElementById('sm-policy-editor');
+        if (!box) return;
+        box.querySelector('.po-zh').value = zh;
+        box.querySelector('.po-en').value = en;
+        box.querySelector('.po-zh').placeholder = zh ? '' : '简体中文内容（留空 = 使用内置默认；支持 <p> <ul> <li> <a> <strong> <br>）';
+      });
+  }
+  function bindPolicyEditor() {
+    var box = document.getElementById('sm-policy-editor');
+    if (!box) return;
+    box.querySelector('.po-page').addEventListener('click', function () {
+      pickPop(this, POLICY_KEYS.map(function (k) { return { v: k[0], label: k[1] }; }), PO_STATE.key, function (v) {
+        PO_STATE.key = v;
+        var meta = POLICY_KEYS.filter(function (k) { return k[0] === v; })[0] || ['', '', '#'];
+        box.querySelector('.po-page .pick-btn-label').textContent = meta[1];
+        var prev = box.querySelector('.po-preview');
+        prev.href = meta[2]; prev.style.display = '';
+        poLoad();
+      });
+    });
+    box.querySelector('.po-save').addEventListener('click', function () {
+      if (!PO_STATE.key) { toast('先选一个页面'); return; }
+      var zh = box.querySelector('.po-zh').value;
+      var en = box.querySelector('.po-en').value;
+      var payload = [
+        { key: 'policy_' + PO_STATE.key + '_zh', value: zh },
+        { key: 'policy_' + PO_STATE.key + '_en', value: en }
+      ];
+      api('site_settings', { method: 'POST', headers: { 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify(payload) }).then(function (r) {
+        toast(r.ok ? '已保存并发布（前台刷新即生效）' : '保存失败：数据库拒绝');
+      });
+    });
+    box.querySelector('.po-reset').addEventListener('click', function () {
+      if (!PO_STATE.key) { toast('先选一个页面'); return; }
+      api('site_settings?key=in.(policy_' + PO_STATE.key + '_zh,policy_' + PO_STATE.key + '_en)', { method: 'DELETE' }).then(function (r) {
+        toast(r.ok ? '已恢复内置默认内容' : '操作失败');
+        if (r.ok) { box.querySelector('.po-zh').value = ''; box.querySelector('.po-en').value = ''; }
+      });
+    });
+  }
+
+  // ── 绑定入口 ──
+  document.getElementById('sm-o-new').addEventListener('click', openManualOrder);
+  document.getElementById('sm-o-export').addEventListener('click', openExport);
+  // 设置页追加政策编辑器
+  var secSettings = document.getElementById('sm-sec-settings');
+  if (secSettings) {
+    secSettings.insertAdjacentHTML('beforeend', policyEditorHtml());
+    bindPolicyEditor();
   }
 
   /* ── 暴露给测试：注入假数组后直接调渲染函数 ── */
