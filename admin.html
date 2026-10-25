@@ -151,7 +151,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   @media (min-width: 900px) {
     #admin-body { display: flex; align-items: flex-start; gap: 22px; }
     #pp-wrap {
-      position: sticky; top: 18px; width: 190px; flex-shrink: 0;
+      /* 顶栏是 fixed 60px 高（z-index 200），sticky 顶偏移必须让出顶栏，否则菜单会钻到顶栏底下被盖住（她 2026-10-25） */
+      position: sticky; top: 78px; width: 190px; flex-shrink: 0;
       margin-bottom: 0; align-self: flex-start;
     }
     #pp-btn { display: none; }
@@ -159,7 +160,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     #pp-menu {
       position: static; display: block;
       box-shadow: none; border: 1px solid var(--card-hover);
-      width: 100%; max-height: calc(100vh - 36px); overflow-y: auto;
+      width: 100%; max-height: calc(100vh - 60px - 36px); overflow-y: auto;
     }
   }
 
@@ -5655,7 +5656,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261025g"></script>
+<script src="js/admin-shop.js?v=20261025h"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
