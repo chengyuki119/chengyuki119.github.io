@@ -304,6 +304,7 @@
         '</div>' +
         '<div class="sm-line"><span class="lbl">收货</span>' + addrHtml(o.address) + '</div>' +
         (o.note ? '<div class="sm-line"><span class="lbl">买家留言</span>' + esc(o.note) + '</div>' : '') +
+        (o.coupon_code ? '<div class="sm-line"><span class="lbl">优惠码</span>' + esc(o.coupon_code) + (num(o.discount) > 0 ? '（已减 $' + fmtMoney(o.discount) + '）' : '') + '</div>' : '') +
         '<div class="sm-line"><span class="lbl">付款</span>' +
         (o.pay_channel ? esc(o.pay_channel) + ' · ' : '') + (o.pay_amount != null && o.pay_amount !== '' ? '$' + fmtMoney(o.pay_amount) + ' · ' : '') +
         (o.pay_time ? esc(o.pay_time) + ' · ' : '') + (o.pay_note ? esc(o.pay_note) : '') +
@@ -343,6 +344,7 @@
       '<span class="sm-o-no">' + esc(o.order_no || '') + '</span>' +
       '<span class="sold-badge" style="background:' + st[1] + ';">' + esc(st[0]) + '</span>' +
       '<span class="sm-o-mail">' + esc(o.email || '') + '</span>' +
+      ((o.note || o.coupon_code) ? '<span class="sm-o-cnt" title="' + escAttr((o.note ? '备注：' + o.note : '') + (o.coupon_code ? (o.note ? '；' : '') + '优惠码：' + o.coupon_code : '')) + '">' + (o.note ? '📝' : '') + (o.coupon_code ? '🎟' : '') + '</span>' : '') +
       '<span class="sm-o-cnt">' + arr(o.items).length + ' 件</span>' +
       '<span class="sm-o-total">$' + fmtMoney(o.total) + '</span>' +
       '<span class="sm-o-time">' + fmtTime(o.created_at) + '</span>' +

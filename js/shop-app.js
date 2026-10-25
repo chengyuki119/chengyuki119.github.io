@@ -85,7 +85,18 @@
 
   // ===== 购物车（本地 + 登录后云同步合并）=====
   var CART = [];
-  function loadCart() { try { CART = JSON.parse(localStorage.getItem('yuki-cart') || '[]'); } catch (e) { CART = []; } if (!Array.isArray(CART)) CART = []; }
+  var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  function loadCart() {
+    try { CART = JSON.parse(localStorage.getItem('yuki-cart') || '[]'); } catch (e) { CART = []; }
+    if (!Array.isArray(CART)) CART = [];
+    // 旧版购物车里可能有非 uuid 的残留数据（会报 invalid input syntax for type uuid），
+    // 载入时直接滤掉（她 2026-10-25 提交不了订单就是它）
+    var bad = CART.filter(function (x) { return !x || !UUID_RE.test(String(x.id || '')); });
+    if (bad.length) {
+      CART = CART.filter(function (x) { return x && UUID_RE.test(String(x.id || '')); });
+      saveCart();
+    }
+  }
   function saveCart() {
     try { localStorage.setItem('yuki-cart', JSON.stringify(CART)); } catch (e) {}
     paintCartBadge();
@@ -427,6 +438,9 @@
   }
   function placeOrder(items, addr, note, coupon, groupId) {
     var btn = document.getElementById('ck-submit');
+    // 双保险：非 uuid 的残留商品直接滤掉，不让它到数据库里炸
+    items = (items || []).filter(function (x) { return UUID_RE.test(String(x.id || '')); });
+    if (!items.length) { toast(t('购物车里的商品已失效，请重新加入', 'Cart items expired — add them again')); return; }
     if (btn) { btn.disabled = true; btn.textContent = t('提交中…', 'Submitting…'); }
     getUid().then(function (uid) {
       return rpc('shop_place_order', {
@@ -449,6 +463,27 @@
       openOrders(res.data.order_id);
     });
   }
+  // 运费估算（Pirate Ship 口径：USPS Ground Advantage 商业费率近似）
+  // 按 收货地 ZIP 首位 → 区位（发货地 926xx 加州），包裹重量查费率表；发货前以 Pirate Ship 实际价为准
+  function shipBase(zip, oz) {
+    var z = String(zip || '').replace(/\D/g, '');
+    if (!z) return 0; // 没地址时不估，让服务端用默认值
+    var zoneIdx = { '9': 0, '8': 1, '7': 2, '6': 3, '5': 4, '4': 5, '3': 6, '2': 7 };
+    var zi = zoneIdx[z[0]]; if (zi == null) zi = 7;
+    oz = Math.max(1, parseFloat(oz) || 0); if (oz > 70 * 16) oz = 70 * 16;
+    var T4 = [4.15, 4.35, 4.60, 4.85, 5.15, 5.45, 5.75, 6.15];
+    var T8 = [4.60, 4.90, 5.25, 5.60, 6.00, 6.45, 6.90, 7.45];
+    var T12 = [5.00, 5.40, 5.90, 6.45, 7.00, 7.60, 8.15, 8.85];
+    var T16 = [5.40, 5.95, 6.55, 7.25, 8.05, 8.80, 9.50, 10.30];
+    var ADD = [0.55, 0.70, 0.90, 1.10, 1.35, 1.55, 1.80, 2.05];
+    var base;
+    if (oz <= 4) base = T4[zi];
+    else if (oz <= 8) base = T8[zi];
+    else if (oz <= 12) base = T12[zi];
+    else if (oz <= 16) base = T16[zi];
+    else base = T16[zi] + Math.ceil((oz - 16) / 16) * ADD[zi];
+    return Math.round(base * 100) / 100;
+  }
   function renderCheckout() {
     if (!USER) { pendingAfterLogin = 'checkout'; renderAccount(); toast(t('先登录再结算哦', 'Log in to check out')); return; }
     var sel = CART.filter(function (x) { return x.checked !== false; });
@@ -466,7 +501,19 @@
     var sub = 0; sel.forEach(function (x) { sub += x.price * x.qty; });
     Promise.all([loadAddr(), fetch(SUPABASE_URL + '/rest/v1/site_settings?select=value&key=eq.shop_ship', { headers: { 'apikey': ANON } }).then(function (r) { return r.json(); })]).then(function (res) {
       var ship = {}; try { ship = JSON.parse((res[1] && res[1][0] && res[1][0].value) || '{}'); } catch (e) {}
-      var est = parseFloat(ship.flat_est) || 0, fee = parseFloat(ship.service_fee) || 2;
+      var fee = parseFloat(ship.service_fee); if (isNaN(fee)) fee = 2;
+      // 估算运费：按包裹重量 + 收货地（与 shop_place_order 服务端同一套算法）
+      var woz = 0; sel.forEach(function (x) {
+        var p = PRODUCTS.filter(function (p2) { return String(p2.id) === String(x.id); })[0];
+        woz += (parseFloat(p && p.weight_oz) || 0) * x.qty;
+      });
+      function ckZip() { var a = ADDR.filter(function (x) { return String(x.id) === String(ckAddrId); })[0]; return a ? (a.zip || '') : ''; }
+      var est = shipBase(ckZip(), woz);
+      function updateShip() {
+        est = shipBase(ckZip(), woz);
+        var l = document.getElementById('ck-ship-line'); if (l) l.textContent = sym(cur) + money(est + fee);
+        var tt = document.getElementById('ck-total'); if (tt) tt.textContent = sym(cur) + money(sub + est + fee);
+      }
       var joinGid = sessionStorage.getItem('yuki-join-group') || '';
       box.innerHTML =
         '<h2 style="font-size:22px;margin-bottom:14px;">' + t('确认订单', 'Checkout') + '</h2>' +
@@ -479,20 +526,21 @@
           '<div id="ck-addr-form" style="display:none;margin-top:10px;"></div>' +
         '</div>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('运费', 'Shipping') + '</b>' +
-          '<p style="font-size:15px;color:var(--muted);margin-top:4px;">' + t('按 Pirate Ship 实际运费收取：结算显示估算，发货前按实际运费确认，另加服务费。', 'Shipping = actual Pirate Ship cost (estimated below, confirmed before shipment) + service fee.') + '</p>' +
-          '<div style="display:flex;justify-content:space-between;font-size:16px;margin-top:8px;"><span>' + t('运费（估算）', 'Shipping (est.)') + '</span><span>' + sym(cur) + money(est) + '</span></div>' +
-          '<div style="display:flex;justify-content:space-between;font-size:16px;"><span>' + t('服务费', 'Service fee') + '</span><span>' + sym(cur) + money(fee) + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:8px;"><span>' + t('运费（含打包服务费）', 'Shipping (incl. handling)') + '</span><b id="ck-ship-line">' + sym(cur) + money(est + fee) + '</b></div>' +
+          '<p style="font-size:14px;color:var(--muted);margin-top:4px;">' + t('按重量和收货地估算，发货前以 Pirate Ship 实际运费为准，多退少补。', 'Estimated by weight & destination; final Pirate Ship rate confirmed before shipping.') + '</p>' +
         '</div>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('优惠码', 'Coupon') + '</b>' +
           '<div style="display:flex;gap:8px;margin-top:8px;"><input id="ck-coupon" placeholder="' + t('有优惠码就填这里', 'Coupon code') + '" style="flex:1;padding:10px 14px;font-size:17px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;"></div>' +
           '<label style="display:block;margin-top:10px;font-size:16px;">' + t('订单备注', 'Order note') + '<textarea id="ck-note" style="width:100%;min-height:60px;border:none;border-radius:12px;background:#fff;padding:10px 14px;font-family:inherit;font-size:17px;color:var(--text);resize:none;outline:none;margin-top:4px;"></textarea></label>' +
         '</div>' +
-        '<div class="card" style="padding:18px;"><div style="display:flex;justify-content:space-between;font-size:19px;"><b>' + t('预估合计', 'Estimated total') + '</b><b style="color:var(--text,#5d6780);">' + sym(cur) + money(sub + est + fee) + '</b></div>' +
+        '<div class="card" style="padding:18px;"><div style="display:flex;justify-content:space-between;font-size:19px;"><b>' + t('预估合计', 'Estimated total') + '</b><b id="ck-total" style="color:var(--text,#5d6780);">' + sym(cur) + money(sub + est + fee) + '</b></div>' +
           '<p style="font-size:14px;color:var(--muted);margin-top:4px;">' + t('以服务端验证后的金额为准；实际运费由后台确认后更新。', 'Final amount is validated server-side; shipping updates once confirmed.') + '</p>' +
           '<button class="buy-btn" id="ck-submit" style="width:100%;margin-top:12px;padding:12px;background:#ffd9e6;color:#fff;font-size:18px;">' + t('提交订单', 'Place order') + '</button>' +
         '</div>';
       paintAddrPicker();
-      document.getElementById('ck-new-addr').addEventListener('click', function () { addrForm('ck-addr-form', null, function () { loadAddr().then(paintAddrPicker); }); });
+      window.__ckUpdateShip = updateShip;
+      updateShip();
+      document.getElementById('ck-new-addr').addEventListener('click', function () { addrForm('ck-addr-form', null, function () { loadAddr().then(function () { paintAddrPicker(); updateShip(); }); }); });
       document.getElementById('ck-submit').addEventListener('click', function () {
         var a = ADDR.filter(function (x) { return String(x.id) === String(ckAddrId); })[0];
         if (!a) { toast(t('选一个收货地址呀', 'Pick a shipping address')); return; }
@@ -511,20 +559,16 @@
       var def = ADDR.filter(function (x) { return x.is_default; })[0] || ADDR[0];
       ckAddrId = def.id;
     }
-    var g = azGroups(ADDR, function (a) { return a.name || ''; });
-    var html = '';
-    g.order.forEach(function (L) {
-      html += '<div class="az-group" id="az-g-' + L + '"><div class="az-head">' + (L === '#' ? '其他' : L) + '</div>' +
-        g.map[L].map(function (a) {
-          return '<label style="display:flex;gap:8px;align-items:flex-start;padding:10px;border-radius:12px;background:' + (a.id === ckAddrId ? 'var(--card-hover)' : '#fff') + ';margin-bottom:6px;cursor:pointer;" data-aid="' + escAttr(a.id) + '">' +
-            '<span class="addr-dot" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--muted,#9aa5bd);margin-top:4px;flex-shrink:0;background:' + (a.id === ckAddrId ? '#ffd9e6' : 'transparent') + ';"></span>' +
-            '<span style="font-size:16px;">' + esc(a.name) + ' · ' + esc(a.phone) + '<br><span style="color:var(--muted);">' + esc(a.street + ', ' + a.city + ', ' + a.state + ' ' + a.zip + ', ' + a.country) + '</span></span></label>';
-        }).join('') + '</div>';
-    });
-    box.innerHTML = '<div class="az-box" style="padding-right:20px;">' + html + azNavHtml(g.map) + '</div>';
-    bindAzNav(box);
+    // 按收件人名字排（不用 A-Z 字母导航，她 2026-10-25 要求删掉）
+    var list = ADDR.slice().sort(function (a, b) { return String(a.name || '').localeCompare(String(b.name || ''), 'zh-u-co-pinyin'); });
+    var html = '<div>' + list.map(function (a) {
+      return '<label style="display:flex;gap:8px;align-items:flex-start;padding:10px;border-radius:12px;background:' + (a.id === ckAddrId ? 'var(--card-hover)' : '#fff') + ';margin-bottom:6px;cursor:pointer;" data-aid="' + escAttr(a.id) + '">' +
+        '<span class="addr-dot" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--muted,#9aa5bd);margin-top:4px;flex-shrink:0;background:' + (a.id === ckAddrId ? '#ffd9e6' : 'transparent') + ';"></span>' +
+        '<span style="font-size:16px;">' + esc(a.name) + ' · ' + esc(a.phone) + '<br><span style="color:var(--muted);">' + esc(a.street + ', ' + a.city + ', ' + a.state + ' ' + a.zip + ', ' + a.country) + '</span></span></label>';
+    }).join('') + '</div>';
+    box.innerHTML = html;
     box.querySelectorAll('[data-aid]').forEach(function (lab) {
-      lab.addEventListener('click', function () { ckAddrId = lab.getAttribute('data-aid'); paintAddrPicker(); });
+      lab.addEventListener('click', function () { ckAddrId = lab.getAttribute('data-aid'); paintAddrPicker(); if (window.__ckUpdateShip) window.__ckUpdateShip(); });
     });
   }
   function addrForm(containerId, existing, done) {
@@ -646,6 +690,7 @@
         (o.note ? t('订单备注', 'Note') + '：' + esc(o.note) : '') +
         (o.note && o.coupon ? '　·　' : '') +
         (o.coupon ? t('优惠码', 'Coupon') + '：' + esc(o.coupon) : '') + '</div>' : '') +
+      (o.discount ? '<div style="font-size:15px;color:#9ecfae;margin-top:4px;">' + t('优惠码已减', 'Coupon saved') + ' ' + sym(o.currency) + money(o.discount) + '</div>' : '') +
       (o.carrier ? '<p style="font-size:15px;margin-top:6px;">' + t('物流', 'Shipping') + '：' + esc(o.carrier) + ' <a href="' + escAttr(trackUrlOf(o.carrier, o.tracking)) + '" target="_blank" style="color:var(--text,#5d6780);">' + esc(o.tracking) + ' ↗</a>' +
         (o.shipped_at ? ' · ' + new Date(o.shipped_at).toLocaleDateString() : '') + '</p>' : '') +
       '<div style="font-size:15px;color:var(--muted);margin-top:6px;">' + t('明细', 'Breakdown') + '：' + sym(o.currency) + money(o.subtotal) + (o.discount > 0 ? ' − 优惠 ' + sym(o.currency) + money(o.discount) : '') + ' + 运费 ' + sym(o.currency) + money(o.shipping_actual != null ? o.shipping_actual : o.shipping_est) + ' + 服务费 ' + sym(o.currency) + money(o.service_fee) + '</div>' +
@@ -944,72 +989,20 @@
       });
     });
   }
-  // ── A–Z 字母索引（地址/联系人列表：拼音分组 + 右侧导航）──
-  var AZ_COLL = (function () { try { return new Intl.Collator('zh-u-co-pinyin'); } catch (e) { return null; } })();
-  // ICU 的 zh 拼音排序中全部汉字排在拉丁字母之前，首字母需用汉字代表字做分界
-  var AZ_BD = [['A','阿'],['B','八'],['C','擦'],['D','搭'],['E','蛾'],['F','发'],['G','噶'],['H','哈'],['J','鸡'],['K','喀'],['L','垃'],['M','妈'],['N','拿'],['O','哦'],['P','啪'],['Q','七'],['R','然'],['S','撒'],['T','塌'],['W','挖'],['X','西'],['Y','压'],['Z','匝']];
-  function azInitial(name) {
-    var s = String(name || '').trim();
-    if (!s) return '#';
-    if (/[a-zA-Z]/.test(s[0])) return s[0].toUpperCase();
-    if (!AZ_COLL) return '#';
-    if (AZ_COLL.compare(s, AZ_BD[0][1]) < 0) return '#';
-    for (var i = 0; i < AZ_BD.length; i++) {
-      if (AZ_COLL.compare(s, AZ_BD[i][1]) >= 0 && (i + 1 >= AZ_BD.length || AZ_COLL.compare(s, AZ_BD[i + 1][1]) < 0)) return AZ_BD[i][0];
-    }
-    return '#';
-  }
-  function azGroups(items, nameFn) {
-    var sorted = items.slice().sort(function (a, b) {
-      var ia = azInitial(nameFn(a)), ib = azInitial(nameFn(b));
-      if (ia !== ib) return ia === '#' ? 1 : ib === '#' ? -1 : ia.localeCompare(ib);
-      var an = String(nameFn(a) || ''), bn = String(nameFn(b) || '');
-      return (AZ_COLL ? AZ_COLL.compare(an, bn) : an.localeCompare(bn)) || an.localeCompare(bn);
-    });
-    var map = {}, order = [];
-    sorted.forEach(function (it) {
-      var L = azInitial(nameFn(it));
-      if (!map[L]) { map[L] = []; order.push(L); }
-      map[L].push(it);
-    });
-    order.sort(function (a, b) { if (a === '#') return -1; if (b === '#') return 1; return a.localeCompare(b); });
-    return { map: map, order: order };
-  }
-  function azNavHtml(map) {
-    var out = '<div class="az-nav" aria-hidden="true">';
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(function (L) {
-      out += '<span class="az-letter' + (map[L] ? ' az-has' : ' az-off') + '" data-l="' + L + '">' + L + '</span>';
-    });
-    return out + '</div>';
-  }
-  function bindAzNav(root) {
-    root.querySelectorAll('.az-letter.az-has').forEach(function (sp) {
-      sp.addEventListener('click', function () {
-        root.querySelectorAll('.az-cur').forEach(function (x) { x.classList.remove('az-cur'); });
-        sp.classList.add('az-cur');
-        var g = root.querySelector('#az-g-' + sp.getAttribute('data-l'));
-        if (g) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
-  }
   function paintMyAddr() {
     var box = document.getElementById('pf-addr');
     if (!ADDR.length) { box.innerHTML = '<p style="color:var(--muted);font-size:15px;">' + t('还没有地址', 'No addresses yet') + '</p>'; return; }
-    var g = azGroups(ADDR, function (a) { return a.name || ''; });
-    var html = '';
-    g.order.forEach(function (L) {
-      html += '<div class="az-group" id="az-g-' + L + '"><div class="az-head">' + (L === '#' ? '其他' : L) + '</div>' +
-        g.map[L].map(function (a) {
-          return '<div style="display:flex;gap:8px;align-items:center;padding:10px;border-radius:12px;background:#fff;margin-bottom:6px;">' +
-            '<div style="flex:1;font-size:15px;min-width:0;">' + esc(a.name) + ' · ' + esc(a.phone) + (a.is_default ? ' <span style="color:var(--text,#5d6780);font-size:13px;">' + t('默认', 'Default') + '</span>' : '') + '<br><span style="color:var(--muted);">' + esc(a.street + ', ' + a.city + ', ' + a.state + ' ' + a.zip + ', ' + a.country) + '</span></div>' +
-            '<button class="buy-btn ad-def" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;">' + t('设默认', 'Default') + '</button>' +
-            '<button class="buy-btn ad-edit" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;">' + t('编辑', 'Edit') + '</button>' +
-            '<button class="buy-btn ad-del" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;background:#fff;color:#d96570;">' + t('删除', 'Del') + '</button>' +
-          '</div>';
-        }).join('') + '</div>';
-    });
-    box.innerHTML = '<div class="az-box" style="padding-right:20px;">' + html + azNavHtml(g.map) + '</div>';
-    bindAzNav(box);
+    // 按收件人名字排（不用 A-Z 字母导航，她 2026-10-25 要求删掉）
+    var list = ADDR.slice().sort(function (a, b) { return String(a.name || '').localeCompare(String(b.name || ''), 'zh-u-co-pinyin'); });
+    var html = '<div>' + list.map(function (a) {
+      return '<div style="display:flex;gap:8px;align-items:center;padding:10px;border-radius:12px;background:#fff;margin-bottom:6px;">' +
+        '<div style="flex:1;font-size:15px;min-width:0;">' + esc(a.name) + ' · ' + esc(a.phone) + (a.is_default ? ' <span style="color:var(--text,#5d6780);font-size:13px;">' + t('默认', 'Default') + '</span>' : '') + '<br><span style="color:var(--muted);">' + esc(a.street + ', ' + a.city + ', ' + a.state + ' ' + a.zip + ', ' + a.country) + '</span></div>' +
+        '<button class="buy-btn ad-def" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;">' + t('设默认', 'Default') + '</button>' +
+        '<button class="buy-btn ad-edit" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;">' + t('编辑', 'Edit') + '</button>' +
+        '<button class="buy-btn ad-del" data-id="' + escAttr(a.id) + '" style="padding:5px 10px;font-size:14px;background:#fff;color:#d96570;">' + t('删除', 'Del') + '</button>' +
+      '</div>';
+    }).join('') + '</div>';
+    box.innerHTML = html;
     box.querySelectorAll('.ad-def').forEach(function (b) { b.addEventListener('click', function () {
       var id = b.getAttribute('data-id');
       api('shop_addresses?user_id=eq.' + UID, { method: 'PATCH', body: JSON.stringify({ is_default: false }) }).then(function () {
