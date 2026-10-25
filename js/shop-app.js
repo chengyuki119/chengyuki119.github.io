@@ -651,6 +651,7 @@
       '<div style="font-size:15px;color:var(--muted);margin-top:6px;">' + t('明细', 'Breakdown') + '：' + sym(o.currency) + money(o.subtotal) + (o.discount > 0 ? ' − 优惠 ' + sym(o.currency) + money(o.discount) : '') + ' + 运费 ' + sym(o.currency) + money(o.shipping_actual != null ? o.shipping_actual : o.shipping_est) + ' + 服务费 ' + sym(o.currency) + money(o.service_fee) + '</div>' +
       '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">';
     if (o.status === 'pending' || o.status === 'rejected') {
+      html += '<button class="buy-btn oc-stripe" style="padding:8px 18px;background:#ffd9e6;color:#fff;">' + t('在线支付（Stripe 测试）', 'Pay online (Stripe test)') + '</button>';
       html += '<button class="buy-btn oc-pay" style="padding:8px 18px;background:#ffd9e6;color:#fff;">' + t('上传付款截图', 'Upload payment proof') + '</button>';
     }
     if (o.status === 'reviewing') html += '<span class="no-buy">' + t('凭证已提交，等柚子确认～', 'Proof submitted — awaiting confirmation~') + '</span>';
@@ -663,6 +664,23 @@
     body.innerHTML = html;
     var payBtn = body.querySelector('.oc-pay');
     if (payBtn) payBtn.addEventListener('click', function () { renderPayUpload(o, body.querySelector('.oc-pay-box')); });
+    var stripeBtn = body.querySelector('.oc-stripe');
+    if (stripeBtn) stripeBtn.addEventListener('click', function () {
+      if (!USER || !USER.a) { toast(t('先登录再支付哦', 'Log in first')); return; }
+      stripeBtn.disabled = true; stripeBtn.textContent = t('正在创建支付…', 'Creating payment…');
+      fetch(SUPABASE_URL + '/functions/v1/stripe-checkout', {
+        method: 'POST',
+        headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + USER.a, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: o.id, origin: location.origin })
+      }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+        if (x.ok && x.j && x.j.url) { location.href = x.j.url; return; } // 跳 Stripe 收银台
+        stripeBtn.disabled = false; stripeBtn.textContent = t('在线支付（Stripe 测试）', 'Pay online (Stripe test)');
+        toast((x.j && (x.j.error || x.j.message)) || t('在线支付暂时不可用', 'Online payment unavailable'));
+      }).catch(function () {
+        stripeBtn.disabled = false; stripeBtn.textContent = t('在线支付（Stripe 测试）', 'Pay online (Stripe test)');
+        toast(t('网络异常，再试一次', 'Network error, try again'));
+      });
+    });
     var cancelBtn = body.querySelector('.oc-cancel');
     if (cancelBtn) cancelBtn.addEventListener('click', function () {
       if (!confirmZh(t('确定取消这个订单吗？', 'Cancel this order?'))) return;
@@ -1322,6 +1340,13 @@
     loadCart(); paintCartBadge(); bindTopbar(); loadFavs();
     var qs = new URLSearchParams(location.search);
     var id = qs.get('id'), gid = qs.get('gid'), sec = qs.get('sec') || window.__ACCOUNT_DEFAULT_SEC || '';
+    if (qs.get('paid') === '1') { // Stripe 支付成功回跳（真实状态以 webhook 为准）
+      toast(t('支付已完成！等柚子确认后发货～', 'Payment completed! Awaiting confirmation~'));
+      history.replaceState(null, '', location.pathname + '?sec=orders');
+    } else if (qs.get('canceled') === '1') {
+      toast(t('已取消支付，订单还在待付款', 'Payment cancelled — order still pending'));
+      history.replaceState(null, '', location.pathname + '?sec=orders');
+    }
     if (id) return openDetail(id, qs.get('sku'));
     if (gid) return openGroupDetail(gid);
     if (sec === 'cart') return renderCart();
