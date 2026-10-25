@@ -1355,6 +1355,7 @@
   function paintAccountMenu() { // 登录门：未登录整个侧栏不出现，页面只有登录/注册；登录后才出现侧栏面板
     var menu = document.getElementById('acc-menu');
     if (!menu) return;
+    menu.style.display = accLoggedIn() ? '' : 'none'; // 未登录：侧栏不出现也不占位，登录卡铺满整页
     var inn = '';
     if (accLoggedIn()) {
       inn = '<div class="acc-group"><div class="acc-group-title">' + t('账户', 'Account') + '</div>' +
