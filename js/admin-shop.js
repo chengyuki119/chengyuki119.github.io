@@ -39,6 +39,22 @@
     '#tab-shopmgr .sm-line .lbl { color:var(--muted); font-size:15px; margin-right:6px; }',
     '#tab-shopmgr .sm-pay-img { max-width:220px; max-height:220px; border-radius:10px; border:1px solid var(--card-hover); display:block; background:var(--card); }',
     '#tab-shopmgr .sm-act { display:flex; gap:8px; flex-wrap:wrap; align-items:center; background:var(--card); border-radius:12px; padding:10px; }',
+    '#tab-shopmgr .sm-act-v { display:block; }',
+    '#tab-shopmgr .sm-act-v .sm-vrow { margin-bottom:12px; }',
+    '#tab-shopmgr .sm-act-v .sm-vrow:last-child { margin-bottom:0; }',
+    '#tab-shopmgr .sm-vlabel { display:block; font-size:13px; color:var(--muted,#9aa5bd); margin-bottom:5px; }',
+    '#tab-shopmgr .sm-act-v input { width:100%; box-sizing:border-box; margin-top:0; }',
+    '#tab-shopmgr .sm-vfee-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#fff; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:12px; padding:12px; }',
+    '#tab-shopmgr .sm-vfee-row input { flex:1; min-width:140px; margin:0; }',
+    '#tab-shopmgr .sm-vfee-row .sm-total-prev { font-size:15px; color:var(--muted); flex-shrink:0; }',
+    '#tab-shopmgr .mo-item { background:#fff; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:14px; padding:14px; margin-bottom:12px; }',
+    '#tab-shopmgr .mo-flabel { display:block; font-size:13px; color:var(--muted,#9aa5bd); margin-bottom:5px; }',
+    '#tab-shopmgr .mo-item input { width:100%; box-sizing:border-box; padding:10px 12px; font-size:15px; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:10px; background:#fff; color:var(--text); font-family:inherit; outline:none; }',
+    '#tab-shopmgr .mo-sum-box { background:var(--card,#fdf2f6); border-radius:14px; padding:14px 16px; margin-bottom:12px; }',
+    '#tab-shopmgr .mo-sum-row { display:flex; justify-content:space-between; font-size:16px; color:var(--text); padding:4px 0; }',
+    '#tab-shopmgr .mo-sum-row .mo-sl { color:var(--muted); }',
+    '#tab-shopmgr .mo-sum-total { display:flex; justify-content:space-between; align-items:center; border-top:1.5px dashed var(--accent-soft,#ffc8d6); margin-top:8px; padding-top:10px; }',
+    '#tab-shopmgr .mo-sum-total b { font-size:22px; font-weight:800; color:#ff6fa5; }',
     '#tab-shopmgr .sm-act .lbl { font-size:15px; color:var(--muted); flex-shrink:0; }',
     '#tab-shopmgr .sm-act input, #tab-shopmgr .sm-act textarea { flex:1; min-width:120px; width:auto; }',
     '#tab-shopmgr .sm-act .sm-reject-reason { min-width:190px; }',
@@ -319,18 +335,24 @@
         '<button type="button" class="btn-del sm-act-reject">拒绝凭证</button>' +
         '<input class="sm-reject-reason" placeholder="拒绝原因（拒绝凭证必填）">' +
         '</div>' +
-        '<div class="sm-act"><span class="lbl">实际运费</span>' +
-        '<input class="sm-ship-actual" type="number" step="0.01" min="0" placeholder="Pirate Ship 实际运费" value="' + escAttr(o.shipping_actual == null ? '' : o.shipping_actual) + '">' +
-        '<span class="sm-total-prev">应付 $' + fmtMoney(ship) + '</span>' +
-        '<button type="button" class="btn-mini sm-act-fee">保存运费</button>' +
-        '</div>' +
-        '<div class="sm-act"><span class="lbl">快递</span>' +
-        '<button type="button" class="sel-btn sm-carrier" data-v="' + escAttr(o.carrier || 'UPS') + '"><span class="pick-btn-label">' + esc(o.carrier || 'UPS') + '</span></button>' +
-        '<input class="sm-tracking" placeholder="快递单号" value="' + escAttr(o.tracking || '') + '">' +
-        '<input class="sm-track-url" placeholder="查件链接（可留空）" value="' + escAttr(o.track_url || '') + '">' +
-        '<input class="sm-ship-date" placeholder="发货日期（点选）" value="' + (o.shipped_at ? escAttr(String(o.shipped_at).slice(0, 10).replace(/-/g, '/')) : '') + '">' +
-        '<input class="sm-ship-note" placeholder="发货备注（可留空）" value="' + escAttr(o.ship_note || '') + '">' +
-        '<button type="button" class="btn-save sm-act-ship">确认发货</button>' +
+        '<div class="sm-act sm-act-v"><span class="sm-vlabel">实际运费（Pirate Ship 实际金额，保存后买家应付同步更新）</span>' +
+        '<div class="sm-vfee-row">' +
+        '<input class="sm-ship-actual" type="number" step="0.01" min="0" placeholder="如 6.15" value="' + escAttr(o.shipping_actual == null ? '' : o.shipping_actual) + '">' +
+        '<span class="sm-total-prev">当前应付 $' + fmtMoney(ship) + '</span>' +
+        '<button type="button" class="btn-save sm-act-fee" style="padding:9px 24px;font-size:16px;">保存运费</button>' +
+        '</div></div>' +
+        '<div class="sm-act sm-act-v"><span class="sm-vlabel">发货物流（一行一项，填完点确认发货）</span>' +
+        '<div class="sm-vrow"><span class="sm-vlabel">快递公司</span>' +
+        '<button type="button" class="sel-btn sm-carrier" data-v="' + escAttr(o.carrier || 'UPS') + '"><span class="pick-btn-label">' + esc(o.carrier || 'UPS') + '</span></button></div>' +
+        '<div class="sm-vrow"><span class="sm-vlabel">快递单号 *</span>' +
+        '<input class="sm-tracking" placeholder="填运单号" value="' + escAttr(o.tracking || '') + '"></div>' +
+        '<div class="sm-vrow"><span class="sm-vlabel">查件链接（可留空）</span>' +
+        '<input class="sm-track-url" placeholder="https://…" value="' + escAttr(o.track_url || '') + '"></div>' +
+        '<div class="sm-vrow"><span class="sm-vlabel">发货日期（点选）</span>' +
+        '<input class="sm-ship-date" placeholder="点选日期" value="' + (o.shipped_at ? escAttr(String(o.shipped_at).slice(0, 10).replace(/-/g, '/')) : '') + '"></div>' +
+        '<div class="sm-vrow"><span class="sm-vlabel">发货备注（可留空）</span>' +
+        '<input class="sm-ship-note" placeholder="备注" value="' + escAttr(o.ship_note || '') + '"></div>' +
+        '<button type="button" class="btn-save sm-act-ship" style="padding:10px 26px;font-size:16px;">确认发货</button>' +
         '</div>' +
         '<div class="sm-act"><span class="lbl">包裹</span>' +
         '<div class="sm-pkgs" style="width:100%;display:flex;flex-direction:column;gap:6px;"><span style="font-size:14px;color:var(--muted);">加载中…</span></div>' +
@@ -1293,15 +1315,25 @@
   function moItemRowHtml(it, i) {
     var p = it.pid ? byId(SM.products, it.pid) : null;
     var label = p ? (p.name || '（未命名商品）') : (it.custom ? '自定义商品' : '选择商品');
-    return '<div class="mo-item" data-i="' + i + '" style="display:grid;grid-template-columns:1fr 74px 88px;gap:6px;align-items:center;margin-bottom:6px;">' +
-      '<div style="display:flex;gap:6px;align-items:center;min-width:0;flex-wrap:wrap;">' +
-        '<button type="button" class="sel-btn mo-pick" data-i="' + i + '"><span class="pick-btn-label">' + esc(label) + '</span></button>' +
-        (it.pid && p && arr(p.variants).length ? '<button type="button" class="sel-btn mo-vpick" data-i="' + i + '"><span class="pick-btn-label">' + esc(it.sku ? (currentVariantName(p, it.sku)) : '规格（可选）') + '</span></button>' : '') +
-        (it.custom ? '<input class="mo-name" data-i="' + i + '" placeholder="自定义商品名 *" value="' + escAttr(it.name || '') + '" style="max-width:160px;">' : '') +
+    var sub = num(it.qty) * num(it.price);
+    return '<div class="mo-item" data-i="' + i + '">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' +
+        '<b style="font-size:15px;color:var(--text);">商品 ' + (i + 1) + '</b>' +
+        '<button type="button" class="btn-del mo-del" data-i="' + i + '" style="margin-left:auto;padding:5px 14px;font-size:14px;">删除此商品</button>' +
       '</div>' +
-      '<input class="mo-qty" data-i="' + i + '" type="number" min="1" step="1" value="' + escAttr(it.qty == null ? 1 : it.qty) + '">' +
-      '<input class="mo-price" data-i="' + i + '" type="number" min="0" step="0.01" value="' + escAttr(it.price == null ? '' : it.price) + '" placeholder="单价">' +
-      '<button type="button" class="btn-del mo-del" data-i="' + i + '" style="grid-column:1/-1;justify-self:start;padding:3px 10px;font-size:13px;">删除此行</button>' +
+      '<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px;">' +
+        '<div style="flex:1;min-width:180px;"><span class="mo-flabel">商品（点选择）</span>' +
+        '<button type="button" class="sel-btn mo-pick" data-i="' + i + '"><span class="pick-btn-label">' + esc(label) + '</span></button></div>' +
+        (it.pid && p && arr(p.variants).length ? '<div style="flex:1;min-width:150px;"><span class="mo-flabel">规格（可留空）</span>' +
+        '<button type="button" class="sel-btn mo-vpick" data-i="' + i + '"><span class="pick-btn-label">' + esc(it.sku ? (currentVariantName(p, it.sku)) : '无规格') + '</span></button></div>' : '') +
+        (it.custom ? '<div style="flex:1;min-width:180px;"><span class="mo-flabel">自定义商品名 *</span>' +
+        '<input class="mo-name" data-i="' + i + '" placeholder="填个名字" value="' + escAttr(it.name || '') + '"></div>' : '') +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">' +
+        '<div><span class="mo-flabel">单价 $（留空用商品价）</span><input class="mo-price" data-i="' + i + '" type="number" min="0" step="0.01" value="' + escAttr(it.price == null ? '' : it.price) + '" placeholder="0.00"></div>' +
+        '<div><span class="mo-flabel">数量</span><input class="mo-qty" data-i="' + i + '" type="number" min="1" step="1" value="' + escAttr(it.qty == null ? 1 : it.qty) + '"></div>' +
+        '<div><span class="mo-flabel">小计</span><div class="mo-item-sub" data-i="' + i + '" style="padding:10px 12px;font-size:16px;font-weight:700;color:#ff6fa5;background:var(--card,#fdf2f6);border-radius:10px;">$' + fmtMoney(sub) + '</div></div>' +
+      '</div>' +
       '</div>';
   }
   function currentVariantName(p, sku) {
@@ -1321,8 +1353,20 @@
     var ship = num(document.querySelector('#mo-form .mo-ship').value);
     var fee = num(document.querySelector('#mo-form .mo-fee').value);
     var total = sub - disc + ship + fee;
+    var cs = '$'; // 汇总行固定按美元展示符号，保存时按所选货币入库（与原逻辑一致）
     var el = document.querySelector('#mo-form .mo-sum');
-    if (el) el.innerHTML = '小计 $' + fmtMoney(sub) + ' · 折扣 -$' + fmtMoney(disc) + ' · 运费 $' + fmtMoney(ship) + ' · 服务费 $' + fmtMoney(fee) + ' → 总价 <b>$' + fmtMoney(total) + '</b>';
+    if (el) el.innerHTML = '<div class="mo-sum-box">' +
+      '<div class="mo-sum-row"><span class="mo-sl">商品小计</span><span>' + cs + fmtMoney(sub) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">折扣</span><span>-' + cs + fmtMoney(disc) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">运费</span><span>' + cs + fmtMoney(ship) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">服务费</span><span>' + cs + fmtMoney(fee) + '</span></div>' +
+      '<div class="mo-sum-total"><b style="font-size:17px;color:var(--text);">订单总价</b><b>' + cs + fmtMoney(total) + '</b></div>' +
+      '</div>';
+    // 每个商品自己的小计也跟着刷新（数量/单价一改立刻变）
+    Array.prototype.forEach.call(document.querySelectorAll('#mo-form .mo-item-sub'), function (el2) {
+      var it = MO_ITEMS[parseInt(el2.getAttribute('data-i'), 10)];
+      if (it) el2.textContent = cs + fmtMoney(num(it.qty) * num(it.price));
+    });
     return { sub: sub, disc: disc, ship: ship, fee: fee, total: total };
   }
   function moRenderItems() {
@@ -1359,16 +1403,17 @@
         '<input class="mo-note" placeholder="买家备注（可空）" style="grid-column:1/-1;">' +
         '<input class="mo-adminnote" placeholder="管理员备注（只有你能看）" style="grid-column:1/-1;">' +
       '</div>' +
-      '<div style="margin:12px 0 6px;"><b style="font-size:16px;">订单商品</b>' +
-      '<div class="mo-items" style="margin-top:6px;"></div>' +
-      '<button type="button" class="btn-mini mo-additem">＋ 添加商品</button>' +
-      '<p class="hint" style="margin:4px 0 0;">从商品列表选，或选「自定义商品」录临时商品；价格留空会自动用商品价</p></div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0;">' +
-        '<input class="mo-discount" type="number" min="0" step="0.01" placeholder="折扣金额" value="0">' +
-        '<input class="mo-ship" type="number" min="0" step="0.01" placeholder="运费" value="0">' +
-        '<input class="mo-fee" type="number" min="0" step="0.01" placeholder="服务费" value="2">' +
+      '<div style="margin:14px 0 6px;"><b style="font-size:16px;">订单商品</b>' +
+      '<div class="mo-items" style="margin-top:10px;"></div>' +
+      '<button type="button" class="btn-mini mo-additem" style="background:#ffc8d6;color:#fff;padding:9px 22px;font-size:15px;">＋ 添加商品</button>' +
+      '<p class="hint" style="margin:6px 0 0;">从商品列表选，或选「自定义商品」录临时商品；单价留空自动用商品价</p></div>' +
+      '<div style="margin:14px 0 8px;"><b style="font-size:16px;">金额</b></div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">' +
+        '<div><span class="mo-flabel mo-flabel-inpop">折扣金额 $</span><input class="mo-discount" type="number" min="0" step="0.01" value="0"></div>' +
+        '<div><span class="mo-flabel mo-flabel-inpop">运费 $</span><input class="mo-ship" type="number" min="0" step="0.01" value="0"></div>' +
+        '<div><span class="mo-flabel mo-flabel-inpop">服务费 $</span><input class="mo-fee" type="number" min="0" step="0.01" value="2"></div>' +
       '</div>' +
-      '<div class="mo-sum" style="font-size:15px;color:var(--text,#5d6780);margin-bottom:10px;"></div>' +
+      '<div class="mo-sum" style="margin-bottom:12px;"></div>' +
       '<button type="button" class="btn-mini mo-save" style="background:#ffd9e6;color:#fff;padding:10px 26px;font-size:16px;">保存订单</button>' +
       '<span class="hint" style="margin-left:10px;">默认「待付款」，不会自动标成已付款；来源自动记为「后台手动创建」</span>' +
       '</div>';

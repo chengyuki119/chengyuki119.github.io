@@ -196,13 +196,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     border: none; font-size:16px; padding: 7px 16px;
     border-radius: 999px; cursor: pointer;
   }
-  .btn-save { background: var(--accent-soft); color: #fff; }
+  .btn-save { border: none; background: var(--accent-soft); color: #fff; font-family: inherit; cursor: pointer; }
   .btn-cancel { background: var(--card-hover); color: var(--text); }
   /* 数字输入框不要浏览器原生上下小箭头（和自定义控件打架） */
   input[type="number"] { appearance: textfield; -moz-appearance: textfield; }
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .btn-del { background: #f6d9e6; color: var(--text); }
+  .btn-del { border: none; background: #f6d9e6; color: var(--text); font-family: inherit; cursor: pointer; }
   /* 按钮组件统一：不管在不在 .actions 里，都是同一套圆角小按钮（不再有浏览器默认样式）*/
   .btn-mini, .btn-del, .btn-save, .btn-cancel {
     border: none; font-family: inherit; font-size:16px;
@@ -241,7 +241,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .combo-opt { display: block; width: 100%; border: none; background: none; text-align: left; padding: 9px 12px; font-size:16px; cursor: pointer; border-radius: 8px; color: var(--text); font-family: inherit; line-height: 1.4; }
   .combo-opt:hover { background: var(--card-hover); }
   .dy-chip input { position: absolute; opacity: 0; pointer-events: none; }
-  .btn-mini { background: var(--card); color: var(--text); }
+  .btn-mini { border: none; background: var(--card); color: var(--text); font-family: inherit; cursor: pointer; }
   /* 头像 / 主页背景图上传区：两行对齐，隐藏原生 file 控件 */
   .hm-upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .hm-upload-row + .hm-upload-row { margin-top: 12px; }
@@ -5655,7 +5655,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261025e"></script>
+<script src="js/admin-shop.js?v=20261025f"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
