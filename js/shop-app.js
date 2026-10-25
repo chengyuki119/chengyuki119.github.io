@@ -776,7 +776,7 @@
     var box = document.getElementById('view-account');
     if (!USER) {
       box.innerHTML =
-        '<h2 style="font-size:22px;margin-bottom:14px;">' + t('Profile 编辑', 'Profile') + '</h2>' +
+        '<h2 style="font-size:22px;margin-bottom:14px;">' + t('登录', 'Log in') + '</h2>' +
         '<div class="card" style="padding:18px;">' +
           '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
             '<button class="buy-btn acct-tab on" data-v="login" style="padding:8px 20px;">' + t('登录', 'Log in') + '</button>' +
@@ -1352,20 +1352,18 @@
     if (id && ids.indexOf(id) === -1) { ids.push(id); try { localStorage.setItem(key, JSON.stringify(ids.slice(-100))); } catch (e) {} }
   }
   function accLoggedIn() { return !!(USER && USER.a); }
-  function paintAccountMenu() { // 登录门：未登录只看到 Profile，登录后才出现订单/评价/留言和退出按钮
+  function paintAccountMenu() { // 登录门：未登录整个侧栏不出现，页面只有登录/注册；登录后才出现侧栏面板
     var menu = document.getElementById('acc-menu');
     if (!menu) return;
-    var inn = '<div class="acc-group"><div class="acc-group-title">' + t('账户', 'Account') + '</div>' +
-      '<button type="button" class="acc-item" data-v="account">' + t('Profile 编辑', 'Profile') + '</button>';
+    var inn = '';
     if (accLoggedIn()) {
-      inn +=
+      inn = '<div class="acc-group"><div class="acc-group-title">' + t('账户', 'Account') + '</div>' +
+        '<button type="button" class="acc-item" data-v="account">' + t('Profile 编辑', 'Profile') + '</button>' +
         '<button type="button" class="acc-item" data-v="orders">' + t('我的订单', 'My Orders') + '</button></div>' +
         '<div class="acc-group"><div class="acc-group-title">' + t('互动', 'Activity') + '</div>' +
         '<button type="button" class="acc-item" data-v="myreviews">' + t('评价', 'Reviews') + '</button>' +
         '<button type="button" class="acc-item" data-v="myquestions">' + t('留言', 'Messages') + '</button></div>' +
         '<div class="acc-group"><button type="button" class="acc-logout" id="acc-logout">' + t('退出登录', 'Log out') + '</button></div>';
-    } else {
-      inn += '</div>';
     }
     menu.innerHTML = inn;
   }
