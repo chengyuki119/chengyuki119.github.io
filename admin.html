@@ -192,10 +192,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     font-family: inherit; font-size:17px;
     color: var(--text); outline: none; width: 100%;
   }
-  .actions { display: flex; gap: 8px; margin-top: 10px; justify-content: flex-end; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; justify-content: flex-end; }
   .actions button {
     border: none; font-size:16px; padding: 7px 16px;
     border-radius: 999px; cursor: pointer;
+    white-space: nowrap; flex-shrink: 0; /* 防窄容器挤压成一字一行（与规格区同类问题） */
   }
   .btn-save { border: none; background: var(--accent-soft); color: #fff; font-family: inherit; cursor: pointer; }
   .btn-cancel { background: var(--card-hover); color: var(--text); }
@@ -520,7 +521,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <button class="tab-btn" data-tab="shopmgr">订单管理</button>
         <button class="tab-btn" data-tab="reviews">评价返图管理</button>
         <div class="pp-group">互动管理</div>
-        <button class="tab-btn" data-tab="messages">匿名留言</button>
+        <button class="tab-btn" data-tab="messages">联系与留言管理</button>
         <button class="tab-btn" data-tab="ai">AI 对话</button>
         <div class="pp-group">系统设置</div>
         <button class="tab-btn" data-tab="system">系统状态</button>
@@ -530,6 +531,43 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
     <!-- 留言管理 -->
     <div id="tab-messages" style="display:none;">
+      <style>
+        /* 联系与留言管理（原匿名留言）：状态筛选 + 关键词搜索 + 状态流转 + 内部备注 */
+        #tab-messages .msg-toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+        #tab-messages .msg-searchbox { flex: 1; min-width: 220px; display: flex; align-items: center; gap: 6px; border: 1px solid var(--card-hover); border-radius: 999px; background: #fff; padding: 2px 8px 2px 16px; }
+        #tab-messages .msg-searchbox:focus-within { border-color: var(--accent-soft); }
+        #tab-messages .msg-searchbox input { flex: 1; min-width: 0; border: none; background: transparent; padding: 8px 0; font-size:16px; font-family: inherit; color: var(--text); outline: none; }
+        #tab-messages .msg-searchbox .clear { width: 24px; height: 24px; border: none; border-radius: 50%; background: var(--card-hover); color: var(--text); font-size:16px; line-height: 1; cursor: pointer; flex-shrink: 0; display: none; font-family: inherit; }
+        #tab-messages .msg-searchbox .clear.show { display: block; }
+        #tab-messages .msg-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+        #tab-messages .msg-filters button { border: none; border-radius: 999px; background: var(--card); color: var(--muted); font-size:15px; padding: 6px 12px; cursor: pointer; font-family: inherit; transition: background .15s, color .15s; }
+        #tab-messages .msg-filters button.active { background: var(--accent-soft); color: #fff; }
+        #tab-messages .card { position: relative; }
+        #tab-messages .qa-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+        #tab-messages .msg-badge { font-size:13px; border-radius: 999px; padding: 1px 10px; color: #fff; background: var(--accent-soft); white-space: nowrap; }
+        #tab-messages .msg-badge.warn { background: #f3b96d; }
+        #tab-messages .msg-badge.ok { background: #7cc49a; }
+        #tab-messages .msg-badge.off { background: #c6cddb; }
+        #tab-messages .qa-contact { font-size:15px; color: var(--muted); margin-top: 6px; line-height: 1.6; word-break: break-all; }
+        #tab-messages .qa-contact b { color: var(--text,#5d6780); font-weight: 600; }
+        #tab-messages .qa-status-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+        #tab-messages .qa-status-row .lbl { font-size:14px; color: var(--muted); flex-shrink: 0; }
+        #tab-messages .qa-status-row select { border: 1px solid var(--card-hover); border-radius: 10px; background: #fff; padding: 6px 10px; font-size:15px; font-family: inherit; color: var(--text); outline: none; }
+        #tab-messages textarea.note-in { min-height: 44px; margin-top: 10px; }
+      </style>
+      <div class="msg-toolbar">
+        <div class="msg-searchbox">
+          <input id="msg-search" placeholder="搜留言内容 / 称呼 / Email / 联系方式">
+          <button type="button" class="clear" id="msg-search-clear">✕</button>
+        </div>
+        <div class="msg-filters" id="msg-status-filters">
+          <button type="button" class="active" data-v="">全部</button>
+          <button type="button" data-v="pending">未处理</button>
+          <button type="button" data-v="processing">处理中</button>
+          <button type="button" data-v="replied">已回复</button>
+          <button type="button" data-v="closed">已关闭</button>
+        </div>
+      </div>
       <div id="qa-list"><p class="empty">加载中…</p></div>
     </div>
 
@@ -1162,35 +1200,101 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     });
   });
 
-  // ===== 留言管理 =====
+  // ===== 联系与留言管理（原匿名留言）：主题/状态/称呼/Email/备注/搜索/回复 =====
+  var MSG = { search: '', status: '', list: [] };
+  var MSG_STATUS_ZH = { pending: '未处理', processing: '处理中', replied: '已回复', closed: '已关闭' };
+  var MSG_TOPIC_ZH = { product: '商品咨询', order: '订单问题', aftersale: '售后与退款', site: '网站问题', other: '其他' };
+  var MSG_BADGE = { pending: '', processing: 'warn', replied: 'ok', closed: 'off' };
+  function msgStatusBadge(s) {
+    var zh = MSG_STATUS_ZH[s] || MSG_STATUS_ZH.pending;
+    return '<span class="msg-badge ' + (MSG_BADGE[s] || '') + '">' + esc(zh) + '</span>';
+  }
   function loadMessages() {
     Promise.all([
-      api('questions?select=id,content,reply,created_at,replied_at&order=created_at.desc&limit=200').then(function (r) { return r.json(); }),
-      api('contacts?select=question_id,contact').then(function (r) { return r.json(); })
+      api('questions?select=id,content,topic,reply,status,created_at,replied_at&order=created_at.desc&limit=200').then(function (r) { return r.json(); }),
+      api('contacts?select=question_id,contact,nickname,email,other_contact,note').then(function (r) { return r.json(); })
     ]).then(function (res) {
-      var questions = res[0] || [];
+      MSG.list = res[0] || [];
       var cmap = {};
-      (res[1] || []).forEach(function (c) { cmap[c.question_id] = c.contact; });
-      var list = document.getElementById('qa-list');
-      if (!questions.length) { list.innerHTML = '<p class="empty">还没有留言</p>'; return; }
-      list.innerHTML = questions.map(function (q) {
-        var contact = cmap[q.id];
-        var contactHtml = contact ? '<div class="qa-contact">联系方式：' + esc(contact) + '</div>' : '';
-        return '<div class="card" data-id="' + q.id + '" data-reply="' + escAttr(q.reply || '') + '">' +
-          '<div class="qa-q">' + esc(q.content) + '</div>' +
-          '<div class="qa-meta">' + fmtTime(q.created_at) + (q.replied_at ? ' · 已回复' : ' · 待回复') + '</div>' +
-          contactHtml +
-          '<textarea placeholder="写下你的回复…（会公开显示在提问箱）">' + esc(q.reply || '') + '</textarea>' +
-          '<div class="actions">' +
-          '<button class="btn-del">删除</button>' +
-          '<button class="btn-cancel btn-cancel-reply">取消</button>' +
-          '<button class="btn-save">保存回复</button>' +
-          '</div></div>';
-      }).join('');
+      (res[1] || []).forEach(function (c) { cmap[c.question_id] = c; });
+      MSG.cmap = cmap;
+      msgRender();
     }).catch(function () {
       document.getElementById('qa-list').innerHTML = '<p class="empty">加载失败，刷新重试</p>';
     });
   }
+  function msgRender() {
+    var list = document.getElementById('qa-list');
+    var kw = MSG.search.trim().toLowerCase();
+    var rows = MSG.list.filter(function (q) {
+      if (MSG.status && (q.status || 'pending') !== MSG.status) return false;
+      if (!kw) return true;
+      var c = (MSG.cmap || {})[q.id] || {};
+      var hay = [q.content, c.nickname, c.email, c.other_contact, c.contact].map(function (x) { return String(x || '').toLowerCase(); }).join('\n');
+      return hay.indexOf(kw) !== -1;
+    });
+    if (!rows.length) { list.innerHTML = '<p class="empty">' + (MSG.list.length ? '没有符合条件的留言' : '还没有留言') + '</p>'; return; }
+    list.innerHTML = rows.map(function (q) {
+      var c = (MSG.cmap || {})[q.id] || {};
+      var status = q.status || (q.reply ? 'replied' : 'pending'); // 旧数据无状态列时按回复存在性推断
+      var contactBits = [];
+      if (c.nickname) contactBits.push('称呼：<b>' + esc(c.nickname) + '</b>');
+      if (c.email) contactBits.push('Email：<b>' + esc(c.email) + '</b>');
+      if (c.other_contact) contactBits.push('其他：<b>' + esc(c.other_contact) + '</b>');
+      if (!c.nickname && !c.email && !c.other_contact && c.contact) contactBits.push('联系方式：<b>' + esc(c.contact) + '</b>'); // 旧版只存了一个联系字段
+      if (!contactBits.length) contactBits.push('匿名留言（未留联系方式）');
+      var sel = '<select class="msg-status" data-id="' + q.id + '">' +
+        ['pending', 'processing', 'replied', 'closed'].map(function (s) {
+          return '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + MSG_STATUS_ZH[s] + '</option>';
+        }).join('') + '</select>';
+      return '<div class="card" data-id="' + q.id + '" data-reply="' + escAttr(q.reply || '') + '">' +
+        '<div class="qa-badges"><span class="msg-badge">' + esc(MSG_TOPIC_ZH[q.topic] || MSG_TOPIC_ZH.other) + '</span>' + msgStatusBadge(status) + '</div>' +
+        '<div class="qa-q">' + esc(q.content) + '</div>' +
+        '<div class="qa-meta">' + fmtTime(q.created_at) + (q.replied_at ? ' · 已于 ' + fmtTime(q.replied_at) + ' 回复' : ' · 尚未回复') + '</div>' +
+        '<div class="qa-contact">' + contactBits.join(' · ') + '</div>' +
+        '<div class="qa-status-row"><span class="lbl">状态：</span>' + sel + '</div>' +
+        '<textarea placeholder="写下你的回复…（会公开显示在联系我们页留言墙）">' + esc(q.reply || '') + '</textarea>' +
+        '<textarea class="note-in" placeholder="内部备注（不会公开显示）">' + esc(c.note || '') + '</textarea>' +
+        '<div class="actions">' +
+        '<button class="btn-del">删除</button>' +
+        '<button class="btn-cancel btn-cancel-reply">取消</button>' +
+        '<button class="btn-save-note">保存备注</button>' +
+        '<button class="btn-save">保存回复</button>' +
+        '</div></div>';
+    }).join('');
+  }
+  document.getElementById('msg-search').addEventListener('input', function () {
+    MSG.search = this.value;
+    document.getElementById('msg-search-clear').classList.toggle('show', !!this.value);
+    msgRender();
+  });
+  document.getElementById('msg-search-clear').addEventListener('click', function () {
+    MSG.search = '';
+    var inp = document.getElementById('msg-search');
+    inp.value = '';
+    this.classList.remove('show');
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  document.getElementById('msg-status-filters').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    MSG.status = b.getAttribute('data-v') || '';
+    Array.prototype.forEach.call(this.children, function (x) { x.classList.toggle('active', x === b); });
+    msgRender();
+  });
+  document.getElementById('qa-list').addEventListener('change', function (e) {
+    if (!e.target.classList.contains('msg-status')) return;
+    var id = e.target.getAttribute('data-id');
+    var status = e.target.value;
+    api('questions?id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ status: status }) })
+      .then(function (r) {
+        if (!r.ok) throw new Error();
+        var q = MSG.list.find(function (x) { return String(x.id) === String(id); });
+        if (q) q.status = status;
+        toast('状态已改为「' + (MSG_STATUS_ZH[status] || status) + '」');
+        msgRender();
+      })
+      .catch(function () { toast('状态保存失败，再试一次'); });
+  });
   document.getElementById('qa-list').addEventListener('click', function (e) {
     var card = e.target.closest('.card');
     if (!card) return;
@@ -1199,13 +1303,35 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       var reply = card.querySelector('textarea').value.trim();
       if (!reply) { toast('回复不能为空哦'); return; }
       e.target.disabled = true;
+      var q = MSG.list.find(function (x) { return String(x.id) === String(id); });
+      var nextStatus = (q && (q.status === 'pending' || q.status === 'processing' || !q.status)) ? 'replied' : (q ? q.status : 'replied');
       api('questions?id=eq.' + id, {
         method: 'PATCH',
-        body: JSON.stringify({ reply: reply, replied_at: new Date().toISOString() })
+        body: JSON.stringify({ reply: reply, replied_at: new Date().toISOString(), status: nextStatus })
       }).then(function (r) {
         if (!r.ok) throw new Error();
-        toast('回复已保存，提问箱里能看到啦');
+        if (q) { q.reply = reply; q.status = nextStatus; q.replied_at = new Date().toISOString(); }
+        toast('回复已保存，联系我们页留言墙能看到啦');
+        msgRender();
       }).catch(function () { toast('保存失败，再试一次'); })
+        .finally(function () { e.target.disabled = false; });
+    }
+    if (e.target.classList.contains('btn-save-note')) {
+      var note = card.querySelector('textarea.note-in').value.trim();
+      e.target.disabled = true;
+      // 备注在 contacts 表（仅登录后台可读）；旧留言可能没有 contacts 行，先补一行
+      api('contacts?question_id=eq.' + id + '&select=question_id').then(function (r) { return r.json(); }).then(function (rows) {
+        if (rows && rows.length) {
+          return api('contacts?question_id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ note: note || null }) });
+        }
+        return api('contacts', { method: 'POST', body: JSON.stringify({ question_id: Number(id) || id, note: note || null }) });
+      }).then(function (r) {
+        if (!r.ok) throw new Error();
+        var c = (MSG.cmap || {})[id] || {};
+        c.note = note;
+        MSG.cmap[id] = c;
+        toast('备注已保存（不会公开）');
+      }).catch(function () { toast('备注保存失败，再试一次'); })
         .finally(function () { e.target.disabled = false; });
     }
     if (e.target.classList.contains('btn-cancel-reply')) {
@@ -2378,10 +2504,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     { key: 'cards', title_zh: '色卡展示', title_en: 'Color Cards' },
     { key: 'works', title_zh: '稿件展示', title_en: 'Works' },
     { key: 'shop', title_zh: '我的小铺', title_en: 'My Shop' },
-    { key: 'anon', title_zh: '匿名提问箱', title_en: 'Ask Box' },
     { key: 'links', title_zh: '找到我', title_en: 'Find Me' }
   ];
-  var AREA_CANON = { gallery: 0, cards: 1, works: 2, shop: 3, anon: 4, links: 5 };
+  // （key 'anon' 已移除：主页不再有提问箱区块，留言功能移至 /askbox/ 联系我们页）
+  var AREA_CANON = { gallery: 0, cards: 1, works: 2, shop: 3, links: 4 };
   var AREAS = [];
   var AREA_EDIT = -1; // 当前编辑中的区域（-1 = 都是展示态）
   function parseSetting(key, fallback) {
@@ -4968,7 +5094,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     ]},
     { id: 'm3', time: now - 26 * 3600000, msgs: [
       { role: 'user', text: '这个网站是做什么的呀', time: now - 26 * 3600000 },
-      { role: 'ai', text: '这是柚子的个人小世界：有照片墙、BJD 档案、色卡展示、小铺和匿名提问箱，欢迎随便逛逛。', time: now - 26 * 3600000 + 4000 },
+      { role: 'ai', text: '这是柚子的个人小世界：有照片墙、BJD 档案、色卡展示、小铺和联系我们页（留言与咨询），欢迎随便逛逛。', time: now - 26 * 3600000 + 4000 },
       { role: 'user', text: '色卡可以定制吗', time: now - 26 * 3600000 + 30000 },
       { role: 'ai', text: FALLBACK, time: now - 26 * 3600000 + 34000 }
     ]},
@@ -4988,7 +5114,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     ]},
     { id: 'm7', time: now - 20 * DAY, msgs: [
       { role: 'user', text: '网站功能有哪些', time: now - 20 * DAY },
-      { role: 'ai', text: '现在网站有这些功能：主页（含日历和重要日子）、照片墙、BJD 档案、色卡展示、小铺、匿名提问箱，还有中英文切换。', time: now - 20 * DAY + 5000 }
+      { role: 'ai', text: '现在网站有这些功能：主页（含日历和重要日子）、照片墙、BJD 档案、色卡展示、小铺、联系我们页（可以留言咨询），还有中英文切换。', time: now - 20 * DAY + 5000 }
     ]},
     { id: 'm8', time: now - 45 * DAY, msgs: [
       { role: 'user', text: '你好', time: now - 45 * DAY },
@@ -5656,7 +5782,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261025h"></script>
+<script src="js/admin-shop.js?v=20261025i"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

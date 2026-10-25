@@ -35,8 +35,8 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261025h">
-  <link rel="stylesheet" href="/site-menu.css?v=20261025h">
+<link rel="stylesheet" href="/css/site.css?v=20261025i">
+  <link rel="stylesheet" href="/site-menu.css?v=20261025i">
     <script src="/site-menu.js" defer></script>
 </head>
 <body class="home">
@@ -151,19 +151,6 @@
     </section>
 
     <!-- 匿名提问箱：页面最下面 -->
-    <section id="anon">
-      <h2>匿名提问箱</h2>
-      <p class="section-sub">悄悄问我任何话，完全匿名 · 我的回答在这里可以看到</p>
-      <a class="askbox-card" id="askbox-card">
-        
-        <div class="askbox-info">
-          <h3>给我递个小纸条吧</h3>
-          <p>匿名提问 · 我会在这里回复 · 点进去可以看所有回答</p>
-        </div>
-        <div class="askbox-arrow">›</div>
-      </a>
-    </section>
-
     <!-- 联系方式 -->
     <section id="links">
       <h2>找到我</h2>
@@ -214,7 +201,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261025h"></script>
+<script src="/js/site-common.js?v=20261025i"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -749,12 +736,6 @@
       if (sh) sh.textContent = en.shop_h;
       if (sp && en.shop_p) sp.textContent = en.shop_p;
     }
-    if (en.anon_h) {
-      var ah = document.querySelector('#anon .askbox-card h3');
-      var ap = document.querySelector('#anon .askbox-card p');
-      if (ah) ah.textContent = en.anon_h;
-      if (ap && en.anon_p) ap.textContent = en.anon_p;
-    }
     // 找到我
     var links = parseSetting('links', []);
     if (links.length) {
@@ -921,12 +902,6 @@
       });
     }
   }).catch(function () {});
-
-  // ===== 匿名提问箱：点卡片打开提问箱页面（同一个页签，不另开新窗口）=====
-  document.getElementById('askbox-card').addEventListener('click', function () {
-    if (!ASKBOX_URL) { toast(t('提问箱还在准备中', 'The ask box is coming soon')); return; }
-    location.href = ASKBOX_URL;
-  });
 
   // ===== 旧 # 深链兼容：#card-N / #bjd-N → 对应新子页 =====
   (function () {
@@ -1505,7 +1480,7 @@
   });
 })();
 </script>
-<script src="/js/site-footer.js?v=20261025h"></script>
+<script src="/js/site-footer.js?v=20261025i"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

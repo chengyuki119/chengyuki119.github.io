@@ -343,6 +343,7 @@
   .cal-head b { flex: 1; text-align: center; font-size:18px; }
   .cal-btn { border: none; background: var(--card-hover); color: var(--text); width: 26px; height: 26px; border-radius: 8px; cursor: pointer; font-size:17px; line-height: 1; padding: 0; }
   .cal-btn.wide { width: auto; padding: 0 10px; font-size:15px; color: var(--muted); }
+  #cal-today { position: relative; z-index: 1160; /* 高于右下角悬浮小助手(z-1150)：手机端滚动到日历时「今天」不被盖住点不到 */ }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size:15px; }
   .cal-wd { color: var(--muted); padding: 4px 0; font-size:14px; }
   .cal-day { position: relative; padding: 6px 0; border-radius: 8px; }
@@ -629,9 +630,9 @@
   .home-shop-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 
-  /* 「找到我」是主页最后一个区块：底部留白让它能滚到顶栏正下方（菜单精准定位用） */
-  body.home::after { content: ""; display: block; height: 380px; }
-  @media (max-width: 700px) { body.home::after { height: 300px; } }
+  /* （已删）body.home::after 380px 底部占位：原为菜单「找到我」定位预留滚动余量，
+     实测从未精准生效且造成 footer 下方大片空白；改由更高的 footer 卡片自然提供余量，
+     菜单定位以 scrollToEl 落点实测验收（见 20261025 批次） */
 
   /* 浏览器自动填充（Chrome 浅蓝底）覆盖为站内粉白配色；不影响密码管理器正常填充 */
   input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {

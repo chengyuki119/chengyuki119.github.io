@@ -27,7 +27,7 @@
       { key: 'shop', zh: '逛小铺', en: 'Shop', page: 'shop', url: '/shop/' },
       { key: 'reviews', zh: '评价返图', en: 'Review', page: 'shop', url: '/shop/?sec=reviews', sec: 'reviews' }
     ]},
-    { key: 'anon', zh: '匿名留言', en: 'Ask Box', page: 'askbox', url: '/askbox/' },
+    { key: 'anon', zh: '联系我们', en: 'Contact Us', page: 'askbox', url: '/askbox/' },
     { key: 'links', zh: '找到我', en: 'Find Me', page: 'index', url: '/', scrollTo: 'links', scroll: true }
   ];
 
