@@ -53,16 +53,16 @@
     '#tab-shopmgr .sm-c-code { font-weight:700; color:var(--text); }',
     '#tab-shopmgr .sm-b-mail { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:6px 0; border-bottom:1px dashed var(--card-hover); font-size:16px; }',
     '#tab-shopmgr .sm-b-mail:last-child { border-bottom:none; }',
-    '#tab-shopmgr .sm-var-row { background:#fff; border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 2px 10px rgba(180,120,150,.10); }',
-    '#tab-shopmgr .sm-var-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }',
-    '#tab-shopmgr .sm-var-grid label { display:block; font-size:13px; color:var(--muted,#9aa5bd); margin-bottom:5px; line-height:1.4; }',
-    '#tab-shopmgr .sm-var-grid input { width:100%; box-sizing:border-box; padding:10px 12px; font-size:15px; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:10px; background:#fff; outline:none; color:var(--text); font-family:inherit; }',
-    '#tab-shopmgr .sm-var-grid input:focus { border-color:var(--card-hover,#ffe4ee); }',
-    '#tab-shopmgr .sm-var-imgs { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }',
-    '#tab-shopmgr .sm-var-imgs img { width:52px; height:52px; border-radius:10px; object-fit:cover; background:var(--card); }',
-    '#tab-shopmgr .sm-var-imgdel { position:absolute; top:-6px; right:-6px; width:18px; height:18px; border:none; border-radius:50%; background:var(--accent-soft); color:#fff; font-size:12px; line-height:1; cursor:pointer; }',
+    '#tab-shopmgr .sm-var-row, #tab-shop .sm-var-row { background:#fff; border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 2px 10px rgba(180,120,150,.10); }',
+    '#tab-shopmgr .sm-var-grid, #tab-shop .sm-var-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }',
+    '#tab-shopmgr .sm-var-grid, #tab-shop .sm-var-grid { display:block; font-size:13px; color:var(--muted,#9aa5bd); margin-bottom:5px; line-height:1.4; }',
+    '#tab-shopmgr .sm-var-grid, #tab-shop .sm-var-grid { width:100%; box-sizing:border-box; padding:10px 12px; font-size:15px; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:10px; background:#fff; outline:none; color:var(--text); font-family:inherit; }',
+    '#tab-shopmgr .sm-var-grid, #tab-shop .sm-var-grid { border-color:var(--card-hover,#ffe4ee); }',
+    '#tab-shopmgr .sm-var-imgs, #tab-shop .sm-var-imgs { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }',
+    '#tab-shopmgr .sm-var-imgs, #tab-shop .sm-var-imgs { width:52px; height:52px; border-radius:10px; object-fit:cover; background:var(--card); }',
+    '#tab-shopmgr .sm-var-imgdel, #tab-shop .sm-var-imgdel { position:absolute; top:-6px; right:-6px; width:18px; height:18px; border:none; border-radius:50%; background:var(--accent-soft); color:#fff; font-size:12px; line-height:1; cursor:pointer; }',
     '#tab-shopmgr .sm-empty { text-align:center; color:var(--muted); font-size:17px; padding:24px 0; }',
-    '@media (max-width:640px) { #tab-shopmgr .sm-stats { grid-template-columns:repeat(2,1fr); } #tab-shopmgr .sm-var-grid { grid-template-columns:1fr 1fr; } }'
+    '@media (max-width:640px) { #tab-shopmgr .sm-stats { grid-template-columns:repeat(2,1fr); } #tab-shopmgr .sm-var-grid, #tab-shop .sm-var-grid { grid-template-columns:1fr 1fr; } }'
   ].join('\n');
   document.head.appendChild(css);
 
@@ -145,8 +145,8 @@
   /* ── 数据加载（真 API 优先，失败回退可注入假数组）── */
   function loadOrders() {
     return restGet('shop_orders?select=*&order=created_at.desc&limit=300')
-      .then(function (rows) { SM.orders = arr(rows); })
-      .catch(function () { SM.orders = arr(window.SHOP_ORDERS); })
+      .then(function (rows) { SM.orders = arr(rows); SM._oFailed = false; })
+      .catch(function () { SM.orders = arr(window.SHOP_ORDERS); SM._oFailed = true; })
       .then(function () { renderOrders(); renderStats(); });
   }
   function loadGroups() {
@@ -360,6 +360,12 @@
     var list = document.getElementById('sm-o-list');
     if (!list) return;
     var rows = filteredOrders();
+    if (SM._oFailed) { // 网络断了就明说，不再无限「加载中」（她 2026-10-25 要求查根因，不能只靠重试）
+      list.innerHTML = '<div class="sm-o-retrybox" style="background:var(--card,#fdf2f6);border-radius:14px;padding:20px;text-align:center;">' +
+        '<p style="margin:0 0 10px;color:var(--muted);font-size:16px;">订单没加载出来（网络问题，不是订单丢了）</p>' +
+        '<button type="button" class="btn-mini sm-o-retry" style="background:#ffc8d6;color:#fff;padding:9px 22px;font-size:15px;">点这里重新加载</button></div>';
+      return;
+    }
     list.innerHTML = rows.length ? rows.map(orderHtml).join('') : '<p class="sm-empty">没有符合条件的订单</p>';
     // 已展开的行：补付款凭证签名图 + 包裹列表
     Array.prototype.forEach.call(list.querySelectorAll('img.sm-pay-img[data-paypath]'), function (img) {
@@ -663,6 +669,65 @@
       })
       .catch(function () { toast('重量/规格保存失败'); });
   }
+
+  /* ── 上架新商品表单：也带「商品规格」区（她 2026-10-25：添加商品时没有加规格的地方）── */
+  var ADDVAR = { list: [] };
+  window.smAddVarCollect = function () {
+    var card = document.getElementById('tab-shop');
+    Array.prototype.forEach.call(card.querySelectorAll('.sm-var-row'), function (row) {
+      var v = ADDVAR.list[parseInt(row.getAttribute('data-i'), 10)];
+      if (!v) return;
+      v.sku = row.querySelector('.sv-sku').value.trim();
+      v.name = row.querySelector('.sv-name').value.trim();
+      v.price = row.querySelector('.sv-price').value.trim();
+      v.stock = row.querySelector('.sv-stock').value.trim();
+    });
+    return ADDVAR.list.filter(function (v) { return v.sku || v.name; }).map(function (v) {
+      return { sku: v.sku || '', name: v.name || '', price: fmtMoney(v.price), stock: parseInt(v.stock, 10) || 0, images: arr(v.images) };
+    });
+  };
+  window.smAddVarReset = function () { ADDVAR.list = []; smVarRenderRows(document.getElementById('tab-shop')); };
+  (function () {
+    var form = document.querySelector('#tab-shop .card');
+    var actions = form && form.querySelector('.actions');
+    if (!form || !actions || form.querySelector('.sm-var-block')) return;
+    var block = document.createElement('div');
+    block.className = 'sm-var-block';
+    block.style.marginTop = '14px';
+    block.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
+      '<b style="font-size:16px;color:var(--text);">商品规格（可选）</b>' +
+      '<span class="hint" style="flex:1;min-width:180px;">一个规格＝买家看到的一个选项；不留空就用上面的商品价/库存</span>' +
+      '<button type="button" class="btn-mini sm-var-add" style="background:#ffd9e6;color:#fff;padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
+      '<div class="sm-var-rows"></div>' +
+      '<p class="hint" style="margin:6px 0 0;">每个规格可以传自己的图，第一张就是这个选项的封面；和编辑商品里的是同一套，上架时一起保存。</p>';
+    form.insertBefore(block, actions);
+  })();
+  (function () {
+    var form = document.getElementById('tab-shop');
+    form.__variants = ADDVAR.list; // 同一份数组的引用：smVarRenderRows 直接读 __variants
+    form.addEventListener('click', function (e) {
+      if (e.target.classList.contains('sm-var-add')) { ADDVAR.list.push({ sku: '', name: '', price: '', stock: '', images: [] }); smVarRenderRows(form); return; }
+      if (e.target.classList.contains('sm-var-del')) { ADDVAR.list.splice(parseInt(e.target.getAttribute('data-i'), 10), 1); smVarRenderRows(form); return; }
+      var imgdel = e.target.closest('.sm-var-imgdel');
+      if (imgdel) { var v = ADDVAR.list[parseInt(imgdel.getAttribute('data-i'), 10)]; if (v && arr(v.images)) { v.images.splice(parseInt(imgdel.getAttribute('data-k'), 10), 1); smVarRenderRows(form); } }
+    });
+    form.addEventListener('input', function (e) {
+      var row = e.target.closest('.sm-var-row'); if (!row) return;
+      var v = ADDVAR.list[parseInt(row.getAttribute('data-i'), 10)]; if (!v) return;
+      if (e.target.classList.contains('sv-sku')) v.sku = e.target.value;
+      if (e.target.classList.contains('sv-name')) v.name = e.target.value;
+      if (e.target.classList.contains('sv-price')) v.price = e.target.value;
+      if (e.target.classList.contains('sv-stock')) v.stock = e.target.value;
+    });
+    form.addEventListener('change', function (e) {
+      if (!e.target.classList.contains('sm-var-file')) return;
+      var i = parseInt(e.target.getAttribute('data-i'), 10);
+      var v = ADDVAR.list[i];
+      var files = Array.prototype.slice.call(e.target.files || []);
+      if (!v || !files.length) return;
+      uploadShopFiles(files).then(function (urls) { v.images = arr(v.images).concat(urls); smVarRenderRows(form); toast('规格图已上传，点「上架这个商品」一起保存'); }).catch(function () { toast('图片上传失败'); });
+    });
+  })();
 
   /* ═══ 构建 DOM ═══ */
   root.innerHTML =
@@ -1188,11 +1253,18 @@
     });
   }
 
-  /* ── 首次打开加载 + #shopmgr 直达 ── */
-  if (location.hash.replace('#', '') === 'shopmgr') {
-    var tb = document.querySelector('.tab-btn[data-tab="shopmgr"]');
-    if (tb) tb.click();
-  }
+  /* ── 首次打开加载 + #shopmgr 直达（必须在事件绑定之后执行，否则 click 没人接；登录态则交给 admin.html 的 PENDING_TAB 机制）── */
+  (function () {
+    var run = function () {
+      if (location.hash.replace('#', '') !== 'shopmgr') return;
+      if (document.getElementById('admin-body') && document.getElementById('admin-body').style.display !== 'none') {
+        var tb = document.querySelector('.tab-btn[data-tab="shopmgr"]');
+        if (tb && !tb.classList.contains('active')) tb.click();
+      } // 未登录/还没进后台时不动，登录成功后 admin.html 会用 PENDING_TAB 点开
+    };
+    run();
+    window.addEventListener('load', run); // 兜底：脚本执行时如果还在登录门后面，登录完成后也不会丢
+  })();
 
   /* ════════ 手动建单 / 批量导出 / 政策内容编辑（她 2026-10-25 规格）════════ */
   SM.osel = SM.osel || {};
@@ -1200,6 +1272,8 @@
 
   // ── 勾选框（捕获阶段，别触发行展开）──
   root.addEventListener('click', function (e) {
+    var retry = e.target.closest('.sm-o-retry'); // 加载失败的手动重试（根因：网络请求卡死/断开，不能只靠自动重试）
+    if (retry) { SM._oFailed = false; renderOrders(); loadOrders(); return; }
     var box = e.target.closest('.sm-osel');
     if (!box) return;
     e.stopPropagation(); e.preventDefault();

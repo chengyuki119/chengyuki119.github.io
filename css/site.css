@@ -303,7 +303,7 @@
   .bjd-chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .bjd-chip { border: none; background: var(--card); color: var(--muted); border-radius: 999px; padding: 6px 12px; font-size:15px; cursor: pointer; transition: background .2s, color .2s; }
   .bjd-chip:hover { background: var(--card-hover); color: var(--text); }
-  .bjd-chip.active { background: #ffd9e6; color: #fff; }
+  .bjd-chip.active { background: var(--accent-soft, #ffc8d6); color: #fff; border-color: var(--accent-soft, #ffc8d6); }
   #bjd-sort { border: none; background: var(--card); color: var(--muted); border-radius: 999px; padding: 6px 12px; font-size:15px; cursor: pointer; outline: none; font-family: inherit; }
   .cg-item { position: relative; aspect-ratio: 1/1; overflow: hidden; border-radius: 12px; background: var(--card); cursor: pointer; display: block; }
   .cg-item img { width: 100%; height: 100%; object-fit: cover; display: block; }

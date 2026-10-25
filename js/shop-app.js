@@ -1247,7 +1247,7 @@
     function tags() {
       var set = []; PRODUCTS.forEach(function (p) { if (p.tag && set.indexOf(p.tag) < 0) set.push(p.tag); });
       document.getElementById('q-tags').innerHTML = [''].concat(set).map(function (x) {
-        return '<button class="buy-btn q-tag" data-t="' + escAttr(x) + '" style="padding:6px 12px;font-size:14px;border-radius:999px;background:' + (x === tag ? '#ffd9e6;color:#fff' : '#fff;color:var(--muted,#9aa5bd)') + ';box-shadow:' + 'none' + ';">' + esc(x || t('全部', 'All')) + '</button>';
+        return '<button class="buy-btn q-tag" data-t="' + escAttr(x) + '" style="padding:6px 12px;font-size:14px;border-radius:999px;background:' + (x === tag ? '#ffc8d6;color:#fff;box-shadow:none;' : '#fff;color:var(--muted,#9aa5bd)') + ';box-shadow:' + 'none' + ';">' + esc(x || t('全部', 'All')) + '</button>';
       }).join('');
       bar.querySelectorAll('.q-tag').forEach(function (b) { b.addEventListener('click', function () { tag = b.getAttribute('data-t'); paint(); }); });
     }
