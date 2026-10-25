@@ -1089,8 +1089,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     });
   });
   var CF_CB = null;
-  function uiConfirm(msg, cb) {
+  function uiConfirm(msg, cb, okLabel) {
+    // okLabel 可选：删除场景默认「删除」，其它确认场景传自定义文案（如「确认」）
     CF_CB = cb;
+    var okBtn = document.getElementById('cf-ok');
+    okBtn.textContent = okLabel || '删除';
+    okBtn.className = okLabel ? 'btn-ok' : 'btn-del';
     document.getElementById('cf-msg').textContent = msg;
     document.getElementById('cf-mask').classList.add('open');
   }
@@ -5571,6 +5575,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     </div>
   </div>
 </div>
+<style>
+  /* 非删除类确认按钮：浅粉底白字（与全站按钮规范一致） */
+  .lo-mask .btn-ok { background: #ffd9e6; color: #fff; }
+  .lo-mask .btn-ok:hover { background: #ffc9dc; }
+</style>
 
 <script>
 /* 桌面侧边导航布局：把导航以外的内容包进 #adm-content */

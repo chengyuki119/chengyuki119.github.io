@@ -761,7 +761,7 @@
     if (e.target.classList.contains('sm-act-pay')) { // 确认付款
       uiConfirm('确认订单 ' + (o.order_no || '') + ' 的付款凭证没问题吗？确认后进入待发货。', function () {
         patchOrder(id, { status: 'paid', reject_reason: '' }, '已确认付款，记得尽快发货', 'status', '审核凭证通过 → paid');
-      });
+      }, '确认付款');
       return;
     }
     if (e.target.classList.contains('sm-act-reject')) { // 拒绝凭证（原因必填）
@@ -792,7 +792,7 @@
       };
       uiConfirm('确认 ' + (o.order_no || '') + ' 已交给 ' + carrier + ' 发出？', function () {
         patchOrder(id, body, '已发货，买家会看到物流信息', 'status', '确认发货 → shipped（' + carrier + ' ' + body.tracking + '）');
-      });
+      }, '确认发货');
       return;
     }
     if (e.target.classList.contains('sm-pkg-add')) { // 包裹：新增一行
@@ -878,7 +878,7 @@
           '商品已更新，金额已重算', 'edit_items',
           '商品编辑：' + calc.items.length + ' 件，小计 $' + fmtMoney(o.subtotal) + '→$' + fmtMoney(calc.sub) + '，总价 $' + fmtMoney(o.total) + '→$' + fmtMoney(calc.total));
         // 成功后 patchOrder→renderOrders 重绘回展示态；失败则保留编辑框内容
-      });
+      }, '保存');
       return;
     }
     if (e.target.classList.contains('sm-act-note')) { // 内部备注
@@ -998,7 +998,7 @@
       uiConfirm('确定取消拼团「' + ((g && g.name) || '') + '」吗？已参加的买家订单不受影响，但团不会再成。', function () {
         restWrite('shop_groups?id=eq.' + gid, 'PATCH', { status: 'cancelled' }, '拼团已取消')
           .then(function (ok) { if (ok) { var gg = byId(SM.groups, gid); if (gg) gg.status = 'cancelled'; renderGroups(); renderStats(); } });
-      });
+      }, '取消拼团');
     }
   });
 
