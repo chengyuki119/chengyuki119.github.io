@@ -86,7 +86,7 @@
   var SM = {
     tab: 'orders',
     loaded: false,
-    orders: [], groups: [], coupons: [], profiles: [], msgs: [], products: [],
+    orders: [], groups: [], coupons: [], profiles: [], msgs: [], products: [], payments: [],
     ship: { service_fee: 2, flat_est: 5 },
     ofilter: '', osearch: '',
     oopen: {},            // order_id -> 行是否展开
@@ -207,9 +207,33 @@
       .catch(function () { SM.ship = window.SHOP_SHIP || { service_fee: 2, flat_est: 5 }; })
       .then(renderSettings);
   }
+  function loadPayments() { // 支付/退款流水：付款状态与部分退款判定以这里为准（她 2026-10-25 规格）
+    return restGet('shop_payments?select=order_id,status,amount&order=created_at.desc&limit=1000')
+      .then(function (rows) { SM.payments = arr(rows); })
+      .catch(function () { SM.payments = arr(window.SHOP_PAYMENTS); });
+  }
+  function payInfo(o) {
+    var ps = arr(SM.payments).filter(function (x) { return String(x.order_id) === String(o.id); });
+    var paid = ps.filter(function (x) { return x.status === 'paid'; }).reduce(function (t, x) { return t + num(x.amount); }, 0);
+    var refunded = ps.filter(function (x) { return x.status === 'refunded'; }).reduce(function (t, x) { return t + num(x.amount); }, 0);
+    return { paid: paid, refunded: refunded };
+  }
+  function payLabel(o) { // 付款状态（与订单状态分开展示，不把已付款和已发货混为一谈）
+    var pi = payInfo(o);
+    var total = num(o.total) || 1;
+    if (pi.refunded > 0 && pi.refunded >= total - 0.005) return '已全额退款';
+    if (pi.refunded > 0) return '部分退款 $' + fmtMoney(pi.refunded);
+    if (pi.paid > 0 || ['paid', 'shipped', 'completed'].indexOf(o.status) !== -1) return '已付款';
+    if (o.status === 'pending') return '待付款';
+    if (o.status === 'reviewing') return '待审核付款';
+    if (o.status === 'rejected') return '凭证有误';
+    if (o.status === 'refunding') return '退款处理中';
+    if (o.status === 'cancelled') return '未付款 · 已取消';
+    return '未付款';
+  }
   function loadAll() {
-    return Promise.all([loadOrders(), loadGroups(), loadCoupons(), loadProfiles(), loadMsgs(), loadProducts(), loadShip()])
-      .then(function () { SM.loaded = true; });
+    return Promise.all([loadOrders(), loadGroups(), loadCoupons(), loadProfiles(), loadMsgs(), loadProducts(), loadShip(), loadPayments()])
+      .then(function () { SM.loaded = true; renderOrders(); renderStats(); }); // 全部到齐再刷一次：付款状态徽章要用支付流水（她 2026-10-25）
   }
 
   /* ── 顶部统计条 ── */
@@ -240,7 +264,11 @@
     var q = SM.osearch.toLowerCase();
     return SM.orders.filter(function (o) {
       if (SM.ofilter && o.status !== SM.ofilter) return false;
-      if (q && String(o.order_no || '').toLowerCase().indexOf(q) === -1 && String(o.email || '').toLowerCase().indexOf(q) === -1) return false;
+      if (q) {
+        var a = o.address || {};
+        var hay = [o.order_no, o.email, a.name, a.phone].map(function (x) { return String(x || '').toLowerCase(); });
+        if (!hay.some(function (h) { return h.indexOf(q) !== -1; })) return false; // 编号/邮箱/姓名/电话都可搜（她 2026-10-25）
+      }
       return true;
     });
   }
@@ -309,8 +337,13 @@
     var open = !!SM.oopen[o.id];
     var st = ST[o.status] || [o.status, '#c4bcb6'];
     var ship = num(o.subtotal) - num(o.discount) + num(o.shipping_actual != null ? o.shipping_actual : o.shipping_est) + num(o.service_fee);
+    var dead = o.status === 'refunded' || o.status === 'cancelled'; // 终态：不再出现付款/发货按钮（她 2026-10-25）
+    var payL = payLabel(o);
     var body = '';
     if (open) {
+      var a0 = o.address || {};
+      var addrName = a0.name || '';
+      var addrPhone = a0.phone || '';
       body = '<div class="sm-o-body">' +
         '<div style="min-width:0;">' +
           '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;"><b style="font-size:15px;">商品</b>' +
@@ -322,6 +355,12 @@
           '<div class="sm-items-edit" style="display:none;"></div>' +
         '</div>' +
         '<div class="sm-line"><span class="lbl">收货</span>' + addrHtml(o.address) + '</div>' +
+        '<div class="sm-line"><span class="lbl">买家</span>' +
+          (addrName ? esc(addrName) : '未提供') + (o.email ? ' · ' + esc(o.email) : '') +
+          (addrPhone ? ' · ' + esc(addrPhone) : ' · 电话未提供') + '</div>' +
+        '<div class="sm-line"><span class="lbl">订单信息</span>' + esc(o.order_no || '') + ' · ' +
+          esc((o.created_at || '').replace('T', ' ').slice(0, 16).replace(/-/g, '/')) + ' · 来源：' +
+          esc(SOURCE_LABEL[o.order_source || 'online'] || (o.order_source || 'online')) + ' · 付款：' + esc(payL) + '</div>' +
         (o.note ? '<div class="sm-line"><span class="lbl">买家留言</span>' + esc(o.note) + '</div>' : '') +
         (o.coupon_code ? '<div class="sm-line"><span class="lbl">优惠码</span>' + esc(o.coupon_code) + (num(o.discount) > 0 ? '（已减 $' + fmtMoney(o.discount) + '）' : '') + '</div>' : '') +
         '<div class="sm-line"><span class="lbl">付款</span>' +
@@ -330,12 +369,28 @@
         (o.status === 'rejected' && o.reject_reason ? '<div class="sm-io-sub">上次拒绝原因：' + esc(o.reject_reason) + '</div>' : '') +
         '</div>' +
         (o.pay_url ? '<img class="sm-pay-img" data-paypath="' + escAttr(o.pay_url) + '" alt="付款凭证">' : '') +
+        '<div class="sm-line"><span class="lbl">金额</span>商品小计 $' + fmtMoney(o.subtotal) +
+          (num(o.discount) > 0 ? ' · 折扣 -$' + fmtMoney(o.discount) : '') +
+          ' · 运费 $' + fmtMoney(o.shipping_actual != null && o.shipping_actual !== '' ? o.shipping_actual : o.shipping_est) +
+          ' · 税费 未收取' +
+          ' · 服务费 $' + fmtMoney(o.service_fee) +
+          ' · <b style="color:#ff6fa5;">总价 $' + fmtMoney(o.total) + '</b></div>' +
+        (function () {
+          var pi = payInfo(o);
+          if (pi.refunded <= 0 && pi.paid <= 0) return '';
+          return '<div class="sm-line"><span class="lbl">退款</span>' +
+            (pi.paid > 0 ? '已付 $' + fmtMoney(pi.paid) + ' · ' : '') +
+            (pi.refunded > 0 ? (pi.refunded >= num(o.total) - 0.005 ? '已全额退款 $' + fmtMoney(pi.refunded) : '<b style="color:#f3b96d;">部分退款 $' + fmtMoney(pi.refunded) + '</b>') : '') + '</div>';
+        })() +
+        (dead ? '<div class="sm-line"><span class="lbl">发货</span>' + (o.status === 'refunded' ? '已退款 · 无需发货' : '已取消 · 无需发货') +
+            (o.tracking ? '（历史物流：' + esc(o.carrier || '') + ' ' + esc(o.tracking) + '）' : '') + '</div>' : '') +
+        (dead ? '' :
         '<div class="sm-act">' +
         '<button type="button" class="btn-save sm-act-pay">确认付款</button>' +
         '<button type="button" class="btn-del sm-act-reject">拒绝凭证</button>' +
         '<input class="sm-reject-reason" placeholder="拒绝原因（拒绝凭证必填）">' +
-        '</div>' +
-        '<div class="sm-act sm-act-v"><span class="sm-vlabel">实际运费（Pirate Ship 实际金额，保存后买家应付同步更新）</span>' +
+        '</div>') +
+        (dead ? '' : '<div class="sm-act sm-act-v"><span class="sm-vlabel">实际运费（Pirate Ship 实际金额，保存后买家应付同步更新）</span>' +
         '<div class="sm-vfee-row">' +
         '<input class="sm-ship-actual" type="number" step="0.01" min="0" placeholder="如 6.15" value="' + escAttr(o.shipping_actual == null ? '' : o.shipping_actual) + '">' +
         '<span class="sm-total-prev">当前应付 $' + fmtMoney(ship) + '</span>' +
@@ -357,7 +412,7 @@
         '<div class="sm-act"><span class="lbl">包裹</span>' +
         '<div class="sm-pkgs" style="width:100%;display:flex;flex-direction:column;gap:6px;"><span style="font-size:14px;color:var(--muted);">加载中…</span></div>' +
         '<button type="button" class="btn-mini sm-pkg-add">＋ 加一个包裹</button>' +
-        '</div>' +
+        '</div>') +
         '<div class="sm-act"><span class="lbl">内部备注</span>' +
         '<textarea class="sm-admin-note" placeholder="只有你自己能看到">' + esc(o.admin_note || '') + '</textarea>' +
         '<button type="button" class="btn-mini sm-act-note">保存备注</button>' +
@@ -368,7 +423,8 @@
       '<div class="sm-o-head">' +
       '<span class="ck-box sm-osel' + (SM.osel[o.id] ? ' on' : '') + '" data-id="' + escAttr(o.id) + '" style="width:18px;height:18px;border-radius:6px;border:2px solid var(--muted,#9aa5bd);flex-shrink:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;color:var(--text,#5d6780);background:' + (SM.osel[o.id] ? '#ffd9e6' : 'transparent') + '">' + (SM.osel[o.id] ? '✓' : '') + '</span>' +
       '<span class="sm-o-no">' + esc(o.order_no || '') + '</span>' +
-      '<span class="sold-badge" style="background:' + st[1] + ';">' + esc(st[0]) + '</span>' +
+      '<span class="sold-badge" style="background:' + st[1] + ';">' + esc(dead ? (st[0] + ' · 无需发货') : st[0]) + '</span>' +
+      '<span class="sold-badge" style="background:#fff;border:1.5px solid var(--accent-soft,#ffc8d6);color:var(--muted,#9aa5bd);">付款：' + esc(payL) + '</span>' +
       '<span class="sm-o-mail">' + esc(o.email || '') + '</span>' +
       ((o.note || o.coupon_code) ? '<span class="sm-o-cnt" title="' + escAttr((o.note ? '备注：' + o.note : '') + (o.coupon_code ? (o.note ? '；' : '') + '优惠码：' + o.coupon_code : '')) + '">' + (o.note ? '📝' : '') + (o.coupon_code ? '🎟' : '') + '</span>' : '') +
       '<span class="sm-o-cnt">' + arr(o.items).length + ' 件</span>' +
@@ -843,6 +899,7 @@
     var b = e.target.closest('.dy-chip');
     if (!b) return;
     SM.ofilter = b.getAttribute('data-f') || '';
+    SM.osel = {}; // 切筛选清空勾选，避免隐藏的订单被误导出（她 2026-10-25）
     renderOrders();
   });
   document.getElementById('sm-o-search').addEventListener('input', function () {
@@ -1359,6 +1416,7 @@
       '<div class="mo-sum-row"><span class="mo-sl">商品小计</span><span>' + cs + fmtMoney(sub) + '</span></div>' +
       '<div class="mo-sum-row"><span class="mo-sl">折扣</span><span>-' + cs + fmtMoney(disc) + '</span></div>' +
       '<div class="mo-sum-row"><span class="mo-sl">运费</span><span>' + cs + fmtMoney(ship) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">税费</span><span>未收取</span></div>' +
       '<div class="mo-sum-row"><span class="mo-sl">服务费</span><span>' + cs + fmtMoney(fee) + '</span></div>' +
       '<div class="mo-sum-total"><b style="font-size:17px;color:var(--text);">订单总价</b><b>' + cs + fmtMoney(total) + '</b></div>' +
       '</div>';
@@ -1382,6 +1440,14 @@
     var mask = document.createElement('div');
     mask.id = 'mo-mask';
     mask.style.cssText = 'position:fixed;inset:0;background:rgba(90,80,90,.45);z-index:9998;overflow:auto;padding:30px 10px;';
+    // 订单编号改用服务端生成的 SY-YYYYMMDD-NNN（她 2026-10-25）；拿不到时先用旧格式占位，保存时再兜底重试
+    api('rpc/shop_next_order_no', { method: 'POST', headers: { 'Prefer': 'params=single-object' }, body: '{}' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (no) {
+        if (!no) return;
+        var el = document.querySelector('#mo-form .mo-no');
+        if (el && el.value.indexOf('SY-') !== 0) el.value = no; // 已被用户改过就不覆盖
+      }).catch(function () {});
     mask.innerHTML =
       '<div id="mo-form" style="max-width:640px;margin:0 auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 10px 40px rgba(120,80,100,.25);">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><h3 style="margin:0;font-size:19px;">手动创建订单</h3>' +
@@ -1517,6 +1583,7 @@
       if (!items.length) { toast('至少要有一个商品'); return; }
       var c = moCalc();
       if (c.total < 0) { toast('总价不能是负数'); return; }
+      if (c.disc < 0 || c.ship < 0 || c.fee < 0) { toast('折扣/运费/服务费不能填负数'); return; }
       var orderNo = f.querySelector('.mo-no').value.trim() || genOrderNo();
       var created = f.querySelector('.mo-time').value;
       var body = {
@@ -1539,16 +1606,27 @@
       var dt = created ? new Date(created) : null;
       if (dt && !isNaN(dt.getTime())) body.created_at = dt.toISOString();
       btn.disabled = true; btn.textContent = '保存中…';
-      api('shop_orders', { method: 'POST', body: JSON.stringify(body) }).then(function (r) {
+      var submitOrder = function (attempt) {
+        return api('shop_orders', { method: 'POST', body: JSON.stringify(body), headers: { 'Prefer': 'return=representation' } }).then(function (r) {
+          if (r.ok) return r.json().then(function (d) { return { ok: true, row: (d || [])[0] }; });
+          return r.json().catch(function () { return {}; }).then(function (d) {
+            var msg = (d && (d.message || d.msg)) || '';
+            if (attempt < 1 && /duplicate|unique|重复/.test(msg)) { // 编号撞车自动换号重试一次（并发兜底）
+              return api('rpc/shop_next_order_no', { method: 'POST', body: '{}' }).then(function (r2) { return r2.ok ? r2.json() : null; }).then(function (no) {
+                if (no) { body.order_no = no; var noEl = f.querySelector('.mo-no'); if (noEl) noEl.value = no; }
+                return submitOrder(attempt + 1);
+              });
+            }
+            return { ok: false, msg: msg };
+          });
+        });
+      };
+      submitOrder(0).then(function (res) {
         btn.disabled = false; btn.textContent = '保存订单';
-        if (!r.ok) {
-          r.json().then(function (d) {
-            toast('保存失败：' + ((d && (d.message || d.msg)) || '数据库拒绝，检查订单号是否重复'));
-          }).catch(function () { toast('保存失败：数据库拒绝'); });
-          return;
-        }
-        api('shop_order_logs', { method: 'POST', body: JSON.stringify({ order_id: null, actor: 'admin', action: 'create', detail: '后台手动建单 ' + orderNo }) }).catch(function () {});
-        toast('订单已保存：' + orderNo);
+        if (!res.ok) { toast('保存失败：' + (res.msg || '数据库拒绝，检查订单号是否重复')); return; }
+        var newId = res.row && res.row.id;
+        api('shop_order_logs', { method: 'POST', body: JSON.stringify({ order_id: newId || null, actor: 'admin', action: 'create', detail: '后台手动建单 ' + body.order_no }) }).catch(function () {});
+        toast('订单已保存：' + body.order_no);
         mask.remove();
         loadOrders().then(renderOrders);
       }).catch(function () { btn.disabled = false; btn.textContent = '保存订单'; toast('保存失败：网络异常，重试一下'); });
@@ -1588,7 +1666,11 @@
           var d = (o.created_at || '').slice(0, 10);
           if (sel.from && d < sel.from) return false;
           if (sel.to && d > sel.to) return false;
-          if (q && String(o.order_no || '').toLowerCase().indexOf(q) === -1 && String(o.email || '').toLowerCase().indexOf(q) === -1) return false;
+          if (q) {
+            var aq = o.address || {};
+            var hay = [o.order_no, o.email, aq.name, aq.phone].map(function (x) { return String(x || '').toLowerCase(); });
+            if (!hay.some(function (h) { return h.indexOf(q) !== -1; })) return false;
+          }
           return true;
         });
       }
@@ -1598,12 +1680,17 @@
         return;
       }
       var PAY = { pending: '待付款', reviewing: '待审核付款', rejected: '凭证有误', paid: '已付款', shipped: '已付款', completed: '已付款', cancelled: '已取消', refunding: '退款处理中', refunded: '已退款' };
-      var head = ['Order ID', 'Order Number', 'Order Date', 'Order Status', 'Payment Status', 'Order Source', 'Currency', 'Subtotal', 'Discount', 'Shipping Fee', 'Service Fee', 'Total Amount', 'Admin Notes', 'Customer Notes', 'Customer ID', 'Customer Name', 'Email', 'Phone', 'Recipient Name', 'Shipping Address', 'City', 'State', 'ZIP Code', 'Country', 'Product ID', 'SKU', 'Product Name', 'Variant', 'Quantity', 'Unit Price', 'Line Total'];
+      var head = ['Order ID', 'Order Number', 'Order Date', 'Order Status', 'Payment Status', 'Refund Amount', 'Refund Status', 'Tax', 'Order Source', 'Currency', 'Subtotal', 'Discount', 'Shipping Fee', 'Service Fee', 'Total Amount', 'Admin Notes', 'Customer Notes', 'Customer ID', 'Customer Name', 'Email', 'Phone', 'Recipient Name', 'Shipping Address', 'City', 'State', 'ZIP Code', 'Country', 'Product ID', 'SKU', 'Product Name', 'Variant', 'Quantity', 'Unit Price', 'Line Total'];
       var lines = [head.map(csvCell).join(',')];
       rows.forEach(function (o) {
         var a = o.address || {};
+        var pi = payInfo(o);
+        var refundAmt = pi.refunded > 0 ? fmtMoney(pi.refunded) : '';
+        var refundSt = pi.refunded <= 0 ? '' : (pi.refunded >= num(o.total) - 0.005 ? '已全额退款' : '部分退款');
+        var payL = payLabel(o);
         var base = [
-          o.id, o.order_no, o.created_at, o.status, PAY[o.status] || o.status,
+          o.id, o.order_no, o.created_at, o.status, payL,
+          refundAmt, refundSt, '', // 税费：系统不收税，留空（她 2026-10-25）
           SOURCE_LABEL[o.order_source || 'online'] || (o.order_source || 'online'),
           o.currency || 'USD', fmtMoney(o.subtotal), fmtMoney(o.discount),
           fmtMoney(o.shipping_actual != null && o.shipping_actual !== '' ? o.shipping_actual : o.shipping_est),
