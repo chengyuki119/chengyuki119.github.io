@@ -1226,19 +1226,18 @@
     showView('cart');
   }
 
-  // ===== 列表增强：搜索 / 筛选 / 排序 + 卡片行为 =====
+  // ===== 列表增强：筛选 / 排序 + 卡片行为（搜索框已按她 2026-10-25 要求删掉）=====
   function enhanceList() {
-    if (window.__ACCOUNT_DEFAULT_SEC) return; // 独立账号页：不注入搜索栏、不拉商品列表
+    if (window.__ACCOUNT_DEFAULT_SEC) return; // 独立账号页：不注入筛选栏、不拉商品列表
     var bar = document.createElement('div');
     bar.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;';
     bar.innerHTML =
-      '<input id="q-search" placeholder="' + t('搜索商品…', 'Search…') + '" style="flex:1;min-width:150px;padding:10px 14px;font-size:17px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;box-shadow:0 2px 10px rgba(180,120,150,.08);">' +
       '<div id="q-tags" style="display:flex;gap:6px;flex-wrap:wrap;"></div>' +
       '<button id="q-sort" class="buy-btn" style="padding:8px 14px;background:#fff;">' + t('最新', 'Newest') + '</button>';
     var grid = document.getElementById('product-grid');
     grid.parentNode.insertBefore(bar, grid);
     var SORTS = [['new', t('最新', 'Newest')], ['plow', t('价格从低', 'Price ↑')], ['phigh', t('价格从高', 'Price ↓')]];
-    var sortIdx = 0, tag = '', q = '';
+    var sortIdx = 0, tag = '';
     function tags() {
       var set = []; PRODUCTS.forEach(function (p) { if (p.tag && set.indexOf(p.tag) < 0) set.push(p.tag); });
       document.getElementById('q-tags').innerHTML = [''].concat(set).map(function (x) {
@@ -1249,7 +1248,6 @@
     function paint() {
       var list = PRODUCTS.filter(function (p) {
         if (tag && (p.tag || '') !== tag) return false;
-        if (q && ((p.name || '') + (p.description || '')).toLowerCase().indexOf(q.toLowerCase()) < 0) return false;
         return true;
       });
       if (sortIdx === 1) list = list.slice().sort(function (a, b) { return (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0); });
@@ -1265,7 +1263,6 @@
     }
     function statusOfG(p) { if (p.display_only) return 'display'; if (p.sold || !(p.stock > 0)) return 'out'; return 'on'; }
     window.__shopPaint = paint;
-    document.getElementById('q-search').addEventListener('input', function () { q = this.value; paint(); });
     document.getElementById('q-sort').addEventListener('click', function () {
       sortIdx = (sortIdx + 1) % 3; this.textContent = SORTS[sortIdx][1]; paint();
     });
@@ -1312,20 +1309,10 @@
     });
   }
 
-  // ===== 顶部快捷入口（登录后才有：未登录不展示「我的订单」等入口；可重复调用）=====
+  // ===== 顶部快捷入口（「我的订单」按钮已按她 2026-10-25 要求删掉；保留空函数防旧调用报错）=====
   function paintNav() {
-    if (document.getElementById('shop-quick-nav')) { // 已存在则按登录态切显示
-      document.getElementById('shop-quick-nav').style.display = USER ? '' : 'none';
-      return;
-    }
-    if (!USER) return;
-    var bar = document.querySelector('.notice');
-    var nav = document.createElement('div');
-    nav.id = 'shop-quick-nav';
-    nav.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;';
-    nav.innerHTML =
-      '<a class="back-link" href="/shop/?sec=orders">' + t('我的订单', 'Orders') + '</a>';
-    bar.parentNode.insertBefore(nav, bar.nextSibling);
+    var old = document.getElementById('shop-quick-nav');
+    if (old) old.parentNode.removeChild(old);
   }
 
   // ===== 路由入口 =====

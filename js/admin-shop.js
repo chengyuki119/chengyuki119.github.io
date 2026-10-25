@@ -570,7 +570,21 @@
   function augmentProductEdit(card) {
     var grid = card.querySelector('.edit-grid');
     if (!grid || grid.querySelector('.e-weight')) return;
-    var p = byId(SM.products, card.getAttribute('data-id'));
+    var pid = card.getAttribute('data-id');
+    var p = byId(SM.products, pid);
+    if (!p) {
+      // 竞态修复：商品列表还没加载完就点编辑 → 单独拉这个商品，别把已有规格/重量当空（她 2026-10-25 遇到）
+      restGet('products?select=id,name,price,stock,variants,weight_oz,image_url,tag&id=eq.' + pid)
+        .then(function (rows) {
+          var row = arr(rows)[0];
+          if (row) SM.products.push(row);
+          grid.querySelector('.e-weight') && grid.querySelector('.e-weight').remove();
+          var oldBlock = grid.querySelector('.sm-var-block'); if (oldBlock) oldBlock.remove();
+          augmentProductEdit(card);
+        })
+        .catch(function () {});
+      return;
+    }
     card.__p = p || null;
     card.__variants = JSON.parse(JSON.stringify(p && Array.isArray(p.variants) ? p.variants : []));
     var w = document.createElement('input');
