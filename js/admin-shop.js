@@ -571,39 +571,43 @@
     var grid = card.querySelector('.edit-grid');
     if (!grid || grid.querySelector('.e-weight')) return;
     var pid = card.getAttribute('data-id');
-    var p = byId(SM.products, pid);
-    if (!p) {
-      // 竞态修复：商品列表还没加载完就点编辑 → 单独拉这个商品，别把已有规格/重量当空（她 2026-10-25 遇到）
-      restGet('products?select=id,name,price,stock,variants,weight_oz,image_url,tag&id=eq.' + pid)
-        .then(function (rows) {
-          var row = arr(rows)[0];
-          if (row) SM.products.push(row);
-          grid.querySelector('.e-weight') && grid.querySelector('.e-weight').remove();
-          var oldBlock = grid.querySelector('.sm-var-block'); if (oldBlock) oldBlock.remove();
-          augmentProductEdit(card);
-        })
-        .catch(function () {});
-      return;
-    }
-    card.__p = p || null;
-    card.__variants = JSON.parse(JSON.stringify(p && Array.isArray(p.variants) ? p.variants : []));
-    var w = document.createElement('input');
-    w.className = 'e-weight';
-    w.type = 'number'; w.min = '0'; w.step = '0.1';
-    w.value = p && p.weight_oz != null ? p.weight_oz : '';
-    w.placeholder = '重量 weight_oz（盎司，含包装）';
-    grid.appendChild(w);
-    var block = document.createElement('div');
-    block.className = 'sm-var-block';
-    block.style.gridColumn = '1 / -1';
-    block.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
-      '<b style="font-size:16px;color:var(--text);">商品规格</b>' +
-      '<span class="hint" style="flex:1;">多规格商品商城下单必须选规格；留空 = 单规格</span>' +
-      '<button type="button" class="btn-mini sm-var-add">＋ 添加规格</button></div>' +
-      '<div class="sm-var-rows"></div>' +
-      '<p class="hint" style="margin:4px 0 0;">每行：SKU（唯一）/ 规格名 / 价格 / 库存，可传多张图（第一张为封面）</p>';
-    grid.appendChild(block);
-    smVarRenderRows(card);
+    var local = byId(SM.products, pid);
+    var build = function (p) {
+      // 重查 DOM：卡片可能已被主流程重绘，别把块插到已脱禹的节点上
+      var g2 = card.querySelector('.edit-grid');
+      if (!g2 || g2.querySelector('.e-weight')) return;
+      card.__p = p || null;
+      card.__variants = JSON.parse(JSON.stringify(p && Array.isArray(p.variants) ? p.variants : []));
+      var w = document.createElement('input');
+      w.className = 'e-weight';
+      w.type = 'number'; w.min = '0'; w.step = '0.1';
+      w.value = p && p.weight_oz != null ? p.weight_oz : '';
+      w.placeholder = '重量 weight_oz（盎司，含包装）';
+      g2.appendChild(w);
+      var block = document.createElement('div');
+      block.className = 'sm-var-block';
+      block.style.gridColumn = '1 / -1';
+      block.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
+        '<b style="font-size:16px;color:var(--text);">商品规格</b>' +
+        '<span class="hint" style="flex:1;">多规格商品商城下单必须选规格；留空 = 单规格</span>' +
+        '<button type="button" class="btn-mini sm-var-add">＋ 添加规格</button></div>' +
+        '<div class="sm-var-rows"></div>' +
+        '<p class="hint" style="margin:4px 0 0;">每行：规格名即买家看到的选项；SKU 用来区分（唯一）；价格/库存留空则用商品本身的；可传多张图（第一张为该选项封面）</p>';
+      g2.appendChild(block);
+      smVarRenderRows(card);
+    };
+    // 只信带 variants 字段的数据；缓存里没有就单独拉这个商品，绝不把已有规格当空（她 2026-10-25 遇到）
+    if (local && Array.isArray(local.variants)) { build(local); return; }
+    restGet('products?select=id,name,price,stock,variants,weight_oz,image_url,tag&id=eq.' + pid)
+      .then(function (rows) {
+        var row = arr(rows)[0] || local;
+        if (row) {
+          var ex = byId(SM.products, pid);
+          if (ex) Object.assign(ex, row); else SM.products.push(row);
+        }
+        build(row);
+      })
+      .catch(function () { build(local); });
   }
   function smVarImgHtml(v, i) {
     return arr(v.images).map(function (u, k) {
