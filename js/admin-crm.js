@@ -405,7 +405,9 @@
   function loadSyncState() {
     var box = document.getElementById('ms-sync-state');
     api('site_settings?key=eq.crm_sync&select=value').then(function (r) { return r.json(); }).then(function (rows) {
-      var st = (rows && rows[0] && rows[0].value) || {};
+      var raw = (rows && rows[0] && rows[0].value) || '';
+      try { raw = JSON.parse(raw); } catch (e) {}
+      var st = (raw && typeof raw === 'object') ? raw : {};
       box.innerHTML =
         '<div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text,#604C57);">' +
           '<span>' + t('同步开关', 'Sync switch') + '</span>' +
@@ -415,8 +417,8 @@
         '<div style="font-size:12px;color:var(--muted,#A88E9B);margin-top:6px;">' + t('状态：', 'Status: ') + (st.oauth_done ? t('Google 已授权，同步就绪', 'Google authorized, ready') : t('等待柚子完成 Google OAuth 授权', 'Waiting for your Google OAuth authorization')) + '</div>';
       box.querySelector('#ms-toggle').addEventListener('click', function () {
         var next = { enabled: !(st && st.enabled), oauth_done: false, updated: new Date().toISOString() };
-        api('site_settings?key=eq.crm_sync', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) })
-          .then(function () { toast(t('已更新（真实同步仍需 Google 授权）', 'Updated (real sync still needs auth)')); loadSyncState(); });
+        api('site_settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ key: 'crm_sync', value: next }) })
+          .then(function (r) { if (!r.ok) { toast(t('保存失败', 'Save failed')); return; } toast(t('已更新（真实同步仍需 Google 授权）', 'Updated (real sync still needs auth)')); loadSyncState(); });
       });
     });
   }
