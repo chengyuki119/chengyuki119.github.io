@@ -26,8 +26,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261026n">
-  <link rel="stylesheet" href="/site-menu.css?v=20261026n">
+<link rel="stylesheet" href="/css/site.css?v=20261026o">
+  <link rel="stylesheet" href="/site-menu.css?v=20261026o">
     <script src="/site-menu.js" defer></script>
 </head>
 <body>
@@ -76,8 +76,9 @@
     </div>
     <style>
       /* 手机端与 BJD 页卡片完全同套尺寸逻辑（bjd-size-grid：minmax(170px,1fr) + gap 10px）；桌面保持 200px */
-      #cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
-      @media (max-width:640px) { #cards-grid { grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:10px; } }
+      #cards-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; } /* §6.1 每行 5 个 */
+      @media (max-width:1100px) { #cards-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+      @media (max-width:640px) { #cards-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } }
     </style>
     <div id="cards-grid"></div>
   </div>
@@ -95,7 +96,7 @@
 </div>
 <div id="share-pop"></div>
 <div class="toast" id="toast"></div>
-<script src="/js/site-common.js?v=20261026n"></script>
+<script src="/js/site-common.js?v=20261026o"></script>
 <script>
   // ===== 色卡：独立子页（列表 + 详情 /color-card/?card=N）=====
   var CURRENT_CARD = -1;
@@ -267,7 +268,7 @@
   applyLang(LANG);
 </script>
 <a class="back-link page-back" href="/" style="margin:38px 0 10px;"><span data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</span></a>
-<script src="/js/site-footer.js?v=20261026n"></script>
+<script src="/js/site-footer.js?v=20261026o"></script>
 <script>
   // 统一 Footer（页面没有 <footer> 时自动在页尾新建）
   function initSiteFooter() { renderSiteFooter(); }

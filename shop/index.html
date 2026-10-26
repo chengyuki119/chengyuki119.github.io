@@ -92,9 +92,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr)); /* §6.1 桌面每行 5 个 */
     gap: 12px;
   }
+  @media (max-width: 1200px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @media (max-width: 640px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } } /* 手机上一行两个，好认 */
   .product {
     background: #fff;
@@ -318,9 +320,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   select { font-family: inherit; font-size: 15px; color: var(--text, #604C57); background: #fff; border: 1.5px solid var(--border, #FFD9E6); border-radius: 10px; padding: 7px 10px; outline: none; max-width: 100%; cursor: pointer; box-sizing: border-box; }
   select:focus { border-color: var(--text, #604C57); }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261026n">
-  <script src="/js/site-common.js?v=20261026n"></script>
-  <script src="/site-menu.js?v=20261026n" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261026o">
+  <script src="/js/site-common.js?v=20261026o"></script>
+  <script src="/site-menu.js?v=20261026o" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -818,8 +820,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261026n"></script>
-<script src="/js/site-footer.js?v=20261026n"></script>
+<script src="/js/shop-app.js?v=20261026o"></script>
+<script src="/js/site-footer.js?v=20261026o"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

@@ -152,6 +152,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .pp-menu .pp-group:not(:first-child) {
     border-top: 1px solid var(--card-hover); margin-top: 7px; padding-top: 12px;
   }
+  /* 组内子区标签（如订单与履约工具下的「互动管理」）：比分组标题更轻，不另起分组边线 */
+  .pp-menu .pp-sub {
+    font-size: 12px; color: var(--muted); letter-spacing: .05em; opacity: .85;
+    padding: 10px 12px 2px; user-select: none;
+  }
   /* ── 桌面端：导航固定左侧栏，内容右侧 ── */
   #adm-content { min-width: 0; }
   @media (min-width: 900px) {
@@ -211,13 +216,16 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   .btn-del { border: none; background: var(--accent,#FFD9E6); color: var(--text); font-family: inherit; cursor: pointer; }
+  /* 确认弹窗的确认按钮（此前无样式定义导致浏览器默认外观，她 20261026 第三轮 §3.2） */
+  .btn-ok { border: none; background: var(--accent-strong,#A04A68); color: #fff; font-family: inherit; cursor: pointer; }
   /* 按钮组件统一：不管在不在 .actions 里，都是同一套圆角小按钮（不再有浏览器默认样式）*/
-  .btn-mini, .btn-del, .btn-save, .btn-cancel {
+  .btn-mini, .btn-del, .btn-ok, .btn-save, .btn-cancel {
     border: none; font-family: inherit; font-size:16px;
     padding: 7px 16px; border-radius: 999px; cursor: pointer;
     transition: background .2s, opacity .2s;
   }
   .btn-mini:hover { background: var(--card-hover); }
+  .btn-ok:hover { background: #8d3d5a; }
   .btn-del:hover { background: #f0c3da; }
   .btn-save:hover { opacity: .85; }
   .dy-chips { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -447,7 +455,30 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .pr-demo { display: grid; gap: 2px; width: 38px; height: 22px; }
   .pr-demo i { background: var(--accent-soft); border-radius: 2px; display: block; }
   .pr-opt.active .pr-demo i { background: #fff; }
-  /* 主页展示开关：自定义粉色开关，不用原生 checkbox */
+  /* §3.1 复选框/单选框全量统一（appearance:none 自定义主题样式，保留键盘可达性） */
+  input[type="checkbox"], input[type="radio"] {
+    appearance: none; -webkit-appearance: none;
+    width: 20px; height: 20px; flex: none; margin: 0;
+    border: 1.5px solid var(--border,#FFD9E6); border-radius: 6px; background: #fff;
+    display: inline-block; vertical-align: middle; cursor: pointer; position: relative;
+    transition: background .15s, border-color .15s, box-shadow .15s; box-sizing: border-box;
+  }
+  input[type="radio"] { border-radius: 50%; }
+  input[type="checkbox"]:hover, input[type="radio"]:hover { border-color: #f0b9d2; }
+  input[type="checkbox"]:checked, input[type="radio"]:checked {
+    background: var(--accent-soft,#FCE4EC); border-color: #f0b9d2;
+  }
+  input[type="checkbox"]:checked::after {
+    content: ''; position: absolute; left: 5px; top: 1.5px; width: 6px; height: 11px;
+    border: solid var(--accent-strong,#A04A68); border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  input[type="radio"]:checked::after {
+    content: ''; position: absolute; left: 4.5px; top: 4.5px; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--accent-strong,#A04A68);
+  }
+  input[type="checkbox"]:disabled, input[type="radio"]:disabled { opacity: .45; cursor: default; }
+  input[type="checkbox"]:focus-visible, input[type="radio"]:focus-visible { outline: 2px solid #f0b9d2; outline-offset: 2px; }
+
   .tgl { position: relative; width: 38px; height: 22px; border-radius: 11px; border: 1px solid var(--accent,#FFD9E6); background: var(--card); cursor: pointer; padding: 0; flex-shrink: 0; transition: background .2s, border-color .2s; }
   .tgl .tgl-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 1px solid var(--accent,#FFD9E6); box-sizing: border-box; transition: left .2s, background .2s; }
   .tgl.on { background: var(--accent-soft); border-color:var(--accent-soft); }
@@ -563,9 +594,6 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <button class="tab-btn" data-tab="crm">客户管理</button>
         <button class="tab-btn" data-tab="reviews">评价返图管理</button>
         <button class="tab-btn" data-tab="pos">线下开单</button>
-        <div class="pp-group">互动管理</div>
-        <button class="tab-btn" data-tab="messages">联系与留言管理</button>
-        <button class="tab-btn" data-tab="ai">AI 对话</button>
         <div class="pp-group">订单与履约工具</div>
         <button class="tab-btn" data-tab="workbench">订单工作台</button>
         <button class="tab-btn" data-tab="export">订单导出</button>
@@ -573,6 +601,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <button class="tab-btn" data-tab="units">商品编码</button>
         <button class="tab-btn" data-tab="qcscan">扫码验货</button>
         <button class="tab-btn" data-tab="cost">成本计算</button>
+        <div class="pp-sub">互动管理</div>
+        <button class="tab-btn" data-tab="messages">联系与留言管理</button>
+        <button class="tab-btn" data-tab="ai">AI 对话</button>
         <div class="pp-group">系统设置</div>
         <button class="tab-btn" data-tab="mailsync">邮件与联系人同步</button>
         <button class="tab-btn" data-tab="mailtpl">邮件模板管理</button>
@@ -1332,9 +1363,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.style.display = b.dataset.tab === name ? '' : 'none';
       });
-      // 切页后左侧导航回到顶部（她自己滚动看过下面再切页时，菜单会停在中间——她 2026-10-26）
-      var ppm = document.getElementById('pp-menu'); if (ppm) ppm.scrollTop = 0;
-      try { window.scrollTo(0, 0); } catch (e) {} // 右侧新页面主体从顶部显示（她 2026-10-26 任务书 §6）
+      // §1.2 左侧导航内部滚动位置保留（她第三轮任务书：切页不能把菜单跳回顶部）；仅当选中项不可见时在导航内部轻微滚动到可见
+      try { b.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+      try { window.scrollTo(0, 0); } catch (e) {} // §1.1 右侧新页面主体从顶部显示
+      setTimeout(function () { try { window.scrollTo(0, 0); } catch (e) {} }, 80); // 异步渲染后再次确认（不刷新页面、不清表单）
       if (b.dataset.tab === 'works') renderWorks();
       if (b.dataset.tab === 'reviews') loadReviewsAdmin();
       if (b.dataset.tab === 'system') loadEmailLog();
@@ -6081,13 +6113,13 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026n"></script>
-<script src="js/admin-crm.js?v=20261026n"></script>
-<script src="js/vendor/jsQR.js?v=20261026n"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261026n"></script>
-<script src="js/admin-workbench.js?v=20261026n"></script>
-<script src="js/admin-biz.js?v=20261026n"></script>
-<script src="js/admin-export.js?v=20261026n"></script>
+<script src="js/admin-shop.js?v=20261026o"></script>
+<script src="js/admin-crm.js?v=20261026o"></script>
+<script src="js/vendor/jsQR.js?v=20261026o"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261026o"></script>
+<script src="js/admin-workbench.js?v=20261026o"></script>
+<script src="js/admin-biz.js?v=20261026o"></script>
+<script src="js/admin-export.js?v=20261026o"></script>
 <div style="padding:0 24px;"><a class="back-link" href="/" style="margin:26px 0 8px;">← 返回主页</a></div>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>

@@ -35,8 +35,8 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261026n">
-  <link rel="stylesheet" href="/site-menu.css?v=20261026n">
+<link rel="stylesheet" href="/css/site.css?v=20261026o">
+  <link rel="stylesheet" href="/site-menu.css?v=20261026o">
     <script src="/site-menu.js" defer></script>
 </head>
 <body class="home">
@@ -207,7 +207,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261026n"></script>
+<script src="/js/site-common.js?v=20261026o"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -578,17 +578,17 @@
       var tv = bjdTotalV(b);
       var pvRaw = String((b.price && b.price.total) || '').trim();
       var pv = tv > 0 ? fmtMoney(tv) : (pvRaw !== '' ? fmtPriceText(pvRaw) : '');
-      return '<div class="card bjd-card" data-i="' + x.i + '" style="margin-bottom:0;padding:0;overflow:hidden;cursor:pointer;position:relative;">' +
+      return '<div class="card bjd-card" data-i="' + x.i + '" style="margin-bottom:0;padding:0;overflow:hidden;cursor:pointer;position:relative;display:flex;flex-direction:column;">' +
         (img ? '<div style="width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--card);"><img src="' + escAttrDb(normImg(img)) + '" style="width:100%;height:100%;object-fit:cover;display:block;" alt="BJD" loading="lazy"></div>'
              : '<div style="width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:var(--card);color:var(--muted);font-size:15px;">' + (LANG === 'en' ? 'No photo' : '暂无图片') + '</div>') +
-        '<div style="padding:10px 12px;">' +
+        '<div style="padding:10px 12px;display:flex;flex-direction:column;flex:1;">' +
         '<div style="display:flex;align-items:center;gap:8px;">' +
         '<b style="flex:1;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escDb(b.name || (LANG === 'en' ? 'Unnamed doll' : '未命名娃娃')) + '</b>' +
         shareBtnHtml(x.i, 'bjd', true) +
         bjdEditBtn(x.i) + // 登录后台后才出现
         '</div>' +
         (b.head.size ? '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + escDb(LANG === 'en' && window.sizeEnKeep ? sizeEnKeep(b.head.size) : b.head.size) + '</div>' : '') +
-        (pv ? '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;"><span style="flex:1;font-size:17px;color:var(--text,#604C57);font-weight:600;">' + (LANG === 'en' ? 'Total ' : '总价 ') + '</span><span style="color:var(--price,#ff6fa5);font-weight:600;">¥' + pv + '</span></div>' : '') +
+        '<div style="display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;"><span style="flex:1;font-size:17px;color:var(--text,#604C57);font-weight:600;">' + (LANG === 'en' ? 'Total ' : '总价 ') + '</span><span style="color:var(--price,#ff6fa5);font-weight:600;">' + (pv ? '¥' + pv : '—') + '</span></div>' +
         '</div></div>';
     }).join('');
   }
@@ -1488,7 +1488,7 @@
   });
 })();
 </script>
-<script src="/js/site-footer.js?v=20261026n"></script>
+<script src="/js/site-footer.js?v=20261026o"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

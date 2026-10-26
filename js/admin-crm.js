@@ -217,6 +217,8 @@
           '<div style="font-size:13px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:8px 12px;margin-bottom:10px;">' + t('现金 / 转账需实际收到钱后再点「确认收款」——只保存记录不代表已收款。', 'Cash/transfers: confirm only after money actually received.') + '</div>' +
           '<div id="pos-cart"></div>' +
           '<div id="pos-sum"></div>' +
+          '<div style="margin-top:10px;"><span class="chip on" id="pos-mode-test">' + t('测试模式', 'Test mode') + '</span> <span class="chip" id="pos-mode-formal">' + t('正式开单', 'Formal sale') + '</span>' +
+          '<span id="pos-nextno" style="margin-left:10px;font-size:12px;color:var(--muted,#A88E9B);"></span></div>' +
           '<button class="btn-save-tb" id="pos-save" style="width:100%;margin-top:12px;">' + t('保存销售记录（测试模式）', 'Save sale (test mode)') + '</button>' +
           '<div id="pos-after" style="margin-top:12px;"></div>' +
         '</div>' +
@@ -229,6 +231,20 @@
       el.addEventListener('click', function () { POS.channel = el.getAttribute('data-ch'); renderPos(); });
     });
     panel.querySelector('#pos-anon').addEventListener('click', function () { POS.customerId = null; renderPos(); });
+    // §4 单号模式切换：测试=SY-POS-TEST-xxx，正式=SY-POS-00x（两套序列均在库端 shop_order_seq 行级计数，与线上订单独立，不会撞号）
+    var tChip = panel.querySelector('#pos-mode-test'), fChip = panel.querySelector('#pos-mode-formal');
+    function paintPosMode() {
+      tChip.classList.toggle('on', POS.test); fChip.classList.toggle('on', !POS.test);
+      panel.querySelector('#pos-save').textContent = POS.test ? t('保存销售记录（测试模式）', 'Save sale (test mode)') : t('保存正式销售记录', 'Save formal sale');
+      var nn = panel.querySelector('#pos-nextno');
+      api('shop_order_seq?select=day,last_no&day=in.(POS,POS_TEST)').then(function (r) { return r.json(); }).then(function (rows) {
+        var pos = (rows || []).filter(function (x) { return x.day === 'POS'; })[0], pt = (rows || []).filter(function (x) { return x.day === 'POS_TEST'; })[0];
+        nn.textContent = t('下一单号：', 'Next no: ') + (POS.test ? ('SY-POS-TEST-' + (((pt && pt.last_no) || 0) + 1)) : ('SY-POS-' + String((((pos && pos.last_no) || 0) + 1)).padStart(3, '0')));
+      }).catch(function () { nn.textContent = ''; });
+    }
+    tChip.addEventListener('click', function () { POS.test = true; paintPosMode(); });
+    fChip.addEventListener('click', function () { POS.test = false; paintPosMode(); });
+    paintPosMode();
     panel.querySelector('#pos-pickcust').addEventListener('click', function () {
       var sel = panel.querySelector('#pos-custpick');
       sel.style.display = sel.style.display === 'none' ? '' : 'none';
@@ -308,7 +324,7 @@
     api('rpc/shop_pos_create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       .then(function (r) { return r.json(); })
       .then(function (j) {
-        btn.disabled = false; btn.textContent = t('保存销售记录（测试模式）', 'Save sale (test mode)');
+        btn.disabled = false; btn.textContent = POS.test ? t('保存销售记录（测试模式）', 'Save sale (test mode)') : t('保存正式销售记录', 'Save formal sale');
         if (j && j.message) { toast(j.message); return; }
         toast(t('已保存：', 'Saved: ') + j.order_no);
         POS.lastSale = j;

@@ -40,7 +40,7 @@
     position: fixed;
     top: 0; left: 0; right: 0;
     height: 60px;
-    background: #FFF5F7; /* 浅粉分区（她 20261026 补充任务书 §4.1），仅此一处，不再往粉里走 */
+    background: #ffffff; /* 顶栏恢复白色（她 20261026 第三轮 §6.3；#FFF5F7 只保留给正文内需要的分区） */
     box-shadow: 0 2px 12px rgba(255,143,171,.18);
     z-index: 200;
     display: flex;
@@ -171,7 +171,7 @@
   /* ===== 主页精选照片（点进子页看全部） ===== */
   .preview-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr); /* §6.1 桌面端统一每行 5 个（她 20261026 第三轮） */
     gap: 10px;
   }
   .preview-grid .photo { border-radius: 12px; font-size:15px; }
@@ -226,11 +226,11 @@
   .photo:hover { transform: scale(1.03); }
   .photo img { width: 100%; height: 100%; object-fit: cover; }
 
-  /* 相册：照片卡片 Grid。列数由每分区「每行显示」设置驱动（--pr），默认 4；
+  /* 相册：照片卡片 Grid。列数由每分区「每行显示」设置驱动（--pr），默认 5（§6.1）；
      平板最多 3 列、手机最多 2 列，只缩不增，桌面端严格等于设置值 */
   .album {
     display: grid;
-    grid-template-columns: repeat(var(--pr, 4), 1fr);
+    grid-template-columns: repeat(var(--pr, 5), 1fr);
     gap: 14px;
     padding: 6px 0 30px;
   }
@@ -312,18 +312,21 @@
   #bjd-sort { border: none; background: var(--card); color: var(--muted); border-radius: 999px; padding: 6px 12px; font-size:15px; cursor: pointer; outline: none; font-family: inherit; }
   .cg-item { position: relative; aspect-ratio: 1/1; overflow: hidden; border-radius: 12px; background: var(--card); cursor: pointer; display: block; }
   .cg-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  #cards-home-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; } /* 主页预览固定 4 列：2~3 个项目也不拉伸（她 2026-10-26） */
-  #works-home-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; } /* 固定 4 列不拉伸 */
+  #cards-home-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; } /* §6.1 每行 5 个 */
+  #works-home-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; } /* §6.1 每行 5 个 */
   /* 稿件列表页：固定一行四个，不满四个也留空位，卡片不拉伸 */
-  #works-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  #works-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } /* §6.1 每行 5 个 */
   @media (max-width: 640px) { #works-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
   .bjd-size-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
   .bjd-size-h { font-size:18px; margin: 20px 0 10px; }
   .bjd-size-h:first-child { margin-top: 0; }
   .home-long-btn { display: block; text-align: center; margin-top: 14px; padding: 11px 0; font-size:17px; border-radius: 12px; background: var(--accent,#ffd9e6); color: var(--text, #604C57); font-weight: 600; text-decoration: none; transition: filter .2s; }
   .home-long-btn:hover { filter: brightness(1.05); }
-  #bjd-home-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; } /* 固定 4 列不拉伸 */
+  #bjd-home-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; } /* §6.1 每行 5 个 */
   /* 卡片视觉与 Photo Gallery 统一：圆角 + hover 平滑放大 */
+  #bjd-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; } /* §6.1 每行 5 个（此前无 grid 定义） */
+  @media (max-width: 1100px) { #bjd-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { #bjd-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
   #bjd-home-grid .bjd-card, #cards-home-grid .sc-product, #works-home-grid .work-card, #cards-grid .sc-product, #bjd-grid .bjd-card {
     min-width: 0;
     border-radius: var(--radius); overflow: hidden; transition: transform .2s;
@@ -616,7 +619,7 @@
 /* ═══ 首页小铺商品展示（视觉规范参考色卡页卡片）═══ */
 .home-shop-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 与色卡/BJD/稿件预览同频 4 列（她 2026-10-26：尺寸要对齐） */
+  grid-template-columns: repeat(5, 1fr); /* §6.1 每行 5 个（她 20261026 第三轮，替代此前 4 列约定） */
   gap: 12px;
   margin-top: 18px;
 }

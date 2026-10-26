@@ -26,8 +26,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261026n">
-  <link rel="stylesheet" href="/site-menu.css?v=20261026n">
+<link rel="stylesheet" href="/css/site.css?v=20261026o">
+  <link rel="stylesheet" href="/site-menu.css?v=20261026o">
     <script src="/site-menu.js" defer></script>
 </head>
 <body>
@@ -97,7 +97,7 @@
 </div>
 <div id="share-pop"></div>
 <div class="toast" id="toast"></div>
-<script src="/js/site-common.js?v=20261026n"></script>
+<script src="/js/site-common.js?v=20261026o"></script>
 <script>
   // ===== BJD：独立子页（娃娃墙 + 娃娃详情 /bjd/?id=N）=====
   var BJD_FILTER = '全部';
@@ -108,10 +108,10 @@
 
   function bjdCardHtml(x) {
     var b = x.b;
-    return '<div class="card bjd-card" data-i="' + x.i + '" style="margin-bottom:0;padding:0;overflow:hidden;cursor:pointer;position:relative;">' +
+    return '<div class="card bjd-card" data-i="' + x.i + '" style="margin-bottom:0;padding:0;overflow:hidden;cursor:pointer;position:relative;display:flex;flex-direction:column;">' +
       (pagerImgsOf({ photos: b.photos, image: b.image }).length ? pagerWrapHtml(pagerImgsOf({ photos: b.photos, image: b.image }), b.name)
                : '<div style="width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:var(--card);color:var(--muted);font-size:15px;">' + t('暂无图片', 'No photo') + '</div>') +
-      '<div style="padding:12px 14px;">' +
+      '<div style="padding:12px 14px;display:flex;flex-direction:column;flex:1;">' +
       '<div style="display:flex;align-items:center;gap:8px;">' +
       '<b style="flex:1;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escDb(b.name || t('未命名娃娃', 'Unnamed doll')) + '</b>' +
       shareBtnHtml(x.i, 'bjd', true) +
@@ -121,9 +121,10 @@
         var tv = bjdTotalV(b);
         var pv = tv > 0 ? '¥' + fmtMoney(tv) : (String(b.price.total || '').trim() !== '' ? '¥' + fmtPriceText(b.price.total) : '');
         var eb = bjdEditBtn(x.i); // 登录后台后才出现
-        if (!pv && !eb) return '';
-        return '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">' +
-          (pv ? '<span style="flex:1;font-size:16px;color:var(--text,#604C57);font-weight:600;">' + t('总价', 'Total') + ' <span style="color:var(--price,#ff6fa5);">' + escDb(pv) + '</span></span>' : '<span style="flex:1;"></span>') +
+        // §6.2 总价行永远渲染（无值显示 —），钉在卡片底部，位置稳定
+        if (!pv) pv = '—';
+        return '<div style="display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;">' +
+          '<span style="flex:1;font-size:16px;color:var(--text,#604C57);font-weight:600;">' + t('总价', 'Total') + ' <span style="color:var(--price,#ff6fa5);">' + escDb(pv) + '</span></span>' +
           eb + '</div>';
       })() +
       '</div></div>';
@@ -286,7 +287,7 @@
   applyLang(LANG);
 </script>
 <a class="back-link page-back" href="/" style="margin:38px 0 10px;"><span data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</span></a>
-<script src="/js/site-footer.js?v=20261026n"></script>
+<script src="/js/site-footer.js?v=20261026o"></script>
 <script>
   // 统一 Footer（页面没有 <footer> 时自动在页尾新建）
   function initSiteFooter() { renderSiteFooter(); }
