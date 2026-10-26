@@ -559,6 +559,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <button class="tab-btn" data-tab="mailsync">邮件与联系人同步</button>
         <button class="tab-btn" data-tab="mailtpl">邮件模板管理</button>
         <button class="tab-btn" data-tab="theme">主题颜色</button>
+        <button class="tab-btn" data-tab="workbench">订单工作台</button>
+        <button class="tab-btn" data-tab="export">订单导出</button>
+        <button class="tab-btn" data-tab="print">清单打印</button>
+        <button class="tab-btn" data-tab="cost">成本计算</button>
+        <button class="tab-btn" data-tab="units">商品编码</button>
+        <button class="tab-btn" data-tab="qcscan">扫码验货</button>
         <button class="tab-btn" data-tab="system">系统状态</button>
       </div>
     </div>
@@ -755,6 +761,18 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     <div id="tab-mailtpl" style="display:none;"></div>
     <!-- 主题颜色（js/admin-crm.js） -->
     <div id="tab-theme" style="display:none;"></div>
+    <!-- 订单工作台（js/admin-workbench.js）：草稿/批量导入/外部商品/付款计划 -->
+    <div id="tab-workbench" style="display:none;"></div>
+    <!-- 订单导出（js/admin-export.js） -->
+    <div id="tab-export" style="display:none;"></div>
+    <!-- 商品清单打印（js/admin-export.js） -->
+    <div id="tab-print" style="display:none;"></div>
+    <!-- 成本计算（js/admin-biz.js） -->
+    <div id="tab-cost" style="display:none;"></div>
+    <!-- 商品编码（js/admin-biz.js） -->
+    <div id="tab-units" style="display:none;"></div>
+    <!-- 扫码验货（js/admin-biz.js） -->
+    <div id="tab-qcscan" style="display:none;"></div>
 
     <!-- 评价返图管理 -->
     <div id="tab-reviews" style="display:none;">
@@ -1038,12 +1056,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   // 主题颜色：与前台同一套（site_settings.theme_colors → :root 变量），后台同步变（她 2026-10-26）
   (function () {
     try { var __t = JSON.parse(localStorage.getItem('yuki-theme-colors') || 'null');
-      if (__t && typeof __t === 'object') { var __m = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price' }, __r = document.documentElement.style; Object.keys(__m).forEach(function (k) { if (__t[k]) __r.setProperty(__m[k], __t[k]); }); } } catch (e) {}
+      if (__t && typeof __t === 'object') { var __m = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price', success: '--success', warning: '--warning', danger: '--danger' }, __r = document.documentElement.style; Object.keys(__m).forEach(function (k) { if (__t[k]) __r.setProperty(__m[k], __t[k]); }); } } catch (e) {}
     fetch(SUPABASE_URL + '/rest/v1/site_settings?select=value&key=eq.theme_colors', { headers: { apikey: SUPABASE_ANON_KEY } })
       .then(function (r) { return r.ok ? r.json() : []; })
       .then(function (rows) { var raw = rows && rows[0] && rows[0].value; if (!raw) return;
         try { var v = typeof raw === 'string' ? JSON.parse(raw) : raw; if (v && typeof v === 'object') {
-          var __r = document.documentElement.style; var __m = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price' };
+          var __r = document.documentElement.style; var __m = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price', success: '--success', warning: '--warning', danger: '--danger' };
           Object.keys(__m).forEach(function (k) { if (v[k]) __r.setProperty(__m[k], v[k]); });
           try { localStorage.setItem('yuki-theme-colors', JSON.stringify(v)); } catch (e) {} } } catch (e) {} })
       .catch(function () {});
@@ -1051,8 +1069,16 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   (function () {
     var h = location.hash.replace('#', '');
     if (h === 'records') h = 'cards'; // 兼容旧链接 admin.html#records
-    if (['messages', 'shop', 'shopmgr', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'days', 'bjd', 'ai', 'system'].indexOf(h) !== -1) PENDING_TAB = h; // shopmgr/system 补进直达名单（她 2026-10-25：#shopmgr 刷新后订单页永远「加载中」的根因之一）
+    // 直达名单改为动态判断：只要有对应页签按钮就允许（旧写死名单漏掉了 mailtpl/theme 等新页签）
+    if (h && document.querySelector('.tab-btn[data-tab="' + h + '"]')) PENDING_TAB = h;
   })();
+  // 后台开着时点带 hash 的链接（如单件二维码 admin.html#qcscan?code=…）：同文档跳转不会重跑脚本，这里补一个 hashchange 切页
+  window.addEventListener('hashchange', function () {
+    var h2 = location.hash.replace('#', '').split('?')[0];
+    if (h2 === 'records') h2 = 'cards';
+    var pb2 = h2 && document.querySelector('.tab-btn[data-tab="' + h2 + '"]');
+    if (pb2 && !pb2.classList.contains('active')) pb2.click();
+  });
 
   function toast(msg) {
     var el = document.getElementById('toast');
@@ -1262,7 +1288,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       b.classList.add('active');
       document.getElementById('pp-cur').textContent = b.textContent;
       ppClose();
-      ['messages', 'shop', 'shopmgr', 'crm', 'pos', 'mailsync', 'mailtpl', 'theme', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (name) {
+      ['messages', 'shop', 'shopmgr', 'crm', 'pos', 'mailsync', 'mailtpl', 'theme', 'workbench', 'export', 'print', 'cost', 'units', 'qcscan', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (name) {
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.style.display = b.dataset.tab === name ? '' : 'none';
       });
@@ -1277,6 +1303,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (b.dataset.tab === 'mailsync' && window.CRM) CRM.bootMailsync();
       if (b.dataset.tab === 'mailtpl' && window.CRM) CRM.bootMailtpl();
       if (b.dataset.tab === 'theme' && window.CRM) CRM.bootTheme();
+      if (b.dataset.tab === 'workbench' && window.WB) WB.bootWorkbench();
+      if (b.dataset.tab === 'export' && window.EXPORT) EXPORT.bootExport();
+      if (b.dataset.tab === 'print' && window.EXPORT) EXPORT.bootPrint();
+      if (b.dataset.tab === 'cost' && window.BIZ) BIZ.bootCost();
+      if (b.dataset.tab === 'units' && window.BIZ) BIZ.bootUnits();
+      if (b.dataset.tab === 'qcscan' && window.BIZ) BIZ.bootQcscan();
       try { history.replaceState(null, '', '#' + b.dataset.tab); } catch (e) {} // 把当前 tab 写进地址：刷新后停留在原页
     });
   });
@@ -6005,8 +6037,11 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026h"></script>
-<script src="js/admin-crm.js?v=20261026h"></script>
+<script src="js/admin-shop.js?v=20261026i"></script>
+<script src="js/admin-crm.js?v=20261026i"></script>
+<script src="js/admin-workbench.js?v=20261026i"></script>
+<script src="js/admin-biz.js?v=20261026i"></script>
+<script src="js/admin-export.js?v=20261026i"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

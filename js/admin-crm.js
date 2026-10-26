@@ -432,13 +432,26 @@
       { key: 'order_cancel', name: t('订单取消', 'Order cancelled'), desc: t('订单取消时自动发送', 'Sent when order cancelled') },
       { key: 'new_product', name: t('新品上架通知', 'New item notice'), desc: t('新品上架时发给订阅买家（带退订）', 'To subscribers (with unsubscribe)') },
       { key: 'contact_reply', name: t('客户留言回复', 'Message reply'), desc: t('站长回复客户留言时发送', 'Sent when you reply to a message') },
-      { key: 'vip_notice', name: t('VIP 会员变更通知', 'VIP change notice'), desc: t('VIP 设定或到期提醒时发送', 'Sent on VIP set / expiry reminder') }
+      { key: 'vip_notice', name: t('VIP 会员变更通知', 'VIP change notice'), desc: t('VIP 设定或到期提醒时发送', 'Sent on VIP set / expiry reminder') },
+      { key: 'order_paid', name: t('付款确认', 'Payment received'), desc: t('定金/尾款/分期到账时发送（与下单确认分开）', 'Sent when a deposit / final / installment arrives') },
+      { key: 'deposit_reminder', name: t('定金/尾款催付提醒', 'Payment reminder'), desc: t('定金或尾款逾期未付时发送', 'Sent when deposit / final payment is overdue') },
+      { key: 'order_risk', name: t('大额订单确认', 'Large-order check'), desc: t('大额/高风险订单发货前的人工确认', 'Manual confirmation before shipping a large / risky order') },
+      { key: 'out_of_stock', name: t('缺货通知', 'Out of stock'), desc: t('商品缺货需等待或换品时发送', 'Sent when an item is out of stock') },
+      { key: 'restock_notice', name: t('补货到货通知', 'Restock notice'), desc: t('缺货商品重新到货时发送（带退订）', 'Sent when a restocked item is back (with unsubscribe)') },
+      { key: 'shipped_delay', name: t('发货延迟通知', 'Shipping delay'), desc: t('预计发货时间需要顺延肘发送', 'Sent when the ship date has to be pushed back') },
+      { key: 'package_exception', name: t('包裹异常/清关通知', 'Package exception'), desc: t('物流异常、海关扣留等需要买家配合时发送', 'Sent when a package needs buyer action (customs, exception)') },
+      { key: 'delivered_notice', name: t('签收提醒', 'Delivery reminder'), desc: t('物流显示已签收后发送确认与售后提醒', 'Sent after delivery confirmed') },
+      { key: 'review_invite', name: t('晒单/好评邀请', 'Review invite'), desc: t('签收几天后邀请晒单（带退订）', 'Sent days after delivery (with unsubscribe)') }
     ],
     vars: [
       ['{{客户称呼}}', t('买家称呼或昵称', 'Buyer name/nick')],
       ['{{订单编号}}', t('订单号，如 SY-001', 'e.g. SY-001')],
       ['{{商品名称}}', t('商品名，多件逐行', 'Product name(s)')],
       ['{{订单金额}}', t('如 $52.00', 'e.g. $52.00')],
+      ['{{付款金额}}', t('本次到账的定金/尾款/分期金额', 'Amount received this time')],
+      ['{{欠款金额}}', t('剩余应付金额', 'Outstanding amount')],
+      ['{{付款链接}}', t('Stripe 支付链接', 'Payment link')],
+      ['{{预计发货日期}}', t('如 11 月 5 日前', 'Expected ship date')],
       ['{{物流单号}}', t('快递单号', 'Tracking number')],
       ['{{店铺链接}}', t('小铺首页链接', 'Shop URL')],
       ['{{留言内容}}', t('客户留言原文', 'Customer message')],
@@ -477,6 +490,42 @@
       vip_notice: {
         zh: { subject: '【Snow Yuzu】VIP 会员通知', body: '亲爱的 {{客户称呼}}：\n\n你的 Snow Yuzu VIP 会员状态有更新，详情请到小铺查看：{{店铺链接}}\n\n谢谢你的喜欢与支持！\n\nSnow Yuzu 小柚' },
         en: { subject: '[Snow Yuzu] VIP Membership Notice', body: 'Dear {{客户称呼}},\n\nYour Snow Yuzu VIP membership has been updated. See your shop page for details: {{店铺链接}}\n\nThank you for your support!\n\nSnow Yuzu' }
+      },
+      order_paid: {
+        zh: { subject: '【Snow Yuzu】付款已确认 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 有一笔付款已确认到账：\n\n本次到账：{{付款金额}}\n剩余应付：{{欠款金额}}\n\n全部付清后我们就会排进制作队列，谢谢你的耐心～\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Payment Confirmed · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nA payment for order {{订单编号}} has been confirmed:\n\nReceived: {{付款金额}}\nOutstanding: {{欠款金额}}\n\nOnce fully paid, your order will join the making queue. Thank you for your patience!\n\nSnow Yuzu' }
+      },
+      deposit_reminder: {
+        zh: { subject: '【Snow Yuzu】付款提醒 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 还有 {{欠款金额}} 待支付，方便的话尽快完成付款，我们好尽早为你安排制作～\n\n付款链接：{{付款链接}}\n\n如有任何问题直接回复这封邮件就好。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Payment Reminder · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nOrder {{订单编号}} still has {{欠款金额}} outstanding. Completing the payment soon helps us start making your order earlier!\n\nPayment link: {{付款链接}}\n\nFeel free to reply to this email if you have any questions.\n\nSnow Yuzu' }
+      },
+      order_risk: {
+        zh: { subject: '【Snow Yuzu】请确认你的大额订单 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n感谢你在 Snow Yuzu 下的大额订单 {{订单编号}}（金额 {{订单金额}}）。\n\n为了保障双方权益，发货前请你回复本邮件确认以下信息：\n1. 订单商品与数量无误\n2. 收货地址正确\n3. 知悉定金/大额订单的退款规则\n\n确认后我们会尽快安排制作与发货。谢谢理解！\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Please Confirm Your Order · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nThank you for your large order {{订单编号}} ({{订单金额}}) at Snow Yuzu.\n\nBefore shipping, please reply to this email to confirm:\n1. Items and quantities are correct\n2. Shipping address is correct\n3. You have read the deposit / large-order refund policy\n\nOnce confirmed, we will prepare and ship your order as soon as possible. Thank you!\n\nSnow Yuzu' }
+      },
+      out_of_stock: {
+        zh: { subject: '【Snow Yuzu】商品暂时缺货 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n很抱歉，你订单 {{订单编号}} 中的「{{商品名称}}」目前暂时缺货。\n\n你可以选择：\n1. 等待补货（预计 {{预计发货日期}}），我们会第一时间通知你\n2. 更换其他商品\n3. 取消该商品并退款对应金额\n\n回复本邮件告诉我你的选择就好，给你带来不便非常抱歉！\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Item Temporarily Out of Stock · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nSorry! The item "{{商品名称}}" in order {{订单编号}} is temporarily out of stock.\n\nYou can choose to:\n1. Wait for restock (expected {{预计发货日期}})\n2. Swap for another item\n3. Cancel the item and get a refund for that amount\n\nJust reply with your choice. Sorry for the inconvenience!\n\nSnow Yuzu' }
+      },
+      restock_notice: {
+        zh: { subject: '【Snow Yuzu】你等的商品补货啦 · {{商品名称}}', body: '亲爱的 {{客户称呼}}：\n\n好消息！你之前缺货的「{{商品名称}}」重新到货啦～\n\n数量有限，先到先得：{{店铺链接}}\n\n如果不想再收到补货通知，可以用邮件底部的 Unsubscribe 一键退订，订单邮件不受影响。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Back in Stock · {{商品名称}}', body: 'Dear {{客户称呼}},\n\nGood news! "{{商品名称}}" is back in stock!\n\nLimited quantity, first come first served: {{店铺链接}}\n\nIf you no longer wish to receive restock notices, use the Unsubscribe link at the bottom. Order emails are not affected.\n\nSnow Yuzu' }
+      },
+      shipped_delay: {
+        zh: { subject: '【Snow Yuzu】发货时间顺延通知 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n非常抱歉，你的订单 {{订单编号}} 需要顺延发货，新的预计发货时间为 {{预计发货日期}}。\n\n我们深知等待的辛苦，感谢你的理解与耐心。如有任何疑问随时回复这封邮件。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Shipping Delay Notice · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nWe are very sorry — order {{订单编号}} needs a shipping delay. The new expected ship date is {{预计发货日期}}.\n\nWe know waiting is hard, and we truly appreciate your understanding. Feel free to reply if you have any questions.\n\nSnow Yuzu' }
+      },
+      package_exception: {
+        zh: { subject: '【Snow Yuzu】包裹需要你的协助 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 的包裹在运输途中遇到异常（如海关扣留、地址问题等）。\n\n物流单号：{{物流单号}}\n\n可能需要你配合提供信息或支付关税，请留意快递公司的通知，或直接回复本邮件，我们会协助你处理。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Your Package Needs Attention · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nThe package of order {{订单编号}} has hit an exception in transit (customs hold, address issue, etc.).\n\nTracking No.: {{物流单号}}\n\nYou may need to provide information or pay customs fees. Please watch for carrier notices, or reply to this email and we will help you sort it out.\n\nSnow Yuzu' }
+      },
+      delivered_notice: {
+        zh: { subject: '【Snow Yuzu】包裹已签收 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n物流显示你的订单 {{订单编号}} 已经签收啦！\n\n拆箱的时候希望你一切都喜欢～如果有任何问题（缺件、损坏等），请在 48 小时内回复这封邮件并附上照片，我们会尽快帮你处理。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Package Delivered · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nTracking shows order {{订单编号}} has been delivered!\n\nWe hope you love everything! If there is any issue (missing parts, damage), reply within 48 hours with photos and we will make it right.\n\nSnow Yuzu' }
+      },
+      review_invite: {
+        zh: { subject: '【Snow Yuzu】喜欢这次的订单吗？', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 已经到手几天啦，希望它有好好陪伴你～\n\n如果喜欢的话，欢迎来 {{店铺链接}} 留言晒单，你的反馈对小柚超级重要！\n\n如果不想再收到这类邀请，可以用邮件底部的 Unsubscribe 一键退订，订单邮件不受影响。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] How Is Your Order?', body: 'Dear {{客户称呼}},\n\nIt has been a few days since order {{订单编号}} arrived — we hope it is treating you well!\n\nIf you love it, we would be thrilled to see your photos or hear your thoughts: {{店铺链接}}\n\nIf you no longer wish to receive these invites, use the Unsubscribe link at the bottom. Order emails are not affected.\n\nSnow Yuzu' }
       }
     };
     return (D[kind] && D[kind][lang]) || { subject: '', body: '' };
@@ -641,7 +690,7 @@
     var panel = document.getElementById('tab-mailtpl');
     var subject = panel.querySelector('#tpl-subject').value.trim();
     var body = panel.querySelector('#tpl-body').value;
-    var samples = { '{{客户称呼}}': 'Yuki', '{{订单编号}}': 'SY-001', '{{商品名称}}': '键帽 ×1', '{{订单金额}}': '$2.99', '{{物流单号}}': 'SF1234567890', '{{店铺链接}}': 'https://chengyuki119.github.io/shop/', '{{留言内容}}': '什么时候能发货呀？', '{{站长回复}}': '本周内发出，谢谢等待～' };
+    var samples = { '{{客户称呼}}': 'Yuki', '{{订单编号}}': 'SY-001', '{{商品名称}}': '键帽 ×1', '{{订单金额}}': '$2.99', '{{付款金额}}': '$20.00', '{{欠款金额}}': '$32.00', '{{付款链接}}': 'https://buy.stripe.com/xxx', '{{预计发货日期}}': '11 月 5 日前', '{{物流单号}}': 'SF1234567890', '{{店铺链接}}': 'https://chengyuki119.github.io/shop/', '{{留言内容}}': '什么时候能发货呀？', '{{站长回复}}': '本周内发出，谢谢等待～' };
     var sub = subject, txt = body;
     Object.keys(samples).forEach(function (k) { sub = sub.split(k).join(samples[k]); txt = txt.split(k).join(samples[k]); });
     panel.querySelector('#tpl-preview').innerHTML =
@@ -661,7 +710,10 @@
       ['text', t('主文字 / 标题', 'Main text'), '#604C57'],
       ['muted', t('次要文字', 'Muted text'), '#A88E9B'],
       ['bg', t('页面背景', 'Page background'), '#FFF8FA'],
-      ['card', t('卡片底色', 'Card background'), '#FFF0F5']
+      ['card', t('卡片底色', 'Card background'), '#FFF0F5'],
+      ['success', t('成功状态（合格/已付款）', 'Success status'), '#5FA777'],
+      ['warning', t('警告状态（待处理/返工）', 'Warning status'), '#E0A458'],
+      ['danger', t('危险状态（失败/退款）', 'Danger status'), '#D96570']
     ],
     presets: ['#FFD9E6', '#FCE4EC', '#FF6FA5', '#E073A8', '#A04A68', '#604C57', '#A88E9B', '#FFF8FA', '#FFF0F5', '#ffffff', '#D4B2C4', '#F6DFE8'],
     saved: {}
@@ -700,7 +752,7 @@
   };
 
   function themeApplyLive() { // admin 页不引 site-common，这里自带同一套应用逻辑（前台由 site-common 的 ykApplyTheme 负责）
-    var map = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price' };
+    var map = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price', success: '--success', warning: '--warning', danger: '--danger' };
     var r = document.documentElement.style;
     Object.keys(map).forEach(function (k) { if (THEME.saved[k]) r.setProperty(map[k], THEME.saved[k]); });
   }

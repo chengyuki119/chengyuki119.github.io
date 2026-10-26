@@ -12,6 +12,9 @@
     --accent-soft: #FCE4EC;
     --accent-strong: #A04A68;
     --price: #FF6FA5;
+    --success: #5FA777;
+    --warning: #E0A458;
+    --danger: #D96570;
     --radius: 16px;
     --font-heading: "Millo Body Heavy", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
     --font-body: "Millo Body", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;

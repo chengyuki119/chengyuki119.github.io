@@ -1006,7 +1006,7 @@ window.ykAuthFetch = ykAuthFetch;
    这里读库后覆写 :root 变量 → 全站同步，无需改任何页面代码。 */
 function ykApplyTheme(v) {
   if (!v || typeof v !== 'object') return;
-  var map = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price' };
+  var map = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price', success: '--success', warning: '--warning', danger: '--danger' };
   var r = document.documentElement.style;
   Object.keys(map).forEach(function (k) { if (v[k]) r.setProperty(map[k], v[k]); });
 }
