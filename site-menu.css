@@ -146,7 +146,7 @@
 .topbar-cart-badge {
   position: absolute; top: -5px; right: -5px;
   min-width: 19px; height: 19px; border-radius: 999px;
-  background:#ffd9e6; color: #fff;
+  background:#ffd9e6; color: var(--text, #604C57);
   font-size: 12px; line-height: 19px; text-align: center; padding: 0 5px;
   font-weight: 600; box-sizing: border-box;
 }
@@ -157,12 +157,12 @@
   border-radius: 12px;
   font-size: 17px;
   text-decoration: none;
-  background: #ffd9e6; color: #fff; /* 登录按钮：浅粉底白字（柚子拍板），提高优先级压过 .menu a 的继承色 */
+  background: #ffd9e6; color: var(--text, #604C57); /* 登录按钮：粉底深字（她 2026-10-26 全站清浅底白字） */
   transition: opacity .2s;
 }
 .menu-acct-bottom:hover { opacity: .88; }
 .menu a.menu-acct-bottom.is-in {
-  background: var(--accent-soft, #FCE4EC); color: #fff; /* 与后台上传头像按钮同款：浅粉底白字 */
+  background: var(--accent-soft, #FCE4EC); color: var(--text, #604C57); /* 已登录态：浅粉底深字 */
   box-shadow: none;
 }
 

@@ -94,7 +94,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .acc-item.on { background: #FCE4EC; color: var(--accent-strong); font-weight: 600; }
   .acc-logout {
     display: block; width: 100%; text-align: center; border: none;
-    background: #ffd9e6; color: #fff; font-size: 17px; font-weight: 600;
+    background: #ffd9e6; color: var(--text, #604C57); font-size: 17px; font-weight: 600;
     padding: 11px 12px; border-radius: 12px; cursor: pointer; font-family: inherit;
     transition: background .15s;
   }
@@ -165,7 +165,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .product-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; row-gap: 8px; }
   .product-row .buy-btn, .product-row .card-edit-btn, .product-row .no-buy, .product-row .price { white-space: nowrap; flex-shrink: 0; }
   .card-edit-btn { border: none; background: var(--card-hover); color:var(--text,#604C57); font-size:14px; cursor: pointer; padding: 4px 12px; border-radius: 999px; font-family: inherit; transition: background .2s, color .2s; white-space: nowrap; }
-  .card-edit-btn:hover { background: var(--accent-soft); color: #fff; }
+  .card-edit-btn:hover { background: var(--accent-soft); color: var(--text, #604C57); }
   .price { font-size:21px; font-weight: 700; color:var(--text,#604C57); font-family: "Millo Body", -apple-system, "PingFang SC", sans-serif; }
   .price small { font-size:15px; font-weight: 400; }
   .buy-btn {
@@ -328,9 +328,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   #view-detail, #view-cart, #view-checkout, #view-orders, #view-account, #view-groups { display: none; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261026b">
-  <script src="/js/site-common.js?v=20261026b"></script>
-  <script src="/site-menu.js?v=20261026b" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261026c">
+  <script src="/js/site-common.js?v=20261026c"></script>
+  <script src="/site-menu.js?v=20261026c" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -867,8 +867,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261026b"></script>
-<script src="/js/site-footer.js?v=20261026b"></script>
+<script src="/js/shop-app.js?v=20261026c"></script>
+<script src="/js/site-footer.js?v=20261026c"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

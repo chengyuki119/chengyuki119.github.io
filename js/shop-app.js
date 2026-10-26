@@ -145,7 +145,7 @@
       var on = x === active;
       // 柔和粉色系：选中浅粉底深玫瑰字，未选中白底软粉描边，不过分强烈
       x.style.background = on ? '#ffd9e6' : '#fff';
-      x.style.color = on ? '#fff' : 'var(--muted,#A88E9B)';
+      x.style.color = on ? 'var(--text,#604C57)' : 'var(--muted,#A88E9B)';
       x.style.boxShadow = 'none';
     });
   }
@@ -430,7 +430,7 @@
               '</div>' +
               (g.status === 'open' ?
                 '<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">' +
-                  (g.joined < g.target ? '<button class="buy-btn" id="g-join" style="padding:10px 24px;background:#ffd9e6;color:#fff;">' + t('加入拼团', 'Join group') + '</button>' : '<span class="no-buy">' + t('人数已满，等待成员付款中', 'Full — waiting for payments') + '</span>') +
+                  (g.joined < g.target ? '<button class="buy-btn" id="g-join" style="padding:10px 24px;background:#ffd9e6;color:var(--text,#604C57);">' + t('加入拼团', 'Join group') + '</button>' : '<span class="no-buy">' + t('人数已满，等待成员付款中', 'Full — waiting for payments') + '</span>') +
                 '</div>' : '') +
               '<div style="margin-top:14px;font-size:15px;color:var(--muted);">' + t('成员', 'Members') + '：' +
                 (members.length ? members.map(function (m) { return esc(m.nickname || t('小伙伴', 'member')); }).join('、') : t('虚位以待…', 'Waiting…')) +
@@ -571,7 +571,7 @@
         '</div>' +
         '<div class="card" style="padding:18px;"><div style="display:flex;justify-content:space-between;font-size:19px;"><b>' + t('预估合计', 'Estimated total') + '</b><b id="ck-total" style="color:#ff6fa5;">' + sym(cur) + money(sub + est + fee) + '</b></div>' +
           '<p style="font-size:14px;color:var(--muted);margin-top:4px;">' + t('以服务端验证后的金额为准；实际运费由后台确认后更新。', 'Final amount is validated server-side; shipping updates once confirmed.') + '</p>' +
-          '<button class="buy-btn" id="ck-submit" style="width:100%;margin-top:12px;padding:12px;background:#ffd9e6;color:#fff;font-size:18px;">' + t('提交订单', 'Place order') + '</button>' +
+          '<button class="buy-btn" id="ck-submit" style="width:100%;margin-top:12px;padding:12px;background:#ffd9e6;color:var(--text,#604C57);font-size:18px;">' + t('提交订单', 'Place order') + '</button>' +
         '</div>';
       paintAddrPicker();
       window.__ckUpdateShip = updateShip;
@@ -691,11 +691,16 @@
       '</div>' +
       '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + new Date(o.created_at).toLocaleString() + '</div>' +
       (o.items || []).map(function (it) {
-        return '<div style="display:flex;gap:10px;align-items:center;margin-top:8px;">' +
-          (it.image ? '<img src="' + escAttr(normImg(it.image)) + '" style="width:44px;height:44px;border-radius:10px;object-fit:cover;">' : '') +
-          '<span style="flex:1;font-size:16px;">' + esc(it.name) + ' × ' + it.qty + '</span><span style="font-size:16px;color:#ff6fa5;">' + sym(o.currency) + money(it.price * it.qty) + '</span></div>';
+        return '<div style="display:flex;gap:12px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--accent-soft,#FCE4EC);">' +
+          (it.image ? '<a href="/shop/?id=' + escAttr(it.id) + '" target="_blank" style="text-decoration:none;"><img src="' + escAttr(normImg(it.image)) + '" style="width:56px;height:56px;border-radius:12px;object-fit:cover;flex-shrink:0;"></a>' : '<div style="width:56px;height:56px;border-radius:12px;background:#FCE4EC;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#A88E9B;font-size:20px;">♡</div>') +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-size:16px;color:var(--text,#604C57);font-weight:600;">' + esc(it.name) + '</div>' +
+            (it.sku ? '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-top:2px;">' + t('规格', 'Option') + '：' + esc(it.sku) + '</div>' : '') +
+            '<div style="font-size:14px;color:#ff6fa5;font-weight:600;margin-top:2px;">' + sym(o.currency) + money(it.price) + ' × ' + it.qty + '</div>' +
+          '</div>' +
+          '<div style="font-size:16px;color:#ff6fa5;font-weight:700;flex-shrink:0;">' + sym(o.currency) + money(it.price * it.qty) + '</div></div>';
       }).join('') +
-      '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:8px;border-top:1px dashed var(--accent-soft);padding-top:8px;">' +
+      '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:10px;border-top:1.5px dashed var(--accent-soft);padding-top:10px;">' +
         '<span>' + t('应付', 'Total') + '</span><b style="color:#ff6fa5;">' + sym(o.currency) + money(o.total) + '</b></div>' +
       '<div id="oc-body-' + o.id + '" style="display:none;margin-top:10px;"></div>' +
       '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">' +
@@ -732,8 +737,8 @@
       '<div style="font-size:15px;color:var(--muted);margin-top:6px;">' + t('明细', 'Breakdown') + '：<span style="color:#ff6fa5;">' + sym(o.currency) + money(o.subtotal) + '</span>' + (o.discount > 0 ? ' − 优惠 <span style="color:#ff6fa5;">' + sym(o.currency) + money(o.discount) + E : '') + ' + 运费 <span style="color:#ff6fa5;">' + sym(o.currency) + money(o.shipping_actual != null ? o.shipping_actual : o.shipping_est) + '</span>' + ' + 服务费 <span style="color:#ff6fa5;">' + sym(o.currency) + money(o.service_fee) + '</span>' + '</div>' +
       '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">';
     if (o.status === 'pending' || o.status === 'rejected') {
-      html += '<button class="buy-btn oc-stripe" style="padding:8px 18px;background:#ffd9e6;color:#fff;">' + t('在线支付（Stripe 测试）', 'Pay online (Stripe test)') + '</button>';
-      html += '<button class="buy-btn oc-pay" style="padding:8px 18px;background:#ffd9e6;color:#fff;">' + t('上传付款截图', 'Upload payment proof') + '</button>';
+      html += '<button class="buy-btn oc-stripe" style="padding:8px 18px;background:#ffd9e6;color:var(--text,#604C57);">' + t('在线支付（Stripe 测试）', 'Pay online (Stripe test)') + '</button>';
+      html += '<button class="buy-btn oc-pay" style="padding:8px 18px;background:#ffd9e6;color:var(--text,#604C57);">' + t('上传付款截图', 'Upload payment proof') + '</button>';
     }
     if (o.status === 'reviewing') html += '<span class="no-buy">' + t('凭证已提交，等柚子确认～', 'Proof submitted — awaiting confirmation~') + '</span>';
     if (['pending', 'reviewing', 'rejected'].indexOf(o.status) >= 0) {
@@ -815,7 +820,7 @@
         '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;">' +
           '<label class="buy-btn" style="padding:7px 16px;cursor:pointer;">' + t('选择截图', 'Choose screenshot') + '<input id="pu-file" type="file" accept="image/*" hidden></label>' +
           '<span id="pu-name" style="font-size:15px;color:var(--muted);">' + t('未选择', 'None') + '</span>' +
-          '<button class="buy-btn" id="pu-go" style="padding:8px 18px;background:#ffd9e6;color:#fff;margin-left:auto;">' + t('提交凭证', 'Submit proof') + '</button>' +
+          '<button class="buy-btn" id="pu-go" style="padding:8px 18px;background:#ffd9e6;color:var(--text,#604C57);margin-left:auto;">' + t('提交凭证', 'Submit proof') + '</button>' +
         '</div>' +
       '</div>';
     box.querySelectorAll('input:not([type=file])').forEach(function (i) { i.style.cssText = 'width:100%;padding:10px 12px;font-size:16px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;'; });
@@ -884,7 +889,7 @@
           '<div id="ac-login">' +
             '<input id="li-email" placeholder="Email" style="width:100%;margin-bottom:14px;">' +
             '<input id="li-pw" type="password" placeholder="' + t('密码', 'Password') + '" style="width:100%;margin-bottom:16px;">' +
-            '<button class="buy-btn" id="li-go" style="width:100%;padding:11px;background:#ffd9e6;color:#fff;font-size:17px;">' + t('登录', 'Log in') + '</button>' +
+            '<button class="buy-btn" id="li-go" style="width:100%;padding:11px;background:#ffd9e6;color:var(--text,#604C57);font-size:17px;">' + t('登录', 'Log in') + '</button>' +
             '<button id="li-forgot" style="background:none;border:none;color:var(--muted);font-family:inherit;font-size:15px;margin-top:14px;cursor:pointer;">' + t('忘记密码？发重置邮件', 'Forgot password? Send reset email') + '</button>' +
           '</div>' +
           '<div id="ac-reg" style="display:none;">' +
@@ -902,7 +907,7 @@
               '<span style="font-size:16px;color:var(--text,#604C57);">' + t('接收新品上架通知', 'Notify me about new items') + '<br><span style="font-size:13px;color:var(--muted,#A88E9B);">' + t('默认关闭 · 邮件通知服务尚未配置，启用前不会发送邮件', 'Off by default · email delivery not configured yet') + '</span></span>' +
               subToggleHtml('rg-notify', false) +
             '</div>' +
-            '<button class="buy-btn" id="rg-go" style="width:100%;padding:11px;background:#ffd9e6;color:#fff;font-size:17px;margin-top:14px;">' + t('注册', 'Create account') + '</button>' +
+            '<button class="buy-btn" id="rg-go" style="width:100%;padding:11px;background:#ffd9e6;color:var(--text,#604C57);font-size:17px;margin-top:14px;">' + t('注册', 'Create account') + '</button>' +
           '</div>' +
         '</div>';
       styleInputs(box);
@@ -953,7 +958,7 @@
           };
           return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">' +
               '<b style="font-size:17px;">' + t('基本资料', 'Basic info') + '</b>' +
-              '<button class="buy-btn" id="pf-edit" style="padding:7px 18px;background:#ffd9e6;color:#fff;">' + t('编辑', 'Edit') + '</button>' +
+              '<button class="buy-btn" id="pf-edit" style="padding:7px 18px;background:#ffd9e6;color:var(--text,#604C57);">' + t('编辑', 'Edit') + '</button>' +
             '</div>' +
             '<div style="display:grid;grid-template-columns:76px 1fr;row-gap:10px;column-gap:12px;align-items:baseline;">' +
               row(t('邮箱', 'Email'), USER.email || '') +
@@ -973,7 +978,7 @@
             '</div>' +
             (errMsg ? '<p id="pf-err" style="color:#d96570;font-size:14px;margin:10px 0 0;">' + esc(errMsg) + '</p>' : '') +
             '<div style="display:flex;gap:10px;margin-top:14px;">' +
-              '<button class="buy-btn" id="pf-save" style="padding:9px 22px;background:#ffd9e6;color:#fff;">' + t('保存', 'Save') + '</button>' +
+              '<button class="buy-btn" id="pf-save" style="padding:9px 22px;background:#ffd9e6;color:var(--text,#604C57);">' + t('保存', 'Save') + '</button>' +
               '<button class="buy-btn" id="pf-cancel" style="padding:9px 22px;background:#fff;color:var(--muted);">' + t('取消', 'Cancel') + '</button>' +
             '</div>';
         }
@@ -1236,17 +1241,27 @@
     box.innerHTML =
       '<h2 style="font-size:22px;margin-bottom:14px;">' + t('购物车', 'Cart') + '</h2>' +
       CART.map(function (x, i) {
-        return '<div class="card" style="padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:center;">' +
+        return '<div class="card" style="padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:center;">' +
           '<span class="ck-box" data-i="' + i + '" style="width:20px;height:20px;border-radius:6px;border:2px solid var(--border,#FFD9E6);flex-shrink:0;cursor:pointer;background:' + (x.checked !== false ? '#FCE4EC' : '#fff') + ';display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1;color:var(--text,#604C57);">' + (x.checked !== false ? '<svg viewBox=\"0 0 16 16\" width=\"12\" height=\"12\" style=\"display:block;\"><path d=\"M3.2 8.6 L6.6 11.8 L12.8 4.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>' : '') + '</span>' +
-          (x.image ? '<img src="' + escAttr(normImg(x.image)) + '" style="width:56px;height:56px;border-radius:12px;object-fit:cover;">' : '') +
-          '<div style="flex:1;min-width:0;"><div style="font-size:16px;">' + esc(x.name) + '</div><div style="font-size:16px;color:#ff6fa5;">' + sym(curOf(null, x)) + money(x.price) + '</div></div>' +
-          '<button class="qty-btn cart-q" data-i="' + i + '" data-d="-1">−</button><b>' + x.qty + '</b><button class="qty-btn cart-q" data-i="' + i + '" data-d="1">＋</button>' +
-          '<button class="buy-btn cart-rm" data-i="' + i + '" style="padding:5px 10px;font-size:14px;background:#fff;color:#d96570;">' + t('删除', 'Remove') + '</button>' +
+          (x.image ? '<img src="' + escAttr(normImg(x.image)) + '" style="width:64px;height:64px;border-radius:14px;object-fit:cover;flex-shrink:0;">' : '<div style="width:64px;height:64px;border-radius:14px;background:#FCE4EC;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#A88E9B;font-size:22px;">♡</div>') +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-size:16px;color:var(--text,#604C57);font-weight:600;">' + esc(x.name) + '</div>' +
+            (x.sku ? '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-top:2px;">' + t('规格', 'Option') + '：' + esc(x.sku) + '</div>' : '') +
+            '<div style="font-size:15px;color:#ff6fa5;font-weight:700;margin-top:4px;">' + sym(curOf(null, x)) + money(x.price) + '</div>' +
+            '<div style="display:flex;align-items:center;gap:10px;margin-top:8px;">' +
+              '<button class="qty-btn cart-q" data-i="' + i + '" data-d="-1">−</button><b style="color:var(--text,#604C57);">' + x.qty + '</b><button class="qty-btn cart-q" data-i="' + i + '" data-d="1">＋</button>' +
+              '<button class="cart-rm" data-i="' + i + '" style="border:none;background:none;color:#d96570;font-size:13px;cursor:pointer;text-decoration:underline;padding:0;font-family:inherit;">' + t('删除', 'Remove') + '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div style="text-align:right;flex-shrink:0;">' +
+            '<div style="font-size:12px;color:var(--muted,#A88E9B);">' + t('小计', 'Subtotal') + '</div>' +
+            '<div style="font-size:17px;color:#ff6fa5;font-weight:700;margin-top:2px;">' + sym(curOf(null, x)) + money(x.price * x.qty) + '</div>' +
+          '</div>' +
         '</div>';
       }).join('') +
       '<div class="card" style="padding:14px;display:flex;justify-content:space-between;align-items:center;">' +
         '<span style="font-size:17px;">' + t('已选小计', 'Selected subtotal') + '</span><b style="font-size:20px;color:#ff6fa5;">' + sym(subCur) + money(sub) + '</b></div>' +
-      '<button class="buy-btn" id="cart-go" style="width:100%;margin-top:12px;padding:12px;background:#ffd9e6;color:#fff;font-size:18px;">' + t('去结算', 'Check out') + '</button>';
+      '<button class="buy-btn" id="cart-go" style="width:100%;margin-top:12px;padding:12px;background:#ffd9e6;color:var(--text,#604C57);font-size:18px;font-weight:600;">' + t('去结算', 'Check out') + '</button>';
     box.querySelectorAll('.ck-box').forEach(function (el) { el.addEventListener('click', function () {
       var x = CART[+el.getAttribute('data-i')]; x.checked = x.checked === false; saveCart(); renderCart();
     }); });
