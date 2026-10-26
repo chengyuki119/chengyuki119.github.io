@@ -11,8 +11,12 @@
 
   var TEXT = {
     zh: {
-      brandTag: '小柚的小世界',
+      account: '我的账户',
+      myaccount: '账户中心（登录 / 订单）',
       service: '客户服务',
+      about: '关于 Snow Yuzu',
+      findme: '找到我（社交平台）',
+      shop: '小铺',
       policies: '网站政策',
       contact: '联系我们',
       faq: '常见问题',
@@ -23,8 +27,12 @@
       copy: '© 2026 SnowYuzu. 保留所有权利。'
     },
     en: {
-      brandTag: "Yuki's little world",
+      account: 'My Account',
+      myaccount: 'Account (Sign in / Orders)',
       service: 'Customer Service',
+      about: 'About Snow Yuzu',
+      findme: 'Find Me (Social)',
+      shop: 'Shop',
       policies: 'Policies',
       contact: 'Contact Us',
       faq: 'FAQ',
@@ -37,13 +45,10 @@
   };
 
   var LINKS = {
-    service: [['contact', '/askbox/'], ['faq', '/faq/']],
-    policies: [
-      ['return-policy', '/return-policy/'],
-      ['shipping-policy', '/shipping-policy/'],
-      ['privacy-policy', '/privacy-policy/'],
-      ['terms-of-service', '/terms-of-service/']
-    ]
+    account: [['myaccount', '/account/']],
+    service: [['contact', '/askbox/'], ['faq', '/faq/'], ['return-policy', '/return-policy/'], ['shipping-policy', '/shipping-policy/']],
+    about: [['findme', '/#links'], ['shop', '/shop/']],
+    policies: [['privacy-policy', '/privacy-policy/'], ['terms-of-service', '/terms-of-service/']]
   };
 
   function esc(s) {
@@ -63,23 +68,23 @@
     if (document.getElementById(STYLE_ID)) return;
     var st = document.createElement('style');
     st.id = STYLE_ID;
-    /* 大圆角卡片式 Footer（她 2026-10-25：算了，所有页面都要卡片样式） */
+    /* 电商多列 Footer（她 2026-10-26：参考 lululemon 多列布局，去掉大圆角粉卡，白/极浅粉底、顶部细分隔线） */
     st.textContent =
-      '.sy-footer{max-width:1080px;margin:20px auto 26px;padding:34px 48px 30px;font-family:inherit;' +
-        'background:var(--card,#FFF0F5);border-radius:28px;box-sizing:border-box;}' +
-      '.sy-footer-top{display:flex;align-items:baseline;gap:12px;padding-bottom:18px;}' +
-      '.sy-footer-brand{font-family:var(--font-heading,"Millo Body Heavy",sans-serif);font-size:22px;font-weight:600;color:var(--text,#604C57);letter-spacing:.5px;}' +
-      '.sy-footer-tag{font-size:15px;color:var(--muted,#A88E9B);}' +
-      '.sy-footer-div{border:none;border-top:1px solid var(--accent,#ffd9e6);margin:0 0 24px;}' +
-      '.sy-footer-cols{display:grid;grid-template-columns:1fr 1fr;gap:28px 40px;}' +
-      '@media (max-width:639px){' +
-        '.sy-footer{margin:14px 14px 20px;padding:26px 22px 24px;border-radius:22px;}' +
-        '.sy-footer-cols{grid-template-columns:1fr;gap:22px;}}' +
-      '.sy-footer-head{font-size:19px;font-weight:700;color:var(--text,#604C57);margin-bottom:12px;}' +
-      '.sy-footer-links{display:flex;flex-direction:column;align-items:flex-start;gap:10px;}' +
-      '.sy-footer-link{color:var(--text,#604C57);font-size:16px;line-height:1.5;text-decoration:none;transition:color .2s;}' +
-      '.sy-footer-link:hover{color:var(--accent-strong,#A04A68);}' +
-      '.sy-footer-copy{margin-top:26px;text-align:center;font-size:15px;color:var(--muted,#A88E9B);}';
+      '.sy-footer{max-width:1080px;margin:26px auto 22px;padding:0 24px;font-family:inherit;box-sizing:border-box;}' +
+      '.sy-footer-inner{border-top:1px solid var(--accent,#FFD9E6);padding-top:30px;}' +
+      '.sy-footer-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 36px;}' +
+      '@media (max-width:899px){.sy-footer-cols{grid-template-columns:1fr 1fr;}}' +
+      '@media (max-width:559px){.sy-footer{padding:0 18px 6px;margin-bottom:30px;}.sy-footer-cols{grid-template-columns:1fr;gap:22px;}}' +
+      '.sy-footer-head{font-size:15px;font-weight:700;color:var(--text,#604C57);margin-bottom:12px;letter-spacing:.03em;}' +
+      '.sy-footer-links{display:flex;flex-direction:column;align-items:flex-start;}' +
+      '.sy-footer-link{color:var(--muted,#A88E9B);font-size:15px;line-height:2.15;text-decoration:none;transition:color .2s;}' +
+      '.sy-footer-link:hover{color:var(--price,#FF6FA5);}' +
+      '.sy-footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 18px;' +
+        'border-top:1px solid var(--accent,#FFD9E6);margin-top:30px;padding-top:18px;font-size:14px;color:var(--muted,#A88E9B);}' +
+      '@media (max-width:559px){.sy-footer-bottom{flex-direction:column;align-items:flex-start;}}' +
+      '.sy-footer-bottom .sy-footer-legal{display:flex;gap:18px;flex-wrap:wrap;}' +
+      '.sy-footer-bottom a{color:var(--muted,#A88E9B);text-decoration:none;transition:color .2s;}' +
+      '.sy-footer-bottom a:hover{color:var(--price,#FF6FA5);}';;
     document.head.appendChild(st);
   }
 
@@ -95,13 +100,19 @@
         }).join('') +
         '</div></div>';
     };
-    return '<div class="sy-footer">' +
-      '<div class="sy-footer-top"><span class="sy-footer-brand">SnowYuzu</span>' +
-        '<span class="sy-footer-tag">' + esc(txt.brandTag) + '</span></div>' +
-      '<hr class="sy-footer-div">' +
-      '<div class="sy-footer-cols">' + col('service', LINKS.service) + col('policies', LINKS.policies) + '</div>' +
-      '<div class="sy-footer-copy">' + esc(txt.copy) + '</div>' +
-      '</div>';
+    return '<div class="sy-footer"><div class="sy-footer-inner">' +
+      '<div class="sy-footer-cols">' +
+        col('account', LINKS.account) + col('service', LINKS.service) +
+        col('about', LINKS.about) + col('policies', LINKS.policies) +
+      '</div>' +
+      '<div class="sy-footer-bottom">' +
+        '<span>' + esc(txt.copy) + '</span>' +
+        '<span class="sy-footer-legal">' +
+          '<a href="/privacy-policy/">' + esc(txt['privacy-policy']) + '</a>' +
+          '<a href="/terms-of-service/">' + esc(txt['terms-of-service']) + '</a>' +
+        '</span>' +
+      '</div>' +
+      '</div></div>';
   }
 
   window.renderSiteFooter = function () {
