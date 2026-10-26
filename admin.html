@@ -309,7 +309,22 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .sc-row input { width: 100%; box-sizing: border-box; }
   .sc-row .r-x, .sc-row .r-eq { text-align: center; color: var(--muted); }
   .sc-row .r-total { text-align: right; font-size:16px; color:#ff6fa5; }
-  .sm-stat b { color:#ff6fa5; }
+  .sm-stat b { color:#ff6fa5; font-size:16px; }
+  /* ═══ 客户管理 / 线下开单（CRM，admin-crm.js）═══ */
+  .sm-stat { display:inline-flex; align-items:baseline; gap:6px; font-size:13px; color:var(--muted,#A88E9B); background:#fff; border:1px solid var(--accent-soft,#FCE4EC); border-radius:999px; padding:5px 14px; }
+  .cust-row:hover { background: var(--card-hover, #FFEDF3); }
+  .chip { display:inline-block; font-size:13px; padding:4px 14px; border-radius:999px; background:#fff; border:1.5px solid var(--accent-soft,#FCE4EC); color:var(--muted,#A88E9B); cursor:pointer; user-select:none; }
+  .chip.on { background:#FCE4EC; border-color:#FCE4EC; color:var(--text,#604C57); font-weight:600; }
+  .paytab { font-size:14px; padding:7px 16px; border-radius:999px; background:#fff; border:1.5px solid var(--accent-soft,#FCE4EC); color:var(--text,#604C57); cursor:pointer; }
+  .paytab.on { background:#FCE4EC; border-color:#FCE4EC; font-weight:600; }
+  .pick { display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--accent-soft,#FCE4EC); border-radius:12px; margin-bottom:8px; background:#fff; }
+  .pick img { width:56px; height:56px; object-fit:cover; border-radius:10px; flex-shrink:0; background:var(--card,#FFF0F5); }
+  .pick .nm { font-size:14px; font-weight:600; color:var(--text,#604C57); }
+  .pick .st { font-size:12px; color:var(--muted,#A88E9B); }
+  .pick .pr { font-size:13px; color:#ff6fa5; font-weight:700; }
+  .pick .qty { margin-left:auto; }
+  .qb { width:28px; height:28px; border-radius:50%; border:1.5px solid var(--accent-soft,#FCE4EC); background:#fff; color:var(--text,#604C57); font-size:15px; cursor:pointer; line-height:1; }
+  .qb:hover { background:#FCE4EC; }
   .sc-row .kebab { position: static; justify-self: end; }
   #sc-pop { position: fixed; z-index: 999; background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 6px; width: 168px; box-sizing: border-box; display: none; animation: scPopIn .16s ease; }
   @keyframes scPopIn { from { opacity: 0; transform: scale(.94); } }
@@ -526,11 +541,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <div class="pp-group">商城管理</div>
         <button class="tab-btn" data-tab="shop">小铺上架</button>
         <button class="tab-btn" data-tab="shopmgr">订单管理</button>
+        <button class="tab-btn" data-tab="crm">客户管理</button>
+        <button class="tab-btn" data-tab="pos">线下开单</button>
         <button class="tab-btn" data-tab="reviews">评价返图管理</button>
         <div class="pp-group">互动管理</div>
         <button class="tab-btn" data-tab="messages">联系与留言管理</button>
         <button class="tab-btn" data-tab="ai">AI 对话</button>
         <div class="pp-group">系统设置</div>
+        <button class="tab-btn" data-tab="mailsync">邮件与联系人同步</button>
         <button class="tab-btn" data-tab="system">系统状态</button>
       </div>
     </div>
@@ -716,6 +734,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
     <!-- 商城管理（买家商城后台：js/admin-shop.js） -->
     <div id="tab-shopmgr" style="display:none;"></div>
+
+    <!-- 客户管理（js/admin-crm.js） -->
+    <div id="tab-crm" style="display:none;"></div>
+    <!-- 线下开单 -->
+    <div id="tab-pos" style="display:none;"></div>
+    <!-- 邮件与联系人同步 -->
+    <div id="tab-mailsync" style="display:none;"></div>
 
     <!-- 评价返图管理 -->
     <div id="tab-reviews" style="display:none;">
@@ -1210,7 +1235,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       b.classList.add('active');
       document.getElementById('pp-cur').textContent = b.textContent;
       ppClose();
-      ['messages', 'shop', 'shopmgr', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (name) {
+      ['messages', 'shop', 'shopmgr', 'crm', 'pos', 'mailsync', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (name) {
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.style.display = b.dataset.tab === name ? '' : 'none';
       });
@@ -1218,6 +1243,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (b.dataset.tab === 'reviews') loadReviewsAdmin();
       if (b.dataset.tab === 'system') loadEmailLog();
       if (b.dataset.tab === 'days') renderDays(); // 每次切到重要日子都重渲染，避免 settings 迟到导致自动列表空白
+      if (b.dataset.tab === 'crm' && window.CRM) CRM.bootCrm();
+      if (b.dataset.tab === 'pos' && window.CRM) CRM.bootPos();
+      if (b.dataset.tab === 'mailsync' && window.CRM) CRM.bootMailsync();
       try { history.replaceState(null, '', '#' + b.dataset.tab); } catch (e) {} // 把当前 tab 写进地址：刷新后停留在原页
     });
   });
@@ -5946,7 +5974,8 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026c"></script>
+<script src="js/admin-shop.js?v=20261026d"></script>
+<script src="js/admin-crm.js?v=20261026d"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

@@ -35,8 +35,8 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261026c">
-  <link rel="stylesheet" href="/site-menu.css?v=20261026c">
+<link rel="stylesheet" href="/css/site.css?v=20261026d">
+  <link rel="stylesheet" href="/site-menu.css?v=20261026d">
     <script src="/site-menu.js" defer></script>
 </head>
 <body class="home">
@@ -201,7 +201,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261026c"></script>
+<script src="/js/site-common.js?v=20261026d"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -566,7 +566,7 @@
     var flagged = all.filter(function (x) { return x.b.homeShow !== false; }).slice(0, 4); // 只显示勾选「主页展示」的娃，最多四张，无勾选则隐藏区块
     var show = flagged;
     grid.style.display = show.length ? 'grid' : 'none';
-    if (show.length) grid.style.setProperty('--home-cols', String(Math.max(1, Math.min(4, show.length)))); // 几张图就均分几列，舖满 1000px
+    /* 固定 4 列：CSS 已硬编码，不再按项目数均分（她 2026-10-26：2~3 个项目也不拉伸） */
     grid.innerHTML = show.map(function (x) {
       var b = x.b, img = b.cover || b.image;
       var tv = bjdTotalV(b);
@@ -767,7 +767,7 @@
         chGrid.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px 0;font-size:17px;">暂无展示中的色卡</p>';
       } else {
         chGrid.style.display = 'grid';
-        chGrid.style.setProperty('--home-cols', String(Math.max(1, Math.min(4, showCards.length)))); // 几张图就均分几列，舖满 1000px
+        /* 色卡预览固定 4 列（CSS 硬编码） */
         chGrid.innerHTML = showCards.map(function (x) {
           var c = x.c, i = x.i;
           return '<div class="card sc-product" data-i="' + i + '" style="margin-bottom:0;padding:0;overflow:hidden;cursor:pointer;position:relative;">' +
@@ -811,7 +811,7 @@
         wkGrid.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px 0;font-size:17px;">还没有稿件，去后台「稿件管理」上传吧</p>';
       } else {
         wkGrid.style.display = 'grid';
-        wkGrid.style.setProperty('--home-cols', String(Math.max(1, Math.min(4, worksList.length)))); // 几张图就均分几列，舖满 1000px
+        /* 稿件预览固定 4 列（CSS 硬编码） */
         wkGrid.innerHTML = worksList.map(function (x, i) {
           var w = x.w, i = x.i; // 用原始序号：详情/分享/编辑都与 /works/ 一致
           return '<div class="card work-card" data-i="' + i + '" style="margin-bottom:0;padding:0;overflow:hidden;cursor:pointer;position:relative;">' +
@@ -1480,7 +1480,7 @@
   });
 })();
 </script>
-<script src="/js/site-footer.js?v=20261026c"></script>
+<script src="/js/site-footer.js?v=20261026d"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }
