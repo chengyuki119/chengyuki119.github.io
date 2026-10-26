@@ -592,6 +592,7 @@
 .pdp { grid-template-rows: auto auto; }
 .pdp .d-pager { grid-column: 1; grid-row: 1; }
 .pdp .d-info { grid-column: 2; grid-row: 1; }
+.pdp .d-head .product-tag, .pdp .d-head .fav-btn { margin-top: 0 !important; margin-bottom: 0 !important; align-self: auto !important; } /* 一行头部：清掉旧竖排遗留 margin/align-self，三元素严格同中线（桌面+手机） */
 .pdp .d-desc { grid-column: 1 / 3; grid-row: 2; } /* 商品解释：底部横跨全宽（她 2026-10-25：写在页脚链接那一带的位置） */
 
 .pdp .d-desc p { margin-top: 12px; }

@@ -275,6 +275,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
 .pdp { grid-template-rows: auto auto; }
 .pdp .d-pager { grid-column: 1; grid-row: 1; }
 .pdp .d-info { grid-column: 2; grid-row: 1; }
+.pdp .d-head .product-tag, .pdp .d-head .fav-btn { margin-top: 0 !important; margin-bottom: 0 !important; align-self: auto !important; } /* 一行头部：清掉旧竖排遗留 margin/align-self，三元素严格同中线（桌面+手机） */
 .pdp .d-desc { grid-column: 1 / 3; grid-row: 2; } /* 商品解释：底部横跨全宽（她 2026-10-25：写在页脚链接那一带的位置） */
 
 @media (max-width: 639px) {
@@ -298,9 +299,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   #view-detail, #view-cart, #view-checkout, #view-orders, #view-account, #view-groups { display: none; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261025x">
-  <script src="/js/site-common.js?v=20261025x"></script>
-  <script src="/site-menu.js?v=20261025x" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261025y">
+  <script src="/js/site-common.js?v=20261025y"></script>
+  <script src="/site-menu.js?v=20261025y" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -798,8 +799,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261025x"></script>
-<script src="/js/site-footer.js?v=20261025x"></script>
+<script src="/js/shop-app.js?v=20261025y"></script>
+<script src="/js/site-footer.js?v=20261025y"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }
