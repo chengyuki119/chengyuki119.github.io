@@ -87,7 +87,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .gate input:focus { border-color: #A04A68; }
   .gate button {
     width: 100%;
-    border: none; background: #ffd9e6; color: #fff;
+    border: none; background: #ffd9e6; color: var(--text, #604C57);
     font-size:17px; padding: 11px 24px; border-radius: 12px;
     cursor: pointer; transition: opacity .15s;
   }
@@ -199,7 +199,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     border-radius: 999px; cursor: pointer;
     white-space: nowrap; flex-shrink: 0; /* 防窄容器挤压成一字一行（与规格区同类问题） */
   }
-  .btn-save { border: none; background: #ffd9e6; color: #fff; font-family: inherit; cursor: pointer; }
+  .btn-save { border: none; background: #ffd9e6; color: var(--text, #604C57); font-family: inherit; cursor: pointer; }
   .btn-cancel { background: var(--card-hover); color: var(--text); }
   /* 数字输入框不要浏览器原生上下小箭头（和自定义控件打架） */
   input[type="number"] { appearance: textfield; -moz-appearance: textfield; }
@@ -330,7 +330,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .dp-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
   .dp-title { flex: 1; text-align: center; font-size:16px; font-weight: 700; }
   .dp-nav, .dp-today { border: none; background: var(--card-hover); color:var(--text,#604C57); font-size:15px; border-radius: 999px; cursor: pointer; padding: 5px 10px; line-height: 1; }
-  .dp-nav:hover, .dp-today:hover { background: var(--accent-soft); color: #fff; }
+  .dp-nav:hover, .dp-today:hover { background: var(--accent-soft); color: var(--text, #604C57); }
   .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
   .dp-wd { font-size:14px; color: var(--muted); text-align: center; padding: 4px 0; }
   .dp-day { border: none; background: none; font-size:15px; color: var(--text); border-radius: 8px; padding: 6px 0; cursor: pointer; line-height: 1; font-family: inherit; }
@@ -452,7 +452,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .pf-chip.on { background: var(--accent-soft); border-color:var(--accent-soft); color: var(--accent-strong); }
   .private-line { font-size:15px; color: var(--muted); margin-top: 4px; }
 
-    .btn-save-tb { margin-left: auto; background: #ffd9e6 !important; color: #fff !important; }
+    .btn-save-tb { margin-left: auto; background: #ffd9e6 !important; color: var(--text, #604C57); !important; }
 .toast {
     position: fixed; bottom: 32px; left: 50%;
     transform: translateX(-50%) translateY(20px);
@@ -2774,7 +2774,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<div style="flex:1;min-width:0;">' +
           '<div style="font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(a.title_zh || '未命名区域') +
           (a.title_en ? ' <span style="color:var(--muted);font-size:15px;">' + esc(a.title_en) + '</span>' : '') +
-          (isTpl ? '<span style="display:inline-block;font-size:14px;color:#fff;background:var(--accent-soft);border-radius:8px;padding:1px 8px;margin-left:6px;vertical-align:1px;">模板</span>' : '') + '</div>' +
+          (isTpl ? '<span style="display:inline-block;font-size:14px;color:var(--text,#604C57);background:var(--accent-soft);border-radius:8px;padding:1px 8px;margin-left:6px;vertical-align:1px;">模板</span>' : '') + '</div>' +
           (custom && (a.content_zh || a.content_en) ? '<div style="font-size:15px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(a.content_zh || a.content_en) + '</div>' : '') +
           '</div>' +
           '<button type="button" class="area-kebab" title="菜单">⋮</button>' +
@@ -5799,7 +5799,7 @@ function loadEmailLog() {
 </div>
 <style>
   /* 非删除类确认按钮：浅粉底白字（与全站按钮规范一致） */
-  .lo-mask .btn-ok { background: #ffd9e6; color: #fff; }
+  .lo-mask .btn-ok { background: #ffd9e6; color: var(--text, #604C57); }
   .lo-mask .btn-ok:hover { background: #ffc9dc; }
 </style>
 
@@ -5858,7 +5858,7 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261025s"></script>
+<script src="js/admin-shop.js?v=20261025t"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
