@@ -75,7 +75,7 @@
       '@media (max-width:639px){' +
         '.sy-footer{margin:14px 14px 20px;padding:26px 22px 24px;border-radius:22px;}' +
         '.sy-footer-cols{grid-template-columns:1fr;gap:22px;}}' +
-      '.sy-footer-head{font-size:16px;font-weight:700;color:var(--text,#604C57);margin-bottom:12px;}' +
+      '.sy-footer-head{font-size:19px;font-weight:700;color:var(--text,#604C57);margin-bottom:12px;}' +
       '.sy-footer-links{display:flex;flex-direction:column;align-items:flex-start;gap:10px;}' +
       '.sy-footer-link{color:var(--text,#604C57);font-size:16px;line-height:1.5;text-decoration:none;transition:color .2s;}' +
       '.sy-footer-link:hover{color:#A04A68;}' +
