@@ -245,10 +245,10 @@
       '<div class="pdp">' +
         '<div class="d-pager" id="d-pager">' + pagerWrapHtml(imgs.map(normImg), p.name) + '</div>' +
         '<div class="d-info">' +
-        '<div class="d-head">' +
+        '<div class="d-head" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
+          '<h2 style="font-size:24px;margin:0;">' + esc(p.name) + '</h2>' +
           '<span class="product-tag">' + esc(p.tag || t('没有标签', 'Untagged')) + '</span>' +
-          '<h2 style="font-size:24px;margin:8px 0 4px;display:block;">' + esc(p.name) + '</h2>' +
-          '<button type="button" class="fav-btn detail-fav' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '">' + (isFav(p.id) ? '♥' : '♡') + '</button>' +
+          '<button type="button" class="fav-btn detail-fav' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '" style="margin-left:auto;">' + (isFav(p.id) ? '♥' : '♡') + '</button>' +
         '</div>' +
         '<div class="d-price">' +
           '<div style="font-size:26px;color:#ff6fa5;font-weight:700;margin:10px 0;">' + sym(curOf(p, v)) + money(price) + '</div>' +
@@ -276,7 +276,7 @@
               '</div>' +
               '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:0;">' +
                 '<button class="buy-btn" id="d-add" style="padding:10px 22px;">' + t('加入购物车', 'Add to cart') + '</button>' +
-                '<button class="buy-btn" id="d-buy" style="padding:10px 22px;background:#ffd9e6;color:#fff;">' + t('立即购买', 'Buy now') + '</button>' +
+                '<button class="buy-btn" id="d-buy" style="padding:10px 22px;background:#ffd9e6;color:var(--text,#604C57);">' + t('立即购买', 'Buy now') + '</button>' +
               '</div>' +
             '</div>'
           : '<div class="d-actions"><p class="no-buy" style="margin:14px 0;">' + (st === 'out' ? t('已售罄，看看别的吧～', 'Sold out — take a look at other items~') : t('仅展示，不能下单', 'Not for sale')) + '</p></div>') +
