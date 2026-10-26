@@ -1228,7 +1228,7 @@
       '<h2 style="font-size:22px;margin-bottom:14px;">' + t('购物车', 'Cart') + '</h2>' +
       CART.map(function (x, i) {
         return '<div class="card" style="padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:center;">' +
-          '<span class="ck-box" data-i="' + i + '" style="width:20px;height:20px;border-radius:6px;border:2px solid var(--muted,#A88E9B);flex-shrink:0;cursor:pointer;background:' + (x.checked !== false ? '#ffd9e6' : 'transparent') + ';display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1;color:var(--text,#604C57);">' + (x.checked !== false ? '✓' : '') + '</span>' +
+          '<span class="ck-box" data-i="' + i + '" style="width:20px;height:20px;border-radius:6px;border:2px solid var(--border,#FFD9E6);flex-shrink:0;cursor:pointer;background:' + (x.checked !== false ? '#FCE4EC' : '#fff') + ';display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1;color:var(--text,#604C57);">' + (x.checked !== false ? '✓' : '') + '</span>' +
           (x.image ? '<img src="' + escAttr(normImg(x.image)) + '" style="width:56px;height:56px;border-radius:12px;object-fit:cover;">' : '') +
           '<div style="flex:1;min-width:0;"><div style="font-size:16px;">' + esc(x.name) + '</div><div style="font-size:16px;color:#ff6fa5;">' + sym(curOf(null, x)) + money(x.price) + '</div></div>' +
           '<button class="qty-btn cart-q" data-i="' + i + '" data-d="-1">−</button><b>' + x.qty + '</b><button class="qty-btn cart-q" data-i="' + i + '" data-d="1">＋</button>' +

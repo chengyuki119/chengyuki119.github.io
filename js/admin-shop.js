@@ -421,7 +421,7 @@
     }
     return '<div class="card sm-order' + (open ? ' open' : '') + '" data-id="' + escAttr(o.id) + '">' +
       '<div class="sm-o-head">' +
-      '<span class="ck-box sm-osel' + (SM.osel[o.id] ? ' on' : '') + '" data-id="' + escAttr(o.id) + '" style="width:18px;height:18px;border-radius:6px;border:2px solid var(--muted,#A88E9B);flex-shrink:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;color:var(--text,#604C57);background:' + (SM.osel[o.id] ? '#ffd9e6' : 'transparent') + '">' + (SM.osel[o.id] ? '✓' : '') + '</span>' +
+      '<span class="ck-box sm-osel' + (SM.osel[o.id] ? ' on' : '') + '" data-id="' + escAttr(o.id) + '" style="width:18px;height:18px;border-radius:6px;border:2px solid var(--border,#FFD9E6);flex-shrink:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;color:var(--text,#604C57);background:' + (SM.osel[o.id] ? '#FCE4EC' : '#fff') + '">' + (SM.osel[o.id] ? '✓' : '') + '</span>' +
       '<span class="sm-o-no">' + esc(o.order_no || '') + '</span>' +
       '<span class="sold-badge" style="background:' + st[1] + ';">' + esc(dead ? (st[0] + ' · 无需发货') : st[0]) + '</span>' +
       '<span class="sold-badge" style="background:#fff;border:1.5px solid var(--accent-soft,#FCE4EC);color:var(--muted,#A88E9B);">付款：' + esc(payL) + '</span>' +
