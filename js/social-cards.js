@@ -65,9 +65,14 @@
         if (mode === 'text') {
           box.innerHTML = links.map(function (l) {
             var name = esc(l.name) + (l.sub ? '<small style="color:var(--muted,#A88E9B);font-weight:400;">　' + esc(l.sub) + '</small>' : '');
+            var icon = l.icon || '';
+            /* §4.3（她 20261026 总任务书）：微信点击复制微信号；Gmail 点击展开邮箱地址+复制/打开两操作 */
+            if (icon === 'wechat' && l.sub) return '<a class="sy-linkline" href="javascript:void(0)" data-sy-copy="' + escAttr(l.sub) + '">' + name + '</a>';
+            if (icon === 'gmail') { var full = (l.sub || '').indexOf('@') >= 0 ? l.sub : (l.sub || '') + '@gmail.com'; return '<a class="sy-linkline" href="javascript:void(0)" data-sy-mail="' + escAttr(full) + '">' + name + '</a>'; }
             if (l.url) return '<a class="sy-linkline" href="' + escAttr(l.url) + '" target="_blank" rel="noopener">' + name + '</a>';
             return '<span class="sy-linkline" style="cursor:default;">' + name + (l.sub ? '' : '<small style="color:var(--muted,#A88E9B);font-weight:400;">　账号整理中</small>') + '</span>';
-          }).join('');
+          }).join('') + '<div id="sy-mail-pop" style="display:none;"></div>';
+          bindSocialActions(box);
           return;
         }
         box.innerHTML = links.map(function (l) {
@@ -81,4 +86,51 @@
         box.innerHTML = '<p style="color:var(--muted,#A88E9B);text-align:center;padding:30px 0;">加载失败，请刷新重试</p>';
       });
   };
+
+  /* —— §4.3 复制与 Gmail 展开逻辑（social-cards 内部自足，不依赖页面其它脚本） —— */
+  function syCopyText(text, done) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){done(true);}, function(){fallbackCopy(text)?done(true):done(false);});
+    } else { done(fallbackCopy(text)); }
+  }
+  function fallbackCopy(text) {
+    try {
+      var ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;opacity:0;';
+      document.body.appendChild(ta); ta.select(); var ok=document.execCommand('copy'); ta.remove(); return ok;
+    } catch(e){ return false; }
+  }
+  function syToast(msg, ok) {
+    var t=document.getElementById('sy-copy-toast');
+    if(!t){ t=document.createElement('div'); t.id='sy-copy-toast';
+      t.style.cssText='position:fixed;left:50%;bottom:34px;transform:translateX(-50%);z-index:99999;background:#fff;border:1.5px solid #FFD9E6;border-radius:999px;padding:9px 22px;font-size:15px;color:#604C57;box-shadow:0 4px 18px rgba(255,143,171,.25);transition:opacity .25s;opacity:0;pointer-events:none;font-family:inherit;';
+      document.body.appendChild(t); }
+    t.textContent=msg; t.style.color=ok?'#604C57':'#D96570';
+    t.style.opacity='1'; clearTimeout(t._tm); t._tm=setTimeout(function(){t.style.opacity='0';},1800);
+  }
+  function bindSocialActions(box) {
+    if (box._syBound) return; box._syBound=true;
+    box.addEventListener('click', function (e) {
+      var cp = e.target.closest ? e.target.closest('[data-sy-copy]') : null;
+      if (cp) { e.preventDefault();
+        syCopyText(cp.getAttribute('data-sy-copy'), function(ok){ syToast(ok?'已复制微信号 ♡':'复制失败，请手动复制：'+cp.getAttribute('data-sy-copy'), ok); });
+        return;
+      }
+      var gm = e.target.closest ? e.target.closest('[data-sy-mail]') : null;
+      if (gm) { e.preventDefault();
+        var addr=gm.getAttribute('data-sy-mail');
+        var pop=document.getElementById('sy-mail-pop'); if(!pop) return;
+        if (pop.style.display==='block' && pop._for===addr) { pop.style.display='none'; return; }
+        pop._for=addr;
+        pop.innerHTML='<div style="max-width:420px;margin:10px auto 0;background:#fff;border:1.5px solid #FFD9E6;border-radius:14px;padding:14px 18px;font-size:15px;color:#604C57;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'+
+          '<b style="word-break:break-all;">'+addr+'</b>'+
+          '<button type="button" data-sy-copybtn="'+addr+'" style="border:none;background:#FCE4EC;color:#A04A68;border-radius:999px;padding:6px 16px;font-size:14px;cursor:pointer;font-family:inherit;">复制邮箱</button>'+
+          '<a href="mailto:'+addr+'" style="border:1.5px solid #FFD9E6;color:#604C57;border-radius:999px;padding:5px 16px;font-size:14px;text-decoration:none;">打开邮箱</a>'+
+          '</div>';
+        pop.style.display='block';
+        return;
+      }
+      var cb = e.target.closest ? e.target.closest('[data-sy-copybtn]') : null;
+      if (cb) { syCopyText(cb.getAttribute('data-sy-copybtn'), function(ok){ syToast(ok?'已复制邮箱 ♡':'复制失败，请手动复制', ok); }); }
+    });
+  }
 })();

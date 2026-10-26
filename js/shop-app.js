@@ -938,9 +938,8 @@
       showView('account');
       return;
     }
-    // 已登录：资料 + 地址
+    // 已登录：资料 + 地址（原来的 id=eq.x 哑请求每次都打 400 只是刷控制台错误，已删）
     Promise.all([
-      api('shop_profiles?select=*&id=eq.' + 'x').then(function () { return null; }).catch(function () { return null; }),
       getUid()
     ]).then(function (r2) {
       var uid = r2[1];

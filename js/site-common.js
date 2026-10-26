@@ -573,6 +573,21 @@ document.querySelectorAll('.lang-btn').forEach(function (b) {
     location.reload(); // 保存后整页刷新：从已存语言状态重新初始化，URL 保持不变
   });
 });
+/* 兼容 site-common 在 <head> 引入的页面（about/brand/service/policies）：load 时按钮还不存在，用事件委托兜底，同一套逻辑不重复绑 */
+document.addEventListener('click', function (e) {
+  var b = e.target && e.target.closest ? e.target.closest('.lang-btn') : null;
+  if (!b || b._langBound) return;
+  b._langBound = true;
+  var lang = b.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
+  try { localStorage.setItem('yuki-lang', lang); } catch (err) {}
+  location.reload();
+});
+/* 语言选中态自动初始化：任何页面刷新/跳转后恢复 yuki-lang（她 20261026 总任务书 §1.3） */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function () { applyLang(LANG); });
+} else {
+  applyLang(LANG);
+}
 
 // ===== 灯箱：全屏展示 + 可选下载 =====
 function closeLightbox() {

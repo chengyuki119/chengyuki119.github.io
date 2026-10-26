@@ -53,12 +53,13 @@
   /* 四栏结构（她 20261026 最终合并版 §5）：标题都是可点链接；账户栏子链接按登录态跳转（§5.1）
      /account/?sec=orders 已内置登录门（shop-app openOrders：未登录先提示登录，登录后自动进订单） */
   var LINKS = {
-    account: [['login', '/account/', 'login'], ['orders', '/account/?sec=orders'], ['cart', '/shop/?sec=cart'], ['profile', '/account/?sec=account']],
+    /* §4.1（她 20261026 总任务书）：账户栏只保留「登录」「订单」两个直接入口，不再重复设置独立「账户中心」入口；购物车走 Header 购物车图标 */
+    account: [['login', '/account/', 'login'], ['orders', '/account/?sec=orders']],
     service: [['contact', '/askbox/'], ['faq', '/faq/'], ['return-policy', '/return-policy/'], ['shipping-policy', '/shipping-policy/']],
     about: [['brand', '/brand/'], ['findme', '/about/']],
     policies: [['privacy-policy', '/privacy-policy/'], ['terms-of-service', '/terms-of-service/']]
   };
-  var TITLE_HREF = { account: '/account/?sec=account', service: '/service/', about: '/brand/', policies: '/policies/' };
+  var TITLE_HREF = { account: '/account/', service: '/service/', about: '/brand/', policies: '/policies/' }; /* 账户栏标题 → Profile 编辑对应页面（/account/ 登录后默认即 Profile） */
 
   // 社交纵向文字列表（§3.4/§5.3）：与「找到我」页同一份数据源；只有确认有效的链接才渲染成可点文字，未配置的平台不展示
 

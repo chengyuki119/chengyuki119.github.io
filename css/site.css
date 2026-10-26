@@ -65,10 +65,10 @@
     color: var(--muted);
     transition: background .2s, color .2s;
   }
+  /* 选中态全站统一为小铺粉色胶囊（她 20261026 Header 任务书：浅粉底+深粉字，铁律 #FCE4EC/#A04A68） */
   .lang-btn.active {
-    background: #ffffff;
-    color: var(--text);
-    box-shadow: 0 1px 4px rgba(90,66,76,.15);
+    background: var(--accent-soft, #FCE4EC);
+    color: var(--accent-strong, #A04A68);
   }
 
 

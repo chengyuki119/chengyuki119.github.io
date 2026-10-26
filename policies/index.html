@@ -6,10 +6,10 @@
   <title>网站政策 · Snow Yuzu</title>
   <meta name="description" content="Snow Yuzu 网站政策：隐私政策与服务条款">
   <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
-  <link rel="stylesheet" href="/css/site.css?v=20261026o">
-  <link rel="stylesheet" href="/site-menu.css?v=20261026o">
-  <script src="/js/site-common.js?v=20261026o"></script>
-  <script src="/site-menu.js?v=20261026o" defer></script>
+  <link rel="stylesheet" href="/css/site.css?v=20261026p">
+  <link rel="stylesheet" href="/site-menu.css?v=20261026p">
+  <script src="/js/site-common.js?v=20261026p"></script>
+  <script src="/site-menu.js?v=20261026p" defer></script>
   <style>
     .sy-linkline { display: block; padding: 15px 4px; border-bottom: 1px solid var(--accent,#FFD9E6); color: var(--text,#604C57); font-size:17px; text-decoration: none; transition: color .2s, padding-left .2s; }
     .sy-linkline:hover { color: var(--price,#FF6FA5); padding-left: 10px; }
@@ -55,10 +55,12 @@
 
   <a class="back-link page-back" href="/" data-zh="← 返回主页" data-en="← Back Home" style="margin:38px 0 10px;">← 返回主页</a>
 <footer></footer>
-  <script src="/js/site-footer.js?v=20261026o"></script>
+  <script src="/js/site-footer.js?v=20261026p"></script>
   <script>
 
     if (window.renderSiteFooter) renderSiteFooter();
-  </script>
+      // §1.3 语言状态初始化：刷新/跳转后恢复 yuki-lang 选中态并翻译静态文案（此前四页漏调，语言按钮无选中态）
+    if (typeof applyLang === 'function') applyLang((function(){try{return localStorage.getItem('yuki-lang')||'zh';}catch(e){return 'zh';}})());
+</script>
 </body>
 </html>
