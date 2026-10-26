@@ -73,7 +73,10 @@
       '.biz-hr{border:none;border-top:1.5px dashed #F8BBD0;margin:8px 0;}',
       /* 摄像头 */
       '#biz-cam-box video{width:100%;max-width:420px;border-radius:14px;background:#000;display:block;margin:0 auto;}',
-      '@media (max-width:720px){.biz-modal{padding:16px 14px;}}'
+      '@media (max-width:720px){.biz-modal{padding:16px 14px;}}',
+      /* 20261026k 整改：手机端弹窗不再横向溢出——双列表单转单列，日期框约束宽度，输入 16px 防 iOS 聚焦缩放 */
+      '@media (max-width:600px){#biz-mask .biz-modal div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important;}' +
+        '.biz-in{font-size:16px;} input[type="date"].biz-in{min-width:0;width:100% !important;} select.biz-in{min-width:0;width:100% !important;}}',
     ].join('\n');
     document.head.appendChild(st);
   })();
@@ -125,10 +128,11 @@
     mask.id = 'biz-mask';
     mask.innerHTML = '<div class="biz-modal">' + inner + '</div>';
     document.body.appendChild(mask);
+    document.documentElement.style.overflow = 'hidden'; // 弹窗打开时禁止背景滚动（她 2026-10-26 任务书 §9.1）
     mask.addEventListener('click', function (e) { if (e.target === mask) bizCloseModal(); });
     return mask;
   }
-  function bizCloseModal() { var m = $('biz-mask'); if (m) m.remove(); }
+  function bizCloseModal() { var m = $('biz-mask'); if (m) m.remove(); document.documentElement.style.overflow = ''; }
 
   /* ══════════════════════════════════════════════════════════════
      纯函数：成本公式（无 DOM、无请求，方便自检与复用）
@@ -708,12 +712,23 @@
           '<span style="font-size:13px;color:var(--muted,#A88E9B);">每件手工品一个唯一编码（SYU-XXXXXX），扫码可查真伪与质检</span>' +
           '<button class="btn-save-tb" id="biz-u-new" style="margin-left:auto;">＋ 生成单件编码</button>' +
           '<button class="btn-mini" id="biz-u-bulk" style="padding:7px 16px;">批量生成</button>' +
+          '<button class="btn-mini" id="biz-u-print" style="padding:7px 16px;">打印标签（当前列表）</button>' +
         '</div>' +
         '<div id="biz-u-filters" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;"></div>' +
         '<input id="biz-u-q" placeholder="搜索单件编码 / 型号编码 / 批次号" style="margin-top:10px;width:100%;max-width:360px;padding:8px 14px;font-size:14px;border:1.5px solid #FFD9E6;border-radius:12px;outline:none;font-family:inherit;color:var(--text,#604C57);background:#fff;box-sizing:border-box;">' +
       '</div>' +
       '<div id="biz-u-list"><p style="color:var(--muted,#A88E9B);text-align:center;padding:24px 0;">加载中…</p></div>';
     $('biz-u-new').addEventListener('click', function () { openUnitForm(1); });
+    $('biz-u-print').addEventListener('click', function () {
+      var rows = UNITS.list.filter(function (u) {
+        if (UNITS.filter !== 'all' && u.qc_status !== UNITS.filter) return false;
+        if (!UNITS.search) return true;
+        return [u.unit_code, u.model_code, u.batch_code].some(function (v) { return String(v || '').toLowerCase().indexOf(UNITS.search) >= 0; });
+      });
+      if (!rows.length) { toast('当前列表没有可打印的编码'); return; }
+      if (rows.length > 100) { toast('一次最多打印 100 张，请先用筛选缩小范围'); return; }
+      printLabelsBatch(rows);
+    });
     $('biz-u-bulk').addEventListener('click', function () { openUnitForm(null); });
     $('biz-u-q').addEventListener('input', function () { UNITS.search = this.value.trim().toLowerCase(); renderUnitRows(); });
     renderUnitFilters();
@@ -738,7 +753,7 @@
       var box = $('biz-u-list');
       if (box) box.innerHTML = '<p style="color:var(--muted,#A88E9B);text-align:center;padding:24px 0;">编码列表加载失败，请刷新重试</p>';
     });
-    api('products?select=id,name,price,image_url&order=created_at.desc&limit=300').then(function (r) { return r.json(); }).then(function (rows) {
+    api('products?select=id,name,price,image_url,tag&order=created_at.desc&limit=300').then(function (r) { return r.json(); }).then(function (rows) {
       UNITS.products = Array.isArray(rows) ? rows : [];
       UNITS.pmap = {};
       UNITS.products.forEach(function (p) { UNITS.pmap[p.id] = p; });
@@ -903,40 +918,93 @@
     $('biz-ud-print').addEventListener('click', function () { printLabel(u, p); });
   }
 
+  // 本地生成二维码 SVG（qrcode-generator，MIT）：不外泄扫码链接，矢量打印更清晰
+  function qrSvg(text) {
+    var qr = window.qrcode(0, 'M');
+    qr.addData(text);
+    qr.make();
+    try { return qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
+    catch (e) { return qr.createSvgTag(4, 2); }
+  }
+  // 标签文字区：商品名称 + 商品种类 + 单件编码（必显），型号 SKU / 批次（有则显示），与记录一一对应
+  function labelHtml(u, p, big) {
+    var scanUrl = 'https://chengyuki119.github.io/admin.html#qcscan?code=' + encodeURIComponent(u.unit_code || '');
+    return '<div class="label">' +
+      '<div class="qr">' + qrSvg(scanUrl) + '</div>' +
+      '<div class="txt">' +
+        '<div class="pname">' + esc(p ? p.name : (u.model_code || '未关联商品')) + '</div>' +
+        (p && p.tag ? '<div class="meta">商品种类：' + esc(p.tag) + '</div>' : '') +
+        '<div class="ucode">' + esc(u.unit_code || '') + '</div>' +
+        (u.model_code ? '<div class="meta">型号 SKU：' + esc(u.model_code) + '</div>' : '') +
+        (u.batch_code ? '<div class="meta">批次：' + esc(u.batch_code) + '</div>' : '') +
+      '</div>' +
+    '</div>';
+  }
   function printLabel(u, p) {
     var w = window.open('', '_blank');
     if (!w) { toast('浏览器拦截了新窗口，请允许弹窗后重试'); return; }
     // 二维码内容：前台扫码验货页的绝对 URL，带单件原编码
-    var scanUrl = 'https://chengyuki119.github.io/admin.html#qcscan?code=' + encodeURIComponent(u.unit_code || '');
-    var qr = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(scanUrl);
     var html = [
       '<!doctype html><html><head><meta charset="utf-8"><title>标签 ' + esc(u.unit_code) + '</title><style>',
       '*{box-sizing:border-box;}',
       "body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#FFF9FB;margin:0;padding:24px;display:flex;flex-direction:column;align-items:center;gap:14px;}",
-      '.label{width:340px;background:#fff;border:1.5px dashed #F8BBD0;border-radius:16px;padding:18px;text-align:center;}',
-      '.brand{font-size:20px;font-weight:800;color:var(--accent-strong,#A04A68);letter-spacing:1px;}',
-      '.brand small{display:block;font-size:11px;color:#D9A7C7;font-weight:600;letter-spacing:3px;margin-top:2px;}',
-      '.pname{font-size:15px;color:var(--text,#604C57);margin-top:10px;font-weight:600;}',
-      '.ucode{font-size:19px;font-weight:800;color:var(--price,#ff6fa5);margin-top:4px;letter-spacing:1px;}',
-      '.meta{font-size:12px;color:var(--muted,#A88E9B);margin-top:4px;line-height:1.7;}',
-      '.qr{margin-top:10px;} .qr img{width:220px;height:220px;}',
+      '.label{width:420px;background:#fff;border:1.5px dashed #F8BBD0;border-radius:16px;padding:18px;display:flex;gap:16px;align-items:center;text-align:left;}',
+      '.brand{font-size:20px;font-weight:800;color:#A04A68;letter-spacing:1px;text-align:center;flex:none;width:100%;}',
+      '.pname{font-size:16px;color:#604C57;font-weight:600;line-height:1.4;}',
+      '.ucode{font-size:20px;font-weight:800;color:#ff6fa5;margin-top:4px;letter-spacing:1px;}',
+      '.meta{font-size:12px;color:#A88E9B;margin-top:4px;line-height:1.7;}',
+      '.label .qr{width:150px;flex:none;}.label .qr svg{width:150px;height:150px;display:block;}',
+      '.label .txt{flex:1;min-width:0;}',
       '.foot{font-size:10px;color:#D9A7C7;margin-top:8px;}',
       '.noprint{border:none;background:#ffd9e6;color:var(--text,#604C57);font-size:15px;padding:9px 26px;border-radius:999px;cursor:pointer;font-family:inherit;}',
       '@media print{body{background:#fff;padding:0;} .noprint{display:none !important;} .label{border:1.5px solid #eee;}}',
       '</style></head><body>',
-      '<div class="label">',
       '<div class="brand">Snow Yuzu<small>SNOW YUZU STUDIO</small></div>',
-      '<div class="pname">' + esc(p ? p.name : (u.model_code || '')) + '</div>',
-      '<div class="ucode">' + esc(u.unit_code || '') + '</div>',
-      '<div class="meta">型号：' + esc(u.model_code || '—') + '　批次：' + esc(u.batch_code || '—') + '<br>制作日期：' + esc(u.made_at || '—') + '</div>',
-      '<div class="qr"><img src="' + escAttr(qr) + '" alt="QR"></div>',
+      labelHtml(u, p, true),
       '<div class="foot">扫码可查真伪与质检信息</div>',
-      '</div>',
       '<button class="noprint" onclick="window.print()">打印标签</button>',
       '</body></html>'
     ].join('\n');
     w.document.write(html);
     w.document.close();
+  }
+
+  // 批量打印标签：普通家用打印机 A4 / Letter 均可，2 列 × 4 行每页 8 张，打印后沿线剪下
+  function printLabelsBatch(rows) {
+    var w = window.open('', '_blank');
+    if (!w) { toast('浏览器拦截了新窗口，请允许弹窗后重试'); return; }
+    var labels = rows.map(function (u) { return labelHtml(u, u.product_id ? UNITS.pmap[u.product_id] : null, false); }).join('');
+    var write = function (paper) {
+      var size = paper === 'LETTER' ? 'letter' : 'A4';
+      w.document.open();
+      w.document.write([
+        '<!doctype html><html><head><meta charset="utf-8"><title>批量标签（' + rows.length + ' 张 · ' + size + '）</title><style>',
+        '*{box-sizing:border-box;}',
+        "body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;margin:0;padding:10mm;background:#fff;}",
+        '@page{size:' + size + ';margin:8mm;}',
+        '.sheet{display:flex;flex-wrap:wrap;gap:4mm;align-content:flex-start;}',
+        '.label{width:88mm;height:54mm;border:1px dashed #bbb;border-radius:3mm;padding:4mm;display:flex;gap:4mm;align-items:center;break-inside:avoid;page-break-inside:avoid;background:#fff;}',
+        '.label .qr{width:40mm;flex:none;}.label .qr svg{width:40mm;height:40mm;display:block;}',
+        '.label .txt{flex:1;min-width:0;overflow:hidden;}',
+        '.label .pname{font-size:13px;font-weight:700;color:#604C57;line-height:1.35;}',
+        '.label .ucode{font-size:16px;font-weight:800;color:#ff6fa5;letter-spacing:.5px;margin-top:1.5mm;}',
+        '.label .meta{font-size:10px;color:#A88E9B;line-height:1.5;margin-top:1mm;}',
+        '.noprint{margin:0 8px 14px 0;border:none;background:#ffd9e6;color:#604C57;font-size:15px;padding:9px 22px;border-radius:999px;cursor:pointer;font-family:inherit;}',
+        '@media print{.noprint{display:none !important;}body{padding:0;}.label{border:1px solid #ddd;}}',
+        '</style></head><body>',
+        '<div class="noprint-wrap"><button class="noprint" onclick="window.print()">打印（' + size + '）</button>',
+        '<button class="noprint" onclick="window.switchPaper(\'A4\')">切 A4</button>',
+        '<button class="noprint" onclick="window.switchPaper(\'LETTER\')">切 Letter</button>',
+        '<span style="font-size:12px;color:#A88E9B;">每页 8 张（2×4），普通纸打印后沿线剪开即可；二维码矢量清晰，手机可直接识别</span></div>',
+        '<div class="sheet">' + labels + '</div>',
+        '<scr' + 'ipt>function switchPaper(p){window.PAPER=p;window.build();}</scr' + 'ipt>',
+        '</body></html>'
+      ].join('\n'));
+      w.document.close();
+    };
+    w.PAPER = 'A4';
+    w.build = function () { write(w.PAPER || 'A4'); };
+    w.build();
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -961,6 +1029,8 @@
             'style="flex:1;min-width:220px;padding:12px 18px;font-size:17px;letter-spacing:1px;border:2px solid #FFD9E6;border-radius:14px;outline:none;font-family:inherit;color:var(--text,#604C57);background:#fff;box-sizing:border-box;">' +
           '<button class="btn-save-tb" id="biz-q-go">查询</button>' +
           '<button class="btn-mini" id="biz-q-cam" style="padding:10px 18px;">开启摄像头扫描</button>' +
+          '<button class="btn-mini" id="biz-q-camstop" style="padding:10px 18px;display:none;">停止扫描</button>' +
+          '<button class="btn-mini" id="biz-q-camflip" style="padding:10px 18px;display:none;">切换镜头</button>' +
         '</div>' +
         '<div id="biz-cam-box" style="display:none;margin-top:12px;">' +
           '<video autoplay playsinline muted></video>' +
@@ -973,50 +1043,87 @@
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') doQcQuery(input.value); }); // 兼容 USB 扫码枪（扫完自动发 Enter）
     $('biz-q-go').addEventListener('click', function () { doQcQuery(input.value); });
     $('biz-q-cam').addEventListener('click', startCam);
+    $('biz-q-camstop').addEventListener('click', stopCam);
+    $('biz-q-camflip').addEventListener('click', function () { QC.facing = (QC.facing === 'environment') ? 'user' : 'environment'; startCam(); });
     if (QC.code) { input.value = QC.code; doQcQuery(QC.code); } // 从打印标签链接 #qcscan?code=SYU-… 跳进来时自动查
   }
 
+  function camButtons(on) {
+    var b1 = $('biz-q-cam'), b2 = $('biz-q-camstop'), b3 = $('biz-q-camflip');
+    if (b1) b1.style.display = on ? 'none' : '';
+    if (b2) b2.style.display = on ? '' : 'none';
+    if (b3) b3.style.display = on ? '' : 'none';
+  }
+  // 识别到码 → 解析出单件编码（标签二维码是完整链接，取 code 参数；裸编码兼容）
+  function handleCamCode(raw) {
+    raw = String(raw || '').trim();
+    stopCam();
+    var mCode = raw.match(/[?&]code=([^&\s]+)/);
+    var code = mCode ? decodeURIComponent(mCode[1]) : raw;
+    var input = $('biz-q-in');
+    if (input) input.value = code;
+    doQcQuery(code);
+  }
   function startCam() {
     var hint = $('biz-q-hint');
-    // 特征检测：不支持就明说，绝不假装能扫
-    if (!('BarcodeDetector' in window)) {
-      if (hint) hint.textContent = '当前浏览器不支持摄像头识别，请手动输入或用扫码枪。';
-      toast('当前浏览器不支持摄像头识别，请手动输入或用扫码枪');
-      return;
-    }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      if (hint) hint.textContent = '当前环境无法访问摄像头，请手动输入或用扫码枪。';
+      if (hint) hint.textContent = '当前环境无法访问摄像头（需 HTTPS），请手动输入或用扫码枪。';
       toast('无法访问摄像头，请手动输入或用扫码枪');
       return;
     }
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function (stream) {
+    // 有 BarcodeDetector 用原生（Android Chrome 最快）；没有则用本地 jsQR 逐帧识别（iPhone Safari / Firefox 等），MIT 协议
+    var useNative = 'BarcodeDetector' in window;
+    if (!useNative && !window.jsQR) {
+      if (hint) hint.textContent = '本地识别库还没加载好，请刷新页面再试；或直接手动输入 / 用扫码枪。';
+      toast('识别库未加载，请刷新重试');
+      return;
+    }
+    if (QC.camStream) stopCam(); // 切换镜头 / 重复点击先关旧流
+    var facing = QC.facing || 'environment';
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: facing } }).then(function (stream) {
       QC.camStream = stream; QC.camOn = true;
       var box = $('biz-cam-box');
       if (!box) { stopCam(); return; }
       box.style.display = 'block';
+      camButtons(true);
+      if (hint) hint.textContent = '正在扫描（' + (facing === 'environment' ? '后置' : '前置') + '镜头）· 识别到二维码会自动查询';
       var video = box.querySelector('video');
       video.srcObject = stream;
-      var detector = new window.BarcodeDetector();
+      var detector = useNative ? new window.BarcodeDetector() : null;
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d', { willReadFrequently: true });
+      var busy = false;
       (function tick() {
         if (!QC.camOn) return;
-        detector.detect(video).then(function (codes) {
-          if (QC.camOn && codes && codes.length && codes[0].rawValue) {
-            var raw = String(codes[0].rawValue).trim();
-            stopCam();
-            // 标签二维码内容是完整链接（…#qcscan?code=SYU-XXXXXX），取其中的 code 参数；裸编码也兼容
-            var mCode = raw.match(/[?&]code=([^&\s]+)/);
-            var code = mCode ? decodeURIComponent(mCode[1]) : raw;
-            var input = $('biz-q-in');
-            if (input) input.value = code;
-            doQcQuery(code);
-            return;
-          }
-          requestAnimationFrame(tick);
-        }).catch(function () { if (QC.camOn) requestAnimationFrame(tick); });
+        if (useNative) {
+          detector.detect(video).then(function (codes) {
+            if (!QC.camOn) return;
+            if (codes && codes.length && codes[0].rawValue) { handleCamCode(codes[0].rawValue); return; }
+            requestAnimationFrame(tick);
+          }).catch(function () { if (QC.camOn) requestAnimationFrame(tick); });
+          return;
+        }
+        if (busy) { requestAnimationFrame(tick); return; }
+        if (!video.videoWidth) { requestAnimationFrame(tick); return; }
+        busy = true;
+        var w = 480, h = Math.round(video.videoHeight / video.videoWidth * 480) || 360;
+        canvas.width = w; canvas.height = h;
+        ctx.drawImage(video, 0, 0, w, h);
+        var img = ctx.getImageData(0, 0, w, h);
+        var found = null;
+        try { found = window.jsQR(img.data, w, h, { inversionAttempts: 'dontInvert' }); } catch (e) {}
+        busy = false;
+        if (QC.camOn && found && found.data) { handleCamCode(found.data); return; }
+        requestAnimationFrame(tick);
       })();
-    }).catch(function () {
-      toast('摄像头打开失败，请检查权限，或手动输入 / 用扫码枪');
-      if (hint) hint.textContent = '摄像头打开失败（可能没给权限），请手动输入或用扫码枪。';
+    }).catch(function (err) {
+      var name = (err && err.name) || '';
+      var msg = name === 'NotAllowedError' ? '摄像头权限被拒绝：请在浏览器权限设置里允许摄像头后重试'
+        : (name === 'NotFoundError' || name === 'OverconstrainedError') ? '没找到可用的摄像头，请手动输入或用扫码枪'
+        : name === 'NotReadableError' ? '摄像头被其他程序占用，关掉后再试'
+        : '摄像头打开失败，请检查权限，或手动输入 / 用扫码枪';
+      toast(msg);
+      if (hint) hint.textContent = msg + '。';
     });
   }
   function stopCam() {
@@ -1024,6 +1131,9 @@
     if (QC.camStream) { try { QC.camStream.getTracks().forEach(function (tr) { tr.stop(); }); } catch (e) {} QC.camStream = null; }
     var box = $('biz-cam-box');
     if (box) { box.style.display = 'none'; var v = box.querySelector('video'); if (v) v.srcObject = null; }
+    camButtons(false);
+    var hint = $('biz-q-hint');
+    if (hint && hint.textContent.indexOf('正在扫描') === 0) hint.textContent = 'USB 扫码枪：点一下输入框后直接扫，枪会自动回车提交。';
   }
 
   function doQcQuery(code) {

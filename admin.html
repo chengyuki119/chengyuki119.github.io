@@ -64,7 +64,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   .back-link:hover { background: var(--card-hover); }
 
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 40px 24px 64px; }
+  .wrap { max-width: none; width: 100%; margin: 0 auto; padding: 40px 24px 64px; box-sizing: border-box; }
   a { color: inherit; text-decoration: none; }
   h1 { font-size:31px; margin: 20px 0 6px; }
   .sub { color: var(--muted); font-size:16px; margin-bottom: 20px; }
@@ -529,12 +529,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   <p class="sub">回留言 · 上小铺新品，全都在这里自己搞定</p>
 
   <!-- 登录 -->
-  <div class="gate" id="gate">
+  <form class="gate" id="gate">
     <div class="hint">用你在 Supabase 后台创建的账号密码登录（第一次用要先去建账号：Supabase 网页 → Authentication → Users → Add user → Create new user，填邮箱和密码）</div>
     <input id="email" type="email" placeholder="邮箱" autocomplete="username">
     <input id="password" type="password" placeholder="密码" autocomplete="current-password">
-    <button id="btn-login">登录</button>
-  </div>
+    <button id="btn-login" type="submit">登录</button>
+  </form>
 
   <!-- 登录后 -->
   <div id="admin-body" style="display:none;">
@@ -554,21 +554,22 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <button class="tab-btn" data-tab="shop">小铺上架</button>
         <button class="tab-btn" data-tab="shopmgr">订单管理</button>
         <button class="tab-btn" data-tab="crm">客户管理</button>
-        <button class="tab-btn" data-tab="pos">线下开单</button>
         <button class="tab-btn" data-tab="reviews">评价返图管理</button>
+        <button class="tab-btn" data-tab="pos">线下开单</button>
         <div class="pp-group">互动管理</div>
         <button class="tab-btn" data-tab="messages">联系与留言管理</button>
         <button class="tab-btn" data-tab="ai">AI 对话</button>
+        <div class="pp-group">订单与履约工具</div>
+        <button class="tab-btn" data-tab="workbench">订单工作台</button>
+        <button class="tab-btn" data-tab="export">订单导出</button>
+        <button class="tab-btn" data-tab="print">清单打印</button>
+        <button class="tab-btn" data-tab="units">商品编码</button>
+        <button class="tab-btn" data-tab="qcscan">扫码验货</button>
+        <button class="tab-btn" data-tab="cost">成本计算</button>
         <div class="pp-group">系统设置</div>
         <button class="tab-btn" data-tab="mailsync">邮件与联系人同步</button>
         <button class="tab-btn" data-tab="mailtpl">邮件模板管理</button>
         <button class="tab-btn" data-tab="theme">主题颜色</button>
-        <button class="tab-btn" data-tab="workbench">订单工作台</button>
-        <button class="tab-btn" data-tab="export">订单导出</button>
-        <button class="tab-btn" data-tab="print">清单打印</button>
-        <button class="tab-btn" data-tab="cost">成本计算</button>
-        <button class="tab-btn" data-tab="units">商品编码</button>
-        <button class="tab-btn" data-tab="qcscan">扫码验货</button>
         <button class="tab-btn" data-tab="system">系统状态</button>
       </div>
     </div>
@@ -1203,9 +1204,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     }
   }
   document.getElementById('btn-login').addEventListener('click', function () {
+    if (window.__loginBusy) return; // Enter/按钮防重复提交（她 2026-10-26 任务书 §7）
     var email = document.getElementById('email').value.trim();
     var pw = document.getElementById('password').value;
     if (!email || !pw) { toast('邮箱和密码都要填哦'); return; }
+    window.__loginBusy = true;
     fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
       method: 'POST',
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
@@ -1218,7 +1221,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           enterAdmin(); toast('欢迎回来，柚子！');
         });
       })
-      .catch(function () { toast('登录失败，检查邮箱密码'); });
+      .catch(function () { toast('登录失败，检查邮箱密码'); })
+      .then(function () { window.__loginBusy = false; }); // 无论成败都解锁，失败可重试
+  });
+  // Enter 提交：标准 form submit（密码框/邮箱框回车原生触发），等价于点登录按钮
+  document.getElementById('gate').addEventListener('submit', function (e) {
+    e.preventDefault();
+    document.getElementById('btn-login').click();
   });
   document.getElementById('btn-logout').addEventListener('click', function () {
     document.getElementById('lo-mask').classList.add('open');
@@ -1298,6 +1307,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       });
       // 切页后左侧导航回到顶部（她自己滚动看过下面再切页时，菜单会停在中间——她 2026-10-26）
       var ppm = document.getElementById('pp-menu'); if (ppm) ppm.scrollTop = 0;
+      try { window.scrollTo(0, 0); } catch (e) {} // 右侧新页面主体从顶部显示（她 2026-10-26 任务书 §6）
       if (b.dataset.tab === 'works') renderWorks();
       if (b.dataset.tab === 'reviews') loadReviewsAdmin();
       if (b.dataset.tab === 'system') loadEmailLog();
@@ -6041,11 +6051,13 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026k"></script>
-<script src="js/admin-crm.js?v=20261026k"></script>
-<script src="js/admin-workbench.js?v=20261026k"></script>
-<script src="js/admin-biz.js?v=20261026k"></script>
-<script src="js/admin-export.js?v=20261026k"></script>
+<script src="js/admin-shop.js?v=20261026l"></script>
+<script src="js/admin-crm.js?v=20261026l"></script>
+<script src="js/vendor/jsQR.js?v=20261026l"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261026l"></script>
+<script src="js/admin-workbench.js?v=20261026l"></script>
+<script src="js/admin-biz.js?v=20261026l"></script>
+<script src="js/admin-export.js?v=20261026l"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

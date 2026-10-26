@@ -47,7 +47,7 @@
   var LINKS = {
     account: [['myaccount', '/account/']],
     service: [['contact', '/askbox/'], ['faq', '/faq/'], ['return-policy', '/return-policy/'], ['shipping-policy', '/shipping-policy/']],
-    about: [['findme', '/#links'], ['shop', '/shop/']],
+    about: [['findme', '/about/'], ['shop', '/shop/']],
     policies: [['privacy-policy', '/privacy-policy/'], ['terms-of-service', '/terms-of-service/']]
   };
 
@@ -70,7 +70,7 @@
     st.id = STYLE_ID;
     /* 电商多列 Footer（她 2026-10-26：参考 lululemon 多列布局，去掉大圆角粉卡，白/极浅粉底、顶部细分隔线） */
     st.textContent =
-      '.sy-footer{max-width:1080px;margin:26px auto 22px;padding:0 24px;font-family:inherit;box-sizing:border-box;}' +
+      '.sy-footer{max-width:1400px;margin:26px auto 22px;padding:0 24px;font-family:inherit;box-sizing:border-box;}' +
       '.sy-footer-inner{border-top:1px solid var(--accent,#FFD9E6);padding-top:30px;}' +
       '.sy-footer-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 36px;}' +
       '@media (max-width:899px){.sy-footer-cols{grid-template-columns:1fr 1fr;}}' +

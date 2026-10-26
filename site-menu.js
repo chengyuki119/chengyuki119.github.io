@@ -28,7 +28,7 @@
       { key: 'reviews', zh: '评价返图', en: 'Review', page: 'shop', url: '/shop/?sec=reviews', sec: 'reviews' }
     ]},
     { key: 'anon', zh: '联系我们', en: 'Contact Us', page: 'askbox', url: '/askbox/' },
-    { key: 'links', zh: '找到我', en: 'Find Me', page: 'index', url: '/', scrollTo: 'links', scroll: true }
+    { key: 'about', zh: '关于 Snow Yuzu', en: 'About', page: 'about', url: '/about/' }
   ];
 
   // 当前页面 / 当前子区（?sec= / ?id= / ?card=）
@@ -41,6 +41,7 @@
     if (p.indexOf('/works/') === 0) return 'works';
     if (p.indexOf('/shop/') === 0 || p.indexOf('/shop.html') === 0) return 'shop';
     if (p.indexOf('/askbox/') === 0) return 'askbox';
+    if (p.indexOf('/about/') === 0) return 'about';
     if (p.indexOf('/admin.html') === 0) return 'admin';
     return 'index';
   })();
