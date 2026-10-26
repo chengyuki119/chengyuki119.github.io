@@ -943,7 +943,7 @@ function ykGatePage(mode) {
         '<div style="font-size:34px;color:var(--text,#604C57);line-height:1;">♥</div>' +
         '<h2 style="font-size:20px;color:var(--text,#604C57);margin:14px 0 8px;">' + (en ? 'Checking your identity…' : '身份确认没成功') + '</h2>' +
         '<p style="font-size:15px;color:var(--muted,#A88E9B);margin:0 0 22px;">' + (en ? 'Network hiccup — your login is safe. Tap to retry.' : '刚才网络抖了一下，你的登录还在，点下面重试就好。') + '</p>' +
-        '<button id="yk-retry" style="background:#ffd9e6;color:var(--text,#604C57);border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Retry' : '重试') + '</button>' +
+        '<button id="yk-retry" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Retry' : '重试') + '</button>' +
         '</div>';
       document.body.insertBefore(wrapR, document.body.firstChild);
       var othersR = document.querySelectorAll('body > *:not(:first-child)');
@@ -960,9 +960,9 @@ function ykGatePage(mode) {
     var title = (mode === 'photos') ? (en ? 'Photos are for logged-in visitors' : '照片展示要登录后才能看哦') : (en ? 'Yuki Members Only' : '此内容仅限柚子专属账号查看');
     var btns = '';
     if (!logged) {
-      btns = '<a href="/account/?next=' + encodeURIComponent(location.pathname + location.search) + '" style="display:inline-block;background:#ffd9e6;color:var(--text,#604C57);border-radius:999px;padding:11px 26px;font-size:16px;text-decoration:none;">' + (en ? 'Go to Login' : '去登录') + '</a>';
+      btns = '<a href="/account/?next=' + encodeURIComponent(location.pathname + location.search) + '" style="display:inline-block;background:var(--accent,#ffd9e6);color:var(--text,#604C57);border-radius:999px;padding:11px 26px;font-size:16px;text-decoration:none;">' + (en ? 'Go to Login' : '去登录') + '</a>';
     } else {
-      btns = '<button id="yk-logout" style="background:#ffd9e6;color:var(--text,#604C57);border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Log Out' : '退出登录') + '</button>' +
+      btns = '<button id="yk-logout" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Log Out' : '退出登录') + '</button>' +
              ' <a href="/" style="display:inline-block;margin-left:10px;color:var(--muted,#A88E9B);text-decoration:none;">' + (en ? 'Back to Home' : '返回主页') + '</a>';
     }
     wrap.innerHTML = '<div style="background:var(--card,#FFF0F5);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
@@ -999,3 +999,36 @@ function ykAuthFetch(path) {
   });
 }
 window.ykAuthFetch = ykAuthFetch;
+
+/* ═══ 主题颜色：全站单一数据源（她 2026-10-26）═══
+   库 site_settings.key='theme_colors'，后台「主题颜色」页签可改；
+   所有页面引用的都是 var(--text/--muted/--bg/--card/--accent/--accent-soft/--accent-strong/--price)，
+   这里读库后覆写 :root 变量 → 全站同步，无需改任何页面代码。 */
+function ykApplyTheme(v) {
+  if (!v || typeof v !== 'object') return;
+  var map = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price' };
+  var r = document.documentElement.style;
+  Object.keys(map).forEach(function (k) { if (v[k]) r.setProperty(map[k], v[k]); });
+}
+window.ykApplyTheme = ykApplyTheme;
+(function () {
+  try {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem('yuki-theme-colors') || 'null'); } catch (e) {}
+    if (saved) ykApplyTheme(saved); // 先用本地快照免闪烁，再拉库校准
+  } catch (e) {}
+  fetch(DB_BASE + 'site_settings?select=value&key=eq.theme_colors', { headers: DB_HEADERS })
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (rows) {
+      var raw = rows && rows[0] && rows[0].value;
+      if (!raw) return;
+      try {
+        var v = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (v && typeof v === 'object') {
+          ykApplyTheme(v);
+          try { localStorage.setItem('yuki-theme-colors', JSON.stringify(v)); } catch (e) {}
+        }
+      } catch (e) {}
+    })
+    .catch(function () {});
+})();

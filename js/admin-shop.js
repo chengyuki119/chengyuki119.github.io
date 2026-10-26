@@ -20,7 +20,7 @@
     '#tab-shopmgr .sm-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }',
     '#tab-shopmgr .sm-tab { border:none; background:var(--card); color:var(--muted); font-size:16px; padding:7px 14px; border-radius:999px; cursor:pointer; font-family:inherit; transition:background .15s,color .15s; }',
     '#tab-shopmgr .sm-tab:hover { background:var(--card-hover); }',
-    '#tab-shopmgr .sm-tab.active { background:#FCE4EC; color:var(--text,#604C57); }',
+    '#tab-shopmgr .sm-tab.active { background:var(--accent-soft,#FCE4EC); color:var(--text,#604C57); }',
     '#tab-shopmgr .sm-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }',
     '#tab-shopmgr .sm-toolbar .dy-chips { flex:1; min-width:260px; }',
     '#tab-shopmgr .sm-toolbar input { width:230px; flex-shrink:0; }',
@@ -54,7 +54,7 @@
     '#tab-shopmgr .mo-sum-row { display:flex; justify-content:space-between; font-size:16px; color:var(--text); padding:4px 0; }',
     '#tab-shopmgr .mo-sum-row .mo-sl { color:var(--muted); }',
     '#tab-shopmgr .mo-sum-total { display:flex; justify-content:space-between; align-items:center; border-top:1.5px dashed var(--accent-soft,#FCE4EC); margin-top:8px; padding-top:10px; }',
-    '#tab-shopmgr .mo-sum-total b { font-size:22px; font-weight:800; color:#ff6fa5; }',
+    '#tab-shopmgr .mo-sum-total b { font-size:22px; font-weight:800; color:var(--price,#ff6fa5); }',
     '#tab-shopmgr .sm-act .lbl { font-size:15px; color:var(--muted); flex-shrink:0; }',
     '#tab-shopmgr .sm-act input, #tab-shopmgr .sm-act textarea { flex:1; min-width:120px; width:auto; }',
     '#tab-shopmgr .sm-act .sm-reject-reason { min-width:190px; }',
@@ -278,7 +278,7 @@
       var img = it.image ? '<img src="' + escAttr(it.image) + '">' : '';
       return '<div class="sm-io-row">' + img +
         '<span>' + esc(it.name || it.sku || '商品') + '</span>' +
-        '<span class="sm-io-sub">' + (it.sku ? 'SKU ' + esc(it.sku) + ' · ' : '') + '×' + (it.qty || 1) + ' · <span style="color:#ff6fa5;">$' + fmtMoney(it.price) + '</span>' + '</span>' +
+        '<span class="sm-io-sub">' + (it.sku ? 'SKU ' + esc(it.sku) + ' · ' : '') + '×' + (it.qty || 1) + ' · <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(it.price) + '</span>' + '</span>' +
         '</div>';
     }).join('');
   }
@@ -294,7 +294,7 @@
       '<select class="sm-ie-prod" style="flex:1;min-width:170px;max-width:280px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:10px;padding:6px 8px;font-family:inherit;font-size:14px;background:#fff;color:var(--text,#604C57);">' + ieProdOpts(it.name) + '</select>' +
       '<label style="font-size:13px;color:var(--muted);">单价 $<input class="sm-ie-price" type="number" step="0.01" min="0" value="' + escAttr(it.price != null ? it.price : '') + '" style="width:74px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
       '<label style="font-size:13px;color:var(--muted);">×<input class="sm-ie-qty" type="number" min="1" step="1" value="' + (it.qty || 1) + '" style="width:52px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
-      '<span class="sm-ie-line" style="font-size:14px;min-width:64px;text-align:right;color:#ff6fa5;"></span>' +
+      '<span class="sm-ie-line" style="font-size:14px;min-width:64px;text-align:right;color:var(--price,#ff6fa5);"></span>' +
       '<button type="button" class="btn-del sm-ie-del">删除</button>' +
     '</div>';
   }
@@ -320,7 +320,7 @@
     var ship = num(o.shipping_actual != null ? o.shipping_actual : o.shipping_est);
     var total = sub - num(o.discount) + ship + num(o.service_fee);
     var el = card.querySelector('.sm-ie-sum');
-    if (el) el.innerHTML = '新小计 $' + fmtMoney(sub) + '（原 $' + fmtMoney(o.subtotal) + '）· 优惠 -$' + fmtMoney(o.discount) + ' · 运费 $' + fmtMoney(ship) + ' · 服务费 <span style="color:#ff6fa5;">$' + fmtMoney(o.service_fee) + '</span>' + ' → 新总价 <b>$' + fmtMoney(total) + '</b>（原 $' + fmtMoney(o.total) + '）';
+    if (el) el.innerHTML = '新小计 $' + fmtMoney(sub) + '（原 $' + fmtMoney(o.subtotal) + '）· 优惠 -$' + fmtMoney(o.discount) + ' · 运费 $' + fmtMoney(ship) + ' · 服务费 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.service_fee) + '</span>' + ' → 新总价 <b>$' + fmtMoney(total) + '</b>（原 $' + fmtMoney(o.total) + '）';
     return { items: items, sub: sub, total: total };
   }
   function ieRowLine(row) {
@@ -363,25 +363,25 @@
           esc((o.created_at || '').replace('T', ' ').slice(0, 16).replace(/-/g, '/')) + ' · 来源：' +
           esc(SOURCE_LABEL[o.order_source || 'online'] || (o.order_source || 'online')) + ' · 付款：' + esc(payL) + '</div>' +
         (o.note ? '<div class="sm-line"><span class="lbl">买家留言</span>' + esc(o.note) + '</div>' : '') +
-        (o.coupon_code ? '<div class="sm-line"><span class="lbl">优惠码</span>' + esc(o.coupon_code) + (num(o.discount) > 0 ? '（已减 <span style="color:#ff6fa5;">$' + fmtMoney(o.discount) + '</span>' + '）' : '') + '</div>' : '') +
+        (o.coupon_code ? '<div class="sm-line"><span class="lbl">优惠码</span>' + esc(o.coupon_code) + (num(o.discount) > 0 ? '（已减 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.discount) + '</span>' + '）' : '') + '</div>' : '') +
         '<div class="sm-line"><span class="lbl">付款</span>' +
-        (o.pay_channel ? esc(o.pay_channel) + ' · ' : '') + (o.pay_amount != null && o.pay_amount !== '' ? '<span style="color:#ff6fa5;">$' + fmtMoney(o.pay_amount) + '</span>' + ' · ' : '') +
+        (o.pay_channel ? esc(o.pay_channel) + ' · ' : '') + (o.pay_amount != null && o.pay_amount !== '' ? '<span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.pay_amount) + '</span>' + ' · ' : '') +
         (o.pay_time ? esc(o.pay_time) + ' · ' : '') + (o.pay_note ? esc(o.pay_note) : '') +
         (o.status === 'rejected' && o.reject_reason ? '<div class="sm-io-sub">上次拒绝原因：' + esc(o.reject_reason) + '</div>' : '') +
         '</div>' +
         (o.pay_url ? '<img class="sm-pay-img" data-paypath="' + escAttr(o.pay_url) + '" alt="付款凭证">' : '') +
-        '<div class="sm-line"><span class="lbl">金额</span>商品小计 <span style="color:#ff6fa5;">$' + fmtMoney(o.subtotal) + '</span>' +
-          (num(o.discount) > 0 ? ' · 折扣 -<span style="color:#ff6fa5;">$' + fmtMoney(o.discount) + E : '') +
-          ' · 运费 <span style="color:#ff6fa5;">$' + fmtMoney(o.shipping_actual != null && o.shipping_actual !== '' ? o.shipping_actual : o.shipping_est) + '</span>' +
+        '<div class="sm-line"><span class="lbl">金额</span>商品小计 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.subtotal) + '</span>' +
+          (num(o.discount) > 0 ? ' · 折扣 -<span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.discount) + E : '') +
+          ' · 运费 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.shipping_actual != null && o.shipping_actual !== '' ? o.shipping_actual : o.shipping_est) + '</span>' +
           ' · 税费 未收取' +
-          ' · 服务费 <span style="color:#ff6fa5;">$' + fmtMoney(o.service_fee) + '</span>' +
-          ' · <b style="color:#ff6fa5;">总价 $' + fmtMoney(o.total) + '</b></div>' +
+          ' · 服务费 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.service_fee) + '</span>' +
+          ' · <b style="color:var(--price,#ff6fa5);">总价 $' + fmtMoney(o.total) + '</b></div>' +
         (function () {
           var pi = payInfo(o);
           if (pi.refunded <= 0 && pi.paid <= 0) return '';
           return '<div class="sm-line"><span class="lbl">退款</span>' +
-            (pi.paid > 0 ? '已付 <span style="color:#ff6fa5;">$' + fmtMoney(pi.paid) + '</span>' + ' · ' : '') +
-            (pi.refunded > 0 ? (pi.refunded >= num(o.total) - 0.005 ? '已全额退款 <span style="color:#ff6fa5;">$' + fmtMoney(pi.refunded) + E : '<b style="color:#f3b96d;">部分退款 $' + fmtMoney(pi.refunded) + '</b>') : '') + '</div>';
+            (pi.paid > 0 ? '已付 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(pi.paid) + '</span>' + ' · ' : '') +
+            (pi.refunded > 0 ? (pi.refunded >= num(o.total) - 0.005 ? '已全额退款 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(pi.refunded) + E : '<b style="color:#f3b96d;">部分退款 $' + fmtMoney(pi.refunded) + '</b>') : '') + '</div>';
         })() +
         (dead ? '<div class="sm-line"><span class="lbl">发货</span>' + (o.status === 'refunded' ? '已退款 · 无需发货' : '已取消 · 无需发货') +
             (o.tracking ? '（历史物流：' + esc(o.carrier || '') + ' ' + esc(o.tracking) + '）' : '') + '</div>' : '') +
@@ -394,7 +394,7 @@
         (dead ? '' : '<div class="sm-act sm-act-v"><span class="sm-vlabel">实际运费（Pirate Ship 实际金额，保存后买家应付同步更新）</span>' +
         '<div class="sm-vfee-row">' +
         '<input class="sm-ship-actual" type="number" step="0.01" min="0" placeholder="如 6.15" value="' + escAttr(o.shipping_actual == null ? '' : o.shipping_actual) + '">' +
-        '<span class="sm-total-prev">当前应付 <span style="color:#ff6fa5;">$' + fmtMoney(ship) + '</span>' + '</span>' +
+        '<span class="sm-total-prev">当前应付 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(ship) + '</span>' + '</span>' +
         '<button type="button" class="btn-save sm-act-fee" style="padding:9px 24px;font-size:16px;">保存运费</button>' +
         '</div></div>' +
         '<div class="sm-act sm-act-v"><span class="sm-vlabel">发货物流（一行一项，填完点确认发货）</span>' +
@@ -422,14 +422,14 @@
     }
     return '<div class="card sm-order' + (open ? ' open' : '') + '" data-id="' + escAttr(o.id) + '">' +
       '<div class="sm-o-head">' +
-      '<span class="ck-box sm-osel' + (SM.osel[o.id] ? ' on' : '') + '" data-id="' + escAttr(o.id) + '" style="width:18px;height:18px;border-radius:6px;border:2px solid var(--border,#FFD9E6);flex-shrink:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;color:var(--text,#604C57);background:' + (SM.osel[o.id] ? '#FCE4EC' : '#fff') + '">' + (SM.osel[o.id] ? '<svg viewBox=\"0 0 16 16\" width=\"11\" height=\"11\" style=\"display:block;\"><path d=\"M3.2 8.6 L6.6 11.8 L12.8 4.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>' : '') + '</span>' +
+      '<span class="ck-box sm-osel' + (SM.osel[o.id] ? ' on' : '') + '" data-id="' + escAttr(o.id) + '" style="width:18px;height:18px;border-radius:6px;border:2px solid var(--border,#FFD9E6);flex-shrink:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;color:var(--text,#604C57);background:' + (SM.osel[o.id] ? 'var(--accent-soft,#FCE4EC)' : '#fff') + '">' + (SM.osel[o.id] ? '<svg viewBox=\"0 0 16 16\" width=\"11\" height=\"11\" style=\"display:block;\"><path d=\"M3.2 8.6 L6.6 11.8 L12.8 4.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>' : '') + '</span>' +
       '<span class="sm-o-no">' + esc(o.order_no || '') + '</span>' +
       '<span class="sold-badge" style="background:' + st[1] + ';">' + esc(dead ? (st[0] + ' · 无需发货') : st[0]) + '</span>' +
       '<span class="sold-badge" style="background:#fff;border:1.5px solid var(--accent-soft,#FCE4EC);color:var(--muted,#A88E9B);">付款：' + esc(payL) + '</span>' +
       '<span class="sm-o-mail">' + esc(o.email || '') + '</span>' +
       ((o.note || o.coupon_code) ? '<span class="sm-o-cnt" title="' + escAttr((o.note ? '备注：' + o.note : '') + (o.coupon_code ? (o.note ? '；' : '') + '优惠码：' + o.coupon_code : '')) + '">' + (o.note ? '📝' : '') + (o.coupon_code ? '🎟' : '') + '</span>' : '') +
       '<span class="sm-o-cnt">' + arr(o.items).length + ' 件</span>' +
-      '<span class="sm-o-total" style="color:#ff6fa5;font-weight:700;">$' + fmtMoney(o.total) + '</span>' +
+      '<span class="sm-o-total" style="color:var(--price,#ff6fa5);font-weight:700;">$' + fmtMoney(o.total) + '</span>' +
       '<span class="sm-o-time">' + fmtTime(o.created_at) + '</span>' +
       '<span class="sm-o-arrow">▸</span>' +
       '</div>' + body + '</div>';
@@ -442,7 +442,7 @@
     if (SM._oFailed) { // 网络断了就明说，不再无限「加载中」（她 2026-10-25 要求查根因，不能只靠重试）
       list.innerHTML = '<div class="sm-o-retrybox" style="background:var(--card,#FFF0F5);border-radius:14px;padding:20px;text-align:center;">' +
         '<p style="margin:0 0 10px;color:var(--muted);font-size:16px;">订单没加载出来（网络问题，不是订单丢了）</p>' +
-        '<button type="button" class="btn-mini sm-o-retry" style="background:#ffd9e6;color:var(--text,#604C57);padding:9px 22px;font-size:15px;">点这里重新加载</button></div>';
+        '<button type="button" class="btn-mini sm-o-retry" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);padding:9px 22px;font-size:15px;">点这里重新加载</button></div>';
       return;
     }
     list.innerHTML = rows.length ? rows.map(orderHtml).join('') : '<p class="sm-empty">没有符合条件的订单</p>';
@@ -514,7 +514,7 @@
         (g.status === 'open' ? '<button type="button" class="btn-del sm-g-cancel">取消拼团</button>' : '') +
         '</div>' +
         '<div class="sm-g-meta">' + esc((g.product_name || (p ? p.name : '') || '') + variant) +
-        ' · 拼团价 <span style="color:#ff6fa5;">$' + fmtMoney(g.price) + '</span>' + ' · ' + (g.joined || 0) + '/' + (g.target || 0) + ' 人 · 截止 ' + fmtTime(g.deadline) + '</div>' +
+        ' · 拼团价 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(g.price) + '</span>' + ' · ' + (g.joined || 0) + '/' + (g.target || 0) + ' 人 · 截止 ' + fmtTime(g.deadline) + '</div>' +
         members + '</div>';
     }).join('');
   }
@@ -679,7 +679,7 @@
       block.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
         '<b style="font-size:16px;color:var(--text);">商品规格</b>' +
         '<span class="hint" style="flex:1;min-width:180px;">一个规格＝买家看到的一个选项（比如一个颜色款）；全部留空＝单规格</span>' +
-        '<button type="button" class="btn-mini sm-var-add" style="background:#ffd9e6;color:var(--text,#604C57);padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
+        '<button type="button" class="btn-mini sm-var-add" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
         '<div class="sm-var-rows"></div>' +
         '<p class="hint" style="margin:6px 0 0;">每个规格可以传自己的图，第一张就是这个选项的封面；详情页点选项会换图、换价、换库存。</p>';
       g2.appendChild(block);
@@ -776,7 +776,7 @@
     block.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
       '<b style="font-size:16px;color:var(--text);">商品规格（可选）</b>' +
       '<span class="hint" style="flex:1;min-width:180px;">一个规格＝买家看到的一个选项；不留空就用上面的商品价/库存</span>' +
-      '<button type="button" class="btn-mini sm-var-add" style="background:#ffd9e6;color:var(--text,#604C57);padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
+      '<button type="button" class="btn-mini sm-var-add" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
       '<div class="sm-var-rows"></div>' +
       '<p class="hint" style="margin:6px 0 0;">每个规格可以传自己的图，第一张就是这个选项的封面；和编辑商品里的是同一套，上架时一起保存。</p>';
     actions.parentNode.insertBefore(block, actions); // 她 2026-10-25 表单加了 wrapper：actions 不再是 .card 直接子节点，改插到同父级
@@ -1390,7 +1390,7 @@
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">' +
         '<div><span class="mo-flabel">单价 $（留空用商品价）</span><input class="mo-price" data-i="' + i + '" type="number" min="0" step="0.01" value="' + escAttr(it.price == null ? '' : it.price) + '" placeholder="0.00"></div>' +
         '<div><span class="mo-flabel">数量</span><input class="mo-qty" data-i="' + i + '" type="number" min="1" step="1" value="' + escAttr(it.qty == null ? 1 : it.qty) + '"></div>' +
-        '<div><span class="mo-flabel">小计</span><div class="mo-item-sub" data-i="' + i + '" style="padding:10px 12px;font-size:16px;font-weight:700;color:#ff6fa5;background:var(--card,#FFF0F5);border-radius:10px;">$' + fmtMoney(sub) + '</div></div>' +
+        '<div><span class="mo-flabel">小计</span><div class="mo-item-sub" data-i="' + i + '" style="padding:10px 12px;font-size:16px;font-weight:700;color:var(--price,#ff6fa5);background:var(--card,#FFF0F5);border-radius:10px;">$' + fmtMoney(sub) + '</div></div>' +
       '</div>' +
       '</div>';
   }
@@ -1414,12 +1414,12 @@
     var cs = '$'; // 汇总行固定按美元展示符号，保存时按所选货币入库（与原逻辑一致）
     var el = document.querySelector('#mo-form .mo-sum');
     if (el) el.innerHTML = '<div class="mo-sum-box">' +
-      '<div class="mo-sum-row"><span class="mo-sl">商品小计</span><span style="color:#ff6fa5;">' + cs + fmtMoney(sub) + '</span></div>' +
-      '<div class="mo-sum-row"><span class="mo-sl">折扣</span><span style="color:#ff6fa5;">-' + cs + fmtMoney(disc) + '</span></div>' +
-      '<div class="mo-sum-row"><span class="mo-sl">运费</span><span style="color:#ff6fa5;">' + cs + fmtMoney(ship) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">商品小计</span><span style="color:var(--price,#ff6fa5);">' + cs + fmtMoney(sub) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">折扣</span><span style="color:var(--price,#ff6fa5);">-' + cs + fmtMoney(disc) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">运费</span><span style="color:var(--price,#ff6fa5);">' + cs + fmtMoney(ship) + '</span></div>' +
       '<div class="mo-sum-row"><span class="mo-sl">税费</span><span>未收取</span></div>' +
-      '<div class="mo-sum-row"><span class="mo-sl">服务费</span><span style="color:#ff6fa5;">' + cs + fmtMoney(fee) + '</span></div>' +
-      '<div class="mo-sum-total"><b style="font-size:17px;color:var(--text);">订单总价</b><b style="color:#ff6fa5;">' + cs + fmtMoney(total) + '</b></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">服务费</span><span style="color:var(--price,#ff6fa5);">' + cs + fmtMoney(fee) + '</span></div>' +
+      '<div class="mo-sum-total"><b style="font-size:17px;color:var(--text);">订单总价</b><b style="color:var(--price,#ff6fa5);">' + cs + fmtMoney(total) + '</b></div>' +
       '</div>';
     // 每个商品自己的小计也跟着刷新（数量/单价一改立刻变）
     Array.prototype.forEach.call(document.querySelectorAll('#mo-form .mo-item-sub'), function (el2) {
@@ -1472,7 +1472,7 @@
       '</div>' +
       '<div style="margin:14px 0 6px;"><b style="font-size:16px;">订单商品</b>' +
       '<div class="mo-items" style="margin-top:10px;"></div>' +
-      '<button type="button" class="btn-mini mo-additem" style="background:#ffd9e6;color:var(--text,#604C57);padding:9px 22px;font-size:15px;">＋ 添加商品</button>' +
+      '<button type="button" class="btn-mini mo-additem" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);padding:9px 22px;font-size:15px;">＋ 添加商品</button>' +
       '<p class="hint" style="margin:6px 0 0;">从商品列表选，或选「自定义商品」录临时商品；单价留空自动用商品价</p></div>' +
       '<div style="margin:14px 0 8px;"><b style="font-size:16px;">金额</b></div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">' +
@@ -1481,7 +1481,7 @@
         '<div><span class="mo-flabel mo-flabel-inpop">服务费 $</span><input class="mo-fee" type="number" min="0" step="0.01" value="2"></div>' +
       '</div>' +
       '<div class="mo-sum" style="margin-bottom:12px;"></div>' +
-      '<button type="button" class="btn-mini mo-save" style="background:#ffd9e6;color:var(--text,#604C57);padding:10px 26px;font-size:16px;">保存订单</button>' +
+      '<button type="button" class="btn-mini mo-save" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);padding:10px 26px;font-size:16px;">保存订单</button>' +
       '<span class="hint" style="margin-left:10px;">默认「待付款」，不会自动标成已付款；来源自动记为「后台手动创建」</span>' +
       '</div>';
     root.appendChild(mask);
@@ -1746,7 +1746,7 @@
         '<p class="hint" style="margin:0 0 8px;">也会套用当前订单搜索关键字；跨页导出会包含所有符合条件的记录</p>' +
       '</div>' +
       '<p class="hint">CSV 为 UTF-8（带 BOM），Excel 可直接打开；每个商品一行，订单信息重复以便筛选</p>' +
-      '<button type="button" class="btn-mini ex-go" style="background:#ffd9e6;color:var(--text,#604C57);padding:10px 26px;font-size:16px;">导出</button>' +
+      '<button type="button" class="btn-mini ex-go" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);padding:10px 26px;font-size:16px;">导出</button>' +
       '</div>';
     root.appendChild(mask);
     var mode = 'all';
@@ -1755,7 +1755,7 @@
       var m = e.target.closest('.ex-mode');
       if (m) {
         mode = m.getAttribute('data-v');
-        mask.querySelectorAll('.ex-mode').forEach(function (b) { b.style.background = b === m ? '#ffd9e6' : ''; b.style.color = b === m ? '#fff' : ''; });
+        mask.querySelectorAll('.ex-mode').forEach(function (b) { b.style.background = b === m ? 'var(--accent,#ffd9e6)' : ''; b.style.color = b === m ? '#fff' : ''; });
         mask.querySelector('.ex-filters').style.display = mode === 'filtered' ? '' : 'none';
         return;
       }
@@ -1796,7 +1796,7 @@
       '<textarea class="po-zh" placeholder="简体中文内容（留空 = 使用内置默认；支持 <p> <ul> <li> <a> <strong> <br>）" style="width:100%;min-height:140px;box-sizing:border-box;"></textarea>' +
       '<textarea class="po-en" placeholder="English content (leave empty = built-in default)" style="width:100%;min-height:140px;box-sizing:border-box;margin-top:8px;"></textarea>' +
       '<div style="display:flex;gap:8px;margin-top:8px;align-items:center;">' +
-        '<button type="button" class="btn-mini po-save" style="background:#ffd9e6;color:var(--text,#604C57);">保存并发布</button>' +
+        '<button type="button" class="btn-mini po-save" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);">保存并发布</button>' +
         '<button type="button" class="btn-mini po-reset">恢复内置默认</button>' +
         '<span class="hint">保存后前台立即生效；「联系我们」页面就是留言板，不需要在这里编辑</span>' +
       '</div></div>';

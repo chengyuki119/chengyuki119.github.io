@@ -56,7 +56,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   button { font-family: inherit; }
 
   .shop-header {
-    background: #FCE4EC;
+    background: var(--accent-soft,#FCE4EC);
     padding: 84px 0 40px;
     position: relative;
   }
@@ -91,14 +91,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     font-family: inherit; transition: background .15s;
   }
   .acc-item:hover { background: var(--card, #FFF0F5); }
-  .acc-item.on { background: #FCE4EC; color: var(--accent-strong); font-weight: 600; }
+  .acc-item.on { background: var(--accent-soft,#FCE4EC); color: var(--accent-strong); font-weight: 600; }
   .acc-logout {
     display: block; width: 100%; text-align: center; border: none;
-    background: #ffd9e6; color: var(--text, #604C57); font-size: 17px; font-weight: 600;
+    background: var(--accent,#ffd9e6); color: var(--text, #604C57); font-size: 17px; font-weight: 600;
     padding: 11px 12px; border-radius: 12px; cursor: pointer; font-family: inherit;
     transition: background .15s;
   }
-  .acc-logout:hover { background: #FCE4EC; }
+  .acc-logout:hover { background: var(--accent-soft,#FCE4EC); }
   @media (max-width: 760px) {
     #acc-shell { flex-direction: column; }
     #acc-menu { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 4px; padding: 10px; }
@@ -143,7 +143,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .product-img {
     position: relative;
     aspect-ratio: 1;
-    background: #FCE4EC;
+    background: var(--accent-soft,#FCE4EC);
     display: flex; align-items: center; justify-content: center;
     font-size:61px;
     overflow: hidden;
@@ -155,7 +155,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     align-self: flex-start;
     font-size:14px;
     color:var(--text,#604C57);
-    background: #FCE4EC;
+    background: var(--accent-soft,#FCE4EC);
     border-radius: 999px;
     padding: 2px 10px;
     margin-bottom: 8px;
@@ -178,7 +178,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     cursor: pointer;
     transition: background .2s;
   }
-  .buy-btn:hover { background:#ffd9e6; }
+  .buy-btn:hover { background:var(--accent,#ffd9e6); }
 
 
   /* 收藏心心 */
@@ -191,7 +191,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     transition: transform .15s, background .2s;
     font-family: inherit;
   }
-  .fav-btn:hover { transform: scale(1.12); background: #FCE4EC; }
+  .fav-btn:hover { transform: scale(1.12); background: var(--accent-soft,#FCE4EC); }
   .product-img .fav-btn { position: absolute; top: 10px; right: 10px; z-index: 2; }
   .product-img { position: relative; }
   .fav-btn.detail-fav { width: 40px; height: 40px; font-size: 22px; vertical-align: middle; margin-left: 8px; }
@@ -209,8 +209,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   #rv-menu.open { display: block; }
   #rv-menu button { display: block; width: 100%; text-align: left; border: none; background: none; border-radius: 9px; padding: 9px 12px; font-size: 16px; font-family: inherit; color: var(--text); cursor: pointer; }
   #rv-menu button:hover { background: var(--card); }
-  #rv-menu .rv-menu-del { background: #FFD9E6; }
-  #rv-menu .rv-menu-del:hover { background: #FCE4EC; }
+  #rv-menu .rv-menu-del { background: var(--accent,#FFD9E6); }
+  #rv-menu .rv-menu-del:hover { background: var(--accent-soft,#FCE4EC); }
 
   .toast {
     position: fixed;
@@ -321,16 +321,16 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
 .pg-thumb.on { border-color: var(--card-hover, #FCE4EC); opacity: 1; }
   /* ===== 商城新增：视图 / 规格 / 订单 / 拼团 ===== */
   .sku-chip { border: 2px solid var(--accent-soft); background: #fff; color: var(--text); border-radius: 999px; padding: 7px 16px; font-size: 16px; font-family: inherit; cursor: pointer; transition: all .2s; }
-  .sku-chip.on { border-color:#FCE4EC; background:#FCE4EC; color: var(--accent-strong); }
+  .sku-chip.on { border-color:var(--accent-soft,#FCE4EC); background:var(--accent-soft,#FCE4EC); color: var(--accent-strong); }
   .sku-chip.dis { opacity: .45; cursor: not-allowed; }
   .qty-btn { border: none; background: var(--card-hover); color: var(--text); width: 30px; height: 30px; border-radius: 50%; font-size: 16px; cursor: pointer; font-family: inherit; }
   .card { background: #fff; border-radius: var(--radius); box-shadow: 0 2px 14px rgba(255,143,171,.12); }
   #view-detail, #view-cart, #view-checkout, #view-orders, #view-account, #view-groups { display: none; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261026e">
-  <script src="/js/site-common.js?v=20261026e"></script>
-  <script src="/site-menu.js?v=20261026e" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261026f">
+  <script src="/js/site-common.js?v=20261026f"></script>
+  <script src="/site-menu.js?v=20261026f" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -370,12 +370,12 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   </div>
 
   <section id="past" style="margin-top:44px;display:none;">
-    <h2 style="font-size:22px;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><span style="width:4px;height:18px;background:#ffd9e6;border-radius:2px;display:inline-block;"></span><span data-zh="往期商品" data-en="Past Items">往期商品</span></h2>
+    <h2 style="font-size:22px;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><span style="width:4px;height:18px;background:var(--accent,#ffd9e6);border-radius:2px;display:inline-block;"></span><span data-zh="往期商品" data-en="Past Items">往期商品</span></h2>
     <div class="grid" id="past-grid"></div>
   </section>
 
   <section id="reviews" style="margin-top:44px;display:none;">
-    <h2 style="font-size:22px;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><span style="width:4px;height:18px;background:#ffd9e6;border-radius:2px;display:inline-block;"></span><span data-zh="评价返图" data-en="Reviews">评价返图</span></h2>
+    <h2 style="font-size:22px;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><span style="width:4px;height:18px;background:var(--accent,#ffd9e6);border-radius:2px;display:inline-block;"></span><span data-zh="评价返图" data-en="Reviews">评价返图</span></h2>
     <div class="card" style="background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:20px;">
       <p style="font-size:16px;color:var(--muted);margin-bottom:10px;"><span data-zh="买过小铺东西的小可爱，欢迎晒图评价～" data-en="Bought something? Share your photos & review~">买过小铺东西的小可爱，欢迎晒图评价～</span></p>
       <input id="r-name" maxlength="30" data-ph-zh="你的名字（选填）" data-ph-en="Your name (optional)" style="width:100%;margin-bottom:10px;padding:12px 14px;font-size:18px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;">
@@ -400,7 +400,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   </section>
 
   <section id="pay" style="margin-top:44px;">
-    <h2 style="font-size:22px;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><span style="width:4px;height:18px;background:#ffd9e6;border-radius:2px;display:inline-block;"></span><span data-zh="付款方式" data-en="Payment">付款方式</span></h2>
+    <h2 style="font-size:22px;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><span style="width:4px;height:18px;background:var(--accent,#ffd9e6);border-radius:2px;display:inline-block;"></span><span data-zh="付款方式" data-en="Payment">付款方式</span></h2>
     <div class="pay-cta">
       <p data-zh="支持微信 / 支付宝，点下面看收款方式～" data-en="WeChat / Alipay — tap below to see the payment codes~">支持微信 / 支付宝，点下面看收款方式～</p>
       <button class="buy-btn" id="pay-open" style="padding:10px 26px;"><span data-zh="查看收款方式" data-en="View payment methods">查看收款方式</span></button>
@@ -867,8 +867,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261026e"></script>
-<script src="/js/site-footer.js?v=20261026e"></script>
+<script src="/js/shop-app.js?v=20261026f"></script>
+<script src="/js/site-footer.js?v=20261026f"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

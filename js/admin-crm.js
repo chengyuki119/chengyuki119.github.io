@@ -66,7 +66,7 @@
     var stats = document.getElementById('cust-stats');
     if (stats) stats.innerHTML =
       '<span class="sm-stat"><b>' + CUST.list.length + '</b><span>' + t('客户总数', 'Customers') + '</span></span>' +
-      '<span class="sm-stat"><b style="color:#ff6fa5;">$' + fmtMoney(totalSum) + '</b><span>' + t('累计消费（已扣退款）', 'Total spent') + '</span></span>' +
+      '<span class="sm-stat"><b style="color:var(--price,#ff6fa5);">$' + fmtMoney(totalSum) + '</b><span>' + t('累计消费（已扣退款）', 'Total spent') + '</span></span>' +
       '<span class="sm-stat"><b>' + vipN + '</b><span>' + t('VIP 会员', 'VIP') + '</span></span>';
     if (!rows.length) { box.innerHTML = '<p style="color:var(--muted,#A88E9B);text-align:center;padding:24px 0;">' + t('还没有客户档案', 'No customers yet') + '</p>'; return; }
     box.innerHTML = rows.map(function (c) {
@@ -75,9 +75,9 @@
         '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
           '<span style="font-size:16px;font-weight:700;color:var(--text,#604C57);">' + esc(c.name || t('（未命名）', '(Unnamed)')) + '</span>' +
           '<span style="font-size:13px;color:var(--muted,#A88E9B);">' + esc(c.c_no || '') + '</span>' +
-          (c.vip ? '<span style="font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;background:#FCE4EC;color:#A04A68;">VIP' + (c.vip_until ? ' · ' + c.vip_until : '') + '</span>' : '') +
+          (c.vip ? '<span style="font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--accent-soft,#FCE4EC);color:var(--accent-strong,#A04A68);">VIP' + (c.vip_until ? ' · ' + c.vip_until : '') + '</span>' : '') +
           '<span style="font-size:12px;padding:2px 10px;border-radius:999px;background:#fff;border:1px solid var(--accent-soft,#FCE4EC);color:var(--muted,#A88E9B);">' + (c.source === 'online' ? t('线上', 'Online') : t('线下', 'Offline')) + '</span>' +
-          '<span style="margin-left:auto;font-size:15px;color:#ff6fa5;font-weight:700;">$' + fmtMoney(st.sum) + '</span>' +
+          '<span style="margin-left:auto;font-size:15px;color:var(--price,#ff6fa5);font-weight:700;">$' + fmtMoney(st.sum) + '</span>' +
           '<span style="font-size:13px;color:var(--muted,#A88E9B);">' + st.count + ' ' + t('次', 'orders') + '</span>' +
         '</div>' +
         '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-top:4px;">' + esc(c.email || '—') + ' · ' + esc(c.phone || '—') + (st.last ? ' · ' + t('最近', 'Last') + ' ' + st.last.order_no : '') + '</div>' +
@@ -150,7 +150,7 @@
         '<div>' + t('邮箱', 'Email') + '：' + esc(c.email || '—') + '</div>' +
         '<div>' + t('电话', 'Phone') + '：' + esc(c.phone || '—') + '</div>' +
         '<div>' + t('来源', 'Source') + '：' + (c.source === 'online' ? t('线上', 'Online') : t('线下', 'Offline')) + '</div>' +
-        '<div>' + t('累计消费', 'Spent') + '：<span style="color:#ff6fa5;font-weight:700;">$' + fmtMoney(st.sum) + '</span> · ' + st.count + t('次', '') + '</div>' +
+        '<div>' + t('累计消费', 'Spent') + '：<span style="color:var(--price,#ff6fa5);font-weight:700;">$' + fmtMoney(st.sum) + '</span> · ' + st.count + t('次', '') + '</div>' +
       '</div>' +
       (c.note ? '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-bottom:10px;">' + t('备注', 'Note') + '：' + esc(c.note) + '</div>' : '') +
       '<div style="font-size:14px;color:var(--text,#604C57);font-weight:600;margin-bottom:6px;">' + t('购买历史', 'Purchase history') + '</div>' +
@@ -160,7 +160,7 @@
         return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--accent-soft,#FCE4EC);font-size:14px;' + (inc ? '' : 'opacity:.55;') + '">' +
           '<b style="color:var(--text,#604C57);">' + esc(o.order_no) + '</b>' +
           '<span style="color:var(--muted,#A88E9B);font-size:13px;">' + stl + ' · ' + (o.order_source === 'pos' ? t('线下', 'POS') : t('线上', 'Online')) + '</span>' +
-          '<span style="margin-left:auto;color:#ff6fa5;font-weight:700;">$' + fmtMoney(o.total) + '</span></div>';
+          '<span style="margin-left:auto;color:var(--price,#ff6fa5);font-weight:700;">$' + fmtMoney(o.total) + '</span></div>';
       }).join('') : '<p style="color:var(--muted,#A88E9B);font-size:14px;">' + t('还没有购买记录', 'No purchases yet') + '</p>');
     panel.insertBefore(div, panel.children[0]);
     div.querySelector('.cd-edit').addEventListener('click', function () { custForm(c); });
@@ -212,7 +212,7 @@
           '<div id="pos-custpick" style="display:none;margin-top:8px;"><select id="pos-cust" style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid var(--accent-soft,#FCE4EC);font-family:inherit;color:var(--text,#604C57);background:#fff;"></select></div>' +
         '</div>' +
         '<div class="card" style="padding:16px 20px;">' +
-          '<h3 style="margin:0 0 10px;font-size:16px;color:var(--text,#604C57);">' + t('收款', 'Payment') + ' · <span id="pos-no" style="color:#ff6fa5;">—</span></h3>' +
+          '<h3 style="margin:0 0 10px;font-size:16px;color:var(--text,#604C57);">' + t('收款', 'Payment') + ' · <span id="pos-no" style="color:var(--price,#ff6fa5);">—</span></h3>' +
           '<div id="pos-chans" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;"></div>' +
           '<div style="font-size:13px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:8px 12px;margin-bottom:10px;">' + t('现金 / 转账需实际收到钱后再点「确认收款」——只保存记录不代表已收款。', 'Cash/transfers: confirm only after money actually received.') + '</div>' +
           '<div id="pos-cart"></div>' +
@@ -252,7 +252,7 @@
         '<div><div class="nm">' + esc(p.name || '') + '</div><div class="st">' + t('库存', 'Stock') + ' ' + (p.stock == null ? '—' : p.stock) + '</div><div class="pr">$' + fmtMoney(p.price) + '</div></div>' +
         '<div class="qty"><button class="qb" data-add="' + escAttr(p.id) + '">＋</button></div></div>';
     }).join('') +
-    '<div class="pick" style="border-style:dashed;" id="pos-custom"><div style="width:56px;height:56px;border-radius:12px;background:#FCE4EC;display:flex;align-items:center;justify-content:center;color:#A88E9B;font-size:22px;">＋</div>' +
+    '<div class="pick" style="border-style:dashed;" id="pos-custom"><div style="width:56px;height:56px;border-radius:12px;background:var(--accent-soft,#FCE4EC);display:flex;align-items:center;justify-content:center;color:var(--muted,#A88E9B);font-size:22px;">＋</div>' +
       '<div><div class="nm">' + t('临时自定义商品（不上架）', 'Custom item (not listed)') + '</div><div class="st">' + t('名称 / 价格现场填，只属于本笔销售', 'Only belongs to this sale') + '</div></div></div>';
     box.querySelectorAll('[data-add]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -280,13 +280,13 @@
       return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--accent-soft,#FCE4EC);font-size:14px;">' +
         '<div style="flex:1;min-width:0;"><b style="color:var(--text,#604C57);">' + esc(x.name) + '</b>' +
         (x.id ? '' : ' <span style="font-size:12px;color:var(--muted,#A88E9B);">' + t('临时', 'custom') + '</span>') +
-        '<div style="color:#ff6fa5;font-weight:600;">$' + fmtMoney(x.price) + '</div></div>' +
+        '<div style="color:var(--price,#ff6fa5);font-weight:600;">$' + fmtMoney(x.price) + '</div></div>' +
         '<button class="qb pos-dec" data-i="' + i + '">−</button><b style="color:var(--text,#604C57);">' + x.qty + '</b><button class="qb pos-inc" data-i="' + i + '">＋</button>' +
         '<button class="pos-rm" data-i="' + i + '" style="border:none;background:none;color:#d96570;font-size:13px;cursor:pointer;text-decoration:underline;">' + t('删', 'Del') + '</button>' +
         '<b style="min-width:70px;text-align:right;color:var(--text,#604C57);">$' + fmtMoney(x.price * x.qty) + '</b></div>';
     }).join('');
     var sum = document.getElementById('pos-sum');
-    sum.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:17px;font-weight:700;color:var(--text,#604C57);border-top:1.5px solid var(--accent-soft,#FCE4EC);padding-top:10px;margin-top:4px;"><span>' + t('应收', 'Total') + '</span><span style="color:#ff6fa5;">$' + fmtMoney(posTotal()) + '</span></div>';
+    sum.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:17px;font-weight:700;color:var(--text,#604C57);border-top:1.5px solid var(--accent-soft,#FCE4EC);padding-top:10px;margin-top:4px;"><span>' + t('应收', 'Total') + '</span><span style="color:var(--price,#ff6fa5);">$' + fmtMoney(posTotal()) + '</span></div>';
     box.querySelectorAll('.pos-dec').forEach(function (b) { b.addEventListener('click', function () { var x = POS.items[+b.getAttribute('data-i')]; x.qty = Math.max(1, x.qty - 1); renderPosCart(); }); });
     box.querySelectorAll('.pos-inc').forEach(function (b) { b.addEventListener('click', function () { POS.items[+b.getAttribute('data-i')].qty++; renderPosCart(); }); });
     box.querySelectorAll('.pos-rm').forEach(function (b) { b.addEventListener('click', function () { POS.items.splice(+b.getAttribute('data-i'), 1); renderPosCart(); }); });
@@ -323,7 +323,7 @@
     var box = document.getElementById('pos-after');
     box.innerHTML =
       '<div class="card" style="padding:14px 16px;border:1.5px solid var(--accent-soft,#FCE4EC);">' +
-        '<div style="font-size:15px;font-weight:700;color:var(--text,#604C57);">' + t('销售编号', 'Sale No.') + '：<span style="color:#ff6fa5;">' + esc(j.order_no) + '</span>' + (POS.test ? ' <span style="font-size:12px;padding:2px 10px;border-radius:999px;background:#fff7f0;border:1px solid #f0d9c0;color:#8a6d3b;">TEST 测试模式</span>' : '') + '</div>' +
+        '<div style="font-size:15px;font-weight:700;color:var(--text,#604C57);">' + t('销售编号', 'Sale No.') + '：<span style="color:var(--price,#ff6fa5);">' + esc(j.order_no) + '</span>' + (POS.test ? ' <span style="font-size:12px;padding:2px 10px;border-radius:999px;background:#fff7f0;border:1px solid #f0d9c0;color:#8a6d3b;">TEST 测试模式</span>' : '') + '</div>' +
         '<div style="font-size:14px;color:var(--muted,#A88E9B);margin:4px 0 10px;">' + t('应收', 'Total') + ' $' + fmtMoney(j.total) + ' · ' + t('付款方式', 'Channel') + ' ' + POS.channel + '</div>' +
         '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
           '<button class="btn-save-tb pos-confirm">' + t('✓ 确认已收款', 'Confirm received') + '</button>' +
@@ -362,7 +362,7 @@
             '<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(res.x.url) + '" alt="QR" style="width:150px;height:150px;border-radius:12px;border:1px solid var(--accent-soft,#FCE4EC);">' +
             '<div style="flex:1;min-width:200px;font-size:13px;word-break:break-all;color:var(--text,#604C57);">' +
               '<b>TEST</b> ' + t('测试付款链接（手机扫码或复制打开，测试卡 4242…，不产生真实扣款）：', 'Test link (no real charge):') + '<br>' +
-              '<a href="' + escAttr(res.x.url) + '" target="_blank" style="color:#A04A68;text-decoration:underline;">' + esc(res.x.url.slice(0, 60)) + '…</a>' +
+              '<a href="' + escAttr(res.x.url) + '" target="_blank" style="color:var(--accent-strong,#A04A68);text-decoration:underline;">' + esc(res.x.url.slice(0, 60)) + '…</a>' +
             '</div></div>';
       }).catch(function () { sbox.innerHTML = '<p style="color:#d96570;font-size:14px;">' + t('网络异常，再试一次', 'Network error') + '</p>'; });
     });
@@ -411,7 +411,7 @@
       box.innerHTML =
         '<div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text,#604C57);">' +
           '<span>' + t('同步开关', 'Sync switch') + '</span>' +
-          '<span style="font-size:12px;padding:2px 12px;border-radius:999px;background:' + (st.enabled ? '#FCE4EC;color:#A04A68;' : '#f3ece6;color:var(--muted,#A88E9B);') + 'font-weight:600;">' + (st.enabled ? t('已开启（待授权）', 'Enabled (pending auth)') : t('关闭', 'Off')) + '</span>' +
+          '<span style="font-size:12px;padding:2px 12px;border-radius:999px;background:' + (st.enabled ? 'var(--accent-soft,#FCE4EC);color:var(--accent-strong,#A04A68);' : '#f3ece6;color:var(--muted,#A88E9B);') + 'font-weight:600;">' + (st.enabled ? t('已开启（待授权）', 'Enabled (pending auth)') : t('关闭', 'Off')) + '</span>' +
           '<button class="btn-mini" id="ms-toggle">' + (st.enabled ? t('关闭', 'Turn off') : t('开启', 'Turn on')) + '</button>' +
         '</div>' +
         '<div style="font-size:12px;color:var(--muted,#A88E9B);margin-top:6px;">' + t('状态：', 'Status: ') + (st.oauth_done ? t('Google 已授权，同步就绪', 'Google authorized, ready') : t('等待柚子完成 Google OAuth 授权', 'Waiting for your Google OAuth authorization')) + '</div>';
@@ -513,7 +513,7 @@
             '<button class="btn-mini" id="tpl-reset">' + t('恢复默认', 'Reset to default') + '</button>' +
             '<button class="btn-mini" id="tpl-preview-btn">' + t('预览', 'Preview') + '</button>' +
           '</div>' +
-          '<div id="tpl-vars" style="margin-top:14px;background:#FFF8FA;border:1px solid var(--accent-soft,#FCE4EC);border-radius:12px;padding:10px 14px;">' +
+          '<div id="tpl-vars" style="margin-top:14px;background:var(--bg,#FFF8FA);border:1px solid var(--accent-soft,#FCE4EC);border-radius:12px;padding:10px 14px;">' +
             '<div style="font-size:14px;font-weight:600;color:var(--text,#604C57);margin-bottom:6px;">' + t('可用变量（点击插入到正文末尾）', 'Variables (click to append to body)') + '</div>' +
             '<div id="tpl-var-list" style="display:flex;gap:6px;flex-wrap:wrap;"></div>' +
           '</div>' +
@@ -649,5 +649,112 @@
       '<div style="font-size:15px;font-weight:700;color:var(--text,#604C57);padding-bottom:10px;border-bottom:1px solid var(--accent-soft,#FCE4EC);margin-bottom:10px;word-break:break-word;">' + esc(sub) + '</div>' +
       '<div style="font-size:12px;color:var(--muted,#A88E9B);margin-bottom:4px;">' + t('邮件正文', 'Body') + '</div>' +
       '<div style="font-size:14px;color:var(--text,#604C57);white-space:pre-wrap;line-height:1.9;word-break:break-word;">' + esc(txt) + '</div>';
+  }
+
+  /* ═══════════ 主题颜色（全站同步） ═══════════ */
+  var THEME = {
+    fields: [
+      ['accent', t('粉底按钮 / 边框', 'Pink buttons / borders'), '#FFD9E6'],
+      ['accentSoft', t('选中底色 / 浅粉块', 'Selected / soft pink'), '#FCE4EC'],
+      ['accentStrong', t('强调深字（选中态字）', 'Accent strong'), '#A04A68'],
+      ['price', t('金额亮粉', 'Price pink'), '#FF6FA5'],
+      ['text', t('主文字 / 标题', 'Main text'), '#604C57'],
+      ['muted', t('次要文字', 'Muted text'), '#A88E9B'],
+      ['bg', t('页面背景', 'Page background'), '#FFF8FA'],
+      ['card', t('卡片底色', 'Card background'), '#FFF0F5']
+    ],
+    presets: ['#FFD9E6', '#FCE4EC', '#FF6FA5', '#E073A8', '#A04A68', '#604C57', '#A88E9B', '#FFF8FA', '#FFF0F5', '#ffffff', '#D4B2C4', '#F6DFE8'],
+    saved: {}
+  };
+
+  CRM.bootTheme = function () {
+    var panel = document.getElementById('tab-theme');
+    if (panel.dataset.booted) return;
+    panel.dataset.booted = '1';
+    panel.innerHTML =
+      '<div class="card" style="padding:16px 20px;">' +
+        '<h3 style="margin:0 0 4px;font-size:17px;color:var(--text,#604C57);">🎨 ' + t('主题颜色', 'Theme colors') + '</h3>' +
+        '<p style="margin:0;font-size:13px;color:var(--muted,#A88E9B);line-height:1.8;">' +
+          t('改的是全站同一套变量：前台每个页面、后台所有页签、按钮/边框/金额/文字全部同步，不用挨个改。改完点「保存并同步全站」。', 'One set of variables for the whole site. Save to sync every page, admin tab, button, border and price color.') +
+        '</p>' +
+        '<div id="theme-fields" style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;"></div>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">' +
+          '<button class="btn-save-tb" id="theme-save">' + t('保存并同步全站', 'Save & sync') + '</button>' +
+          '<button class="btn-mini" id="theme-reset">' + t('恢复默认配色', 'Reset defaults') + '</button>' +
+        '</div>' +
+        '<div style="margin-top:14px;font-size:12px;color:var(--muted,#A88E9B);">' + t('当前状态：', 'Status: ') + '<span id="theme-status">…</span></div>' +
+      '</div>';
+    renderThemeFields();
+    panel.querySelector('#theme-save').addEventListener('click', themeSave);
+    panel.querySelector('#theme-reset').addEventListener('click', function () {
+      uiConfirm(t('恢复默认会把所有自定义颜色还原成网站原配色，确定吗？', 'Reset all colors to the original palette?'), function () {
+        api('site_settings?key=eq.theme_colors', { method: 'DELETE' }).then(function (r) {
+          if (!r.ok) { toast(t('操作失败', 'Failed')); return; }
+          THEME.saved = {};
+          try { localStorage.removeItem('yuki-theme-colors'); } catch (e) {}
+          location.reload();
+        });
+      }, t('恢复默认', 'Reset'));
+    });
+    loadThemeSaved();
+  };
+
+  function renderThemeFields() {
+    var panel = document.getElementById('tab-theme');
+    var box = panel.querySelector('#theme-fields');
+    box.innerHTML = THEME.fields.map(function (f) {
+      var cur = THEME.saved[f[0]] || f[2];
+      var sw = THEME.presets.map(function (p) {
+        var on = p.toLowerCase() === cur.toLowerCase();
+        return '<span class="chip' + (on ? ' on' : '') + '" data-f="' + f[0] + '" data-c="' + p + '" style="width:30px;height:30px;padding:0;background:' + p + ';border:2px solid ' + (on ? 'var(--text,#604C57)' : 'var(--accent,#ffd9e6)') + ';" title="' + p + '"></span>';
+      }).join('');
+      return '<div style="background:#fff;border:1px solid var(--accent-soft,#FCE4EC);border-radius:14px;padding:12px 14px;">' +
+        '<div style="font-size:14px;font-weight:600;color:var(--text,#604C57);">' + f[1] + ' <span style="font-weight:400;color:var(--muted,#A88E9B);">' + f[0] + '</span></div>' +
+        '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;">' + sw +
+          '<input data-hex="' + f[0] + '" value="' + cur + '" style="width:96px;padding:5px 8px;font-size:13px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:8px;font-family:inherit;color:var(--text,#604C57);" placeholder="#RRGGBB">' +
+        '</div></div>';
+    }).join('');
+    box.querySelectorAll('[data-f]').forEach(function (c) {
+      c.addEventListener('click', function () {
+        THEME.saved[c.getAttribute('data-f')] = c.getAttribute('data-c');
+        if (window.ykApplyTheme) ykApplyTheme(THEME.saved);
+        renderThemeFields();
+      });
+    });
+    box.querySelectorAll('[data-hex]').forEach(function (inp) {
+      inp.addEventListener('change', function () {
+        var v = inp.value.trim();
+        var key = inp.getAttribute('data-hex');
+        if (!/^#[0-9a-fA-F]{6}$/.test(v)) { toast(t('颜色格式要是 #RRGGBB', 'Use #RRGGBB')); inp.value = THEME.saved[key] || THEME.fields.filter(function (f) { return f[0] === key; })[0][2]; return; }
+        THEME.saved[key] = v;
+        if (window.ykApplyTheme) ykApplyTheme(THEME.saved);
+        renderThemeFields();
+      });
+    });
+  }
+
+  function loadThemeSaved() {
+    api('site_settings?select=value&key=eq.theme_colors').then(function (r) { return r.json(); }).then(function (rows) {
+      var raw = rows && rows[0] && rows[0].value;
+      try { var v = typeof raw === 'string' ? JSON.parse(raw) : raw; if (v && typeof v === 'object') THEME.saved = v; } catch (e) {}
+      var st = document.querySelector('#theme-status');
+      var n = Object.keys(THEME.saved).length;
+      if (st) st.textContent = n ? t('已自定义 ' + n + ' 项', n + ' customized') : t('使用默认配色', 'Default palette');
+      renderThemeFields();
+    });
+  }
+
+  function themeSave() {
+    var allowed = {}; THEME.fields.forEach(function (f) { allowed[f[0]] = true; });
+    var clean = {};
+    Object.keys(THEME.saved).forEach(function (k) { if (allowed[k] && /^#[0-9a-fA-F]{6}$/.test(THEME.saved[k])) clean[k] = THEME.saved[k]; });
+    if (!Object.keys(clean).length) { toast(t('没有改过任何颜色', 'Nothing changed')); return; }
+    api('site_settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ key: 'theme_colors', value: JSON.stringify(clean) }) })
+      .then(function (r) {
+        if (!r.ok) { toast(t('保存失败，再试一次', 'Save failed')); return; }
+        try { localStorage.setItem('yuki-theme-colors', JSON.stringify(clean)); } catch (e) {}
+        toast(t('已保存 ✓ 全站已同步（刷新前台页面即可看到）', 'Saved ✓ synced site-wide'));
+        loadThemeSaved();
+      });
   }
 })();
