@@ -179,6 +179,20 @@
     });
   }
 
+  // ===== 邮件退订链接（/shop/?unsub=<token>）：无需登录，直接退订上新通知 =====
+  (function () {
+    var unsub = new URLSearchParams(location.search).get('unsub');
+    if (!unsub) return;
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    api('rpc/unsubscribe_notify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ p_token: unsub }) })
+      .then(function (r) { return r.json(); })
+      .then(function (ok) {
+        try { localStorage.setItem('yuki-notify-new', '0'); } catch (e) {}
+        toast(ok ? t('已退订上新通知，以后不会再收到啦', 'Unsubscribed from new-item notices') : t('退订链接无效或已过期', 'This unsubscribe link is invalid'));
+      })
+      .catch(function () { toast(t('退订失败，请稍后再试', 'Unsubscribe failed, please try again')); });
+  })();
+
   // ===== 视图路由 =====
   var LIST_SELS = ['.notice', '#product-grid', '#past', '#reviews', '#pay'];
   function showView(name) {

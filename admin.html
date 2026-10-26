@@ -394,6 +394,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   /* 商品货币选择：自定义胶囊（¥/美元），不用原生 select */
   .cur-chip { border: 1.5px solid var(--accent-soft,#ffc8d6); background: #fff; color: #9aa5bd; font-size: 15px; padding: 5px 14px; border-radius: 999px; cursor: pointer; font-family: inherit; }
   .cur-chip.on { background: var(--accent-soft,#ffc8d6); color: #fff; border-color: var(--accent-soft,#ffc8d6); }
+  /* 货币说明独占一行（她说手机端挤）：控件一行、说明下一行，两端布局一致 */
+  .cur-row { display: block; }
+  .cur-row .cur-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .cur-row .cur-line .cur-chip { flex-shrink: 0; }
+  .cur-row .cur-hint { font-size: 13px; color: var(--muted); margin: 6px 0 0; line-height: 1.5; }
   /* 照片管理列表：紧凑一行卡（缩略图 72px + 信息） */
   /* 照片管理：4 列照片卡片网格（与前台同一套视觉；管理操作全在卡片内） */
   #photo-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -664,7 +669,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <div class="form-grid">
           <input id="p-name" placeholder="商品名称 *">
           <input id="p-price" placeholder="价格，如 39.9（可留空）">
-          <div class="full fld-inline"><span style="font-size:15px;color:var(--muted);margin-right:6px;">货币</span><button type="button" class="cur-chip" data-cur="CNY">¥ 人民币</button><button type="button" class="cur-chip on" data-cur="USD">$ 美元</button><span style="font-size:13px;color:var(--muted);margin-left:8px;">每件商品各自选，金额不会自动换算</span></div>
+          <div class="full cur-row"><div class="cur-line"><span style="font-size:15px;color:var(--muted);">货币</span><button type="button" class="cur-chip" data-cur="CNY">¥ 人民币</button><button type="button" class="cur-chip on" data-cur="USD">$ 美元</button></div><p class="cur-hint">每件商品各自选，金额不会自动换算</p></div>
           <input id="p-stock" type="number" min="0" placeholder="库存数量（0 = 售尽）">
           <input id="p-cost" type="number" min="0" step="0.01" placeholder="成本，只有你自己能看到">
           <input id="p-tag" placeholder="标签，如 手作 / 毛线 / 黏土（点输入框可选已有标签）">
@@ -1196,12 +1201,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       });
       if (b.dataset.tab === 'works') renderWorks();
       if (b.dataset.tab === 'reviews') loadReviewsAdmin();
+      if (b.dataset.tab === 'system') loadEmailLog();
       try { history.replaceState(null, '', '#' + b.dataset.tab); } catch (e) {} // 把当前 tab 写进地址：刷新后停留在原页
     });
   });
 
   // ===== 联系与留言管理（原匿名留言）：主题/状态/称呼/Email/备注/搜索/回复 =====
   var MSG = { search: '', status: '', list: [] };
+  var E_NL = '\n';
   var MSG_STATUS_ZH = { pending: '未处理', processing: '处理中', replied: '已回复', closed: '已关闭' };
   var MSG_TOPIC_ZH = { product: '商品咨询', order: '订单问题', aftersale: '售后与退款', site: '网站问题', other: '其他' };
   var MSG_BADGE = { pending: '', processing: 'warn', replied: 'ok', closed: 'off' };
@@ -1259,6 +1266,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<button class="btn-del">删除</button>' +
         '<button class="btn-cancel btn-cancel-reply">取消</button>' +
         '<button class="btn-save-note">保存备注</button>' +
+        (c.email ? '<button class="btn-mail-send" title="将当前回复内容通过官方邮箱发给客户">邮件发送此回复</button>' : '') +
         '<button class="btn-save">保存回复</button>' +
         '</div></div>';
     }).join('');
@@ -1333,6 +1341,31 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         toast('备注已保存（不会公开）');
       }).catch(function () { toast('备注保存失败，再试一次'); })
         .finally(function () { e.target.disabled = false; });
+    }
+    if (e.target.classList.contains('btn-mail-send')) {
+      // 通过官方邮箱 snowyuzustudio@gmail.com 真实发信：先入队，email-worker 每分钟拉起发送
+      var mailReply = card.querySelector('textarea').value.trim();
+      if (!mailReply) { toast('先写下要发送的回复内容'); return; }
+      e.target.disabled = true;
+      api('email_log', {
+        method: 'POST',
+        headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify({
+          kind: 'reply',
+          ref_id: id + '#r' + new Date().toISOString(),
+          to_email: (MSG.cmap[id] || {}).email,
+          subject: 'SnowYuzu · 你的留言有回复啦',
+          body: '您好！' + E_NL + E_NL + '你在「联系我们」留言：' + E_NL + (function () {
+            var q = MSG.list.find(function (x) { return String(x.id) === String(id); });
+            return q ? q.content : '';
+          })() + E_NL + E_NL + '柚子回复：' + E_NL + mailReply + E_NL + E_NL + '— SnowYuzu 小柚的小世界'
+        })
+      }).then(function (r) {
+        if (!r.ok) throw new Error();
+        toast('已加入邮件发送队列，约 1 分钟内发出（系统状态可查记录）');
+      }).catch(function () { toast('加入发送队列失败，再试一次'); })
+        .finally(function () { e.target.disabled = false; });
+      return;
     }
     if (e.target.classList.contains('btn-cancel-reply')) {
       card.querySelector('textarea').value = card.getAttribute('data-reply') || ''; // 改回原来的回复内容，不动数据库
@@ -1659,10 +1692,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<div class="edit-grid">' +
         '<input class="e-name" value="' + escAttr(p.name) + '" placeholder="商品名称">' +
         '<input class="e-price" value="' + escAttr(p.price) + '" placeholder="价格">' +
-        '<div style="grid-column:1/-1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:14px;color:var(--muted);">货币</span>' +
+        '<div style="grid-column:1/-1;" class="cur-row"><div class="cur-line"><span style="font-size:14px;color:var(--muted);">货币</span>' +
           '<button type="button" class="cur-chip' + (card.__cur !== 'USD' ? ' on' : '') + '" data-cur="CNY">¥ 人民币</button>' +
-          '<button type="button" class="cur-chip' + (card.__cur === 'USD' ? ' on' : '') + '" data-cur="USD">$ 美元</button>' +
-          '<span style="font-size:13px;color:var(--muted);margin-left:8px;">规格价格跟商品同一货币</span></div>' +
+          '<button type="button" class="cur-chip' + (card.__cur === 'USD' ? ' on' : '') + '" data-cur="USD">$ 美元</button></div>' +
+          '<p class="cur-hint">规格价格跟商品同一货币</p></div>' +
         '<input class="e-tag" value="' + escAttr(p.tag) + '" placeholder="标签（点输入框可选已有标签）">' +
         '<input class="e-stock" type="number" min="0" value="' + (p.stock == null ? '' : p.stock) + '" placeholder="库存">' +
         '<input class="e-cost" type="number" step="0.01" value="' + (p.cost == null ? '' : p.cost) + '" placeholder="成本（仅自己可见）">' +
@@ -5581,6 +5614,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 <!-- 系统状态 -->
 <div id="tab-system" style="display:none;">
   <div class="card" style="max-width:640px;">
+    <h3 style="margin:0 0 12px;">邮件发送记录（最近 30 封）</h3>
+    <div id="email-log-list" style="font-size:15px; line-height:1.9; max-height:420px; overflow-y:auto;"><p class="empty">加载中…</p></div>
+    <p style="color:var(--muted); font-size:14px; line-height:1.8; margin:12px 0 0;">
+      发件邮箱：snowyuzustudio@gmail.com（需在 Supabase 配置 SMTP_USER / SMTP_PASS 后才会真实发信，未配置前队列保留不丢弃）。
+    </p>
+  </div>
+  <div class="card" style="max-width:640px;">
     <h3 style="margin:0 0 12px;">系统状态</h3>
     <div style="font-size:16px; line-height:2;">
       <div>数据库连接：<b id="sys-db">检测中…</b></div>
@@ -5610,6 +5650,25 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
 <script>
 /* ── 系统状态 tab：真实探测，不模拟 ── */
+function loadEmailLog() {
+  var box = document.getElementById('email-log-list');
+  if (!box) return;
+  api('email_log?select=kind,to_email,subject,status,attempts,last_error,created_at,sent_at&order=created_at.desc&limit=30').then(function (r) { return r.json(); }).then(function (rows) {
+    if (!rows || !rows.length) { box.innerHTML = '<p class="empty">还没有发送记录</p>'; return; }
+    var ST = { pending: ['待发送', 'warn'], sending: ['发送中', ''], sent: ['已发送', 'ok'], failed: ['失败（将重试）', 'warn'], dead: ['失败（已停）', 'off'] };
+    box.innerHTML = rows.map(function (m) {
+      var st = ST[m.status] || ST.pending;
+      var t = m.sent_at ? new Date(m.sent_at).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : new Date(m.created_at).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      return '<div style="padding:7px 0; border-bottom:1px dashed var(--card-hover);">' +
+        '<b>' + esc(m.subject) + '</b> → ' + esc(m.to_email) +
+        ' <span style="font-size:13px;color:#fff;background:' + (st[1] === 'ok' ? '#7cc49a' : st[1] === 'warn' ? '#f3b96d' : st[1] === 'off' ? '#c6cddb' : 'var(--accent-soft)') + ';border-radius:999px;padding:1px 9px;">' + st[0] + '</span>' +
+        ' <span style="color:var(--muted);font-size:14px;">' + t + '</span>' +
+        (m.last_error ? '<div style="color:#b0603a;font-size:14px;">' + esc(m.last_error) + '</div>' : '') +
+        '</div>';
+    }).join('');
+  }).catch(function () { box.innerHTML = '<p class="empty">加载失败，刷新重试</p>'; });
+}
 (function () {
   var URLBASE = 'https://zajcglvlzsolygvjeumb.supabase.co/rest/v1/';
   var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphamNnbHZsenNvbHlndmpldW1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMzI4NjUsImV4cCI6MjEwNjgwODg2NX0.7_Pthb3wPInb5v4o7IoWejozEvDZQgNPS8DgwikQ8ys';
@@ -5782,7 +5841,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 </script>
 
 
-<script src="js/admin-shop.js?v=20261025i"></script>
+<script src="js/admin-shop.js?v=20261025j"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
