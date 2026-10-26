@@ -252,6 +252,18 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
 .pg-thumb { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(255,255,255,.9); cursor: pointer; opacity: .85; transition: opacity .2s, border-color .2s; box-sizing: border-box; background: var(--card); display: block; }
 .pg-thumb.on { border-color: var(--card-hover, #ffe4ee); opacity: 1; }
 
+/* ═══ 商品详情：描述区用大圆角卡片格子（她 2026-10-25：把 Footer 卡片样式留给描述区用）═══ */
+.pdp .d-desc {
+  background: var(--card, #fff2f7);
+  border-radius: 22px;
+  padding: 16px 20px;
+  margin: 12px 0;
+}
+.pdp .d-desc p { margin: 0; }
+@media (max-width: 639px) {
+  .pdp .d-desc { padding: 15px 17px; margin: 13px 0; border-radius: 20px; }
+}
+
 /* ═══ 商品详情页（.pdp：桌面双栏网格 / 手机纵向单栏）═══ */
 .pdp {
   display: grid;
@@ -283,9 +295,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   #view-detail, #view-cart, #view-checkout, #view-orders, #view-account, #view-groups { display: none; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261025k">
-  <script src="/js/site-common.js?v=20261025k"></script>
-  <script src="/site-menu.js?v=20261025k" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261025l">
+  <script src="/js/site-common.js?v=20261025l"></script>
+  <script src="/site-menu.js?v=20261025l" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -784,8 +796,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261025k"></script>
-<script src="/js/site-footer.js?v=20261025k"></script>
+<script src="/js/shop-app.js?v=20261025l"></script>
+<script src="/js/site-footer.js?v=20261025l"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }
