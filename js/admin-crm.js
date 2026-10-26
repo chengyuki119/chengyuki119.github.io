@@ -699,6 +699,12 @@
     loadThemeSaved();
   };
 
+  function themeApplyLive() { // admin 页不引 site-common，这里自带同一套应用逻辑（前台由 site-common 的 ykApplyTheme 负责）
+    var map = { text: '--text', muted: '--muted', bg: '--bg', card: '--card', accent: '--accent', accentSoft: '--accent-soft', accentStrong: '--accent-strong', price: '--price' };
+    var r = document.documentElement.style;
+    Object.keys(map).forEach(function (k) { if (THEME.saved[k]) r.setProperty(map[k], THEME.saved[k]); });
+  }
+
   function renderThemeFields() {
     var panel = document.getElementById('tab-theme');
     var box = panel.querySelector('#theme-fields');
@@ -717,7 +723,7 @@
     box.querySelectorAll('[data-f]').forEach(function (c) {
       c.addEventListener('click', function () {
         THEME.saved[c.getAttribute('data-f')] = c.getAttribute('data-c');
-        if (window.ykApplyTheme) ykApplyTheme(THEME.saved);
+        themeApplyLive();
         renderThemeFields();
       });
     });
@@ -727,7 +733,7 @@
         var key = inp.getAttribute('data-hex');
         if (!/^#[0-9a-fA-F]{6}$/.test(v)) { toast(t('颜色格式要是 #RRGGBB', 'Use #RRGGBB')); inp.value = THEME.saved[key] || THEME.fields.filter(function (f) { return f[0] === key; })[0][2]; return; }
         THEME.saved[key] = v;
-        if (window.ykApplyTheme) ykApplyTheme(THEME.saved);
+        themeApplyLive();
         renderThemeFields();
       });
     });

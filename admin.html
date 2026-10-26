@@ -4930,7 +4930,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<div class="sc-info">' +
           '<b class="sc-name">' + esc(w.name || '未命名稿件') + '</b>' +
           '<div class="sc-shop">' + [w.cat, w.artist].filter(Boolean).map(esc).join(' · ') + '</div>' +
-          '<div class="sc-shop">' + esc(w.date || '') + (parseFloat(w.price) ? ' · <span style="color:var(--price,#ff6fa5);">¥' + fmtMoney(w.price) + E : '') + '</div>' +
+          '<div class="sc-shop">' + esc(w.date || '') + (parseFloat(w.price) ? ' · <span style="color:var(--price,#ff6fa5);">¥' + fmtMoney(w.price) + '</span>' : '') + '</div>' +
           '<span class="tgl-label" style="margin-top:7px;"><button type="button" class="tgl w-vis-toggle' + (w.visible !== false ? ' on' : '') + '" aria-pressed="' + (w.visible !== false) + '" aria-label="展示中"><span class="tgl-knob"></span></button>展示中</span>' +
           '</div>' +
           '</div>';

@@ -371,7 +371,7 @@
         '</div>' +
         (o.pay_url ? '<img class="sm-pay-img" data-paypath="' + escAttr(o.pay_url) + '" alt="付款凭证">' : '') +
         '<div class="sm-line"><span class="lbl">金额</span>商品小计 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.subtotal) + '</span>' +
-          (num(o.discount) > 0 ? ' · 折扣 -<span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.discount) + E : '') +
+          (num(o.discount) > 0 ? ' · 折扣 -<span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.discount) + '</span>' : '') +
           ' · 运费 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.shipping_actual != null && o.shipping_actual !== '' ? o.shipping_actual : o.shipping_est) + '</span>' +
           ' · 税费 未收取' +
           ' · 服务费 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(o.service_fee) + '</span>' +
@@ -381,7 +381,7 @@
           if (pi.refunded <= 0 && pi.paid <= 0) return '';
           return '<div class="sm-line"><span class="lbl">退款</span>' +
             (pi.paid > 0 ? '已付 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(pi.paid) + '</span>' + ' · ' : '') +
-            (pi.refunded > 0 ? (pi.refunded >= num(o.total) - 0.005 ? '已全额退款 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(pi.refunded) + E : '<b style="color:#f3b96d;">部分退款 $' + fmtMoney(pi.refunded) + '</b>') : '') + '</div>';
+            (pi.refunded > 0 ? (pi.refunded >= num(o.total) - 0.005 ? '已全额退款 <span style="color:var(--price,#ff6fa5);">$' + fmtMoney(pi.refunded) + '</span>' : '<b style="color:#f3b96d;">部分退款 $' + fmtMoney(pi.refunded) + '</b>') : '') + '</div>';
         })() +
         (dead ? '<div class="sm-line"><span class="lbl">发货</span>' + (o.status === 'refunded' ? '已退款 · 无需发货' : '已取消 · 无需发货') +
             (o.tracking ? '（历史物流：' + esc(o.carrier || '') + ' ' + esc(o.tracking) + '）' : '') + '</div>' : '') +
