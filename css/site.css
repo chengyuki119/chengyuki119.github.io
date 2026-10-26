@@ -316,7 +316,7 @@
   .bjd-size-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
   .bjd-size-h { font-size:18px; margin: 20px 0 10px; }
   .bjd-size-h:first-child { margin-top: 0; }
-  .home-long-btn { display: block; text-align: center; margin-top: 14px; padding: 11px 0; font-size:17px; border-radius: 12px; background: #ffd9e6; color: #fff; font-weight: 600; text-decoration: none; transition: filter .2s; }
+  .home-long-btn { display: block; text-align: center; margin-top: 14px; padding: 11px 0; font-size:17px; border-radius: 12px; background: #ffd9e6; color: var(--text, #604C57); font-weight: 600; text-decoration: none; transition: filter .2s; }
   .home-long-btn:hover { filter: brightness(1.05); }
   #bjd-home-grid { display: grid; grid-template-columns: repeat(var(--home-cols, 4), 1fr); gap: 12px; }
   /* 卡片视觉与 Photo Gallery 统一：圆角 + hover 平滑放大 */
