@@ -930,7 +930,7 @@ function ykGatePage(mode) {
   return check.then(function (res) {
     if (res.ok === 'pending') {
       var bar = document.createElement('div');
-      bar.style.cssText = 'position:sticky;top:0;z-index:99;background:var(--card,#FFF0F5);color:var(--text,#604C57);text-align:center;font-size:14px;padding:7px 12px;border-bottom:1px solid var(--accent-soft,#FCE4EC);';
+      bar.style.cssText = 'position:sticky;top:0;z-index:99;background:var(--card,#FFFFFF);color:var(--text,#604C57);text-align:center;font-size:14px;padding:7px 12px;border-bottom:1px solid var(--accent-soft,#FCE4EC);';
       bar.textContent = (window.LANG === 'en' ? 'Permission layer not active yet (waiting for SQL).' : '专属权限层尚未启用（等待 SQL），当前仅前端临时放行。');
       document.body.insertBefore(bar, document.body.firstChild);
       return true;
@@ -939,7 +939,7 @@ function ykGatePage(mode) {
       // 网络/服务抖动：不下「普通用户」的结论，给重试入口
       var wrapR = document.createElement('div');
       wrapR.style.cssText = 'min-height:62vh;display:flex;align-items:center;justify-content:center;padding:30px 16px;';
-      wrapR.innerHTML = '<div style="background:var(--card,#FFF0F5);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
+      wrapR.innerHTML = '<div style="background:var(--card,#FFFFFF);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
         '<div style="font-size:34px;color:var(--text,#604C57);line-height:1;">♥</div>' +
         '<h2 style="font-size:20px;color:var(--text,#604C57);margin:14px 0 8px;">' + (en ? 'Checking your identity…' : '身份确认没成功') + '</h2>' +
         '<p style="font-size:15px;color:var(--muted,#A88E9B);margin:0 0 22px;">' + (en ? 'Network hiccup — your login is safe. Tap to retry.' : '刚才网络抖了一下，你的登录还在，点下面重试就好。') + '</p>' +
@@ -965,7 +965,7 @@ function ykGatePage(mode) {
       btns = '<button id="yk-logout" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Log Out' : '退出登录') + '</button>' +
              ' <a href="/" style="display:inline-block;margin-left:10px;color:var(--muted,#A88E9B);text-decoration:none;">' + (en ? 'Back to Home' : '返回主页') + '</a>';
     }
-    wrap.innerHTML = '<div style="background:var(--card,#FFF0F5);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
+    wrap.innerHTML = '<div style="background:var(--card,#FFFFFF);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
       '<div style="font-size:34px;color:var(--text,#604C57);line-height:1;">♥</div>' +
       '<h2 style="font-size:20px;color:var(--text,#604C57);margin:14px 0 8px;">' + title + '</h2>' +
       '<p style="font-size:15px;color:var(--muted,#A88E9B);margin:0 0 22px;">' +
@@ -1014,7 +1014,7 @@ window.ykApplyTheme = ykApplyTheme;
 (function () {
   try {
     var saved = null;
-    try { saved = JSON.parse(localStorage.getItem('yuki-theme-colors') || 'null'); } catch (e) {}
+    try { saved = JSON.parse(localStorage.getItem('yuki-theme-colors-v2') || 'null'); } catch (e) {}
     if (saved) ykApplyTheme(saved); // 先用本地快照免闪烁，再拉库校准
   } catch (e) {}
   fetch(DB_BASE + 'site_settings?select=value&key=eq.theme_colors', { headers: DB_HEADERS })
@@ -1026,7 +1026,7 @@ window.ykApplyTheme = ykApplyTheme;
         var v = typeof raw === 'string' ? JSON.parse(raw) : raw;
         if (v && typeof v === 'object') {
           ykApplyTheme(v);
-          try { localStorage.setItem('yuki-theme-colors', JSON.stringify(v)); } catch (e) {}
+          try { localStorage.setItem('yuki-theme-colors-v2', JSON.stringify(v)); } catch (e) {}
         }
       } catch (e) {}
     })

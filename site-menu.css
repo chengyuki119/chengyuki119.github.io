@@ -34,7 +34,7 @@
   position: fixed;
   top: 60px; right: 0; bottom: 0;
   width: 250px;
-  background: var(--bg,#FFF8FA);
+  background: var(--bg,#FFFBFC);
   box-shadow: -4px 0 24px rgba(255,143,171,.18);
   transform: translateX(100%);
   transition: transform .25s;
@@ -172,7 +172,7 @@
   border-radius: 12px;
   font-size: 15px;
   color: var(--muted, #A88E9B);
-  background: var(--card, #FFF0F5);
+  background: var(--card, #FFFFFF);
   text-align: center;
 }
 .menu-acct-bottom.acct-loading { pointer-events: none; opacity: .75; }

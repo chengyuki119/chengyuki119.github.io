@@ -743,7 +743,7 @@
         api('site_settings?key=eq.theme_colors', { method: 'DELETE' }).then(function (r) {
           if (!r.ok) { toast(t('操作失败', 'Failed')); return; }
           THEME.saved = {};
-          try { localStorage.removeItem('yuki-theme-colors'); } catch (e) {}
+          try { localStorage.removeItem('yuki-theme-colors-v2'); } catch (e) {}
           location.reload();
         });
       }, t('恢复默认', 'Reset'));
@@ -810,7 +810,7 @@
     api('site_settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ key: 'theme_colors', value: JSON.stringify(clean) }) })
       .then(function (r) {
         if (!r.ok) { toast(t('保存失败，再试一次', 'Save failed')); return; }
-        try { localStorage.setItem('yuki-theme-colors', JSON.stringify(clean)); } catch (e) {}
+        try { localStorage.setItem('yuki-theme-colors-v2', JSON.stringify(clean)); } catch (e) {}
         toast(t('已保存 ✓ 全站已同步（刷新前台页面即可看到）', 'Saved ✓ synced site-wide'));
         loadThemeSaved();
       });

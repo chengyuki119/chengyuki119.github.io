@@ -3,8 +3,8 @@
   @font-face { font-family: "Millo Body"; src: url("/fonts/Millo-RiceSoyMilk80.woff2") format("woff2"), url("/fonts/Millo-RiceSoyMilk80.ttf") format("truetype"); font-display: swap; }
 
   :root {
-    --bg: #FFF8FA;
-    --card: #FFF0F5;
+    --bg: #FFFBFC;
+    --card: #FFFFFF;
     --card-hover: #FCE4EC;
     --text: #604C57;
     --muted: #A88E9B;
@@ -40,7 +40,7 @@
     position: fixed;
     top: 0; left: 0; right: 0;
     height: 60px;
-    background: #ffffff;
+    background: #FFF5F7; /* 浅粉分区（她 20261026 补充任务书 §4.1），仅此一处，不再往粉里走 */
     box-shadow: 0 2px 12px rgba(255,143,171,.18);
     z-index: 200;
     display: flex;
@@ -83,7 +83,7 @@
     height: 72vh;
     min-height: 480px;
     background:
-      linear-gradient(180deg, rgba(255,248,250,0) 82%, rgba(255,248,250,.8) 96%, var(--bg,#FFF8FA) 100%), /* 仅照片最底部一小段轻微过渡，避免大面积泛白 */
+      linear-gradient(180deg, rgba(255,251,252,0) 82%, rgba(255,251,252,.8) 96%, var(--bg,#FFFBFC) 100%), /* 仅照片最底部一小段轻微过渡，避免大面积泛白 */
       url("/cover.jpg"); /*  封面背景图：可在后台「主页管理」更换，图片本身颜色内容不动 */
     background-color: var(--bg);
     background-size: cover;
@@ -134,7 +134,7 @@
 
   /* ===== 主页背景（仅首页生效）：几乎纯色，只留极淡的上下过渡，无粉色雾化/光晕 ===== */
   body.home {
-    background: linear-gradient(180deg, var(--bg,#FFF8FA) 0%, var(--bg,#FFF8FA) 100%);
+    background: linear-gradient(180deg, var(--bg,#FFFBFC) 0%, var(--bg,#FFFBFC) 100%);
   }
 
   section { margin-bottom: 56px; }

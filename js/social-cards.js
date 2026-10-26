@@ -12,6 +12,8 @@
     xhs: '<svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="#ff2442"/><text x="12" y="16.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffffff">红</text></svg>',
     douyin: '<svg viewBox="0 0 24 24" fill="#5ad7d0"><path d="M16.6 3c.4 2.3 1.9 3.8 4.4 4v3c-1.7 0-3.2-.5-4.4-1.4v6.6c0 3.5-2.6 5.8-5.9 5.8-3.1 0-5.7-2.4-5.7-5.6 0-3.3 2.9-5.8 6.3-5.4v3.1c-1.7-.5-3.2.5-3.2 2.2 0 1.5 1.2 2.6 2.6 2.6 1.6 0 2.8-1.1 2.8-3.2V3h3.1Z"/></svg>',
     netease: '<svg viewBox="0 0 24 24" fill="none" stroke="#e35d5d" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+    tiktok: '<svg viewBox="0 0 24 24" fill="#1c1c1e"><path d="M16.6 3c.4 2.3 1.9 3.8 4.4 4v3c-1.7 0-3.2-.5-4.4-1.4v6.6c0 3.5-2.6 5.8-5.9 5.8-3.1 0-5.7-2.4-5.7-5.6 0-3.3 2.9-5.8 6.3-5.4v3.1c-1.7-.5-3.2.5-3.2 2.2 0 1.5 1.2 2.6 2.6 2.6 1.6 0 2.8-1.1 2.8-3.2V3h3.1Z"/></svg>',
+    youtube: '<svg viewBox="0 0 24 24" fill="#ff0000"><path d="M23 12s0-3.8-.5-5.6c-.3-1-1-1.7-2-2C18.7 4 12 4 12 4s-6.7 0-8.5.4c-1 .3-1.7 1-2 2C1 8.2 1 12 1 12s0 3.8.5 5.6c.3 1 1 1.7 2 2 1.8.4 8.5.4 8.5.4s6.7 0 8.5-.4c1-.3 1.7-1 2-2 .5-1.8.5-5.6.5-5.6ZM9.8 15.5v-7l6.2 3.5-6.2 3.5Z"/></svg>',
     link: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--muted,#A88E9B)" stroke-width="2"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7L12.5 19"/></svg>'
   };
 
@@ -23,12 +25,14 @@
   // 默认清单 = 主页「找到我」当前的静态配置（账号名/ID/链接逐字一致，2026-10-26 实查）；
   // 后台「主页管理」保存过 links 设置时以库里的为准
   var DEFAULT_LINKS = [
-    { icon: 'gmail', name: 'Gmail', sub: 'snowyuzustudio', url: 'mailto:snowyuzustudio@gmail.com' },
-    { icon: 'instagram', name: 'Instagram', sub: 'zyc.0119', url: 'https://instagram.com/zyc.0119' },
-    { icon: 'x', name: 'X / Twitter', sub: '@yuki_zheng119', url: 'https://x.com/yuki_zheng119' },
     { icon: 'discord', name: 'Discord', sub: '小柚的服务器', url: 'https://discord.gg/aWSfnydGG' },
-    { icon: 'wechat', name: '微信', sub: 'yuki_0b0119', url: '' },
+    { icon: 'tiktok', name: 'TikTok', sub: '账号整理中', url: '' },
     { icon: 'douyin', name: '抖音', sub: '小柚ovo', url: 'https://v.douyin.com/rDWydc4QlBE/' },
+    { icon: 'youtube', name: 'YouTube', sub: '账号整理中', url: '' },
+    { icon: 'instagram', name: 'Instagram', sub: 'zyc.0119', url: 'https://instagram.com/zyc.0119' },
+    { icon: 'wechat', name: '微信', sub: 'yuki_0b0119', url: '' },
+    { icon: 'gmail', name: 'Gmail', sub: 'snowyuzustudio', url: 'mailto:snowyuzustudio@gmail.com' },
+    { icon: 'x', name: 'X / Twitter', sub: '@yuki_zheng119', url: 'https://x.com/yuki_zheng119' },
     { icon: 'xhs', name: '小红书', sub: '柚y', url: 'https://xhslink.cn/o/8ZUGYxQgnKG' },
     { icon: 'netease', name: '网易云音乐', sub: 'Snow柚', url: 'https://y.music.163.com/m/user?id=5022037817' }
   ];

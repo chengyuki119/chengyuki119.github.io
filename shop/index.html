@@ -18,8 +18,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   @font-face { font-family: "Millo Body"; src: url("/fonts/Millo-RiceSoyMilk80.woff2") format("woff2"), url("/fonts/Millo-RiceSoyMilk80.ttf") format("truetype"); font-display: swap; }
 
   :root {
-    --bg: #FFF8FA;
-    --card: #FFF0F5;
+    --bg: #FFFBFC;
+    --card: #FFFFFF;
     --card-hover: #FCE4EC;
     --text: #604C57;
     --muted: #A88E9B;
@@ -149,7 +149,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
   /* 收藏心心 */
   .fav-btn {
-    border: none; background: rgba(255,248,250,.92);
+    border: none; background: rgba(255,251,252,.92);
     color:var(--text,#604C57); cursor: pointer;
     font-size: 18px; line-height: 1;
     width: 34px; height: 34px; border-radius: 50%;
@@ -256,7 +256,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
 
 /* ═══ 商品详情：描述区用大圆角卡片格子（她 2026-10-25：把 Footer 卡片样式留给描述区用）═══ */
 .pdp .d-desc {
-  background: var(--card, #FFF0F5);
+  background: var(--card, #FFFFFF);
   border-radius: 22px;
   padding: 16px 20px;
   margin: 12px 0;
@@ -318,9 +318,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   select { font-family: inherit; font-size: 15px; color: var(--text, #604C57); background: #fff; border: 1.5px solid var(--border, #FFD9E6); border-radius: 10px; padding: 7px 10px; outline: none; max-width: 100%; cursor: pointer; box-sizing: border-box; }
   select:focus { border-color: var(--text, #604C57); }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261026l">
-  <script src="/js/site-common.js?v=20261026l"></script>
-  <script src="/site-menu.js?v=20261026l" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261026m">
+  <script src="/js/site-common.js?v=20261026m"></script>
+  <script src="/site-menu.js?v=20261026m" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -818,8 +818,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261026l"></script>
-<script src="/js/site-footer.js?v=20261026l"></script>
+<script src="/js/shop-app.js?v=20261026m"></script>
+<script src="/js/site-footer.js?v=20261026m"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

@@ -270,7 +270,7 @@
             return '<button type="button" class="sku-chip' + (x.sku === d.sku ? ' on' : '') + (out ? ' dis' : '') + '" data-sku="' + escAttr(x.sku) + '">' + esc(x.name || x.sku) + (out ? ' · ' + t('缺货', 'Out') : '') + '</button>';
           }).join('') + '</div></div>' : '') +
         (st === 'on' ?
-          '<div class="d-notice card" style="padding:12px 14px;margin:12px 0 0;background:var(--bg,#FFF8FA);border:1.5px solid var(--accent-soft,#FCE4EC);">' +
+          '<div class="d-notice card" style="padding:12px 14px;margin:12px 0 0;background:var(--bg,#FFFBFC);border:1.5px solid var(--accent-soft,#FCE4EC);">' +
             '<b style="font-size:15px;">' + t('购买须知 ♡', 'Before You Order ♡') + '</b>' +
             '<p style="font-size:14px;color:var(--muted);margin:6px 0 0;line-height:1.7;">' +
               t('下单前请仔细阅读商品描述与图片。手工制品与键帽可能存在轻微瑕疵或正常工艺差异，与描述一致的轻微差异不构成退款理由。详细规则见', 'Please review the description and photos carefully. Handmade items and keycaps may have minor imperfections or variations; minor variations consistent with the description are not grounds for refund. See our ') +
@@ -1474,7 +1474,7 @@
             '<div style="font-size:17px;color:#e2b100;letter-spacing:2px;margin-top:4px;">' + '★★★★★'.slice(0, rv.rating || 0) + '☆☆☆☆☆'.slice(0, 5 - (rv.rating || 0)) + '</div>' +
             (rv.content ? '<p style="font-size:16px;line-height:1.7;margin-top:6px;">' + esc(rv.content) + '</p>' : '') +
             (rv.image_url ? '<img src="' + escAttr(normImg(rv.image_url)) + '" style="max-width:180px;border-radius:12px;margin-top:8px;display:block;">' : '') +
-            (rv.reply ? '<div style="margin-top:10px;padding:10px 12px;background:var(--card,#FFF0F5);border-radius:12px;font-size:15px;"><b>' + t('柚子 回复：', 'Yuki replied:') + '</b> ' + esc(rv.reply) + '</div>' : '') +
+            (rv.reply ? '<div style="margin-top:10px;padding:10px 12px;background:var(--card,#FFFFFF);border-radius:12px;font-size:15px;"><b>' + t('柚子 回复：', 'Yuki replied:') + '</b> ' + esc(rv.reply) + '</div>' : '') +
             '</div>';
         }).join('') : '<p style="color:var(--muted);text-align:center;padding:20px 0;font-size:16px;">' + t('评价可能在后台审核中被隐藏了', 'Your reviews may be hidden for moderation') + '</p>');
     }).catch(function () {
@@ -1500,7 +1500,7 @@
             '<p style="font-size:16px;line-height:1.7;">' + esc(q.content) + '</p>' +
             '<div style="font-size:13px;color:var(--muted);margin-top:6px;">' + new Date(q.created_at).toLocaleString() + '</div>' +
             (q.reply
-              ? '<div style="margin-top:10px;padding:10px 12px;background:var(--card,#FFF0F5);border-radius:12px;font-size:15px;"><b>' + t('柚子 回复：', 'Yuki replied:') + '</b> ' + esc(q.reply) + '</div>'
+              ? '<div style="margin-top:10px;padding:10px 12px;background:var(--card,#FFFFFF);border-radius:12px;font-size:15px;"><b>' + t('柚子 回复：', 'Yuki replied:') + '</b> ' + esc(q.reply) + '</div>'
               : '<div style="margin-top:10px;font-size:15px;color:var(--muted);">' + t('已收到，等柚子回复哦～', 'Received! Yuki will reply soon~') + '</div>') +
             '</div>';
         }).join('') : '<p style="color:var(--muted);text-align:center;padding:20px 0;font-size:16px;">' + t('留言可能已被删除', 'Messages may have been removed') + '</p>');
