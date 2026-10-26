@@ -422,4 +422,232 @@
       });
     });
   }
+
+  /* ═══════════ 邮件模板管理 ═══════════ */
+  var TPL = {
+    kinds: [
+      { key: 'order_confirm', name: t('订单确认 / 付款成功', 'Order confirm / paid'), desc: t('买家下单、付款成功后自动发送', 'Sent after order placed / paid') },
+      { key: 'order_shipped', name: t('订单已发货', 'Order shipped'), desc: t('填写物流单号发货后自动发送', 'Sent when shipped with tracking no.') },
+      { key: 'order_refund', name: t('退款通知', 'Refund notice'), desc: t('退款处理完成后自动发送', 'Sent after refund processed') },
+      { key: 'order_cancel', name: t('订单取消', 'Order cancelled'), desc: t('订单取消时自动发送', 'Sent when order cancelled') },
+      { key: 'new_product', name: t('新品上架通知', 'New item notice'), desc: t('新品上架时发给订阅买家（带退订）', 'To subscribers (with unsubscribe)') },
+      { key: 'contact_reply', name: t('客户留言回复', 'Message reply'), desc: t('站长回复客户留言时发送', 'Sent when you reply to a message') },
+      { key: 'vip_notice', name: t('VIP 会员变更通知', 'VIP change notice'), desc: t('VIP 设定或到期提醒时发送', 'Sent on VIP set / expiry reminder') }
+    ],
+    vars: [
+      ['{{客户称呼}}', t('买家称呼或昵称', 'Buyer name/nick')],
+      ['{{订单编号}}', t('订单号，如 SY-001', 'e.g. SY-001')],
+      ['{{商品名称}}', t('商品名，多件逐行', 'Product name(s)')],
+      ['{{订单金额}}', t('如 $52.00', 'e.g. $52.00')],
+      ['{{物流单号}}', t('快递单号', 'Tracking number')],
+      ['{{店铺链接}}', t('小铺首页链接', 'Shop URL')],
+      ['{{留言内容}}', t('客户留言原文', 'Customer message')],
+      ['{{站长回复}}', t('你的回复内容', 'Your reply')]
+    ],
+    lang: 'zh', kind: 'order_confirm', saved: {}, dirty: false
+  };
+
+  function tplDefault(kind, lang) {
+    var shop = 'https://chengyuki119.github.io/shop/';
+    var D = {
+      order_confirm: {
+        zh: { subject: '【Snow Yuzu】订单确认 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n感谢你在 Snow Yuzu 下单！以下是本次订单详情：\n\n订单编号：{{订单编号}}\n商品：{{商品名称}}\n订单金额：{{订单金额}}\n\n我们会尽快为你安排制作与发货，有任何问题直接回复这封邮件就好。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Order Confirmation · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nThank you for your order at Snow Yuzu! Here are your order details:\n\nOrder No.: {{订单编号}}\nItems: {{商品名称}}\nTotal: {{订单金额}}\n\nWe will prepare and ship your order as soon as possible. Feel free to reply to this email if you have any questions.\n\nSnow Yuzu' }
+      },
+      order_shipped: {
+        zh: { subject: '【Snow Yuzu】订单已发货 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 已经发货啦！\n\n物流单号：{{物流单号}}\n\n途中的小心等待，包裹很快就到～ 收到后欢迎回来说一声。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Order Shipped · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nYour order {{订单编号}} has been shipped!\n\nTracking No.: {{物流单号}}\n\nIt will arrive soon. Let us know once you receive it, we would love to hear from you!\n\nSnow Yuzu' }
+      },
+      order_refund: {
+        zh: { subject: '【Snow Yuzu】退款通知 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 已完成退款，退款金额 {{订单金额}} 将原路退回。\n\n到账时间依支付渠道而定，一般 1-5 个工作日。如有疑问随时回复这封邮件。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Refund Notice · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nYour order {{订单编号}} has been refunded. The amount {{订单金额}} will be returned via the original payment method.\n\nIt usually takes 1-5 business days depending on your payment provider. Feel free to reply if you have any questions.\n\nSnow Yuzu' }
+      },
+      order_cancel: {
+        zh: { subject: '【Snow Yuzu】订单已取消 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n很遗憾，你的订单 {{订单编号}} 已取消，订单金额 {{订单金额}} 不会产生扣款（已付款的部分会原路退回）。\n\n希望下次还能见到你～\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] Order Cancelled · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nUnfortunately your order {{订单编号}} has been cancelled. No charge will be made for {{订单金额}} (paid amounts will be refunded via the original method).\n\nHope to see you next time!\n\nSnow Yuzu' }
+      },
+      new_product: {
+        zh: { subject: '【Snow Yuzu】新品上架 · {{商品名称}}', body: '亲爱的 {{客户称呼}}：\n\nSnow Yuzu 上新啦！\n\n本期新品：{{商品名称}}\n\n数量不多，喜欢的话来看看：{{店铺链接}}\n\n如果不想再收到新品通知，可以用邮件底部的 Unsubscribe 一键退订，订单邮件不受影响。\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] New Item · {{商品名称}}', body: 'Dear {{客户称呼}},\n\nNew arrivals at Snow Yuzu!\n\nThis time: {{商品名称}}\n\nLimited stock — take a look: {{店铺链接}}\n\nIf you no longer wish to receive new item notices, use the Unsubscribe link at the bottom. Order emails are not affected.\n\nSnow Yuzu' }
+      },
+      contact_reply: {
+        zh: { subject: '【Snow Yuzu】你的留言有新回复啦', body: '亲爱的 {{客户称呼}}：\n\n你留言的「{{留言内容}}」有了新回复：\n\n{{站长回复}}\n\n继续聊可以去小铺留言板：{{店铺链接}}\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] New Reply to Your Message', body: 'Dear {{客户称呼}},\n\nYour message "{{留言内容}}" has a new reply:\n\n{{站长回复}}\n\nContinue the conversation at: {{店铺链接}}\n\nSnow Yuzu' }
+      },
+      vip_notice: {
+        zh: { subject: '【Snow Yuzu】VIP 会员通知', body: '亲爱的 {{客户称呼}}：\n\n你的 Snow Yuzu VIP 会员状态有更新，详情请到小铺查看：{{店铺链接}}\n\n谢谢你的喜欢与支持！\n\nSnow Yuzu 小柚' },
+        en: { subject: '[Snow Yuzu] VIP Membership Notice', body: 'Dear {{客户称呼}},\n\nYour Snow Yuzu VIP membership has been updated. See your shop page for details: {{店铺链接}}\n\nThank you for your support!\n\nSnow Yuzu' }
+      }
+    };
+    return (D[kind] && D[kind][lang]) || { subject: '', body: '' };
+  }
+
+  function tplKey(kind, lang) { return 'mailtpl_' + kind + '_' + lang; }
+  function tplBase(kind, lang) { return TPL.saved[tplKey(kind, lang)] || tplDefault(kind, lang); }
+
+  CRM.bootMailtpl = function () {
+    var panel = document.getElementById('tab-mailtpl');
+    if (panel.dataset.booted) return;
+    panel.dataset.booted = '1';
+    panel.innerHTML =
+      '<div class="card" style="padding:16px 20px;margin-bottom:14px;">' +
+        '<h3 style="margin:0 0 4px;font-size:17px;color:var(--text,#604C57);">✉️ ' + t('邮件模板管理', 'Email templates') + '</h3>' +
+        '<p style="margin:0;font-size:13px;color:var(--muted,#A88E9B);line-height:1.8;">' +
+          t('各用途邮件的主题与正文模板，中英文分开管理；带变量占位，发送时自动替换。当前仅保存与预览，不会自动发送任何邮件。', 'Subject & body templates per email type, zh/en managed separately. Save & preview only — nothing is sent automatically.') +
+        '</p>' +
+        '<div id="tpl-kind-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;"></div>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;">' +
+        '<div class="card" style="padding:16px 20px;">' +
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">' +
+            '<span class="chip" data-lang="zh">中文</span><span class="chip" data-lang="en">English</span>' +
+            '<span id="tpl-kind-desc" style="font-size:12px;color:var(--muted,#A88E9B);margin-left:auto;"></span>' +
+          '</div>' +
+          '<div style="font-size:14px;color:var(--text,#604C57);margin-bottom:4px;">' + t('邮件主题', 'Subject') + '</div>' +
+          '<input id="tpl-subject" style="width:100%;box-sizing:border-box;padding:10px 14px;font-size:15px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:12px;outline:none;font-family:inherit;color:var(--text,#604C57);background:#fff;">' +
+          '<div style="font-size:14px;color:var(--text,#604C57);margin:12px 0 4px;">' + t('邮件正文', 'Body') + '</div>' +
+          '<textarea id="tpl-body" rows="10" style="width:100%;box-sizing:border-box;padding:10px 14px;font-size:15px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:12px;outline:none;font-family:inherit;color:var(--text,#604C57);background:#fff;resize:vertical;line-height:1.8;"></textarea>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">' +
+            '<button class="btn-save-tb" id="tpl-save">' + t('保存模板', 'Save') + '</button>' +
+            '<button class="btn-mini" id="tpl-cancel">' + t('取消修改', 'Revert') + '</button>' +
+            '<button class="btn-mini" id="tpl-reset">' + t('恢复默认', 'Reset to default') + '</button>' +
+            '<button class="btn-mini" id="tpl-preview-btn">' + t('预览', 'Preview') + '</button>' +
+          '</div>' +
+          '<div id="tpl-vars" style="margin-top:14px;background:#FFF8FA;border:1px solid var(--accent-soft,#FCE4EC);border-radius:12px;padding:10px 14px;">' +
+            '<div style="font-size:14px;font-weight:600;color:var(--text,#604C57);margin-bottom:6px;">' + t('可用变量（点击插入到正文末尾）', 'Variables (click to append to body)') + '</div>' +
+            '<div id="tpl-var-list" style="display:flex;gap:6px;flex-wrap:wrap;"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card" style="padding:16px 20px;align-self:start;">' +
+          '<h3 style="margin:0 0 10px;font-size:16px;color:var(--text,#604C57);">👁 ' + t('模板预览', 'Preview') + '</h3>' +
+          '<div id="tpl-preview" style="border:1px solid var(--accent-soft,#FCE4EC);border-radius:14px;padding:14px 16px;background:#fff;">' +
+            '<p style="color:var(--muted,#A88E9B);font-size:14px;">' + t('点「预览」查看替换变量后的效果', 'Click Preview to see variable substitution') + '</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    panel.querySelectorAll('[data-lang]').forEach(function (c) {
+      c.addEventListener('click', function () { tplSwitchLang(c.getAttribute('data-lang')); });
+    });
+    panel.querySelector('#tpl-subject').addEventListener('input', function () { TPL.dirty = true; });
+    panel.querySelector('#tpl-body').addEventListener('input', function () { TPL.dirty = true; });
+    panel.querySelector('#tpl-save').addEventListener('click', tplSave);
+    panel.querySelector('#tpl-cancel').addEventListener('click', tplRevert);
+    panel.querySelector('#tpl-reset').addEventListener('click', tplReset);
+    panel.querySelector('#tpl-preview-btn').addEventListener('click', tplPreview);
+    loadTplSaved();
+  };
+
+  function loadTplSaved() {
+    api('site_settings?select=key,value&key=like.mailtpl_*').then(function (r) { return r.json(); }).then(function (rows) {
+      (rows || []).forEach(function (row) {
+        try { TPL.saved[row.key] = JSON.parse(row.value); } catch (e) {}
+      });
+      renderTplChips();
+      tplFill();
+    }).catch(function () { renderTplChips(); tplFill(); });
+  }
+
+  function renderTplChips() {
+    var panel = document.getElementById('tab-mailtpl');
+    panel.querySelector('#tpl-kind-chips').innerHTML = TPL.kinds.map(function (k) {
+      return '<span class="chip' + (TPL.kind === k.key ? ' on' : '') + '" data-kind="' + k.key + '">' + k.name + '</span>';
+    }).join('');
+    panel.querySelectorAll('#tpl-kind-chips [data-kind]').forEach(function (c) {
+      c.addEventListener('click', function () { tplSwitchKind(c.getAttribute('data-kind')); });
+    });
+    panel.querySelector('#tpl-var-list').innerHTML = TPL.vars.map(function (v) {
+      return '<span class="chip" data-var="' + v[0] + '" title="' + v[1] + '" style="font-size:12px;">' + v[0] + '</span>';
+    }).join('');
+    panel.querySelectorAll('#tpl-var-list [data-var]').forEach(function (c) {
+      c.addEventListener('click', function () {
+        var ta = panel.querySelector('#tpl-body');
+        ta.value = (ta.value || '') + c.getAttribute('data-var');
+        TPL.dirty = true; ta.focus();
+      });
+    });
+    panel.querySelectorAll('[data-lang]').forEach(function (c) {
+      c.classList.toggle('on', c.getAttribute('data-lang') === TPL.lang);
+    });
+  }
+
+  function tplFill() {
+    var panel = document.getElementById('tab-mailtpl');
+    var base = tplBase(TPL.kind, TPL.lang);
+    panel.querySelector('#tpl-subject').value = base.subject || '';
+    panel.querySelector('#tpl-body').value = base.body || '';
+    var k = TPL.kinds.filter(function (x) { return x.key === TPL.kind; })[0];
+    var custom = !!TPL.saved[tplKey(TPL.kind, TPL.lang)];
+    panel.querySelector('#tpl-kind-desc').textContent = (k ? k.desc : '') + (custom ? ' · ' + t('已自定义', 'customized') : '');
+    TPL.dirty = false;
+    renderTplChips();
+  }
+
+  function tplSwitchKind(key) {
+    if (key === TPL.kind) return;
+    if (TPL.dirty) {
+      uiConfirm(t('当前模板改了还没保存，切换会丢弃修改，确定切换吗？', 'Discard unsaved changes and switch?'), function () { TPL.kind = key; tplFill(); }, t('切换', 'Switch'));
+      return;
+    }
+    TPL.kind = key; tplFill();
+  }
+
+  function tplSwitchLang(lang) {
+    if (lang === TPL.lang) return;
+    if (TPL.dirty) {
+      uiConfirm(t('当前模板改了还没保存，切换语言会丢弃修改，确定切换吗？', 'Discard unsaved changes and switch language?'), function () { TPL.lang = lang; tplFill(); }, t('切换', 'Switch'));
+      return;
+    }
+    TPL.lang = lang; tplFill();
+  }
+
+  function tplSave() {
+    var panel = document.getElementById('tab-mailtpl');
+    var subject = panel.querySelector('#tpl-subject').value.trim();
+    var body = panel.querySelector('#tpl-body').value.replace(/\s+$/, '');
+    if (!subject) { toast(t('邮件主题不能为空', 'Subject cannot be empty')); return; }
+    if (!body) { toast(t('邮件正文不能为空', 'Body cannot be empty')); return; }
+    var key = tplKey(TPL.kind, TPL.lang);
+    api('site_settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ key: key, value: JSON.stringify({ subject: subject, body: body, saved_at: new Date().toISOString() }) }) })
+      .then(function (r) {
+        if (!r.ok) { toast(t('保存失败，再试一次', 'Save failed')); return; }
+        TPL.saved[key] = { subject: subject, body: body };
+        toast(t('已保存 ✓（重开页面仍在）', 'Saved ✓'));
+        tplFill();
+      });
+  }
+
+  function tplRevert() {
+    var panel = document.getElementById('tab-mailtpl');
+    var base = tplBase(TPL.kind, TPL.lang);
+    panel.querySelector('#tpl-subject').value = base.subject || '';
+    panel.querySelector('#tpl-body').value = base.body || '';
+    TPL.dirty = false;
+    toast(t('已还原到上次保存的内容', 'Reverted to last saved'));
+  }
+
+  function tplReset() {
+    uiConfirm(t('恢复默认会丢掉这类模板的自定义内容（含已保存的），确定恢复吗？', 'Reset to default? Saved custom content for this template will be lost.'), function () {
+      var key = tplKey(TPL.kind, TPL.lang);
+      api('site_settings?key=eq.' + key, { method: 'DELETE' }).then(function (r) {
+        if (!r.ok) { toast(t('操作失败，再试一次', 'Failed')); return; }
+        delete TPL.saved[key];
+        toast(t('已恢复默认', 'Reset to default'));
+        tplFill();
+      });
+    }, t('恢复默认', 'Reset'));
+  }
+
+  function tplPreview() {
+    var panel = document.getElementById('tab-mailtpl');
+    var subject = panel.querySelector('#tpl-subject').value.trim();
+    var body = panel.querySelector('#tpl-body').value;
+    var samples = { '{{客户称呼}}': 'Yuki', '{{订单编号}}': 'SY-001', '{{商品名称}}': '键帽 ×1', '{{订单金额}}': '$2.99', '{{物流单号}}': 'SF1234567890', '{{店铺链接}}': 'https://chengyuki119.github.io/shop/', '{{留言内容}}': '什么时候能发货呀？', '{{站长回复}}': '本周内发出，谢谢等待～' };
+    var sub = subject, txt = body;
+    Object.keys(samples).forEach(function (k) { sub = sub.split(k).join(samples[k]); txt = txt.split(k).join(samples[k]); });
+    panel.querySelector('#tpl-preview').innerHTML =
+      '<div style="font-size:12px;color:var(--muted,#A88E9B);margin-bottom:4px;">' + t('邮件主题', 'Subject') + '</div>' +
+      '<div style="font-size:15px;font-weight:700;color:var(--text,#604C57);padding-bottom:10px;border-bottom:1px solid var(--accent-soft,#FCE4EC);margin-bottom:10px;word-break:break-word;">' + esc(sub) + '</div>' +
+      '<div style="font-size:12px;color:var(--muted,#A88E9B);margin-bottom:4px;">' + t('邮件正文', 'Body') + '</div>' +
+      '<div style="font-size:14px;color:var(--text,#604C57);white-space:pre-wrap;line-height:1.9;word-break:break-word;">' + esc(txt) + '</div>';
+  }
 })();

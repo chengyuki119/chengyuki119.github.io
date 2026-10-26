@@ -467,7 +467,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .pf-chip.on { background: var(--accent-soft); border-color:var(--accent-soft); color: var(--accent-strong); }
   .private-line { font-size:15px; color: var(--muted); margin-top: 4px; }
 
-    .btn-save-tb { margin-left: auto; background: #ffd9e6 !important; color: var(--text, #604C57); !important; }
+  /* 后台保存主按钮：完整胶囊样式（之前只给底色没重置 border，浏览器默认灰立体边框会露出来——她 2026-10-26） */
+  .btn-save-tb {
+    border: none; font-family: inherit; font-size: 16px; padding: 7px 16px;
+    border-radius: 999px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    background: #ffd9e6; color: var(--text, #604C57); transition: background .2s, opacity .2s;
+  }
+  .btn-save-tb:hover { background: #f0c3da; }
+  .btn-save-tb:disabled { opacity: .55; cursor: default; }
 .toast {
     position: fixed; bottom: 32px; left: 50%;
     transform: translateX(-50%) translateY(20px);
@@ -549,6 +556,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <button class="tab-btn" data-tab="ai">AI 对话</button>
         <div class="pp-group">系统设置</div>
         <button class="tab-btn" data-tab="mailsync">邮件与联系人同步</button>
+        <button class="tab-btn" data-tab="mailtpl">邮件模板管理</button>
         <button class="tab-btn" data-tab="system">系统状态</button>
       </div>
     </div>
@@ -741,6 +749,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     <div id="tab-pos" style="display:none;"></div>
     <!-- 邮件与联系人同步 -->
     <div id="tab-mailsync" style="display:none;"></div>
+    <!-- 邮件模板管理（js/admin-crm.js） -->
+    <div id="tab-mailtpl" style="display:none;"></div>
 
     <!-- 评价返图管理 -->
     <div id="tab-reviews" style="display:none;">
@@ -1235,10 +1245,12 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       b.classList.add('active');
       document.getElementById('pp-cur').textContent = b.textContent;
       ppClose();
-      ['messages', 'shop', 'shopmgr', 'crm', 'pos', 'mailsync', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (name) {
+      ['messages', 'shop', 'shopmgr', 'crm', 'pos', 'mailsync', 'mailtpl', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (name) {
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.style.display = b.dataset.tab === name ? '' : 'none';
       });
+      // 切页后左侧导航回到顶部（她自己滚动看过下面再切页时，菜单会停在中间——她 2026-10-26）
+      var ppm = document.getElementById('pp-menu'); if (ppm) ppm.scrollTop = 0;
       if (b.dataset.tab === 'works') renderWorks();
       if (b.dataset.tab === 'reviews') loadReviewsAdmin();
       if (b.dataset.tab === 'system') loadEmailLog();
@@ -1246,6 +1258,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (b.dataset.tab === 'crm' && window.CRM) CRM.bootCrm();
       if (b.dataset.tab === 'pos' && window.CRM) CRM.bootPos();
       if (b.dataset.tab === 'mailsync' && window.CRM) CRM.bootMailsync();
+      if (b.dataset.tab === 'mailtpl' && window.CRM) CRM.bootMailtpl();
       try { history.replaceState(null, '', '#' + b.dataset.tab); } catch (e) {} // 把当前 tab 写进地址：刷新后停留在原页
     });
   });
@@ -5974,8 +5987,8 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026d"></script>
-<script src="js/admin-crm.js?v=20261026d"></script>
+<script src="js/admin-shop.js?v=20261026e"></script>
+<script src="js/admin-crm.js?v=20261026e"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
