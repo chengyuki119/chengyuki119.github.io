@@ -242,38 +242,45 @@
     var el = document.createElement('div');
     el.innerHTML =
       '<a class="back-link" href="/shop/" style="margin-bottom:14px;display:inline-flex;">← ' + t('回小铺', 'Back to shop') + '</a>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;">' +
-        '<div id="d-pager">' + pagerWrapHtml(imgs.map(normImg), p.name) + '</div>' +
-        '<div>' +
+      '<div class="pdp">' +
+        '<div class="d-pager" id="d-pager">' + pagerWrapHtml(imgs.map(normImg), p.name) + '</div>' +
+        '<div class="d-info">' +
+        '<div class="d-head">' +
           '<span class="product-tag">' + esc(p.tag || t('没有标签', 'Untagged')) + '</span>' +
           '<h2 style="font-size:24px;margin:6px 0 4px;display:inline-block;">' + esc(p.name) + '</h2>' +
           '<button type="button" class="fav-btn detail-fav' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '">' + (isFav(p.id) ? '♥' : '♡') + '</button>' +
-          '<p style="color:var(--muted);font-size:17px;">' + esc(p.description || '') + '</p>' +
+        '</div>' +
+        '<div class="d-desc"><p style="color:var(--muted);font-size:17px;line-height:1.8;margin:12px 0;">' + esc(p.description || '') + '</p></div>' +
+        '<div class="d-price">' +
           '<div style="font-size:26px;color:#ff6fa5;font-weight:700;margin:10px 0;">' + sym(curOf(p, v)) + money(price) + '</div>' +
           (skuText ? '<div style="font-size:15px;color:var(--muted);margin-bottom:6px;">SKU: ' + esc(skuText) + '</div>' : '') +
-          (vs ?
-            '<div style="margin:10px 0;"><div style="font-size:16px;margin-bottom:6px;">' + t('规格', 'Option') + '</div><div id="d-variants" style="display:flex;gap:8px;flex-wrap:wrap;">' +
-            vs.map(function (x) {
-              var out = variantStock(x) <= 0;
-              return '<button type="button" class="sku-chip' + (x.sku === d.sku ? ' on' : '') + (out ? ' dis' : '') + '" data-sku="' + escAttr(x.sku) + '">' + esc(x.name || x.sku) + (out ? ' · ' + t('缺货', 'Out') : '') + '</button>';
-            }).join('') + '</div></div>' : '') +
-          (st === 'on' ?
-            '<div class="card" style="padding:12px 14px;margin:12px 0;background:#fff7fa;border:1.5px solid var(--accent-soft,#ffc8d6);">' +
-              '<b style="font-size:15px;">' + t('购买须知 ♡', 'Before You Order ♡') + '</b>' +
-              '<p style="font-size:14px;color:var(--muted);margin:6px 0 0;line-height:1.7;">' +
-                t('下单前请仔细阅读商品描述与图片。手工制品与键帽可能存在轻微瑕疵或正常工艺差异，与描述一致的轻微差异不构成退款理由。详细规则见', 'Please review the description and photos carefully. Handmade items and keycaps may have minor imperfections or variations; minor variations consistent with the description are not grounds for refund. See our ') +
-                '<a href="/return-policy/" style="color:#ff6fa5;text-decoration:underline;">' + t('《退货与退款政策》', 'Return & Refund Policy') + '</a>' + t('。', '.') + '</p>' +
-            '</div>' +
-            '<div style="display:flex;align-items:center;gap:12px;margin:12px 0;">' +
-              '<span style="font-size:16px;">' + t('数量', 'Qty') + '</span>' +
-              '<button type="button" class="qty-btn" data-d="-1">−</button><b id="d-qty">1</b><button type="button" class="qty-btn" data-d="1">＋</button>' +
-              '<span style="font-size:15px;color:var(--muted);">' + t('库存', 'Stock') + ' ' + (v ? variantStock(v) : (p.stock || 0)) + '</span>' +
-            '</div>' +
-            '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;">' +
-              '<button class="buy-btn" id="d-add" style="padding:10px 22px;">' + t('加入购物车', 'Add to cart') + '</button>' +
-              '<button class="buy-btn" id="d-buy" style="padding:10px 22px;background:#ffd9e6;color:#fff;">' + t('立即购买', 'Buy now') + '</button>' +
+        '</div>' +
+        (vs ?
+          '<div class="d-variants" style="margin:10px 0;"><div style="font-size:16px;margin-bottom:6px;">' + t('规格', 'Option') + '</div><div id="d-variants" style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          vs.map(function (x) {
+            var out = variantStock(x) <= 0;
+            return '<button type="button" class="sku-chip' + (x.sku === d.sku ? ' on' : '') + (out ? ' dis' : '') + '" data-sku="' + escAttr(x.sku) + '">' + esc(x.name || x.sku) + (out ? ' · ' + t('缺货', 'Out') : '') + '</button>';
+          }).join('') + '</div></div>' : '') +
+        (st === 'on' ?
+          '<div class="d-notice card" style="padding:12px 14px;margin:12px 0 0;background:#fff7fa;border:1.5px solid var(--accent-soft,#ffc8d6);">' +
+            '<b style="font-size:15px;">' + t('购买须知 ♡', 'Before You Order ♡') + '</b>' +
+            '<p style="font-size:14px;color:var(--muted);margin:6px 0 0;line-height:1.7;">' +
+              t('下单前请仔细阅读商品描述与图片。手工制品与键帽可能存在轻微瑕疵或正常工艺差异，与描述一致的轻微差异不构成退款理由。详细规则见', 'Please review the description and photos carefully. Handmade items and keycaps may have minor imperfections or variations; minor variations consistent with the description are not grounds for refund. See our ') +
+              '<a href="/return-policy/" style="color:#ff6fa5;text-decoration:underline;">' + t('《退货与退款政策》', 'Return & Refund Policy') + '</a>' + t('。', '.') + '</p>' +
+          '</div>' : '') +
+        (st === 'on' ?
+            '<div class="d-actions" style="margin:12px 0;">' +
+              '<div style="display:flex;align-items:center;gap:12px;margin:0 0 12px;">' +
+                '<span style="font-size:16px;">' + t('数量', 'Qty') + '</span>' +
+                '<button type="button" class="qty-btn" data-d="-1">−</button><b id="d-qty">1</b><button type="button" class="qty-btn" data-d="1">＋</button>' +
+                '<span style="font-size:15px;color:var(--muted);">' + t('库存', 'Stock') + ' ' + (v ? variantStock(v) : (p.stock || 0)) + '</span>' +
+              '</div>' +
+              '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:0;">' +
+                '<button class="buy-btn" id="d-add" style="padding:10px 22px;">' + t('加入购物车', 'Add to cart') + '</button>' +
+                '<button class="buy-btn" id="d-buy" style="padding:10px 22px;background:#ffd9e6;color:#fff;">' + t('立即购买', 'Buy now') + '</button>' +
+              '</div>' +
             '</div>'
-          : '<p class="no-buy" style="margin:14px 0;">' + (st === 'out' ? t('已售罄，看看别的吧～', 'Sold out — take a look at other items~') : t('仅展示，不能下单', 'Not for sale')) + '</p>') +
+          : '<div class="d-actions"><p class="no-buy" style="margin:14px 0;">' + (st === 'out' ? t('已售罄，看看别的吧～', 'Sold out — take a look at other items~') : t('仅展示，不能下单', 'Not for sale')) + '</p></div>') +
         '</div>' +
       '</div>' +
       '<div id="d-group-form" style="display:none;margin-top:16px;" class="card"></div>';

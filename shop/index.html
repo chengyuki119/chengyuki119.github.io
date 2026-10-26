@@ -251,6 +251,29 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
 .pg-thumbs::-webkit-scrollbar { display: none; }
 .pg-thumb { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(255,255,255,.9); cursor: pointer; opacity: .85; transition: opacity .2s, border-color .2s; box-sizing: border-box; background: var(--card); display: block; }
 .pg-thumb.on { border-color: var(--card-hover, #ffe4ee); opacity: 1; }
+
+/* ═══ 商品详情页（.pdp：桌面双栏网格 / 手机纵向单栏）═══ */
+.pdp {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 22px;
+  align-items: start;
+}
+.pdp .d-pager { grid-column: 1; grid-row: 1; }
+.pdp .d-info { grid-column: 2; grid-row: 1; }
+
+@media (max-width: 639px) {
+  /* 手机纵向：名称 → 1:1 主图 → 价格 → 规格/数量/购买按钮 → 详情 → 购买须知 */
+  .pdp { display: flex; flex-direction: column; gap: 0; }
+  .pdp .d-info { display: contents; }
+  .pdp .d-head { order: 1; } .pdp .d-pager { order: 2; } .pdp .d-price { order: 3; }
+  .pdp .d-variants { order: 4; } .pdp .d-actions { order: 5; } .pdp .d-desc { order: 6; } .pdp .d-notice { order: 7; }
+  .pdp .d-pager { margin-top: 2px; }
+  .pdp .pg-wrap { width: 100%; max-width: 100%; margin: 0 auto; }
+  .pdp .pg-img { object-fit: cover !important; } /* 正方形填满不拉伸不空白（内联 contain 需 !important 压过） */
+  .pdp .d-price > div:first-child { font-size: 28px !important; }
+  .pdp .d-actions .buy-btn { flex: 1; min-width: 120px; justify-content: center; padding: 13px 22px !important; font-size: 17px; }
+}
   /* ===== 商城新增：视图 / 规格 / 订单 / 拼团 ===== */
   .sku-chip { border: 2px solid var(--accent-soft); background: #fff; color: var(--text); border-radius: 999px; padding: 7px 16px; font-size: 16px; font-family: inherit; cursor: pointer; transition: all .2s; }
   .sku-chip.on { border-color:#ffc8d6; background:#ffc8d6; color: #fff; }
@@ -260,9 +283,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   #view-detail, #view-cart, #view-checkout, #view-orders, #view-account, #view-groups { display: none; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261025j">
-  <script src="/js/site-common.js?v=20261025j"></script>
-  <script src="/site-menu.js?v=20261025j" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261025k">
+  <script src="/js/site-common.js?v=20261025k"></script>
+  <script src="/site-menu.js?v=20261025k" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -761,8 +784,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261025j"></script>
-<script src="/js/site-footer.js?v=20261025j"></script>
+<script src="/js/shop-app.js?v=20261025k"></script>
+<script src="/js/site-footer.js?v=20261025k"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }
