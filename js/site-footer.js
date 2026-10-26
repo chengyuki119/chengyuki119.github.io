@@ -61,14 +61,12 @@
 
   function ensureStyle() {
     if (document.getElementById(STYLE_ID)) return;
-    var isHome = location.pathname === '/' || location.pathname === '/index.html';
     var st = document.createElement('style');
     st.id = STYLE_ID;
-    /* 主页：大圆角卡片式 Footer；其他页：无卡片，顶部一条淡粉分隔线（她 2026-10-25：卡片只留主页，其他页用线分开） */
+    /* 大圆角卡片式 Footer（她 2026-10-25：算了，所有页面都要卡片样式） */
     st.textContent =
       '.sy-footer{max-width:1080px;margin:20px auto 26px;padding:34px 48px 30px;font-family:inherit;' +
-        'background:transparent;border-radius:0;box-sizing:border-box;border-top:1px solid var(--accent,#ffd9e6);}' +
-      '.sy-footer.sy-home{background:var(--card,#fff2f7);border-radius:28px;border-top:none;padding:34px 48px 30px;}' +
+        'background:var(--card,#fff2f7);border-radius:28px;box-sizing:border-box;}' +
       '.sy-footer-top{display:flex;align-items:baseline;gap:12px;padding-bottom:18px;}' +
       '.sy-footer-brand{font-family:var(--font-heading,"Millo Body Heavy",sans-serif);font-size:22px;font-weight:600;color:var(--text,#5d6780);letter-spacing:.5px;}' +
       '.sy-footer-tag{font-size:15px;color:var(--muted,#9aa5bd);}' +
@@ -76,8 +74,6 @@
       '.sy-footer-cols{display:grid;grid-template-columns:1fr 1fr;gap:28px 40px;}' +
       '@media (max-width:639px){' +
         '.sy-footer{margin:14px 14px 20px;padding:26px 22px 24px;border-radius:22px;}' +
-        '.sy-footer.sy-home{padding:26px 22px 24px;}' +
-        '.sy-footer:not(.sy-home){margin:26px 14px 20px;padding:22px 6px 12px;border-radius:0;}' +
         '.sy-footer-cols{grid-template-columns:1fr;gap:22px;}}' +
       '.sy-footer-head{font-size:16px;font-weight:700;color:var(--text,#5d6780);margin-bottom:12px;}' +
       '.sy-footer-links{display:flex;flex-direction:column;align-items:flex-start;gap:10px;}' +
@@ -90,7 +86,6 @@
   function buildHtml() {
     var lang = currentLang();
     var txt = TEXT[lang] || TEXT.zh;
-    var isHome = location.pathname === '/' || location.pathname === '/index.html';
     var col = function (titleKey, items) {
       return '<div class="sy-footer-col">' +
         '<div class="sy-footer-head">' + esc(txt[titleKey]) + '</div>' +
@@ -100,7 +95,7 @@
         }).join('') +
         '</div></div>';
     };
-    return '<div class="sy-footer' + (isHome ? ' sy-home' : '') + '">' +
+    return '<div class="sy-footer">' +
       '<div class="sy-footer-top"><span class="sy-footer-brand">SnowYuzu</span>' +
         '<span class="sy-footer-tag">' + esc(txt.brandTag) + '</span></div>' +
       '<hr class="sy-footer-div">' +
