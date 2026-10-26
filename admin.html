@@ -684,6 +684,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <div class="p-preview" id="p-preview"><span class="pv-empty">选了图片会在这里预览</span></div>
         <div class="actions">
           <button class="btn-save" id="btn-add-product">上架这个商品</button>
+          <button class="btn-mini" id="btn-prod-draft" style="padding:9px 18px;">存为草稿</button>
+          <button class="btn-mini" id="btn-prod-bulk-toggle" style="padding:9px 18px;">批量导入商品</button>
+        </div>
+        <div id="bulk-wrap" style="display:none;margin-top:14px;">
+          <textarea id="bulk-text" style="width:100%;min-height:110px;box-sizing:border-box;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:14px;background:#fff;padding:12px 14px;font-size:16px;color:var(--text,#604C57);font-family:inherit;resize:vertical;outline:none;" placeholder="一行一个商品：名称，价格，库存，标签&#10;例如：&#10;毛线小兔，39.9，3，手作&#10;黏土小熊，52，1，黏土"></textarea>
+          <p class="hint" style="margin:8px 0 0;">一行一个商品，用逗号隔开：名称，价格，库存，标签（价格/库存/标签可留空；标签不填默认「手作」）。批量导入的商品没有图片，上架后再逐个补。</p>
+          <div class="actions" style="margin-top:10px;">
+            <button class="btn-save" id="btn-bulk-import">导入这些商品</button>
+          </div>
         </div>
         </div>
       </div>
@@ -1208,6 +1217,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (b.dataset.tab === 'works') renderWorks();
       if (b.dataset.tab === 'reviews') loadReviewsAdmin();
       if (b.dataset.tab === 'system') loadEmailLog();
+      if (b.dataset.tab === 'days') renderDays(); // 每次切到重要日子都重渲染，避免 settings 迟到导致自动列表空白
       try { history.replaceState(null, '', '#' + b.dataset.tab); } catch (e) {} // 把当前 tab 写进地址：刷新后停留在原页
     });
   });
@@ -1485,6 +1495,83 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (!chip || !chip.closest('.form-grid')) return; // 只响应上架表单里的胶囊
     pCur = chip.getAttribute('data-cur') || 'USD';
     chip.parentNode.querySelectorAll('.cur-chip').forEach(function (x) { x.classList.toggle('on', x === chip); });
+  });
+  // ── 新商品草稿：存文本字段，图片需重新选（文件没法存浏览器）──
+  var DRAFT_KEY = 'yuki-newprod-draft';
+  function collectDraft() {
+    return {
+      name: document.getElementById('p-name').value.trim(),
+      price: document.getElementById('p-price').value.trim(),
+      stock: document.getElementById('p-stock').value.trim(),
+      cost: document.getElementById('p-cost').value.trim(),
+      tag: document.getElementById('p-tag').value.trim(),
+      desc: document.getElementById('p-desc').value.trim(),
+      descEn: document.getElementById('p-desc-en').value.trim()
+    };
+  }
+  function fillDraft(d) {
+    if (!d) return;
+    document.getElementById('p-name').value = d.name || '';
+    document.getElementById('p-price').value = d.price || '';
+    document.getElementById('p-stock').value = d.stock || '';
+    document.getElementById('p-cost').value = d.cost || '';
+    document.getElementById('p-tag').value = d.tag || '';
+    document.getElementById('p-desc').value = d.desc || '';
+    document.getElementById('p-desc-en').value = d.descEn || '';
+  }
+  document.getElementById('btn-prod-draft').addEventListener('click', function () {
+    var d = collectDraft();
+    if (!d.name && !d.desc) { toast('什么都还没填，不用存草稿哦'); return; }
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch (e) { toast('草稿保存失败'); return; }
+    toast('草稿已保存，下次打开会自动恢复');
+  });
+  (function () { // 打开表单时自动恢复草稿
+    var w = document.getElementById('newprod-wrap');
+    var obs = new MutationObserver(function () {
+      if (w.style.display !== 'none' && !w.dataset.draftDone) {
+        w.dataset.draftDone = '1';
+        try {
+          var d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+          if (d && (d.name || d.desc)) { fillDraft(d); toast('已恢复上次保存的草稿（图片要重新选哦）'); }
+        } catch (e) {}
+      }
+    });
+    obs.observe(w, { attributes: true, attributeFilter: ['style'] });
+  })();
+  document.getElementById('btn-prod-bulk-toggle').addEventListener('click', function () {
+    var w = document.getElementById('bulk-wrap');
+    var open = w.style.display !== 'none';
+    w.style.display = open ? 'none' : '';
+    this.textContent = open ? '批量导入商品' : '收起批量导入';
+  });
+  document.getElementById('btn-bulk-import').addEventListener('click', function () {
+    var btn = this;
+    var raw = document.getElementById('bulk-text').value.trim();
+    if (!raw) { toast('先粘贴商品清单'); return; }
+    var rows = raw.split(/\n+/).map(function (line) {
+      var parts = line.split(/[,，]/).map(function (x) { return x.trim(); });
+      if (!parts[0]) return null;
+      return { name: parts[0], price: parts[1] || '', stock: parts[2] || '', tag: parts[3] || '手作' };
+    }).filter(Boolean);
+    if (!rows.length) { toast('没有解析到商品，检查一下格式'); return; }
+    btn.disabled = true;
+    var i = 0, okN = 0, failN = 0;
+    var next = function () {
+      if (i >= rows.length) {
+        btn.disabled = false;
+        if (okN) document.getElementById('bulk-text').value = '';
+        toast('导入完成：成功 ' + okN + ' 个' + (failN ? '，失败 ' + failN + ' 个（保留在框里可重试）' : ''));
+        if (okN && typeof window.renderShopList === 'function') window.renderShopList();
+        return;
+      }
+      var r = rows[i];
+      btn.textContent = '导入中 ' + (i + 1) + '/' + rows.length + '…';
+      api('products', { method: 'POST', body: JSON.stringify({ name: r.name, price: r.price, stock: r.stock === '' ? 0 : r.stock, tag: r.tag, description: '' }) }).then(function (res) {
+        if (res.ok) { okN++; rememberTag(r.tag); } else failN++;
+        i++; next();
+      }).catch(function () { failN++; i++; next(); });
+    };
+    next();
   });
   document.getElementById('btn-toggle-newprod').addEventListener('click', function () { // 她 2026-10-25：新商品表单默认收起，点按钮再展开
     var w = document.getElementById('newprod-wrap');
@@ -2104,17 +2191,17 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   function renderDays() {
     var box = document.getElementById('days-list');
     var autoRows = autoDayRows();
-    var autoHtml = autoRows.length ? '<div class="card" style="padding:12px 14px;margin-bottom:14px;"><b style="font-size:16px;">自动生成（来自 BJD / 色卡，前台日历已同步展示）</b>' +
-      autoRows.map(function (r) {
-        return '<div class="auto-row" data-cal="' + escAttr(r.key) + '" data-kind="' + r.kind + '" data-i="' + r.i + '" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;border-top:1px solid var(--card-hover);margin-top:9px;">' +
-          '<div style="flex:1;min-width:150px;">' +
-          '<b style="font-size:17px;">' + esc(r.name) + '</b>' +
-          '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + toDispDayAdmin(r.day) + ' · ' + (r.kind === 'b' ? 'BJD' : '色卡') + ' · ' + r.label + '</div>' +
-          '</div>' +
-          '<span class="tgl-label">' + calTgl(r.key, r.oldKey) + '前台展示</span>' +
-          '<button class="btn-mini cal-edit">编辑</button>' +
-          '</div>';
-      }).join('') + '<div style="font-size:14px;color:var(--muted);margin-top:10px;">日期跟着 BJD / 色卡档案走；点「编辑」会跳到对应档案里改；不想出现在日历就把右边的「前台展示」关掉</div></div>' : '';
+    var autoHtml = autoRows.map(function (r) {
+      // 展示方式与下面的自定义纪念日完全一致（同一套卡片行样式）；编辑跳到对应档案改日期
+      return '<div class="card day-item auto-row" data-cal="' + escAttr(r.key) + '" data-kind="' + r.kind + '" data-i="' + r.i + '" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;margin-bottom:10px;">' +
+        '<div style="flex:1;min-width:150px;">' +
+        '<b style="font-size:17px;">' + esc(r.name) + '</b>' +
+        '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + toDispDayAdmin(r.day) + ' · ' + (r.kind === 'b' ? 'BJD' : '色卡') + ' · 每年重复</div>' +
+        '</div>' +
+        '<span class="tgl-label">' + calTgl(r.key, r.oldKey) + '前台展示</span>' +
+        '<button class="btn-mini cal-edit">编辑</button>' +
+        '</div>';
+    }).join('');
     box.innerHTML = autoHtml + DAYS.map(function (d) {
       if (d.id === DAY_EDIT) {
         return '<div class="card day-item editing" data-id="' + d.id + '" style="padding:12px 14px;margin-bottom:10px;">' +
@@ -2585,6 +2672,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       .then(function (rows) {
         SETTINGS = {};
         (rows || []).forEach(function (r) { SETTINGS[r.key] = r.value; });
+        var dt = document.getElementById('tab-days'); if (dt && dt.style.display !== 'none') renderDays(); // 修复：进重要日子页时设置还没加载完，自动列表不显示；设置到位后立即补渲染
         var hero = parseSetting('hero', {});
         ['name', 'line1', 'line2', 'name_en', 'line1_en', 'line2_en'].forEach(function (k) { // 永远回填全部六项（空也回填，避免残留旧值）
           var el = document.getElementById('hm-' + k.replace('_', '-'));
@@ -5858,7 +5946,7 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261025v"></script>
+<script src="js/admin-shop.js?v=20261025w"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
