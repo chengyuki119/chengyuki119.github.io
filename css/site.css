@@ -316,7 +316,7 @@
   .bjd-size-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
   .bjd-size-h { font-size:18px; margin: 20px 0 10px; }
   .bjd-size-h:first-child { margin-top: 0; }
-  .home-long-btn { display: block; text-align: center; margin-top: 14px; padding: 11px 0; font-size:17px; border-radius: 12px; background: var(--accent-strong, #A04A68); color: #fff; font-weight: 600; text-decoration: none; transition: filter .2s; }
+  .home-long-btn { display: block; text-align: center; margin-top: 14px; padding: 11px 0; font-size:17px; border-radius: 12px; background: #ffd9e6; color: #fff; font-weight: 600; text-decoration: none; transition: filter .2s; }
   .home-long-btn:hover { filter: brightness(1.05); }
   #bjd-home-grid { display: grid; grid-template-columns: repeat(var(--home-cols, 4), 1fr); gap: 12px; }
   /* 卡片视觉与 Photo Gallery 统一：圆角 + hover 平滑放大 */
@@ -330,7 +330,7 @@
   .share-btn.share-inline { position: static; width: 30px; height: 30px; flex-shrink: 0; }
   @media (max-width: 640px) { #bjd-home-grid, #cards-home-grid, #works-home-grid { grid-template-columns: repeat(2, 1fr); } } /* 手机上保持两张一行，好认 */
   .card-edit-btn { border: none; background: var(--card-hover); color:var(--text,#604C57); font-size:14px; cursor: pointer; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; transition: background .2s, color .2s; white-space: nowrap; }
-  .card-edit-btn:hover { background: var(--accent-strong); color: #fff; }
+  .card-edit-btn:hover { background: var(--accent-soft); color: #fff; }
   /* Apple Calendar 式月历 + 重要日子 */
   #home-cal { margin: 0 0 32px; display: flex; gap: 14px; align-items: stretch; }
   @media (max-width: 640px) { #home-cal { flex-direction: column; } }
@@ -376,7 +376,7 @@
   .cal-day.has-ev:hover { background: var(--card-hover); }
   .cal-day.today.has-ev:hover { background: var(--accent-soft); }
   .cal-add { margin-top: 12px; display: none; width: auto; padding: 6px 14px; border: none; border-radius: 999px; background: var(--card-hover); color: var(--muted); font-weight: 600; font-size:15px; cursor: pointer; transition: background .2s, color .2s; }
-  .cal-add:hover { background: var(--accent-strong); color: #fff; }
+  .cal-add:hover { background: var(--accent-soft); color: #fff; }
   /* 日历年月快速选择（自定义弹层，点击标题打开） */
   /* ===== 苹果式年月滚轮 ===== */
   .dp-wheel { display: flex; position: relative; height: 180px; background: var(--card); border-radius: 12px; overflow: hidden; }
@@ -406,7 +406,7 @@
   .dp-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
   .dp-title { flex: 1; text-align: center; font-size:16px; font-weight: 700; }
   .dp-nav, .dp-today { border: none; background: var(--card-hover); color:var(--text,#604C57); font-size:15px; border-radius: 999px; cursor: pointer; padding: 5px 10px; line-height: 1; font-family: inherit; }
-  .dp-nav:hover, .dp-today:hover { background: var(--accent-strong); color: #fff; }
+  .dp-nav:hover, .dp-today:hover { background: var(--accent-soft); color: #fff; }
   .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
   .dp-wd { font-size:14px; color: var(--muted); text-align: center; padding: 4px 0; }
   .dp-day { border: none; background: none; font-size:15px; color: var(--text); border-radius: 8px; padding: 6px 0; cursor: pointer; line-height: 1; font-family: inherit; }
@@ -433,7 +433,7 @@
   #cal-form .ev-chip.active { background: var(--accent-soft); color: var(--accent-strong); }
   #cal-form input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
   #cal-form .ev-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
-  #cal-form .ev-save { border: none; border-radius: 999px; background: var(--accent-strong); color: #fff; font-weight: 600; font-size:16px; padding: 7px 18px; cursor: pointer; }
+  #cal-form .ev-save { border: none; border-radius: 999px; background: #ffd9e6; color: #fff; font-weight: 600; font-size:16px; padding: 7px 18px; cursor: pointer; }
   #cal-form .ev-cancel { border: none; border-radius: 999px; background: #fff; color: var(--muted); font-weight: 600; font-size:16px; padding: 7px 18px; cursor: pointer; transition: background .2s, color .2s; }
   #cal-form .ev-cancel:hover { background: var(--card-hover); color: var(--text); }
 

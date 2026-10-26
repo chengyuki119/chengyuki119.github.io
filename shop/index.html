@@ -130,7 +130,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .product-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; row-gap: 8px; }
   .product-row .buy-btn, .product-row .card-edit-btn, .product-row .no-buy, .product-row .price { white-space: nowrap; flex-shrink: 0; }
   .card-edit-btn { border: none; background: var(--card-hover); color:var(--text,#604C57); font-size:14px; cursor: pointer; padding: 4px 12px; border-radius: 999px; font-family: inherit; transition: background .2s, color .2s; white-space: nowrap; }
-  .card-edit-btn:hover { background: var(--accent-strong); color: #fff; }
+  .card-edit-btn:hover { background: var(--accent-soft); color: #fff; }
   .price { font-size:21px; font-weight: 700; color:#ff6fa5; font-family: "Millo Body", -apple-system, "PingFang SC", sans-serif; }
   .price small { font-size:15px; font-weight: 400; }
   .buy-btn {
@@ -143,7 +143,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     cursor: pointer;
     transition: background .2s;
   }
-  .buy-btn:hover { background:var(--accent-strong); color:#fff; }
+  .buy-btn:hover { background:#ffd9e6; }
 
 
   /* 收藏心心 */
@@ -298,9 +298,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   #view-detail, #view-cart, #view-checkout, #view-orders, #view-account, #view-groups { display: none; }
   @media (max-width: 700px) { #view-detail > div { grid-template-columns: 1fr !important; } }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261025o">
-  <script src="/js/site-common.js?v=20261025o"></script>
-  <script src="/site-menu.js?v=20261025o" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261025p">
+  <script src="/js/site-common.js?v=20261025p"></script>
+  <script src="/site-menu.js?v=20261025p" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -798,8 +798,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261025o"></script>
-<script src="/js/site-footer.js?v=20261025o"></script>
+<script src="/js/shop-app.js?v=20261025p"></script>
+<script src="/js/site-footer.js?v=20261025p"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }
