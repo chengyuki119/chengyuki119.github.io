@@ -26,8 +26,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261025n">
-  <link rel="stylesheet" href="/site-menu.css?v=20261025n">
+<link rel="stylesheet" href="/css/site.css?v=20261025o">
+  <link rel="stylesheet" href="/site-menu.css?v=20261025o">
     <script src="/site-menu.js" defer></script>
 </head>
 <body>
@@ -96,7 +96,7 @@
 </div>
 <div id="share-pop"></div>
 <div class="toast" id="toast"></div>
-<script src="/js/site-common.js?v=20261025n"></script>
+<script src="/js/site-common.js?v=20261025o"></script>
 <script>
   // ===== 色卡：独立子页（列表 + 详情 /color-card/?card=N）=====
   var CURRENT_CARD = -1;
@@ -151,7 +151,7 @@
         (c.shop ? '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + escDb(c.shop) + '</div>' : '') +
         '<div style="font-size:15px;color:var(--muted);margin-top:3px;">' + (LANG === 'en' ? cardCountV(c) + ' cards · ' + c.artists.length + ' artists' : '画师 ' + c.artists.length + ' 位 · 共 ' + cardCountV(c) + ' 张') + '</div>' +
         '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">' +
-        '<span style="flex:1;font-size:17px;color:var(--text,#5d6780);font-weight:600;">' + t('色卡总价', 'Total price') + ' <span style="color:#ff6fa5;">¥' + fmtMoney(cardFinalV(c)) + '</span></span>' +
+        '<span style="flex:1;font-size:17px;color:var(--text,#604C57);font-weight:600;">' + t('色卡总价', 'Total price') + ' <span style="color:#ff6fa5;">¥' + fmtMoney(cardFinalV(c)) + '</span></span>' +
         cardEditBtn(i) +
         '</div>' +
         '</div></div>';
@@ -195,7 +195,7 @@
       '<span style="font-size:21px;font-weight:700;">' + escDb(c.name || t('未命名色卡', 'Unnamed card')) + '</span>' +
       (c.shop ? '<span style="color:var(--muted);font-size:17px;">　|　' + escDb(c.shop) + '</span>' : '') +
       '</div>' +
-      '<div style="text-align:center;margin-bottom:18px;"><span style="font-size:25px;font-weight:700;color:var(--text,#5d6780);">' + t('色卡总价', 'Total price') + ' <span style="color:#ff6fa5;">¥' + fmtMoney(cardFinalV(c)) + '</span><span style="color:var(--muted);font-size:17px;margin-left:14px;">' + (LANG === 'en' ? 'Total ' + cardCountV(c) + ' cards' : '共 ' + cardCountV(c) + ' 张') + '</span></div>' +
+      '<div style="text-align:center;margin-bottom:18px;"><span style="font-size:25px;font-weight:700;color:var(--text,#604C57);">' + t('色卡总价', 'Total price') + ' <span style="color:#ff6fa5;">¥' + fmtMoney(cardFinalV(c)) + '</span><span style="color:var(--muted);font-size:17px;margin-left:14px;">' + (LANG === 'en' ? 'Total ' + cardCountV(c) + ' cards' : '共 ' + cardCountV(c) + ' 张') + '</span></div>' +
       '<div class="card" style="padding:18px 20px;margin-bottom:14px;">' +
       '<h2 style="font-size:19px;">' + t('私调明细', 'Custom Details') + '</h2>' +
       (c.origPrice != null && c.origPrice !== '' ?
@@ -267,7 +267,7 @@
   if (window.SiteMenu) SiteMenu.notify('cards');
   applyLang(LANG);
 </script>
-<script src="/js/site-footer.js?v=20261025n"></script>
+<script src="/js/site-footer.js?v=20261025o"></script>
 <script>
   // 统一 Footer（页面没有 <footer> 时自动在页尾新建）
   function initSiteFooter() { renderSiteFooter(); }

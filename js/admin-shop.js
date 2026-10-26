@@ -15,7 +15,7 @@
   css.textContent = [
     '#tab-shopmgr .sm-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }',
     '#tab-shopmgr .sm-stat { background:#fff; border-radius:var(--radius); padding:10px 14px; box-shadow:0 2px 10px rgba(180,120,150,.12); }',
-    '#tab-shopmgr .sm-stat b { display:block; font-size:23px; color:var(--text,#5d6780); line-height:1.3; }',
+    '#tab-shopmgr .sm-stat b { display:block; font-size:23px; color:var(--text,#604C57); line-height:1.3; }',
     '#tab-shopmgr .sm-stat span { font-size:14px; color:var(--muted); }',
     '#tab-shopmgr .sm-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }',
     '#tab-shopmgr .sm-tab { border:none; background:var(--card); color:var(--muted); font-size:16px; padding:7px 14px; border-radius:999px; cursor:pointer; font-family:inherit; transition:background .15s,color .15s; }',
@@ -27,7 +27,7 @@
     '#tab-shopmgr .sm-o-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; cursor:pointer; }',
     '#tab-shopmgr .sm-o-no { font-weight:700; color:var(--text); }',
     '#tab-shopmgr .sm-o-mail { font-size:15px; color:var(--muted); word-break:break-all; }',
-    '#tab-shopmgr .sm-o-total { color:var(--text,#5d6780); font-weight:600; }',
+    '#tab-shopmgr .sm-o-total { color:var(--text,#604C57); font-weight:600; }',
     '#tab-shopmgr .sm-o-time, #tab-shopmgr .sm-o-cnt { font-size:15px; color:var(--muted); }',
     '#tab-shopmgr .sm-o-arrow { margin-left:auto; color:var(--muted); transition:transform .15s; }',
     '#tab-shopmgr .sm-order.open .sm-o-arrow { transform:rotate(90deg); }',
@@ -42,24 +42,24 @@
     '#tab-shopmgr .sm-act-v { display:block; }',
     '#tab-shopmgr .sm-act-v .sm-vrow { margin-bottom:12px; }',
     '#tab-shopmgr .sm-act-v .sm-vrow:last-child { margin-bottom:0; }',
-    '#tab-shopmgr .sm-vlabel { display:block; font-size:13px; color:var(--muted,#9aa5bd); margin-bottom:5px; }',
+    '#tab-shopmgr .sm-vlabel { display:block; font-size:13px; color:var(--muted,#A88E9B); margin-bottom:5px; }',
     '#tab-shopmgr .sm-act-v input { width:100%; box-sizing:border-box; margin-top:0; }',
-    '#tab-shopmgr .sm-vfee-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#fff; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:12px; padding:12px; }',
+    '#tab-shopmgr .sm-vfee-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#fff; border:1.5px solid var(--accent-soft,#FCE4EC); border-radius:12px; padding:12px; }',
     '#tab-shopmgr .sm-vfee-row input { flex:1; min-width:140px; margin:0; }',
     '#tab-shopmgr .sm-vfee-row .sm-total-prev { font-size:15px; color:var(--muted); flex-shrink:0; }',
-    '#tab-shopmgr .mo-item { background:#fff; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:14px; padding:14px; margin-bottom:12px; }',
-    '#tab-shopmgr .mo-flabel { display:block; font-size:13px; color:var(--muted,#9aa5bd); margin-bottom:5px; }',
-    '#tab-shopmgr .mo-item input { width:100%; box-sizing:border-box; padding:10px 12px; font-size:15px; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:10px; background:#fff; color:var(--text); font-family:inherit; outline:none; }',
-    '#tab-shopmgr .mo-sum-box { background:var(--card,#fdf2f6); border-radius:14px; padding:14px 16px; margin-bottom:12px; }',
+    '#tab-shopmgr .mo-item { background:#fff; border:1.5px solid var(--accent-soft,#FCE4EC); border-radius:14px; padding:14px; margin-bottom:12px; }',
+    '#tab-shopmgr .mo-flabel { display:block; font-size:13px; color:var(--muted,#A88E9B); margin-bottom:5px; }',
+    '#tab-shopmgr .mo-item input { width:100%; box-sizing:border-box; padding:10px 12px; font-size:15px; border:1.5px solid var(--accent-soft,#FCE4EC); border-radius:10px; background:#fff; color:var(--text); font-family:inherit; outline:none; }',
+    '#tab-shopmgr .mo-sum-box { background:var(--card,#FFF0F5); border-radius:14px; padding:14px 16px; margin-bottom:12px; }',
     '#tab-shopmgr .mo-sum-row { display:flex; justify-content:space-between; font-size:16px; color:var(--text); padding:4px 0; }',
     '#tab-shopmgr .mo-sum-row .mo-sl { color:var(--muted); }',
-    '#tab-shopmgr .mo-sum-total { display:flex; justify-content:space-between; align-items:center; border-top:1.5px dashed var(--accent-soft,#ffc8d6); margin-top:8px; padding-top:10px; }',
+    '#tab-shopmgr .mo-sum-total { display:flex; justify-content:space-between; align-items:center; border-top:1.5px dashed var(--accent-soft,#FCE4EC); margin-top:8px; padding-top:10px; }',
     '#tab-shopmgr .mo-sum-total b { font-size:22px; font-weight:800; color:#ff6fa5; }',
     '#tab-shopmgr .sm-act .lbl { font-size:15px; color:var(--muted); flex-shrink:0; }',
     '#tab-shopmgr .sm-act input, #tab-shopmgr .sm-act textarea { flex:1; min-width:120px; width:auto; }',
     '#tab-shopmgr .sm-act .sm-reject-reason { min-width:190px; }',
     '#tab-shopmgr .sm-act textarea { min-height:44px; }',
-    '#tab-shopmgr .sm-total-prev { color:var(--text,#5d6780); font-size:15px; white-space:nowrap; }',
+    '#tab-shopmgr .sm-total-prev { color:var(--text,#604C57); font-size:15px; white-space:nowrap; }',
     '#tab-shopmgr .sm-g-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }',
     '#tab-shopmgr .sm-g-meta { font-size:15px; color:var(--muted); margin-top:4px; }',
     '#tab-shopmgr .sm-mb-row { font-size:16px; padding:5px 0; border-bottom:1px dashed var(--card-hover); }',
@@ -71,9 +71,9 @@
     '#tab-shopmgr .sm-b-mail:last-child { border-bottom:none; }',
     '#tab-shopmgr .sm-var-row, #tab-shop .sm-var-row { background:#fff; border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 2px 10px rgba(180,120,150,.10); }',
     '#tab-shopmgr .sm-var-grid, #tab-shop .sm-var-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }',
-    '#tab-shopmgr .sm-var-grid label, #tab-shop .sm-var-grid label { display:block; font-size:13px; color:var(--muted,#9aa5bd); margin-bottom:5px; line-height:1.4; }',
-    '#tab-shopmgr .sm-var-grid input, #tab-shop .sm-var-grid input { width:100%; box-sizing:border-box; padding:10px 12px; font-size:15px; border:1.5px solid var(--accent-soft,#ffc8d6); border-radius:10px; background:#fff; outline:none; color:var(--text); font-family:inherit; }',
-    '#tab-shopmgr .sm-var-grid input:focus, #tab-shop .sm-var-grid input:focus { border-color:var(--card-hover,#ffe4ee); }',
+    '#tab-shopmgr .sm-var-grid label, #tab-shop .sm-var-grid label { display:block; font-size:13px; color:var(--muted,#A88E9B); margin-bottom:5px; line-height:1.4; }',
+    '#tab-shopmgr .sm-var-grid input, #tab-shop .sm-var-grid input { width:100%; box-sizing:border-box; padding:10px 12px; font-size:15px; border:1.5px solid var(--accent-soft,#FCE4EC); border-radius:10px; background:#fff; outline:none; color:var(--text); font-family:inherit; }',
+    '#tab-shopmgr .sm-var-grid input:focus, #tab-shop .sm-var-grid input:focus { border-color:var(--card-hover,#FCE4EC); }',
     '#tab-shopmgr .sm-var-imgs, #tab-shop .sm-var-imgs { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }',
     '#tab-shopmgr .sm-var-imgs img, #tab-shop .sm-var-imgs img { width:52px; height:52px; border-radius:10px; object-fit:cover; background:var(--card); }',
     '#tab-shopmgr .sm-var-imgdel, #tab-shop .sm-var-imgdel { position:absolute; top:-6px; right:-6px; width:18px; height:18px; border:none; border-radius:50%; background:var(--accent-soft); color:#fff; font-size:12px; line-height:1; cursor:pointer; }',
@@ -289,10 +289,10 @@
   }
   function itemEditRow(it) {
     it = it || {};
-    return '<div class="sm-ie-row" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;background:var(--card,#fff2f7);border-radius:10px;padding:6px 8px;margin-bottom:6px;">' +
-      '<select class="sm-ie-prod" style="flex:1;min-width:170px;max-width:280px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:10px;padding:6px 8px;font-family:inherit;font-size:14px;background:#fff;color:var(--text,#5d6780);">' + ieProdOpts(it.name) + '</select>' +
-      '<label style="font-size:13px;color:var(--muted);">单价 $<input class="sm-ie-price" type="number" step="0.01" min="0" value="' + escAttr(it.price != null ? it.price : '') + '" style="width:74px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
-      '<label style="font-size:13px;color:var(--muted);">×<input class="sm-ie-qty" type="number" min="1" step="1" value="' + (it.qty || 1) + '" style="width:52px;border:1.5px solid var(--accent-soft,#ffc8d6);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
+    return '<div class="sm-ie-row" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;background:var(--card,#FFF0F5);border-radius:10px;padding:6px 8px;margin-bottom:6px;">' +
+      '<select class="sm-ie-prod" style="flex:1;min-width:170px;max-width:280px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:10px;padding:6px 8px;font-family:inherit;font-size:14px;background:#fff;color:var(--text,#604C57);">' + ieProdOpts(it.name) + '</select>' +
+      '<label style="font-size:13px;color:var(--muted);">单价 $<input class="sm-ie-price" type="number" step="0.01" min="0" value="' + escAttr(it.price != null ? it.price : '') + '" style="width:74px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
+      '<label style="font-size:13px;color:var(--muted);">×<input class="sm-ie-qty" type="number" min="1" step="1" value="' + (it.qty || 1) + '" style="width:52px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
       '<span class="sm-ie-line" style="font-size:14px;min-width:64px;text-align:right;"></span>' +
       '<button type="button" class="btn-del sm-ie-del">删除</button>' +
     '</div>';
@@ -421,10 +421,10 @@
     }
     return '<div class="card sm-order' + (open ? ' open' : '') + '" data-id="' + escAttr(o.id) + '">' +
       '<div class="sm-o-head">' +
-      '<span class="ck-box sm-osel' + (SM.osel[o.id] ? ' on' : '') + '" data-id="' + escAttr(o.id) + '" style="width:18px;height:18px;border-radius:6px;border:2px solid var(--muted,#9aa5bd);flex-shrink:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;color:var(--text,#5d6780);background:' + (SM.osel[o.id] ? '#ffd9e6' : 'transparent') + '">' + (SM.osel[o.id] ? '✓' : '') + '</span>' +
+      '<span class="ck-box sm-osel' + (SM.osel[o.id] ? ' on' : '') + '" data-id="' + escAttr(o.id) + '" style="width:18px;height:18px;border-radius:6px;border:2px solid var(--muted,#A88E9B);flex-shrink:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;color:var(--text,#604C57);background:' + (SM.osel[o.id] ? '#ffd9e6' : 'transparent') + '">' + (SM.osel[o.id] ? '✓' : '') + '</span>' +
       '<span class="sm-o-no">' + esc(o.order_no || '') + '</span>' +
       '<span class="sold-badge" style="background:' + st[1] + ';">' + esc(dead ? (st[0] + ' · 无需发货') : st[0]) + '</span>' +
-      '<span class="sold-badge" style="background:#fff;border:1.5px solid var(--accent-soft,#ffc8d6);color:var(--muted,#9aa5bd);">付款：' + esc(payL) + '</span>' +
+      '<span class="sold-badge" style="background:#fff;border:1.5px solid var(--accent-soft,#FCE4EC);color:var(--muted,#A88E9B);">付款：' + esc(payL) + '</span>' +
       '<span class="sm-o-mail">' + esc(o.email || '') + '</span>' +
       ((o.note || o.coupon_code) ? '<span class="sm-o-cnt" title="' + escAttr((o.note ? '备注：' + o.note : '') + (o.coupon_code ? (o.note ? '；' : '') + '优惠码：' + o.coupon_code : '')) + '">' + (o.note ? '📝' : '') + (o.coupon_code ? '🎟' : '') + '</span>' : '') +
       '<span class="sm-o-cnt">' + arr(o.items).length + ' 件</span>' +
@@ -439,9 +439,9 @@
     if (!list) return;
     var rows = filteredOrders();
     if (SM._oFailed) { // 网络断了就明说，不再无限「加载中」（她 2026-10-25 要求查根因，不能只靠重试）
-      list.innerHTML = '<div class="sm-o-retrybox" style="background:var(--card,#fdf2f6);border-radius:14px;padding:20px;text-align:center;">' +
+      list.innerHTML = '<div class="sm-o-retrybox" style="background:var(--card,#FFF0F5);border-radius:14px;padding:20px;text-align:center;">' +
         '<p style="margin:0 0 10px;color:var(--muted);font-size:16px;">订单没加载出来（网络问题，不是订单丢了）</p>' +
-        '<button type="button" class="btn-mini sm-o-retry" style="background:#ffc8d6;color:#fff;padding:9px 22px;font-size:15px;">点这里重新加载</button></div>';
+        '<button type="button" class="btn-mini sm-o-retry" style="background:#A04A68;color:#fff;padding:9px 22px;font-size:15px;">点这里重新加载</button></div>';
       return;
     }
     list.innerHTML = rows.length ? rows.map(orderHtml).join('') : '<p class="sm-empty">没有符合条件的订单</p>';
@@ -455,7 +455,7 @@
   // ── 包裹管理（多包裹物流，shop_packages 表）──
   function pkgRowHtml(p) {
     p = p || {};
-    return '<div class="sm-pkg-row" data-pkid="' + escAttr(p.id || '') + '" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;width:100%;background:var(--card,#fff2f7);border-radius:10px;padding:6px 8px;">' +
+    return '<div class="sm-pkg-row" data-pkid="' + escAttr(p.id || '') + '" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;width:100%;background:var(--card,#FFF0F5);border-radius:10px;padding:6px 8px;">' +
       '<button type="button" class="sel-btn sm-carrier" data-v="' + escAttr(p.carrier || 'UPS') + '"><span class="pick-btn-label">' + esc(p.carrier || 'UPS') + '</span></button>' +
       '<input class="sm-p-tracking" placeholder="单号" value="' + escAttr(p.tracking || '') + '" style="width:130px;">' +
       '<input class="sm-p-url" placeholder="查件链接" value="' + escAttr(p.track_url || '') + '" style="width:150px;">' +
@@ -678,7 +678,7 @@
       block.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
         '<b style="font-size:16px;color:var(--text);">商品规格</b>' +
         '<span class="hint" style="flex:1;min-width:180px;">一个规格＝买家看到的一个选项（比如一个颜色款）；全部留空＝单规格</span>' +
-        '<button type="button" class="btn-mini sm-var-add" style="background:#ffd9e6;color:#fff;padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
+        '<button type="button" class="btn-mini sm-var-add" style="background:#A04A68;color:#fff;padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
         '<div class="sm-var-rows"></div>' +
         '<p class="hint" style="margin:6px 0 0;">每个规格可以传自己的图，第一张就是这个选项的封面；详情页点选项会换图、换价、换库存。</p>';
       g2.appendChild(block);
@@ -719,7 +719,7 @@
           '<button type="button" class="btn-del sm-var-del" data-i="' + i + '" style="padding:6px 14px;font-size:14px;margin-left:auto;">删除此规格</button>' +
         '</div>' +
         '</div>';
-    }).join('') : '<p class="hint" style="background:var(--card,#fdf2f6);border-radius:12px;padding:14px;text-align:center;">还没有规格，点上面「＋ 添加规格」加第一个选项</p>';
+    }).join('') : '<p class="hint" style="background:var(--card,#FFF0F5);border-radius:12px;padding:14px;text-align:center;">还没有规格，点上面「＋ 添加规格」加第一个选项</p>';
   }
   function saveProductExtra(card) {
     var vlist = arr(card.__variants);
@@ -775,7 +775,7 @@
     block.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
       '<b style="font-size:16px;color:var(--text);">商品规格（可选）</b>' +
       '<span class="hint" style="flex:1;min-width:180px;">一个规格＝买家看到的一个选项；不留空就用上面的商品价/库存</span>' +
-      '<button type="button" class="btn-mini sm-var-add" style="background:#ffd9e6;color:#fff;padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
+      '<button type="button" class="btn-mini sm-var-add" style="background:#A04A68;color:#fff;padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
       '<div class="sm-var-rows"></div>' +
       '<p class="hint" style="margin:6px 0 0;">每个规格可以传自己的图，第一张就是这个选项的封面；和编辑商品里的是同一套，上架时一起保存。</p>';
     actions.parentNode.insertBefore(block, actions); // 她 2026-10-25 表单加了 wrapper：actions 不再是 .card 直接子节点，改插到同父级
@@ -1389,7 +1389,7 @@
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">' +
         '<div><span class="mo-flabel">单价 $（留空用商品价）</span><input class="mo-price" data-i="' + i + '" type="number" min="0" step="0.01" value="' + escAttr(it.price == null ? '' : it.price) + '" placeholder="0.00"></div>' +
         '<div><span class="mo-flabel">数量</span><input class="mo-qty" data-i="' + i + '" type="number" min="1" step="1" value="' + escAttr(it.qty == null ? 1 : it.qty) + '"></div>' +
-        '<div><span class="mo-flabel">小计</span><div class="mo-item-sub" data-i="' + i + '" style="padding:10px 12px;font-size:16px;font-weight:700;color:#ff6fa5;background:var(--card,#fdf2f6);border-radius:10px;">$' + fmtMoney(sub) + '</div></div>' +
+        '<div><span class="mo-flabel">小计</span><div class="mo-item-sub" data-i="' + i + '" style="padding:10px 12px;font-size:16px;font-weight:700;color:#ff6fa5;background:var(--card,#FFF0F5);border-radius:10px;">$' + fmtMoney(sub) + '</div></div>' +
       '</div>' +
       '</div>';
   }
@@ -1471,7 +1471,7 @@
       '</div>' +
       '<div style="margin:14px 0 6px;"><b style="font-size:16px;">订单商品</b>' +
       '<div class="mo-items" style="margin-top:10px;"></div>' +
-      '<button type="button" class="btn-mini mo-additem" style="background:#ffc8d6;color:#fff;padding:9px 22px;font-size:15px;">＋ 添加商品</button>' +
+      '<button type="button" class="btn-mini mo-additem" style="background:#A04A68;color:#fff;padding:9px 22px;font-size:15px;">＋ 添加商品</button>' +
       '<p class="hint" style="margin:6px 0 0;">从商品列表选，或选「自定义商品」录临时商品；单价留空自动用商品价</p></div>' +
       '<div style="margin:14px 0 8px;"><b style="font-size:16px;">金额</b></div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">' +
@@ -1480,7 +1480,7 @@
         '<div><span class="mo-flabel mo-flabel-inpop">服务费 $</span><input class="mo-fee" type="number" min="0" step="0.01" value="2"></div>' +
       '</div>' +
       '<div class="mo-sum" style="margin-bottom:12px;"></div>' +
-      '<button type="button" class="btn-mini mo-save" style="background:#ffd9e6;color:#fff;padding:10px 26px;font-size:16px;">保存订单</button>' +
+      '<button type="button" class="btn-mini mo-save" style="background:#A04A68;color:#fff;padding:10px 26px;font-size:16px;">保存订单</button>' +
       '<span class="hint" style="margin-left:10px;">默认「待付款」，不会自动标成已付款；来源自动记为「后台手动创建」</span>' +
       '</div>';
     root.appendChild(mask);
@@ -1745,7 +1745,7 @@
         '<p class="hint" style="margin:0 0 8px;">也会套用当前订单搜索关键字；跨页导出会包含所有符合条件的记录</p>' +
       '</div>' +
       '<p class="hint">CSV 为 UTF-8（带 BOM），Excel 可直接打开；每个商品一行，订单信息重复以便筛选</p>' +
-      '<button type="button" class="btn-mini ex-go" style="background:#ffd9e6;color:#fff;padding:10px 26px;font-size:16px;">导出</button>' +
+      '<button type="button" class="btn-mini ex-go" style="background:#A04A68;color:#fff;padding:10px 26px;font-size:16px;">导出</button>' +
       '</div>';
     root.appendChild(mask);
     var mode = 'all';
@@ -1795,7 +1795,7 @@
       '<textarea class="po-zh" placeholder="简体中文内容（留空 = 使用内置默认；支持 <p> <ul> <li> <a> <strong> <br>）" style="width:100%;min-height:140px;box-sizing:border-box;"></textarea>' +
       '<textarea class="po-en" placeholder="English content (leave empty = built-in default)" style="width:100%;min-height:140px;box-sizing:border-box;margin-top:8px;"></textarea>' +
       '<div style="display:flex;gap:8px;margin-top:8px;align-items:center;">' +
-        '<button type="button" class="btn-mini po-save" style="background:#ffd9e6;color:#fff;">保存并发布</button>' +
+        '<button type="button" class="btn-mini po-save" style="background:#A04A68;color:#fff;">保存并发布</button>' +
         '<button type="button" class="btn-mini po-reset">恢复内置默认</button>' +
         '<span class="hint">保存后前台立即生效；「联系我们」页面就是留言板，不需要在这里编辑</span>' +
       '</div></div>';

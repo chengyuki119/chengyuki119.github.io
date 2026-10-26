@@ -18,13 +18,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   @font-face { font-family: "Millo Body"; src: url("/fonts/Millo-RiceSoyMilk80.woff2") format("woff2"), url("/fonts/Millo-RiceSoyMilk80.ttf") format("truetype"); font-display: swap; }
 
   :root {
-    --bg: #fffcfd;
-    --card: #fff2f7;
-    --card-hover: #ffe7f0;
-    --text: #5d6780;
-    --muted: #9aa5bd;
+    --bg: #FFF8FA;
+    --card: #FFF0F5;
+    --card-hover: #FCE4EC;
+    --text: #604C57;
+    --muted: #A88E9B;
     --accent: #ffd9e6;
-    --accent-soft: #ffc8d6;
+    --accent-soft: #FCE4EC;
+    --accent-strong: #A04A68;
     --radius: 16px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -83,10 +84,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     color: var(--text); outline: none;
     transition: border-color .15s;
   }
-  .gate input:focus { border-color: #f79fbd; }
+  .gate input:focus { border-color: #A04A68; }
   .gate button {
     width: 100%;
-    border: none; background: #ffd9e6; color: #fff;
+    border: none; background: var(--accent-strong, #A04A68); color: #fff;
     font-size:17px; padding: 11px 24px; border-radius: 12px;
     cursor: pointer; transition: opacity .15s;
   }
@@ -108,7 +109,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     color: var(--muted);
     transition: background .2s, color .2s;
   }
-  .tab-btn.active { background: var(--accent-soft); color: #fff; }
+  .tab-btn.active { background: var(--accent-soft); color: var(--accent-strong); }
   /* 后台页面切换器：所有后台页面共用一个下拉 */
   .pp-wrap { position: relative; display: inline-block; margin-bottom: 18px; }
   .pp-btn {
@@ -136,7 +137,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     border-radius: 8px; cursor: pointer;
   }
   .pp-menu .tab-btn:hover { background: var(--card-hover); }
-  .pp-menu .tab-btn.active { background: var(--accent-soft); color: #fff; }
+  .pp-menu .tab-btn.active { background: var(--accent-soft); color: var(--accent-strong); }
   @keyframes ppIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
   /* ── 后台导航五组分组标签 ── */
   .pp-menu .pp-group {
@@ -180,14 +181,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   textarea {
     width: 100%; min-height: 70px;
-    border: 1px solid #f6d9e6; border-radius: 12px;
+    border: 1px solid #FFD9E6; border-radius: 12px;
     background: var(--card); padding: 10px 12px;
     font-family: inherit; font-size:17px;
     color: var(--text); line-height: 1.6;
     resize: none; outline: none;
   }
   input, select {
-    border: 1px solid #f6d9e6; border-radius: 12px;
+    border: 1px solid #FFD9E6; border-radius: 12px;
     background: var(--card); padding: 10px 12px;
     font-family: inherit; font-size:17px;
     color: var(--text); outline: none; width: 100%;
@@ -198,13 +199,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     border-radius: 999px; cursor: pointer;
     white-space: nowrap; flex-shrink: 0; /* 防窄容器挤压成一字一行（与规格区同类问题） */
   }
-  .btn-save { border: none; background: var(--accent-soft); color: #fff; font-family: inherit; cursor: pointer; }
+  .btn-save { border: none; background: var(--accent-strong); color: #fff; font-family: inherit; cursor: pointer; }
   .btn-cancel { background: var(--card-hover); color: var(--text); }
   /* 数字输入框不要浏览器原生上下小箭头（和自定义控件打架） */
   input[type="number"] { appearance: textfield; -moz-appearance: textfield; }
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .btn-del { border: none; background: #f6d9e6; color: var(--text); font-family: inherit; cursor: pointer; }
+  .btn-del { border: none; background: #FFD9E6; color: var(--text); font-family: inherit; cursor: pointer; }
   /* 按钮组件统一：不管在不在 .actions 里，都是同一套圆角小按钮（不再有浏览器默认样式）*/
   .btn-mini, .btn-del, .btn-save, .btn-cancel {
     border: none; font-family: inherit; font-size:16px;
@@ -216,16 +217,16 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .btn-save:hover { opacity: .85; }
   .dy-chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .dy-chip { display: inline-flex; align-items: center; border: none; background: var(--card-hover); color: var(--muted); border-radius: 999px; padding: 5px 12px; font-size:15px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; flex: none; }
-  #dy-cat, .de-cat { border: 1px solid #f0cfdf; border-radius: 8px; padding: 6px 10px; font-size:15px; font-family: inherit; color: var(--text); background: #fff; outline: none; }
-  #dy-cat:focus, .de-cat:focus { border-color:var(--text,#5d6780); }
+  #dy-cat, .de-cat { border: 1px solid #FFD9E6; border-radius: 8px; padding: 6px 10px; font-size:15px; font-family: inherit; color: var(--text); background: #fff; outline: none; }
+  #dy-cat:focus, .de-cat:focus { border-color:var(--text,#604C57); }
   #dy-cat-list, .dy-cat-list { display: none; position: absolute; z-index: 1399; background: #fff; border-radius: 10px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 4px; min-width: 170px; max-height: 168px; overflow-y: auto; }
   .day-item.editing .dy-cat-list { position: relative; margin-top: 4px; }
   #days-form-card #dy-cat-list { top: calc(100% + 4px); } /* 联想浮层锚在表单行正下方（横向跟随输入框），不压住重复选项 */
   #days-form-card .cat-opt, .day-item .cat-opt { display: block; width: 100%; box-sizing: border-box; border: none; background: none; text-align: left; padding: 8px 12px; font-size:16px; cursor: pointer; border-radius: 8px; color: var(--text); font-family: inherit; line-height: 1.4; }
   #days-form-card .cat-opt:hover, .day-item .cat-opt:hover { background: var(--card-hover); }
-  #days-form-card .cat-opt.cat-new, .day-item .cat-opt.cat-new { color:var(--text,#5d6780); font-weight: 600; }
+  #days-form-card .cat-opt.cat-new, .day-item .cat-opt.cat-new { color:var(--text,#604C57); font-weight: 600; }
   .dy-chip:hover { color: var(--text); }
-  .dy-chip.active { background: var(--accent-soft); color: #fff; }
+  .dy-chip.active { background: var(--accent-soft); color: var(--accent-strong); }
   /* 竖排文字防护：所有表单勾选/徽章标签禁止逐字换行 */
   .sc-artist label, .bjd-item label, .sold-badge { white-space: nowrap; }
   /* 统一下拉菜单（替代浏览器原生 select 面板） */
@@ -235,7 +236,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .sel-menu { position: fixed; z-index: 1000; background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 6px; min-width: 160px; max-height: 260px; overflow-y: auto; display: none; box-sizing: border-box; }
   .sel-opt { display: block; width: 100%; border: none; background: none; text-align: left; padding: 9px 12px; font-size:16px; cursor: pointer; border-radius: 8px; color: var(--text); font-family: inherit; line-height: 1.4; }
   .sel-opt:hover { background: var(--card-hover); }
-  .sel-opt.active { background: var(--accent-soft); color: #fff; }
+  .sel-opt.active { background: var(--accent-soft); color: var(--accent-strong); }
   /* 后台筛选/排序：自定义下拉按钮（不用原生 select），与 sel-menu 同一套视觉 */
   .pick-btn-label { font-size:16px; color: var(--muted); }
   /* 自定义联想下拉（画师 / 标签）：与 sel-menu / sc-pop 同一套视觉，彻底替代浏览器 datalist */
@@ -251,7 +252,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .hm-file-name { font-size:15px; color: var(--muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* 主页区域 / 主页文案的简化管理：显隐 chip + 卡片头 ⋮（不用绝对定位的 .kebab） */
   .vis-chip { display: inline-flex; align-items: center; border: none; background: var(--card-hover); color: var(--muted); border-radius: 999px; padding: 4px 10px; font-size:15px; cursor: pointer; font-family: inherit; flex-shrink: 0; }
-  .vis-chip.vis-on { background: var(--accent-soft); color: #fff; }
+  .vis-chip.vis-on { background: var(--accent-soft); color: var(--accent-strong); }
   .area-kebab, .hm-kebab { width: 32px; height: 32px; flex-shrink: 0; border: none; border-radius: 10px; background: var(--card); color: var(--muted); font-size:19px; cursor: pointer; font-family: inherit; line-height: 1; }
   .area-kebab:hover, .hm-kebab:hover { background: var(--card-hover); color: var(--text); }
   .empty { text-align: center; color: var(--muted); font-size:17px; padding: 30px 0; }
@@ -274,7 +275,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .logout {
     background: var(--card);
     border: 1px solid var(--card-hover);
-    color: #8d99b5;
+    color: #A88E9B;
     font-size:16px;
     padding: 6px 14px;
     border-radius: 999px;
@@ -321,22 +322,22 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .dp-wheel .wheel::-webkit-scrollbar { display: none; }
   .dp-wheel .wheel-list { padding: 72px 0; }
   .dp-wheel .wheel-item { height: 36px; line-height: 36px; text-align: center; scroll-snap-align: center; font-size:16px; color: var(--text); cursor: pointer; font-family: inherit; }
-  .dp-wheel .wheel-item.cur { color:var(--text,#5d6780); font-weight: 700; }
+  .dp-wheel .wheel-item.cur { color:var(--text,#604C57); font-weight: 700; }
   .dp-wheel .wheel-band { position: absolute; left: 8px; right: 8px; top: 50%; height: 36px; transform: translateY(-50%); background: var(--accent-soft); border-radius: 10px; opacity: .45; pointer-events: none; }
   #date-pop .dp-ym { display: none; }
   #date-pop .dp-mon { text-align: center; }
   .dp-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
   .dp-title { flex: 1; text-align: center; font-size:16px; font-weight: 700; }
-  .dp-nav, .dp-today { border: none; background: var(--card-hover); color:var(--text,#5d6780); font-size:15px; border-radius: 999px; cursor: pointer; padding: 5px 10px; line-height: 1; }
-  .dp-nav:hover, .dp-today:hover { background: var(--accent-soft); color: #fff; }
+  .dp-nav, .dp-today { border: none; background: var(--card-hover); color:var(--text,#604C57); font-size:15px; border-radius: 999px; cursor: pointer; padding: 5px 10px; line-height: 1; }
+  .dp-nav:hover, .dp-today:hover { background: var(--accent-strong); color: #fff; }
   .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
   .dp-wd { font-size:14px; color: var(--muted); text-align: center; padding: 4px 0; }
   .dp-day { border: none; background: none; font-size:15px; color: var(--text); border-radius: 8px; padding: 6px 0; cursor: pointer; line-height: 1; font-family: inherit; }
   .dp-day:hover { background: var(--card-hover); }
-  .dp-day.today { color:var(--text,#5d6780); font-weight: 700; }
-  .dp-day.sel, .dp-day.sel:hover { background: var(--accent-soft,#ffc8d6); color: #fff; border-color: var(--accent-soft,#ffc8d6); }
-  #date-pop .dp-input { width: 100%; box-sizing: border-box; margin-bottom: 6px; border: 1px solid #f0cfdf; background: #fff; border-radius: 8px; padding: 7px 10px; font-size:16px; font-family: inherit; color: var(--text); outline: none; }
-  #date-pop .dp-input:focus { border-color:var(--text,#5d6780); }
+  .dp-day.today { color:var(--text,#604C57); font-weight: 700; }
+  .dp-day.sel, .dp-day.sel:hover { background: var(--accent-soft,#FCE4EC); color: var(--accent-strong,#A04A68); border-color: var(--accent-soft,#FCE4EC); }
+  #date-pop .dp-input { width: 100%; box-sizing: border-box; margin-bottom: 6px; border: 1px solid #FFD9E6; background: #fff; border-radius: 8px; padding: 7px 10px; font-size:16px; font-family: inherit; color: var(--text); outline: none; }
+  #date-pop .dp-input:focus { border-color:var(--text,#604C57); }
   .dp-empty { visibility: hidden; }
   @media (max-width: 520px) {
     .sc-row { grid-template-columns: 56px 48px 10px 38px 10px 44px auto; gap: 4px; }
@@ -348,10 +349,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     .sc-row .kebab { width: 22px; height: 30px; }
   }
   #sc-pop .sc-opt { display: flex; align-items: center; gap: 8px; width: 100%; box-sizing: border-box; border: none; background: none; padding: 9px 12px; font-size:16px; line-height: 1; cursor: pointer; border-radius: 8px; text-align: left; color: var(--text); }
-  #sc-pop .sc-opt:hover { background: #f6d9e6; }
+  #sc-pop .sc-opt:hover { background: #FFD9E6; }
   #sc-pop .sc-opt:disabled { color: var(--muted); cursor: default; background: none; }
   #sc-pop .sc-opt-del { background: none; color: var(--text); }
-  #sc-pop .sc-opt-del:hover { background: #f6d9e6; }
+  #sc-pop .sc-opt-del:hover { background: #FFD9E6; }
   /* 色卡 / BJD 列表：同一个卡片尺寸规范（同一网格、同一间距、同一卡片结构）*/
   #sc-artist-list, #bjd-list, #works-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   @media (max-width: 900px) { #sc-artist-list, #bjd-list, #works-list { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
@@ -365,13 +366,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .rv-text { font-size:15px; line-height: 1.55; color: var(--text); margin-top: 4px; white-space: pre-wrap; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
   /* 色卡列表卡价格明细：与详情/前台同一套计算（labelAgg/artistSub/cardFinal），只补展示 */
   .sc-bd-line { margin-top: 5px; font-size:15px; color: var(--text); }
-  .sc-bd-line b { color:var(--text,#5d6780); }
+  .sc-bd-line b { color:var(--text,#604C57); }
   .sc-bd { margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--card-hover); font-size:14px; line-height: 1.55; color: var(--muted); }
   .sc-bd-a { padding: 2px 0; }
   .sc-bd-a b { display: block; color: var(--text); font-size:14px; }
   .sc-bd-a span { display: inline-block; margin-right: 6px; white-space: nowrap; }
-  .sc-bd-a i { display: block; font-style: normal; color:var(--text,#5d6780); }
-  .sc-bd-final { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--card-hover); color:var(--text,#5d6780); font-weight: 600; }
+  .sc-bd-a i { display: block; font-style: normal; color:var(--text,#604C57); }
+  .sc-bd-final { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--card-hover); color:var(--text,#604C57); font-weight: 600; }
   .sc-bd-final b { font-size:16px; }
   .sc-artist > .kebab { background: #fff; }
   .sc-card-img { width: 100%; aspect-ratio: 1/1; overflow: hidden; background: var(--card); }
@@ -379,10 +380,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .sc-card-img .sc-img-empty { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size:15px; }
   .sc-info { padding: 12px 14px 14px; min-width: 0; }
   .sc-info .sc-name { font-size:18px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
-  .sc-info .sc-name:hover { color:var(--text,#5d6780); }
+  .sc-info .sc-name:hover { color:var(--text,#604C57); }
   .sc-info .sc-shop { font-size:15px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 19px; }
   .sc-info .sc-meta { font-size:15px; color: var(--muted); margin-top: 3px; }
-  .sc-info .sc-price { font-size:17px; color:var(--text,#5d6780); font-weight: 600; margin-top: 4px; }
+  .sc-info .sc-price { font-size:17px; color:var(--text,#604C57); font-weight: 600; margin-top: 4px; }
   /* 编辑态内所有 ⋮（卡片级/画师级/行级）都在同一条垂直线上 */
   .sc-artist.editing > .sc-kebab { right: 16px; }
   .sc-artist.editing .sc-artist-block > .kebab { right: 0; }
@@ -392,8 +393,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; min-width: 0; }
   .edit-grid .e-desc, .edit-grid .e-file { grid-column: 1 / -1; }
   /* 商品货币选择：自定义胶囊（¥/美元），不用原生 select */
-  .cur-chip { border: 1.5px solid var(--accent-soft,#ffc8d6); background: #fff; color: #9aa5bd; font-size: 15px; padding: 5px 14px; border-radius: 999px; cursor: pointer; font-family: inherit; }
-  .cur-chip.on { background: var(--accent-soft,#ffc8d6); color: #fff; border-color: var(--accent-soft,#ffc8d6); }
+  .cur-chip { border: 1.5px solid var(--accent-soft,#FCE4EC); background: #fff; color: #A88E9B; font-size: 15px; padding: 5px 14px; border-radius: 999px; cursor: pointer; font-family: inherit; }
+  .cur-chip.on { background: var(--accent-soft,#FCE4EC); color: var(--accent-strong,#A04A68); border-color: var(--accent-soft,#FCE4EC); }
   /* 货币说明独占一行（她说手机端挤）：控件一行、说明下一行，两端布局一致 */
   .cur-row { display: block; }
   .cur-row .cur-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -415,17 +416,17 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .photo-item .actions { margin-top: 8px; }
   /* 每行显示选择器（分区设置）：4 个可视化布局选项，不用原生 select */
   .pr-picker { display: flex; gap: 6px; flex-wrap: wrap; }
-  .pr-opt { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 1px solid #f6d9e6; background: var(--card); border-radius: 10px; padding: 7px 8px 5px; cursor: pointer; font-size:14px; color: var(--muted); font-family: inherit; transition: background .2s, border-color .2s, color .2s; }
+  .pr-opt { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 1px solid #FFD9E6; background: var(--card); border-radius: 10px; padding: 7px 8px 5px; cursor: pointer; font-size:14px; color: var(--muted); font-family: inherit; transition: background .2s, border-color .2s, color .2s; }
   .pr-opt:hover { background: var(--card-hover); }
-  .pr-opt.active { background: var(--accent-soft); border-color:var(--accent-soft); color: #fff; }
+  .pr-opt.active { background: var(--accent-soft); border-color:var(--accent-soft); color: var(--accent-strong); }
   .pr-demo { display: grid; gap: 2px; width: 38px; height: 22px; }
   .pr-demo i { background: var(--accent-soft); border-radius: 2px; display: block; }
   .pr-opt.active .pr-demo i { background: #fff; }
   /* 主页展示开关：自定义粉色开关，不用原生 checkbox */
-  .tgl { position: relative; width: 38px; height: 22px; border-radius: 11px; border: 1px solid #f6d9e6; background: var(--card); cursor: pointer; padding: 0; flex-shrink: 0; transition: background .2s, border-color .2s; }
-  .tgl .tgl-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 1px solid #f0cfdf; box-sizing: border-box; transition: left .2s, background .2s; }
+  .tgl { position: relative; width: 38px; height: 22px; border-radius: 11px; border: 1px solid #FFD9E6; background: var(--card); cursor: pointer; padding: 0; flex-shrink: 0; transition: background .2s, border-color .2s; }
+  .tgl .tgl-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 1px solid #FFD9E6; box-sizing: border-box; transition: left .2s, background .2s; }
   .tgl.on { background: var(--accent-soft); border-color:var(--accent-soft); }
-  .tgl.on .tgl-knob { left: 18px; background:#ffd9e6; border-color:var(--text,#5d6780); }
+  .tgl.on .tgl-knob { left: 18px; background:#ffd9e6; border-color:var(--text,#604C57); }
   .tgl-label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size:16px; flex-shrink: 0; color: var(--text); }
   /* 上传新照片：字段行内小标签 + 统一间距 */
   .fld-inline { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -442,15 +443,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .shop-item .info p { font-size:15px; color: var(--muted); }
   .sold-badge { display: inline-block; font-size:14px; color:#fff; border-radius: 999px; padding: 1px 8px; margin-left: 6px; }
   .st-on { background: #9ecfae; }
-  .st-display { background: #b3ace0; }
+  .st-display { background: #A88E9B; }
   .st-out { background: #c4bcb6; }
   .st-off { background: #e6a9c3; }
   /* 商品列表标签筛选 chips */
-  .pf-chip { border: 1px solid #f6d9e6; }
-  .pf-chip.on { background: var(--accent-soft); border-color:var(--accent-soft); color: #fff; }
+  .pf-chip { border: 1px solid #FFD9E6; }
+  .pf-chip.on { background: var(--accent-soft); border-color:var(--accent-soft); color: var(--accent-strong); }
   .private-line { font-size:15px; color: var(--muted); margin-top: 4px; }
 
-    .btn-save-tb { margin-left: auto; background: var(--accent-soft) !important; color: #fff !important; }
+    .btn-save-tb { margin-left: auto; background: var(--accent-strong) !important; color: #fff !important; }
 .toast {
     position: fixed; bottom: 32px; left: 50%;
     transform: translateX(-50%) translateY(20px);
@@ -546,15 +547,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         #tab-messages .msg-searchbox .clear.show { display: block; }
         #tab-messages .msg-filters { display: flex; gap: 6px; flex-wrap: wrap; }
         #tab-messages .msg-filters button { border: none; border-radius: 999px; background: var(--card); color: var(--muted); font-size:15px; padding: 6px 12px; cursor: pointer; font-family: inherit; transition: background .15s, color .15s; }
-        #tab-messages .msg-filters button.active { background: var(--accent-soft); color: #fff; }
+        #tab-messages .msg-filters button.active { background: var(--accent-soft); color: var(--accent-strong); }
         #tab-messages .card { position: relative; }
         #tab-messages .qa-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
-        #tab-messages .msg-badge { font-size:13px; border-radius: 999px; padding: 1px 10px; color: #fff; background: var(--accent-soft); white-space: nowrap; }
+        #tab-messages .msg-badge { font-size:13px; border-radius: 999px; padding: 1px 10px; color: #fff; background: var(--accent-strong); white-space: nowrap; }
         #tab-messages .msg-badge.warn { background: #f3b96d; }
         #tab-messages .msg-badge.ok { background: #7cc49a; }
         #tab-messages .msg-badge.off { background: #c6cddb; }
         #tab-messages .qa-contact { font-size:15px; color: var(--muted); margin-top: 6px; line-height: 1.6; word-break: break-all; }
-        #tab-messages .qa-contact b { color: var(--text,#5d6780); font-weight: 600; }
+        #tab-messages .qa-contact b { color: var(--text,#604C57); font-weight: 600; }
         #tab-messages .qa-status-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
         #tab-messages .qa-status-row .lbl { font-size:14px; color: var(--muted); flex-shrink: 0; }
         #tab-messages .qa-status-row select { border: 1px solid var(--card-hover); border-radius: 10px; background: #fff; padding: 6px 10px; font-size:15px; font-family: inherit; color: var(--text); outline: none; }
@@ -581,7 +582,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       <style>
         .aix-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
         .aix-stat { background: #fff; border-radius: var(--radius); padding: 10px 14px; box-shadow: 0 2px 10px rgba(180,120,150,.12); }
-        .aix-stat b { display: block; font-size:23px; color:var(--text,#5d6780); line-height: 1.3; }
+        .aix-stat b { display: block; font-size:23px; color:var(--text,#604C57); line-height: 1.3; }
         .aix-stat span { font-size:14px; color: var(--muted); }
         .aix-toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
         .aix-searchbox { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 6px; border: 1px solid var(--card-hover); border-radius: 999px; background: #fff; padding: 2px 8px 2px 16px; }
@@ -591,8 +592,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         .aix-searchbox .clear.show { display: block; }
         .aix-filters { display: flex; gap: 6px; flex-wrap: wrap; }
         .aix-filters button { border: none; border-radius: 999px; background: var(--card); color: var(--muted); font-size:15px; padding: 6px 12px; cursor: pointer; font-family: inherit; transition: background .15s, color .15s; }
-        .aix-filters button.active { background: var(--accent-soft); color: #fff; }
-        .aix-filters .fclear { display: none; color:var(--text,#5d6780); background: #fff; border: 1px solid var(--card-hover); }
+        .aix-filters button.active { background: var(--accent-soft); color: var(--accent-strong); }
+        .aix-filters .fclear { display: none; color:var(--text,#604C57); background: #fff; border: 1px solid var(--card-hover); }
         .aix-filters .fclear.show { display: inline-block; }
         .aix-list { display: flex; flex-direction: column; gap: 10px; }
         .aix-session { background: #fff; border-radius: var(--radius); padding: 14px 16px; cursor: pointer; border: 2px solid transparent; box-shadow: 0 2px 10px rgba(180,120,150,.12); transition: border-color .15s, background .15s; }
@@ -602,13 +603,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         .aix-s-time { font-size:14px; color: var(--muted); flex-shrink: 0; }
         .aix-s-q { flex: 1; min-width: 0; font-size:16px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .aix-s-a { font-size:15px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .aix-badge { font-size:13px; background: var(--accent-soft); color: #fff; border-radius: 999px; padding: 1px 8px; flex-shrink: 0; white-space: nowrap; }
+        .aix-badge { font-size:13px; background: var(--accent-strong); color: #fff; border-radius: 999px; padding: 1px 8px; flex-shrink: 0; white-space: nowrap; }
         .aix-badge.warn { background: #f3b96d; }
         .aix-chat { display: flex; flex-direction: column; gap: 10px; background: var(--bg); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 50vh; overflow-y: auto; }
         .aix-msg { display: flex; flex-direction: column; max-width: 85%; }
         .aix-msg.user { align-self: flex-end; align-items: flex-end; }
         .aix-msg .bubble { border-radius: 14px; padding: 8px 12px; font-size:16px; line-height: 1.55; word-break: break-word; }
-        .aix-msg.user .bubble { background: var(--accent-soft); color: #fff; border-bottom-right-radius: 4px; }
+        .aix-msg.user .bubble { background: var(--accent-strong); color: #fff; border-bottom-right-radius: 4px; }
         .aix-msg.ai .bubble { background: var(--card); color: var(--text); border-bottom-left-radius: 4px; }
         .aix-msg .who { font-size:13px; color: var(--muted); margin: 0 4px 2px; }
         .aix-msg .t { font-size:13px; color: var(--muted); margin: 2px 4px 0; }
@@ -627,7 +628,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         .aix-confirm { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 4px 0; font-size:15px; color: var(--text); }
         .aix-pager { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: center; margin: 14px 0 4px; }
         .aix-pager button { min-width: 30px; height: 30px; border: none; border-radius: 999px; background: var(--card); color: var(--muted); font-size:15px; padding: 0 10px; cursor: pointer; font-family: inherit; }
-        .aix-pager button.cur { background:var(--accent-soft,#ffc8d6); color: #fff; }
+        .aix-pager button.cur { background:var(--accent-soft,#FCE4EC); color: var(--accent-strong,#A04A68); }
         .aix-pager .dots { color: var(--muted); font-size:15px; }
         .aix-kb { margin-bottom: 10px; }
         .aix-kb .k-q { font-size:17px; font-weight: 600; margin-bottom: 2px; word-break: break-word; }
@@ -710,7 +711,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     <div id="tab-reviews" style="display:none;">
       <div class="card">
         <h3>评价返图</h3>
-        <p style="font-size:15px;color:var(--muted);margin:0 0 14px;">小可爱们在<a href="/shop/?sec=reviews" target="_blank" style="color:var(--text,#5d6780);">小铺页面</a>提交的评价都收在这里 · 不想留的那条点卡片里的「删除」</p>
+        <p style="font-size:15px;color:var(--muted);margin:0 0 14px;">小可爱们在<a href="/shop/?sec=reviews" target="_blank" style="color:var(--text,#604C57);">小铺页面</a>提交的评价都收在这里 · 不想留的那条点卡片里的「删除」</p>
         <div id="review-admin-list"><p class="empty">加载中…</p></div>
       </div>
     </div>
@@ -906,7 +907,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <div class="actions" style="flex-wrap:wrap;">
           <button class="btn-mini" id="btn-work-add">+ 新增稿件</button>
           <button class="btn-mini btn-save-tb" id="btn-work-save">保存稿件改动</button>
-          <span id="works-total" style="font-size:17px;font-weight:600;color:var(--text,#5d6780);align-self:center;"></span>
+          <span id="works-total" style="font-size:17px;font-weight:600;color:var(--text,#604C57);align-self:center;"></span>
         </div>
       </div>
     </div>
@@ -942,7 +943,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <button type="button" class="sel-btn" id="bjd-sort-btn">排序：默认</button>
           <span style="flex:1;"></span>
           <button class="btn-mini" id="btn-bjd-add">+ 新增 BJD</button>
-          <span id="bjd-total" style="font-size:17px;font-weight:600;color:var(--text,#5d6780);"></span>
+          <span id="bjd-total" style="font-size:17px;font-weight:600;color:var(--text,#604C57);"></span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
           <span style="font-size:16px;color:var(--muted);flex-shrink:0;">尺寸 / 种类管理</span>
@@ -967,7 +968,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           <span style="flex:1;"></span>
           <button class="btn-mini" id="btn-sc-add">+ 新建色卡</button>
           <button class="btn-mini btn-save-tb" id="btn-sc-save">保存色卡改动</button>
-          <span id="sc-total" style="font-size:17px;font-weight:600;color:var(--text,#5d6780);"></span>
+          <span id="sc-total" style="font-size:17px;font-weight:600;color:var(--text,#604C57);"></span>
         </div>
         <div id="sc-artist-list"></div>
       </div>
@@ -1427,7 +1428,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     box.innerHTML = pendingFiles.map(function (f, idx) {
       return '<div class="pv ph-tile' + (idx === 0 ? ' ph-cover' : '') + '" draggable="true" data-idx="' + idx + '" title="拖动可调整顺序" style="cursor:grab;position:relative;">' +
         '<img src="' + URL.createObjectURL(f) + '" alt="">' +
-        (idx === 0 ? '<span style="position:absolute;left:3px;bottom:3px;background:#ffd9e6;color:#fff;border-radius:999px;padding:0 6px;font-size:10px;line-height:14px;">封面</span>' : '') +
+        (idx === 0 ? '<span style="position:absolute;left:3px;bottom:3px;background:#A04A68;color:#fff;border-radius:999px;padding:0 6px;font-size:10px;line-height:14px;">封面</span>' : '') +
         '</div>';
     }).join('');
   }
@@ -1438,8 +1439,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       if (!src) return '';
       return '<div class="ph-tile' + (idx === 0 ? ' ph-cover' : '') + '" draggable="true" data-idx="' + idx + '" title="拖动可调整顺序" style="width:64px;height:64px;border-radius:10px;overflow:hidden;position:relative;background:var(--card);flex-shrink:0;cursor:grab;">' +
         '<img src="' + escAttr(src) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;">' +
-        (idx === 0 ? '<span style="position:absolute;left:3px;bottom:3px;background:#ffd9e6;color:#fff;border-radius:999px;padding:0 7px;font-size:11px;line-height:16px;">封面</span>'
-                   : '<button type="button" class="ph-del" data-idx="' + idx + '" title="删除照片" style="position:absolute;top:3px;right:3px;width:20px;height:20px;font-size:13px;line-height:1;border:none;border-radius:50%;background:rgba(255,255,255,.92);cursor:pointer;color:#5d6780;">⋮</button>') +
+        (idx === 0 ? '<span style="position:absolute;left:3px;bottom:3px;background:#A04A68;color:#fff;border-radius:999px;padding:0 7px;font-size:11px;line-height:16px;">封面</span>'
+                   : '<button type="button" class="ph-del" data-idx="' + idx + '" title="删除照片" style="position:absolute;top:3px;right:3px;width:20px;height:20px;font-size:13px;line-height:1;border:none;border-radius:50%;background:rgba(255,255,255,.92);cursor:pointer;color:#604C57;">⋮</button>') +
         '</div>';
     }).join('') + '</div>';
   }
@@ -1827,7 +1828,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<div class="sc-card-img">' + (rv.image_url ? '<img src="' + escAttr(rv.image_url) + '" alt="返图">' : '<div class="sc-img-empty">没有返图</div>') + '</div>' +
           '<div class="sc-info">' +
           '<span class="sc-name">' + esc(rv.name || '小可爱') + '</span>' +
-          '<div class="sc-shop" style="color:var(--text,#5d6780);letter-spacing:2px;">' + starsStr(rv.rating) + '</div>' +
+          '<div class="sc-shop" style="color:var(--text,#604C57);letter-spacing:2px;">' + starsStr(rv.rating) + '</div>' +
           '<div class="rv-text">' + esc(rv.content || '') + '</div>' +
           '<div class="sc-meta">' + fmtTime(rv.created_at) + '</div>' +
           '<div class="actions" style="justify-content:flex-start;margin-top:8px;"><button class="btn-del rv-del">删除</button></div>' +
@@ -2543,7 +2544,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     wechat: '<svg viewBox="0 0 24 24" fill="#57bb6a"><path d="M9.3 4C5.3 4 2 6.7 2 10.1c0 1.9 1 3.5 2.7 4.7l-.7 2.1 2.4-1.2c.7.2 1.4.4 2.2.4h.4a5.5 5.5 0 0 1-.2-1.5c0-3.2 3-5.8 6.7-5.8h.4C15.3 6 12.6 4 9.3 4ZM7 7.4a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8Zm4.6 0a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8ZM15.5 10c-3.2 0-5.8 2.1-5.8 4.8 0 2.6 2.6 4.8 5.8 4.8.6 0 1.2-.1 1.8-.3l2 1-.6-1.7c1.4-.9 2.3-2.2 2.3-3.8 0-2.6-2.6-4.8-5.5-4.8Zm-2 2.3a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6Zm4 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6Z"/></svg>',
     xhs: '<svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="#ff2442"/><text x="12" y="16.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffffff">红</text></svg>',
     netease: '<svg viewBox="0 0 24 24" fill="none" stroke="#e35d5d" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
-    link: '<svg viewBox="0 0 24 24" fill="none" stroke="#b9a7b3" stroke-width="2"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7L12.5 19"/></svg>'
+    link: '<svg viewBox="0 0 24 24" fill="none" stroke="#A88E9B" stroke-width="2"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7L12.5 19"/></svg>'
   };
   var SETTINGS = {};
   var LINKS = [];
@@ -3085,7 +3086,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       var isC = idx === 0 && !!cover;
       return '<div class="ph-tile' + (isC ? ' ph-cover' : '') + '" draggable="true" data-idx="' + idx + '" title="拖动可调整顺序" style="width:64px;height:64px;border-radius:10px;overflow:hidden;position:relative;background:var(--card);flex-shrink:0;cursor:grab;">' +
         '<img src="' + escAttr(u) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;">' +
-        (isC ? '<span style="position:absolute;left:3px;bottom:3px;background:#ffd9e6;color:#fff;border-radius:999px;padding:0 7px;font-size:11px;line-height:16px;">封面</span>'
+        (isC ? '<span style="position:absolute;left:3px;bottom:3px;background:#A04A68;color:#fff;border-radius:999px;padding:0 7px;font-size:11px;line-height:16px;">封面</span>'
              : '<button type="button" class="kebab ' + cls + '" data-pi="' + (idx - (cover ? 1 : 0)) + '" title="菜单" style="position:absolute;top:3px;right:3px;width:20px;height:20px;font-size:14px;">⋮</button>') +
         '</div>';
     }).join('') + '</div>';
@@ -3433,7 +3434,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<button class="btn-mini sc-add-row">+ 添加项目</button>' +
           '</div>' +
           '<div class="a-stats" style="margin-top:6px;font-size:15px;color:var(--muted);">张数统计（自动）：' + labelAgg(a) + ' · 共 ' + artistCount(a) + ' 张</div>' +
-          '<div class="a-sub" style="margin-top:2px;font-size:15px;color:var(--muted);">画师 ' + (ai + 1) + ' 小计：<b class="a-sub-v" style="color:var(--text,#5d6780);">¥' + fmtMoney(artistSub(a)) + '</b></div>' +
+          '<div class="a-sub" style="margin-top:2px;font-size:15px;color:var(--muted);">画师 ' + (ai + 1) + ' 小计：<b class="a-sub-v" style="color:var(--text,#604C57);">¥' + fmtMoney(artistSub(a)) + '</b></div>' +
           '</div>';
       }).join('');
       return '<div class="card sc-artist editing" data-i="' + i + '" style="position:relative;">' +
@@ -3461,7 +3462,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<span style="color:var(--muted);font-size:15px;">保存时自动更新</span>' +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:17px;">' +
-        '<span>色卡总价 <b class="sc-card-total" style="color:var(--text,#5d6780);font-size:19px;">¥' + fmtMoney(cardFinal(c)) + '</b></span>' +
+        '<span>色卡总价 <b class="sc-card-total" style="color:var(--text,#604C57);font-size:19px;">¥' + fmtMoney(cardFinal(c)) + '</b></span>' +
         '<span style="color:var(--muted);">总张数 <b class="sc-card-count">' + cardCount(c) + '</b> 张</span>' +
         '</div>' +
         '<div class="sc-artists" style="margin-top:4px;">' + blocks + '</div>' +
@@ -5797,8 +5798,8 @@ function loadEmailLog() {
 </div>
 <style>
   /* 非删除类确认按钮：浅粉底白字（与全站按钮规范一致） */
-  .lo-mask .btn-ok { background: #ffd9e6; color: #fff; }
-  .lo-mask .btn-ok:hover { background: #ffc9dc; }
+  .lo-mask .btn-ok { background: var(--accent-strong, #A04A68); color: #fff; }
+  .lo-mask .btn-ok:hover { filter: brightness(1.08); }
 </style>
 
 <script>
@@ -5856,7 +5857,7 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261025n"></script>
+<script src="js/admin-shop.js?v=20261025o"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

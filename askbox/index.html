@@ -18,13 +18,14 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   @font-face { font-family: "Millo Body"; src: url("/fonts/Millo-RiceSoyMilk80.woff2") format("woff2"), url("/fonts/Millo-RiceSoyMilk80.ttf") format("truetype"); font-display: swap; }
 
   :root {
-    --bg: #fffcfd;
-    --card: #fff2f7;
-    --card-hover: #ffe7f0;
-    --text: #5d6780;
-    --muted: #9aa5bd;
+    --bg: #FFF8FA;
+    --card: #FFF0F5;
+    --card-hover: #FCE4EC;
+    --text: #604C57;
+    --muted: #A88E9B;
     --accent: #ffd9e6;
-    --accent-soft: #ffc8d6;
+    --accent-soft: #FCE4EC;
+    --accent-strong: #A04A68;
     --radius: 16px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -128,7 +129,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .ask-card button:disabled { opacity: .5; cursor: default; }
 
   h2 { font-size:21px; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
-  h2::before { content: ""; width: 4px; height: 18px; background: var(--accent-soft, #ffc8d6); border-radius: 2px; }
+  h2::before { content: ""; width: 4px; height: 18px; background: var(--accent-soft, #FCE4EC); border-radius: 2px; }
 
   .qa {
     background: #fff;
@@ -147,7 +148,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     font-size:17px;
     white-space: pre-wrap; word-break: break-word;
   }
-  .qa-reply .reply-label { font-size:15px; color:var(--text,#5d6780); font-weight: 600; display: block; margin-bottom: 4px; }
+  .qa-reply .reply-label { font-size:15px; color:var(--text,#604C57); font-weight: 600; display: block; margin-bottom: 4px; }
   .qa-pending { margin-top: 12px; font-size:16px; color: var(--muted); font-style: italic; }
   .empty { text-align: center; color: var(--muted); font-size:17px; padding: 30px 0; }
 
@@ -175,7 +176,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 h1::after { content: " ♥"; font-size: .75em; }
 h2::after { content: " ♥"; font-size: .75em; }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261025n">
+  <link rel="stylesheet" href="/site-menu.css?v=20261025o">
   <script src="/site-menu.js" defer></script>
   <style>a { color: inherit; text-decoration: none; }</style>
 </head>
@@ -399,7 +400,7 @@ h2::after { content: " ♥"; font-size: .75em; }
   loadWall();
 </script>
 <footer>© 2026 Yuki · Made with Cola</footer>
-<script src="/js/site-footer.js?v=20261025n"></script>
+<script src="/js/site-footer.js?v=20261025o"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

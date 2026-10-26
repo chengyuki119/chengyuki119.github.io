@@ -11,7 +11,7 @@
   align-items: center; justify-content: center;
   gap: 5px;
 }
-.burger:hover { background: var(--card-hover, #ffe4ee); }
+.burger:hover { background: var(--card-hover, #FCE4EC); }
 .burger span {
   width: 20px; height: 2px;
   background: var(--text);
@@ -34,7 +34,7 @@
   position: fixed;
   top: 60px; right: 0; bottom: 0;
   width: 250px;
-  background: #fffafc;
+  background: #FFF8FA;
   box-shadow: -4px 0 24px rgba(255,143,171,.18);
   transform: translateX(100%);
   transition: transform .25s;
@@ -111,8 +111,8 @@
 .menu-owner:hover { background: var(--card-hover); }
 
 /* 当前所在页面：柔和粉色高亮（所有页面统一，只标当前，不重排不隐藏） */
-.menu a.current, .menu-link.current { background: #ffe9f2; font-weight: 600; }
-.menu-group.current > .menu-toggle { background: #ffe9f2; font-weight: 600; }
+.menu a.current, .menu-link.current { background: #FCE4EC; font-weight: 600; }
+.menu-group.current > .menu-toggle { background: #FCE4EC; font-weight: 600; }
 
 /* 顶栏中间 logo：全站统一组件（只按高度等比缩放，永不拉伸/裁切/压扁） */
 .site-logo {
@@ -138,10 +138,10 @@
   width: 42px; height: 42px;
   border-radius: 12px;
   background: #ffffff; /* 未悬停不用粉底（她 17:46 要求），悬停才上粉色 */
-  color: var(--text, #5d6780);
+  color: var(--text, #604C57);
   transition: background .2s;
 }
-.topbar-cart:hover { background: var(--card-hover, #ffe4ee); }
+.topbar-cart:hover { background: var(--card-hover, #FCE4EC); }
 .topbar-cart svg { display: block; }
 .topbar-cart-badge {
   position: absolute; top: -5px; right: -5px;
@@ -162,7 +162,7 @@
 }
 .menu-acct-bottom:hover { opacity: .88; }
 .menu a.menu-acct-bottom.is-in {
-  background: var(--accent-soft, #ffc8d6); color: #fff; /* 与后台上传头像按钮同款：浅粉底白字 */
+  background: var(--accent-soft, #FCE4EC); color: #fff; /* 与后台上传头像按钮同款：浅粉底白字 */
   box-shadow: none;
 }
 
@@ -171,8 +171,8 @@
   padding: 11px 16px;
   border-radius: 12px;
   font-size: 15px;
-  color: var(--muted, #9aa5bd);
-  background: var(--card, #fff2f7);
+  color: var(--muted, #A88E9B);
+  background: var(--card, #FFF0F5);
   text-align: center;
 }
 .menu-acct-bottom.acct-loading { pointer-events: none; opacity: .75; }
