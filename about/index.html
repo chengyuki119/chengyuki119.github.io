@@ -6,10 +6,17 @@
   <title>关于 Snow Yuzu · 小柚的小世界</title>
   <meta name="description" content="Snow Yuzu 的所有社交平台与联系方式：Gmail、Instagram、X、Discord、微信、抖音、小红书、网易云音乐">
   <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
-  <link rel="stylesheet" href="/css/site.css?v=20261026m">
-  <link rel="stylesheet" href="/site-menu.css?v=20261026m">
-  <script src="/js/site-common.js?v=20261026m"></script>
-  <script src="/site-menu.js?v=20261026m" defer></script>
+  <link rel="stylesheet" href="/css/site.css?v=20261026n">
+  <link rel="stylesheet" href="/site-menu.css?v=20261026n">
+  <script src="/js/site-common.js?v=20261026n"></script>
+  <script src="/site-menu.js?v=20261026n" defer></script>
+  <style>
+    /* §3.3：找到我改为纵向文字链接列表，不再使用大型卡片网格 */
+    #links { max-width: 640px; }
+    #links .sy-linkline { display: block; padding: 13px 4px; border-bottom: 1px solid var(--accent,#FFD9E6); color: var(--text,#604C57); font-size:17px; text-decoration: none; transition: color .2s, padding-left .2s; }
+    #links .sy-linkline:hover { color: var(--price,#FF6FA5); padding-left: 10px; }
+    #links .sy-linkline:first-child { border-top: 1px solid var(--accent,#FFD9E6); }
+  </style>
 </head>
 <body>
 
@@ -33,9 +40,8 @@
 <div class="menu-mask" id="menu-mask"></div>
 
   <div class="subpage-header">
-    <a class="back-link" href="/" data-zh="← 返回主页" data-en="← Back Home">← 返回主页</a>
     <h1 class="subpage-title">关于 Snow Yuzu</h1>
-    <p class="subpage-sub" data-zh="找到我 · 各平台的账号都在这里，点卡片直达" data-en="Find me · tap a card to reach me anywhere">找到我 · 各平台的账号都在这里，点卡片直达</p>
+    <p class="subpage-sub" data-zh="找到我 · 各平台的账号都在这里" data-en="Find me · all my accounts are here">找到我 · 各平台的账号都在这里</p>
   </div>
 
   <div class="page-body" style="padding-top:6px;">
@@ -44,11 +50,12 @@
     </section>
   </div>
 
-  <footer></footer>
-  <script src="/js/social-cards.js?v=20261026m"></script>
-  <script src="/js/site-footer.js?v=20261026m"></script>
+  <a class="back-link page-back" href="/" data-zh="← 返回主页" data-en="← Back Home" style="margin:38px 0 10px;">← 返回主页</a>
+<footer></footer>
+  <script src="/js/social-cards.js?v=20261026n"></script>
+  <script src="/js/site-footer.js?v=20261026n"></script>
   <script>
-    renderSocialCards('#about-links');
+    renderSocialCards('#about-links','text');
     if (window.renderSiteFooter) renderSiteFooter();
   </script>
 </body>

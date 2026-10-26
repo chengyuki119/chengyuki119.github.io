@@ -12,11 +12,14 @@
   var TEXT = {
     zh: {
       account: '我的账户',
-      myaccount: '账户中心（登录 / 订单）',
+      login: '登录',
+      orders: '订单',
+      cart: '购物车',
+      profile: 'Profile 编辑',
       service: '客户服务',
       about: '关于 Snow Yuzu',
-      findme: '找到我（社交平台）',
-      shop: '小铺',
+      brand: '品牌介绍',
+      findme: '找到我',
       policies: '网站政策',
       contact: '联系我们',
       faq: '常见问题',
@@ -28,11 +31,14 @@
     },
     en: {
       account: 'My Account',
-      myaccount: 'Account (Sign in / Orders)',
+      login: 'Sign in',
+      orders: 'Orders',
+      cart: 'Cart',
+      profile: 'Edit Profile',
       service: 'Customer Service',
       about: 'About Snow Yuzu',
-      findme: 'Find Me (Social)',
-      shop: 'Shop',
+      brand: 'About the Brand',
+      findme: 'Find Me',
       policies: 'Policies',
       contact: 'Contact Us',
       faq: 'FAQ',
@@ -44,12 +50,17 @@
     }
   };
 
+  /* 四栏结构（她 20261026 最终合并版 §5）：标题都是可点链接；账户栏子链接按登录态跳转（§5.1）
+     /account/?sec=orders 已内置登录门（shop-app openOrders：未登录先提示登录，登录后自动进订单） */
   var LINKS = {
-    account: [['myaccount', '/account/']],
+    account: [['login', '/account/', 'login'], ['orders', '/account/?sec=orders'], ['cart', '/shop/?sec=cart'], ['profile', '/account/?sec=account']],
     service: [['contact', '/askbox/'], ['faq', '/faq/'], ['return-policy', '/return-policy/'], ['shipping-policy', '/shipping-policy/']],
-    about: [['findme', '/about/'], ['shop', '/shop/']],
+    about: [['brand', '/brand/'], ['findme', '/about/']],
     policies: [['privacy-policy', '/privacy-policy/'], ['terms-of-service', '/terms-of-service/']]
   };
+  var TITLE_HREF = { account: '/account/?sec=account', service: '/service/', about: '/brand/', policies: '/policies/' };
+
+  // 社交纵向文字列表（§3.4/§5.3）：与「找到我」页同一份数据源；只有确认有效的链接才渲染成可点文字，未配置的平台不展示
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -75,8 +86,10 @@
       '.sy-footer-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 36px;}' +
       '@media (max-width:899px){.sy-footer-cols{grid-template-columns:1fr 1fr;}}' +
       '@media (max-width:559px){.sy-footer{padding:0 18px 6px;margin-bottom:30px;}.sy-footer-cols{grid-template-columns:1fr;gap:22px;}}' +
-      '.sy-footer-head{font-size:15px;font-weight:700;color:var(--text,#604C57);margin-bottom:12px;letter-spacing:.03em;}' +
+      '.sy-footer-head{display:inline-block;font-size:15px;font-weight:700;color:var(--text,#604C57);margin-bottom:12px;letter-spacing:.03em;text-decoration:none;}' +
+      '.sy-footer-head:hover{color:var(--price,#FF6FA5);}' +
       '.sy-footer-links{display:flex;flex-direction:column;align-items:flex-start;}' +
+      '.sy-footer-social{margin-top:10px;display:flex;flex-direction:column;align-items:flex-start;gap:0;}' +
       '.sy-footer-link{color:var(--muted,#A88E9B);font-size:15px;line-height:2.15;text-decoration:none;transition:color .2s;}' +
       '.sy-footer-link:hover{color:var(--price,#FF6FA5);}' +
       '.sy-footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 18px;' +
@@ -93,11 +106,13 @@
     var txt = TEXT[lang] || TEXT.zh;
     var col = function (titleKey, items) {
       return '<div class="sy-footer-col">' +
-        '<div class="sy-footer-head">' + esc(txt[titleKey]) + '</div>' +
+        '<a class="sy-footer-head" href="' + TITLE_HREF[titleKey] + '">' + esc(txt[titleKey]) + '</a>' +
         '<div class="sy-footer-links">' +
         items.map(function (p) {
-          return '<a class="sy-footer-link" href="' + esc(p[1]) + '">' + esc(txt[p[0]]) + '</a>';
+          var extra = p[2] === 'login' ? ' data-acc="login"' : '';
+          return '<a class="sy-footer-link" href="' + esc(p[1]) + '"' + extra + '>' + esc(txt[p[0]]) + '</a>';
         }).join('') +
+        (titleKey === 'about' ? '<div class="sy-footer-social" id="sy-footer-social"></div>' : '') +
         '</div></div>';
     };
     return '<div class="sy-footer"><div class="sy-footer-inner">' +
@@ -115,22 +130,70 @@
       '</div></div>';
   }
 
+  // 社交文字列表：与「找到我」页同一份 links 配置（social-cards.js 单一数据源）；
+  // 页面未引 social-cards.js 时动态加载；有 url 才渲染成可点文字，微信纯展示账号名，未配置平台（TikTok/YouTube）不出现在 Footer
+  function renderSocial() {
+    var box = document.getElementById('sy-footer-social');
+    if (!box) return;
+    var done = function (links) {
+      if (!box.isConnected) return;
+      box.innerHTML = (links || []).filter(function (l) { return l.icon !== 'tiktok' && l.icon !== 'youtube'; }).map(function (l) {
+        if (l.url) return '<a class="sy-footer-link" href="' + esc(l.url) + '"' + (l.url.indexOf('mailto:') === 0 ? '' : ' target="_blank" rel="noopener"') + '>' + esc(l.name) + '</a>';
+        if (l.sub) return '<span class="sy-footer-link" style="cursor:default;">' + esc(l.name) + '：' + esc(l.sub) + '</span>';
+        return '';
+      }).join('');
+    };
+    if (window.getSocialLinks) { window.getSocialLinks().then(done); return; }
+    var ver = '20261026m';
+    try { var me = document.querySelector('script[src*="site-footer"]'); var mv = me && me.src.match(/v=([\w-]+)/); if (mv) ver = mv[1]; } catch (e) {}
+    var sEl = document.createElement('script');
+    sEl.src = '/js/social-cards.js?v=' + ver;
+    sEl.onload = function () { if (window.getSocialLinks) window.getSocialLinks().then(done); else box.parentNode.removeChild(box); };
+    sEl.onerror = function () { box.parentNode.removeChild(box); };
+    document.head.appendChild(sEl);
+  }
+
   window.renderSiteFooter = function () {
     ensureStyle();
     var html = buildHtml();
     var footer = document.querySelector('footer');
     if (footer) {
-      // 保留原 <footer> 标签（页面已有 footer 样式不冲突），只替换内容；卡片自带外距，清掉旧 footer 的默认 padding 避免三重叠底边距
       footer.style.padding = '0';
+      footer.style.background = '#FFFBFC'; /* §5.5.6：主背景 #FFFBFC，不恢复浓粉卡 */
       footer.innerHTML = html;
+      renderSocial();
       return;
     }
-    // 页面没有 footer：新建一个插到 </body> 前
     var el = document.createElement('footer');
     el.style.padding = '0';
+    el.style.background = '#FFFBFC';
     el.innerHTML = html;
     document.body.appendChild(el);
+    renderSocial();
   };
+
+  // 「登录」按登录态跳：已登录进订单页，未登录进登录页（§5.1）；页面自带用户态判断（shop-app 的 yuki-user-session）
+  if (!window.__syFooterNavBound) {
+    window.__syFooterNavBound = true;
+    document.addEventListener('click', function (e) {
+      var a = e.target && e.target.closest ? e.target.closest('a[data-acc="login"]') : null;
+      if (!a) return;
+      var logged = false;
+      try { logged = !!(JSON.parse(localStorage.getItem('yuki-user-session') || 'null')); } catch (err) {}
+      if (logged) { e.preventDefault(); location.href = '/account/?sec=orders'; }
+    });
+    // 页底返回钮（§1.2）：有站内来源时回退历史，直达时走默认 href，不会离开网站
+    document.addEventListener('click', function (e) {
+      var a = e.target && e.target.closest ? e.target.closest('a.page-back') : null;
+      if (!a) return;
+      try {
+        if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) {
+          e.preventDefault();
+          history.back();
+        }
+      } catch (err) {}
+    });
+  }
 
   // 语言切换时跟随更新（延迟 50ms，等页面自身逻辑先跑）
   if (!window.__syFooterLangBound) {

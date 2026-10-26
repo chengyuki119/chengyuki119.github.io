@@ -26,8 +26,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261026m">
-  <link rel="stylesheet" href="/site-menu.css?v=20261026m">
+<link rel="stylesheet" href="/css/site.css?v=20261026n">
+  <link rel="stylesheet" href="/site-menu.css?v=20261026n">
     <script src="/site-menu.js" defer></script>
 </head>
 <body>
@@ -55,7 +55,6 @@
 <div class="page active" id="page-color-card">
   <div id="cards-list-page">
   <div class="subpage-header">
-    <a class="back-link" href="/"><span data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</span></a>
     <h1 class="subpage-title" data-zh="色卡" data-en="Color Cards">色卡</h1>
     <p class="subpage-sub" data-zh="原创圈我的色卡宝宝们" data-en="My color card babies">原创圈我的色卡宝宝们</p>
   </div>
@@ -96,7 +95,7 @@
 </div>
 <div id="share-pop"></div>
 <div class="toast" id="toast"></div>
-<script src="/js/site-common.js?v=20261026m"></script>
+<script src="/js/site-common.js?v=20261026n"></script>
 <script>
   // ===== 色卡：独立子页（列表 + 详情 /color-card/?card=N）=====
   var CURRENT_CARD = -1;
@@ -267,7 +266,8 @@
   if (window.SiteMenu) SiteMenu.notify('cards');
   applyLang(LANG);
 </script>
-<script src="/js/site-footer.js?v=20261026m"></script>
+<a class="back-link page-back" href="/" style="margin:38px 0 10px;"><span data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</span></a>
+<script src="/js/site-footer.js?v=20261026n"></script>
 <script>
   // 统一 Footer（页面没有 <footer> 时自动在页尾新建）
   function initSiteFooter() { renderSiteFooter(); }
