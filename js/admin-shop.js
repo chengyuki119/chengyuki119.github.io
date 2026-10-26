@@ -165,6 +165,7 @@
       .catch(function () { SM.orders = arr(window.SHOP_ORDERS); SM._oFailed = true; })
       .then(function () { renderOrders(); renderStats(); });
   }
+  window.loadShopOrders = loadOrders; // 线下开单（admin-crm.js）保存/取消后让订单页即时刷新
   function loadGroups() {
     return restGet('shop_groups?select=*&order=created_at.desc&limit=200')
       .then(function (rows) { SM.groups = arr(rows); })
