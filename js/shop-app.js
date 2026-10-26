@@ -188,6 +188,15 @@
       .then(function (r) { return r.json(); })
       .then(function (ok) {
         try { localStorage.setItem('yuki-notify-new', '0'); } catch (e) {}
+        // 持久提示条（toast 会消失，退订结果要留在页面上）
+        var bar = document.createElement('div');
+        bar.style.cssText = 'max-width:680px;margin:14px auto 0;padding:14px 18px;border-radius:16px;font-size:15px;line-height:1.7;'
+          + 'background:#FCE4EC;border:1.5px solid #FFD9E6;color:#604C57;text-align:center;';
+        bar.innerHTML = ok
+          ? '✔ 已退订上新通知，以后不会再收到啦<br><span style="font-size:13px;color:var(--muted,#A88E9B);">订单、发货相关的邮件不受影响，仍会正常发送</span>'
+          : '退订链接无效或已过期';
+        var anchor = document.querySelector('#view-shop, main, body');
+        (anchor || document.body).insertBefore(bar, (anchor || document.body).firstChild);
         toast(ok ? t('已退订上新通知，以后不会再收到啦', 'Unsubscribed from new-item notices') : t('退订链接无效或已过期', 'This unsubscribe link is invalid'));
       })
       .catch(function () { toast(t('退订失败，请稍后再试', 'Unsubscribe failed, please try again')); });
