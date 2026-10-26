@@ -13,7 +13,7 @@
 
   CRM.bootCrm = function () {
     var panel = document.getElementById('tab-crm');
-    if (panel.dataset.booted) { renderCrm(); return; }
+    if (panel.dataset.booted) { renderCrm(); loadCust(); return; } // 切回来也要重新拉数据，否则永远卡「加载中…」（2026-10-26 实测抓到）
     panel.dataset.booted = '1';
     renderCrm();
     loadCust();
