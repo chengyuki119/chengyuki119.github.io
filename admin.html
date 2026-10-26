@@ -308,7 +308,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .sc-row { display: grid; grid-template-columns: 100px 92px 18px 60px 18px 70px auto; gap: 8px; align-items: center; position: relative; margin-bottom: 8px; }
   .sc-row input { width: 100%; box-sizing: border-box; }
   .sc-row .r-x, .sc-row .r-eq { text-align: center; color: var(--muted); }
-  .sc-row .r-total { text-align: right; font-size:16px; }
+  .sc-row .r-total { text-align: right; font-size:16px; color:#ff6fa5; }
+  .sm-stat b { color:#ff6fa5; }
   .sc-row .kebab { position: static; justify-self: end; }
   #sc-pop { position: fixed; z-index: 999; background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 6px; width: 168px; box-sizing: border-box; display: none; animation: scPopIn .16s ease; }
   @keyframes scPopIn { from { opacity: 0; transform: scale(.94); } }
@@ -3396,16 +3397,16 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<div class="sc-shop">' + esc(c.shop || '') + '</div>' +
           '<div class="sc-meta">画师 ' + c.artists.length + ' 位 · 共 ' + cardCount(c) + ' 张</div>' +
           '<div class="tgl-label" style="margin-top:7px;"><button type="button" class="tgl c-home-toggle' + (c.homeShow !== false ? ' on' : '') + '" aria-pressed="' + (c.homeShow !== false) + '" aria-label="主页展示"><span class="tgl-knob"></span></button>主页展示</div>' +
-          (c.origPrice ? '<div class="sc-bd-line">收卡价格 <b>¥' + fmtMoney(c.origPrice) + '</b></div>' : '') +
+          (c.origPrice ? '<div class="sc-bd-line">收卡价格 <b style="color:#ff6fa5;">¥' + fmtMoney(c.origPrice) + '</b></div>' : '') +
           '<div class="sc-bd">' +
           c.artists.map(function (a, ai) {
             a = normArtist(a);
             var bdRows = a.rows.filter(function (r) { return r.label || (r.price != null && r.price !== ''); });
             return '<div class="sc-bd-a"><b>' + esc(a.name || ('画师 ' + (ai + 1))) + '</b>' +
               (bdRows.length ? bdRows.map(function (r) { return '<span>' + esc(r.label || '项目') + ' ¥' + fmtMoney(r.price) + '×' + (parseInt(r.qty, 10) || 0) + ' = ¥' + fmtMoney(rowTotal(r)) + '</span>'; }).join('') : '<span>暂无项目</span>') +
-              '<i>小计 ¥' + fmtMoney(artistSub(a)) + '</i></div>';
+              '<i>小计 <span style="color:#ff6fa5;">¥' + fmtMoney(artistSub(a)) + '</span>' + '</i></div>';
           }).join('') +
-          '<div class="sc-bd-final">色卡总价 <b>¥' + fmtMoney(cardFinal(c)) + '</b></div>' +
+          '<div class="sc-bd-final">色卡总价 <b style="color:#ff6fa5;">¥' + fmtMoney(cardFinal(c)) + '</b></div>' +
           '</div>' +
           '</div>' +
           '</div>';
@@ -3434,7 +3435,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<button class="btn-mini sc-add-row">+ 添加项目</button>' +
           '</div>' +
           '<div class="a-stats" style="margin-top:6px;font-size:15px;color:var(--muted);">张数统计（自动）：' + labelAgg(a) + ' · 共 ' + artistCount(a) + ' 张</div>' +
-          '<div class="a-sub" style="margin-top:2px;font-size:15px;color:var(--muted);">画师 ' + (ai + 1) + ' 小计：<b class="a-sub-v" style="color:var(--text,#604C57);">¥' + fmtMoney(artistSub(a)) + '</b></div>' +
+          '<div class="a-sub" style="margin-top:2px;font-size:15px;color:var(--muted);">画师 ' + (ai + 1) + ' 小计：<b class="a-sub-v" style="color:#ff6fa5;">¥' + fmtMoney(artistSub(a)) + '</b></div>' +
           '</div>';
       }).join('');
       return '<div class="card sc-artist editing" data-i="' + i + '" style="position:relative;">' +
@@ -3462,7 +3463,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         '<span style="color:var(--muted);font-size:15px;">保存时自动更新</span>' +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:17px;">' +
-        '<span>色卡总价 <b class="sc-card-total" style="color:var(--text,#604C57);font-size:19px;">¥' + fmtMoney(cardFinal(c)) + '</b></span>' +
+        '<span>色卡总价 <b class="sc-card-total" style="color:#ff6fa5;font-size:19px;">¥' + fmtMoney(cardFinal(c)) + '</b></span>' +
         '<span style="color:var(--muted);">总张数 <b class="sc-card-count">' + cardCount(c) + '</b> 张</span>' +
         '</div>' +
         '<div class="sc-artists" style="margin-top:4px;">' + blocks + '</div>' +
@@ -3485,7 +3486,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     var sum = 0;
     CARDS.forEach(function (c) { sum += cardFinal(normCard(c)); });
     var el = document.getElementById('sc-total');
-    el.textContent = CARDS.length ? '总额：' + fmtMoney(sum) : '';
+    el.innerHTML = CARDS.length ? '总额：<span style="color:#ff6fa5;">' + fmtMoney(sum) + '</span>' : '';
   }
   function saveCardsQuiet(done, keepArchive) {
     if (CARDS_EDIT >= 0 && CARDS[CARDS_EDIT]) CARDS[CARDS_EDIT].lastRec = todayStr(); // 最后一次记录色卡日期：保存时自动当天
@@ -4782,7 +4783,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           '<div class="sc-info">' +
           '<b class="sc-name">' + esc(w.name || '未命名稿件') + '</b>' +
           '<div class="sc-shop">' + [w.cat, w.artist].filter(Boolean).map(esc).join(' · ') + '</div>' +
-          '<div class="sc-shop">' + esc(w.date || '') + (parseFloat(w.price) ? ' · ¥' + fmtMoney(w.price) : '') + '</div>' +
+          '<div class="sc-shop">' + esc(w.date || '') + (parseFloat(w.price) ? ' · <span style="color:#ff6fa5;">¥' + fmtMoney(w.price) + E : '') + '</div>' +
           '<span class="tgl-label" style="margin-top:7px;"><button type="button" class="tgl w-vis-toggle' + (w.visible !== false ? ' on' : '') + '" aria-pressed="' + (w.visible !== false) + '" aria-label="展示中"><span class="tgl-knob"></span></button>展示中</span>' +
           '</div>' +
           '</div>';
@@ -5857,7 +5858,7 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261025r"></script>
+<script src="js/admin-shop.js?v=20261025s"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

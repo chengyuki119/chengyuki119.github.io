@@ -277,7 +277,7 @@
       var img = it.image ? '<img src="' + escAttr(it.image) + '">' : '';
       return '<div class="sm-io-row">' + img +
         '<span>' + esc(it.name || it.sku || '商品') + '</span>' +
-        '<span class="sm-io-sub">' + (it.sku ? 'SKU ' + esc(it.sku) + ' · ' : '') + '×' + (it.qty || 1) + ' · $' + fmtMoney(it.price) + '</span>' +
+        '<span class="sm-io-sub">' + (it.sku ? 'SKU ' + esc(it.sku) + ' · ' : '') + '×' + (it.qty || 1) + ' · <span style="color:#ff6fa5;">$' + fmtMoney(it.price) + '</span>' + '</span>' +
         '</div>';
     }).join('');
   }
@@ -293,7 +293,7 @@
       '<select class="sm-ie-prod" style="flex:1;min-width:170px;max-width:280px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:10px;padding:6px 8px;font-family:inherit;font-size:14px;background:#fff;color:var(--text,#604C57);">' + ieProdOpts(it.name) + '</select>' +
       '<label style="font-size:13px;color:var(--muted);">单价 $<input class="sm-ie-price" type="number" step="0.01" min="0" value="' + escAttr(it.price != null ? it.price : '') + '" style="width:74px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
       '<label style="font-size:13px;color:var(--muted);">×<input class="sm-ie-qty" type="number" min="1" step="1" value="' + (it.qty || 1) + '" style="width:52px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:8px;padding:4px 6px;font-family:inherit;font-size:14px;"></label>' +
-      '<span class="sm-ie-line" style="font-size:14px;min-width:64px;text-align:right;"></span>' +
+      '<span class="sm-ie-line" style="font-size:14px;min-width:64px;text-align:right;color:#ff6fa5;"></span>' +
       '<button type="button" class="btn-del sm-ie-del">删除</button>' +
     '</div>';
   }
@@ -319,7 +319,7 @@
     var ship = num(o.shipping_actual != null ? o.shipping_actual : o.shipping_est);
     var total = sub - num(o.discount) + ship + num(o.service_fee);
     var el = card.querySelector('.sm-ie-sum');
-    if (el) el.innerHTML = '新小计 $' + fmtMoney(sub) + '（原 $' + fmtMoney(o.subtotal) + '）· 优惠 -$' + fmtMoney(o.discount) + ' · 运费 $' + fmtMoney(ship) + ' · 服务费 $' + fmtMoney(o.service_fee) + ' → 新总价 <b>$' + fmtMoney(total) + '</b>（原 $' + fmtMoney(o.total) + '）';
+    if (el) el.innerHTML = '新小计 $' + fmtMoney(sub) + '（原 $' + fmtMoney(o.subtotal) + '）· 优惠 -$' + fmtMoney(o.discount) + ' · 运费 $' + fmtMoney(ship) + ' · 服务费 <span style="color:#ff6fa5;">$' + fmtMoney(o.service_fee) + '</span>' + ' → 新总价 <b>$' + fmtMoney(total) + '</b>（原 $' + fmtMoney(o.total) + '）';
     return { items: items, sub: sub, total: total };
   }
   function ieRowLine(row) {
@@ -362,25 +362,25 @@
           esc((o.created_at || '').replace('T', ' ').slice(0, 16).replace(/-/g, '/')) + ' · 来源：' +
           esc(SOURCE_LABEL[o.order_source || 'online'] || (o.order_source || 'online')) + ' · 付款：' + esc(payL) + '</div>' +
         (o.note ? '<div class="sm-line"><span class="lbl">买家留言</span>' + esc(o.note) + '</div>' : '') +
-        (o.coupon_code ? '<div class="sm-line"><span class="lbl">优惠码</span>' + esc(o.coupon_code) + (num(o.discount) > 0 ? '（已减 $' + fmtMoney(o.discount) + '）' : '') + '</div>' : '') +
+        (o.coupon_code ? '<div class="sm-line"><span class="lbl">优惠码</span>' + esc(o.coupon_code) + (num(o.discount) > 0 ? '（已减 <span style="color:#ff6fa5;">$' + fmtMoney(o.discount) + '</span>' + '）' : '') + '</div>' : '') +
         '<div class="sm-line"><span class="lbl">付款</span>' +
-        (o.pay_channel ? esc(o.pay_channel) + ' · ' : '') + (o.pay_amount != null && o.pay_amount !== '' ? '$' + fmtMoney(o.pay_amount) + ' · ' : '') +
+        (o.pay_channel ? esc(o.pay_channel) + ' · ' : '') + (o.pay_amount != null && o.pay_amount !== '' ? '<span style="color:#ff6fa5;">$' + fmtMoney(o.pay_amount) + '</span>' + ' · ' : '') +
         (o.pay_time ? esc(o.pay_time) + ' · ' : '') + (o.pay_note ? esc(o.pay_note) : '') +
         (o.status === 'rejected' && o.reject_reason ? '<div class="sm-io-sub">上次拒绝原因：' + esc(o.reject_reason) + '</div>' : '') +
         '</div>' +
         (o.pay_url ? '<img class="sm-pay-img" data-paypath="' + escAttr(o.pay_url) + '" alt="付款凭证">' : '') +
-        '<div class="sm-line"><span class="lbl">金额</span>商品小计 $' + fmtMoney(o.subtotal) +
-          (num(o.discount) > 0 ? ' · 折扣 -$' + fmtMoney(o.discount) : '') +
-          ' · 运费 $' + fmtMoney(o.shipping_actual != null && o.shipping_actual !== '' ? o.shipping_actual : o.shipping_est) +
+        '<div class="sm-line"><span class="lbl">金额</span>商品小计 <span style="color:#ff6fa5;">$' + fmtMoney(o.subtotal) + '</span>' +
+          (num(o.discount) > 0 ? ' · 折扣 -<span style="color:#ff6fa5;">$' + fmtMoney(o.discount) + E : '') +
+          ' · 运费 <span style="color:#ff6fa5;">$' + fmtMoney(o.shipping_actual != null && o.shipping_actual !== '' ? o.shipping_actual : o.shipping_est) + '</span>' +
           ' · 税费 未收取' +
-          ' · 服务费 $' + fmtMoney(o.service_fee) +
+          ' · 服务费 <span style="color:#ff6fa5;">$' + fmtMoney(o.service_fee) + '</span>' +
           ' · <b style="color:#ff6fa5;">总价 $' + fmtMoney(o.total) + '</b></div>' +
         (function () {
           var pi = payInfo(o);
           if (pi.refunded <= 0 && pi.paid <= 0) return '';
           return '<div class="sm-line"><span class="lbl">退款</span>' +
-            (pi.paid > 0 ? '已付 $' + fmtMoney(pi.paid) + ' · ' : '') +
-            (pi.refunded > 0 ? (pi.refunded >= num(o.total) - 0.005 ? '已全额退款 $' + fmtMoney(pi.refunded) : '<b style="color:#f3b96d;">部分退款 $' + fmtMoney(pi.refunded) + '</b>') : '') + '</div>';
+            (pi.paid > 0 ? '已付 <span style="color:#ff6fa5;">$' + fmtMoney(pi.paid) + '</span>' + ' · ' : '') +
+            (pi.refunded > 0 ? (pi.refunded >= num(o.total) - 0.005 ? '已全额退款 <span style="color:#ff6fa5;">$' + fmtMoney(pi.refunded) + E : '<b style="color:#f3b96d;">部分退款 $' + fmtMoney(pi.refunded) + '</b>') : '') + '</div>';
         })() +
         (dead ? '<div class="sm-line"><span class="lbl">发货</span>' + (o.status === 'refunded' ? '已退款 · 无需发货' : '已取消 · 无需发货') +
             (o.tracking ? '（历史物流：' + esc(o.carrier || '') + ' ' + esc(o.tracking) + '）' : '') + '</div>' : '') +
@@ -393,7 +393,7 @@
         (dead ? '' : '<div class="sm-act sm-act-v"><span class="sm-vlabel">实际运费（Pirate Ship 实际金额，保存后买家应付同步更新）</span>' +
         '<div class="sm-vfee-row">' +
         '<input class="sm-ship-actual" type="number" step="0.01" min="0" placeholder="如 6.15" value="' + escAttr(o.shipping_actual == null ? '' : o.shipping_actual) + '">' +
-        '<span class="sm-total-prev">当前应付 $' + fmtMoney(ship) + '</span>' +
+        '<span class="sm-total-prev">当前应付 <span style="color:#ff6fa5;">$' + fmtMoney(ship) + '</span>' + '</span>' +
         '<button type="button" class="btn-save sm-act-fee" style="padding:9px 24px;font-size:16px;">保存运费</button>' +
         '</div></div>' +
         '<div class="sm-act sm-act-v"><span class="sm-vlabel">发货物流（一行一项，填完点确认发货）</span>' +
@@ -428,7 +428,7 @@
       '<span class="sm-o-mail">' + esc(o.email || '') + '</span>' +
       ((o.note || o.coupon_code) ? '<span class="sm-o-cnt" title="' + escAttr((o.note ? '备注：' + o.note : '') + (o.coupon_code ? (o.note ? '；' : '') + '优惠码：' + o.coupon_code : '')) + '">' + (o.note ? '📝' : '') + (o.coupon_code ? '🎟' : '') + '</span>' : '') +
       '<span class="sm-o-cnt">' + arr(o.items).length + ' 件</span>' +
-      '<span class="sm-o-total">$' + fmtMoney(o.total) + '</span>' +
+      '<span class="sm-o-total" style="color:#ff6fa5;font-weight:700;">$' + fmtMoney(o.total) + '</span>' +
       '<span class="sm-o-time">' + fmtTime(o.created_at) + '</span>' +
       '<span class="sm-o-arrow">▸</span>' +
       '</div>' + body + '</div>';
@@ -513,7 +513,7 @@
         (g.status === 'open' ? '<button type="button" class="btn-del sm-g-cancel">取消拼团</button>' : '') +
         '</div>' +
         '<div class="sm-g-meta">' + esc((g.product_name || (p ? p.name : '') || '') + variant) +
-        ' · 拼团价 $' + fmtMoney(g.price) + ' · ' + (g.joined || 0) + '/' + (g.target || 0) + ' 人 · 截止 ' + fmtTime(g.deadline) + '</div>' +
+        ' · 拼团价 <span style="color:#ff6fa5;">$' + fmtMoney(g.price) + '</span>' + ' · ' + (g.joined || 0) + '/' + (g.target || 0) + ' 人 · 截止 ' + fmtTime(g.deadline) + '</div>' +
         members + '</div>';
     }).join('');
   }
@@ -1413,12 +1413,12 @@
     var cs = '$'; // 汇总行固定按美元展示符号，保存时按所选货币入库（与原逻辑一致）
     var el = document.querySelector('#mo-form .mo-sum');
     if (el) el.innerHTML = '<div class="mo-sum-box">' +
-      '<div class="mo-sum-row"><span class="mo-sl">商品小计</span><span>' + cs + fmtMoney(sub) + '</span></div>' +
-      '<div class="mo-sum-row"><span class="mo-sl">折扣</span><span>-' + cs + fmtMoney(disc) + '</span></div>' +
-      '<div class="mo-sum-row"><span class="mo-sl">运费</span><span>' + cs + fmtMoney(ship) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">商品小计</span><span style="color:#ff6fa5;">' + cs + fmtMoney(sub) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">折扣</span><span style="color:#ff6fa5;">-' + cs + fmtMoney(disc) + '</span></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">运费</span><span style="color:#ff6fa5;">' + cs + fmtMoney(ship) + '</span></div>' +
       '<div class="mo-sum-row"><span class="mo-sl">税费</span><span>未收取</span></div>' +
-      '<div class="mo-sum-row"><span class="mo-sl">服务费</span><span>' + cs + fmtMoney(fee) + '</span></div>' +
-      '<div class="mo-sum-total"><b style="font-size:17px;color:var(--text);">订单总价</b><b>' + cs + fmtMoney(total) + '</b></div>' +
+      '<div class="mo-sum-row"><span class="mo-sl">服务费</span><span style="color:#ff6fa5;">' + cs + fmtMoney(fee) + '</span></div>' +
+      '<div class="mo-sum-total"><b style="font-size:17px;color:var(--text);">订单总价</b><b style="color:#ff6fa5;">' + cs + fmtMoney(total) + '</b></div>' +
       '</div>';
     // 每个商品自己的小计也跟着刷新（数量/单价一改立刻变）
     Array.prototype.forEach.call(document.querySelectorAll('#mo-form .mo-item-sub'), function (el2) {

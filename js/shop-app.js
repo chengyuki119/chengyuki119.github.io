@@ -336,7 +336,7 @@
     box.style.display = '';
     box.innerHTML =
       '<h3 style="font-size:19px;margin-bottom:10px;">' + t('发起拼团', 'Start a group buy') + '</h3>' +
-      '<p style="font-size:15px;color:var(--muted);margin-bottom:10px;">' + t('拼团价 ' + sym(p.currency) + money(price) + ' · 你是团长，把链接分享给小伙伴，人满即成团', 'Group price ' + sym(p.currency) + money(price) + ' · You are the leader. Share the link — group closes when full.') + '</p>' +
+      '<p style="font-size:15px;color:var(--muted);margin-bottom:10px;">' + t('拼团价 <span style="color:#ff6fa5;">' + sym(p.currency) + money(price) + '</span>' + ' · 你是团长，把链接分享给小伙伴，人满即成团', 'Group price <span style="color:#ff6fa5;">' + sym(p.currency) + money(price) + '</span>' + ' · You are the leader. Share the link — group closes when full.') + '</p>' +
       '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">' +
         '<label style="font-size:16px;">' + t('目标人数', 'Target') + ' <input id="g-target" type="number" min="2" max="50" value="2" style="width:70px;padding:8px;border:none;border-radius:10px;background:#fff;font-family:inherit;font-size:17px;"></label>' +
         '<label style="font-size:16px;">' + t('有效小时数', 'Hours open') + ' <input id="g-hours" type="number" min="1" max="720" value="48" style="width:70px;padding:8px;border:none;border-radius:10px;background:#fff;font-family:inherit;font-size:17px;"></label>' +
@@ -545,22 +545,22 @@
       box.innerHTML =
         '<h2 style="font-size:22px;margin-bottom:14px;">' + t('确认订单', 'Checkout') + '</h2>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('商品', 'Items') + '</b>' +
-          sel.map(function (x) { return '<div style="display:flex;justify-content:space-between;font-size:16px;margin-top:6px;"><span>' + esc(x.name) + ' × ' + x.qty + '</span><span>' + sym(cur) + money(x.price * x.qty) + '</span></div>'; }).join('') +
-          '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:10px;border-top:1px dashed var(--accent-soft);padding-top:8px;"><span>' + t('商品小计', 'Subtotal') + '</span><b>' + sym(cur) + money(sub) + '</b></div>' +
+          sel.map(function (x) { return '<div style="display:flex;justify-content:space-between;font-size:16px;margin-top:6px;"><span>' + esc(x.name) + ' × ' + x.qty + '</span><span style="color:#ff6fa5;">' + sym(cur) + money(x.price * x.qty) + '</span></div>'; }).join('') +
+          '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:10px;border-top:1px dashed var(--accent-soft);padding-top:8px;"><span>' + t('商品小计', 'Subtotal') + '</span><b style="color:#ff6fa5;">' + sym(cur) + money(sub) + '</b></div>' +
         '</div>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('收货地址', 'Shipping address') + '</b><div id="ck-addr" style="margin-top:8px;"></div>' +
           '<button class="buy-btn" id="ck-new-addr" style="margin-top:8px;padding:7px 16px;">' + t('＋ 新地址', '+ New address') + '</button>' +
           '<div id="ck-addr-form" style="display:none;margin-top:10px;"></div>' +
         '</div>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('运费', 'Shipping') + '</b>' +
-          '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:8px;"><span>' + t('运费（含打包服务费）', 'Shipping (incl. handling)') + '</span><b id="ck-ship-line">' + sym(cur) + money(est + fee) + '</b></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:8px;"><span>' + t('运费（含打包服务费）', 'Shipping (incl. handling)') + '</span><b id="ck-ship-line" style="color:#ff6fa5;">' + sym(cur) + money(est + fee) + '</b></div>' +
           '<p style="font-size:14px;color:var(--muted);margin-top:4px;">' + t('按重量和收货地估算，发货前以 Pirate Ship 实际运费为准，多退少补。', 'Estimated by weight & destination; final Pirate Ship rate confirmed before shipping.') + '</p>' +
         '</div>' +
         '<div class="card" style="padding:18px;margin-bottom:14px;"><b style="font-size:17px;">' + t('优惠码', 'Coupon') + '</b>' +
           '<div style="display:flex;gap:8px;margin-top:8px;"><input id="ck-coupon" placeholder="' + t('有优惠码就填这里', 'Coupon code') + '" style="flex:1;padding:10px 14px;font-size:17px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;"></div>' +
           '<label style="display:block;margin-top:10px;font-size:16px;">' + t('订单备注', 'Order note') + '<textarea id="ck-note" style="width:100%;min-height:60px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:12px;background:#fff;padding:10px 14px;font-family:inherit;font-size:17px;color:var(--text);resize:none;outline:none;margin-top:4px;box-sizing:border-box;"></textarea></label>' +
         '</div>' +
-        '<div class="card" style="padding:18px;"><div style="display:flex;justify-content:space-between;font-size:19px;"><b>' + t('预估合计', 'Estimated total') + '</b><b id="ck-total" style="color:var(--text,#604C57);">' + sym(cur) + money(sub + est + fee) + '</b></div>' +
+        '<div class="card" style="padding:18px;"><div style="display:flex;justify-content:space-between;font-size:19px;"><b>' + t('预估合计', 'Estimated total') + '</b><b id="ck-total" style="color:#ff6fa5;">' + sym(cur) + money(sub + est + fee) + '</b></div>' +
           '<p style="font-size:14px;color:var(--muted);margin-top:4px;">' + t('以服务端验证后的金额为准；实际运费由后台确认后更新。', 'Final amount is validated server-side; shipping updates once confirmed.') + '</p>' +
           '<button class="buy-btn" id="ck-submit" style="width:100%;margin-top:12px;padding:12px;background:#ffd9e6;color:#fff;font-size:18px;">' + t('提交订单', 'Place order') + '</button>' +
         '</div>';
@@ -684,10 +684,10 @@
       (o.items || []).map(function (it) {
         return '<div style="display:flex;gap:10px;align-items:center;margin-top:8px;">' +
           (it.image ? '<img src="' + escAttr(normImg(it.image)) + '" style="width:44px;height:44px;border-radius:10px;object-fit:cover;">' : '') +
-          '<span style="flex:1;font-size:16px;">' + esc(it.name) + ' × ' + it.qty + '</span><span style="font-size:16px;">' + sym(o.currency) + money(it.price * it.qty) + '</span></div>';
+          '<span style="flex:1;font-size:16px;">' + esc(it.name) + ' × ' + it.qty + '</span><span style="font-size:16px;color:#ff6fa5;">' + sym(o.currency) + money(it.price * it.qty) + '</span></div>';
       }).join('') +
       '<div style="display:flex;justify-content:space-between;font-size:17px;margin-top:8px;border-top:1px dashed var(--accent-soft);padding-top:8px;">' +
-        '<span>' + t('应付', 'Total') + '</span><b style="color:var(--text,#604C57);">' + sym(o.currency) + money(o.total) + '</b></div>' +
+        '<span>' + t('应付', 'Total') + '</span><b style="color:#ff6fa5;">' + sym(o.currency) + money(o.total) + '</b></div>' +
       '<div id="oc-body-' + o.id + '" style="display:none;margin-top:10px;"></div>' +
       '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">' +
         '<button class="buy-btn oc-more" data-oid="' + escAttr(o.id) + '" style="padding:7px 16px;">' + t('详情 / 付款', 'Details / Pay') + '</button></div>' +
@@ -720,7 +720,7 @@
       (o.discount ? '<div style="font-size:15px;color:#9ecfae;margin-top:4px;">' + t('优惠码已减', 'Coupon saved') + ' ' + sym(o.currency) + money(o.discount) + '</div>' : '') +
       (o.carrier ? '<p style="font-size:15px;margin-top:6px;">' + t('物流', 'Shipping') + '：' + esc(o.carrier) + ' <a href="' + escAttr(trackUrlOf(o.carrier, o.tracking)) + '" target="_blank" style="color:var(--text,#604C57);">' + esc(o.tracking) + ' ↗</a>' +
         (o.shipped_at ? ' · ' + new Date(o.shipped_at).toLocaleDateString() : '') + '</p>' : '') +
-      '<div style="font-size:15px;color:var(--muted);margin-top:6px;">' + t('明细', 'Breakdown') + '：' + sym(o.currency) + money(o.subtotal) + (o.discount > 0 ? ' − 优惠 ' + sym(o.currency) + money(o.discount) : '') + ' + 运费 ' + sym(o.currency) + money(o.shipping_actual != null ? o.shipping_actual : o.shipping_est) + ' + 服务费 ' + sym(o.currency) + money(o.service_fee) + '</div>' +
+      '<div style="font-size:15px;color:var(--muted);margin-top:6px;">' + t('明细', 'Breakdown') + '：<span style="color:#ff6fa5;">' + sym(o.currency) + money(o.subtotal) + '</span>' + (o.discount > 0 ? ' − 优惠 <span style="color:#ff6fa5;">' + sym(o.currency) + money(o.discount) + E : '') + ' + 运费 <span style="color:#ff6fa5;">' + sym(o.currency) + money(o.shipping_actual != null ? o.shipping_actual : o.shipping_est) + '</span>' + ' + 服务费 <span style="color:#ff6fa5;">' + sym(o.currency) + money(o.service_fee) + '</span>' + '</div>' +
       '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">';
     if (o.status === 'pending' || o.status === 'rejected') {
       html += '<button class="buy-btn oc-stripe" style="padding:8px 18px;background:#ffd9e6;color:#fff;">' + t('在线支付（Stripe 测试）', 'Pay online (Stripe test)') + '</button>';
@@ -1230,13 +1230,13 @@
         return '<div class="card" style="padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:center;">' +
           '<span class="ck-box" data-i="' + i + '" style="width:20px;height:20px;border-radius:6px;border:2px solid var(--muted,#A88E9B);flex-shrink:0;cursor:pointer;background:' + (x.checked !== false ? '#ffd9e6' : 'transparent') + ';display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1;color:var(--text,#604C57);">' + (x.checked !== false ? '✓' : '') + '</span>' +
           (x.image ? '<img src="' + escAttr(normImg(x.image)) + '" style="width:56px;height:56px;border-radius:12px;object-fit:cover;">' : '') +
-          '<div style="flex:1;min-width:0;"><div style="font-size:16px;">' + esc(x.name) + '</div><div style="font-size:16px;color:var(--text,#604C57);">' + sym(curOf(null, x)) + money(x.price) + '</div></div>' +
+          '<div style="flex:1;min-width:0;"><div style="font-size:16px;">' + esc(x.name) + '</div><div style="font-size:16px;color:#ff6fa5;">' + sym(curOf(null, x)) + money(x.price) + '</div></div>' +
           '<button class="qty-btn cart-q" data-i="' + i + '" data-d="-1">−</button><b>' + x.qty + '</b><button class="qty-btn cart-q" data-i="' + i + '" data-d="1">＋</button>' +
           '<button class="buy-btn cart-rm" data-i="' + i + '" style="padding:5px 10px;font-size:14px;background:#fff;color:#d96570;">' + t('删除', 'Remove') + '</button>' +
         '</div>';
       }).join('') +
       '<div class="card" style="padding:14px;display:flex;justify-content:space-between;align-items:center;">' +
-        '<span style="font-size:17px;">' + t('已选小计', 'Selected subtotal') + '</span><b style="font-size:20px;color:var(--text,#604C57);">' + sym(subCur) + money(sub) + '</b></div>' +
+        '<span style="font-size:17px;">' + t('已选小计', 'Selected subtotal') + '</span><b style="font-size:20px;color:#ff6fa5;">' + sym(subCur) + money(sub) + '</b></div>' +
       '<button class="buy-btn" id="cart-go" style="width:100%;margin-top:12px;padding:12px;background:#ffd9e6;color:#fff;font-size:18px;">' + t('去结算', 'Check out') + '</button>';
     box.querySelectorAll('.ck-box').forEach(function (el) { el.addEventListener('click', function () {
       var x = CART[+el.getAttribute('data-i')]; x.checked = x.checked === false; saveCart(); renderCart();
