@@ -247,10 +247,9 @@
         '<div class="d-info">' +
         '<div class="d-head">' +
           '<span class="product-tag">' + esc(p.tag || t('没有标签', 'Untagged')) + '</span>' +
-          '<h2 style="font-size:24px;margin:6px 0 4px;display:inline-block;">' + esc(p.name) + '</h2>' +
+          '<h2 style="font-size:24px;margin:8px 0 4px;display:block;">' + esc(p.name) + '</h2>' +
           '<button type="button" class="fav-btn detail-fav' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '">' + (isFav(p.id) ? '♥' : '♡') + '</button>' +
         '</div>' +
-        '<div class="d-desc"><p style="color:var(--muted);font-size:17px;line-height:1.8;margin:12px 0;">' + esc(p.description || '') + '</p></div>' +
         '<div class="d-price">' +
           '<div style="font-size:26px;color:#ff6fa5;font-weight:700;margin:10px 0;">' + sym(curOf(p, v)) + money(price) + '</div>' +
           (skuText ? '<div style="font-size:15px;color:var(--muted);margin-bottom:6px;">SKU: ' + esc(skuText) + '</div>' : '') +
@@ -282,6 +281,7 @@
             '</div>'
           : '<div class="d-actions"><p class="no-buy" style="margin:14px 0;">' + (st === 'out' ? t('已售罄，看看别的吧～', 'Sold out — take a look at other items~') : t('仅展示，不能下单', 'Not for sale')) + '</p></div>') +
         '</div>' +
+        '<div class="d-desc"><p style="color:var(--muted);font-size:17px;line-height:1.8;margin:12px 0;">' + esc((window.LANG === 'en' && p.description_en) ? p.description_en : (p.description || '')) + '</p></div>' +
       '</div>' +
       '<div id="d-group-form" style="display:none;margin-top:16px;" class="card"></div>';
     return el;
@@ -1310,7 +1310,6 @@
       '<div class="product-info">' +
       '<span class="product-tag">' + esc(p.tag || t('没有标签', 'Untagged')) + '</span>' +
       '<h3>' + esc(p.name) + '</h3>' +
-      '<p>' + esc(p.description || '') + '</p>' +
       '<div class="product-row">' +
       '<span class="price">' + (p.price ? priceHtml(curOf(p), fmtPriceShop(p.price)) : '') + '</span>' +
       (st === 'on' ? '<button class="buy-btn cart-quick">' + t('加入购物车', 'Add to cart') + '</button>' : '<span class="no-buy">' + (st === 'display' ? t('仅展示，不能下单', 'Not for sale') : '') + '</span>') +

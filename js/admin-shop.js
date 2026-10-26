@@ -778,7 +778,7 @@
       '<button type="button" class="btn-mini sm-var-add" style="background:#ffd9e6;color:#fff;padding:9px 20px;font-size:15px;">＋ 添加规格</button></div>' +
       '<div class="sm-var-rows"></div>' +
       '<p class="hint" style="margin:6px 0 0;">每个规格可以传自己的图，第一张就是这个选项的封面；和编辑商品里的是同一套，上架时一起保存。</p>';
-    form.insertBefore(block, actions);
+    actions.parentNode.insertBefore(block, actions); // 她 2026-10-25 表单加了 wrapper：actions 不再是 .card 直接子节点，改插到同父级
   })();
   (function () {
     var form = document.getElementById('tab-shop');
