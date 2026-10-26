@@ -121,7 +121,7 @@
       '#tab-export .ex-date:focus, #tab-print .ex-date:focus { border-color:var(--accent,#ffd9e6); }',
       '#tab-export .ex-input, #tab-print .ex-input { background:#fff; border:1.5px solid #FFD9E6; border-radius:10px; padding:9px 12px; font-size:15px; font-family:inherit; color:var(--text,#604C57); outline:none; width:280px; max-width:100%; }',
       '#tab-export .ex-hint, #tab-print .ex-hint { font-size:14px; color:var(--muted,#A88E9B); margin-top:8px; line-height:1.6; }',
-      '#tab-export .ex-cb, #tab-print .ex-cb { width:22px; height:22px; border:1.5px solid #FFD9E6; border-radius:7px; background:#fff; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex:none; transition:background .15s; box-sizing:border-box; }',
+      '#tab-export .ex-cb, #tab-print .ex-cb { width:22px; height:22px; border:1.5px solid var(--border,#FFD9E6); border-radius:7px; background:#fff; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex:none; transition:background .15s; box-sizing:border-box; }',
       '#tab-export .ex-cb svg, #tab-print .ex-cb svg { width:14px; height:14px; opacity:0; transition:opacity .15s; }',
       '#tab-export .ex-cb.on, #tab-print .ex-cb.on { background:var(--accent-soft,#FCE4EC); }',
       '#tab-export .ex-cb.on svg, #tab-print .ex-cb.on svg { opacity:1; }',

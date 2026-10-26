@@ -217,7 +217,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .btn-del:hover { background: #f0c3da; }
   .btn-save:hover { opacity: .85; }
   .dy-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .dy-chip { display: inline-flex; align-items: center; border: none; background: var(--card-hover); color: var(--muted); border-radius: 999px; padding: 5px 12px; font-size:15px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; flex: none; }
+  .dy-chip { display: inline-flex; align-items: center; border: 1.5px solid var(--border,#FFD9E6); background: #fff; color: var(--muted); border-radius: 999px; padding: 5px 12px; font-size:15px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; flex: none; }
   #dy-cat, .de-cat { border: 1px solid var(--accent,#FFD9E6); border-radius: 8px; padding: 6px 10px; font-size:15px; font-family: inherit; color: var(--text); background: #fff; outline: none; }
   #dy-cat:focus, .de-cat:focus { border-color:var(--text,#604C57); }
   #dy-cat-list, .dy-cat-list { display: none; position: absolute; z-index: 1399; background: #fff; border-radius: 10px; box-shadow: 0 6px 20px rgba(180,120,150,.18); padding: 4px; min-width: 170px; max-height: 168px; overflow-y: auto; }
@@ -228,6 +228,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   #days-form-card .cat-opt.cat-new, .day-item .cat-opt.cat-new { color:var(--text,#604C57); font-weight: 600; }
   .dy-chip:hover { color: var(--text); }
   .dy-chip.active { background: var(--accent-soft); color: var(--accent-strong); }
+  /* ── 原生 select 外观对齐设计系统（仅样式：字体/边框/圆角/配色，行为与选项不变 · 20261026j） ── */
+  select { font-family: inherit; font-size: 15px; color: var(--text, #604C57); background: #fff; border: 1.5px solid var(--border, #FFD9E6); border-radius: 10px; padding: 7px 10px; outline: none; max-width: 100%; cursor: pointer; box-sizing: border-box; }
+  select:focus { border-color: var(--text, #604C57); }
+  select:disabled { opacity: .5; cursor: default; }
   /* 竖排文字防护：所有表单勾选/徽章标签禁止逐字换行 */
   .sc-artist label, .bjd-item label, .sold-badge { white-space: nowrap; }
   /* 统一下拉菜单（替代浏览器原生 select 面板） */
@@ -459,7 +463,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .shop-item .info h3 { font-size:18px; }
   .shop-item .info p { font-size:15px; color: var(--muted); }
   .sold-badge { display: inline-block; font-size:14px; color:#fff; border-radius: 999px; padding: 1px 8px; margin-left: 6px; }
-  .st-on { background: #9ecfae; }
+  .st-on { background: var(--success,#5FA777); }
   .st-display { background: var(--muted,#A88E9B); }
   .st-out { background: #c4bcb6; }
   .st-off { background: #e6a9c3; }
@@ -586,8 +590,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         #tab-messages .card { position: relative; }
         #tab-messages .qa-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
         #tab-messages .msg-badge { font-size:13px; border-radius: 999px; padding: 1px 10px; color: #fff; background: var(--accent-strong); white-space: nowrap; }
-        #tab-messages .msg-badge.warn { background: #f3b96d; }
-        #tab-messages .msg-badge.ok { background: #7cc49a; }
+        #tab-messages .msg-badge.warn { background: var(--warning,#E0A458); }
+        #tab-messages .msg-badge.ok { background: var(--success,#5FA777); }
         #tab-messages .msg-badge.off { background: #c6cddb; }
         #tab-messages .qa-contact { font-size:15px; color: var(--muted); margin-top: 6px; line-height: 1.6; word-break: break-all; }
         #tab-messages .qa-contact b { color: var(--text,#604C57); font-weight: 600; }
@@ -639,7 +643,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         .aix-s-q { flex: 1; min-width: 0; font-size:16px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .aix-s-a { font-size:15px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .aix-badge { font-size:13px; background: var(--accent-strong); color: #fff; border-radius: 999px; padding: 1px 8px; flex-shrink: 0; white-space: nowrap; }
-        .aix-badge.warn { background: #f3b96d; }
+        .aix-badge.warn { background: var(--warning,#E0A458); }
         .aix-chat { display: flex; flex-direction: column; gap: 10px; background: var(--bg); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 50vh; overflow-y: auto; }
         .aix-msg { display: flex; flex-direction: column; max-width: 85%; }
         .aix-msg.user { align-self: flex-end; align-items: flex-end; }
@@ -5858,9 +5862,9 @@ function loadEmailLog() {
         : new Date(m.created_at).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
       return '<div style="padding:7px 0; border-bottom:1px dashed var(--card-hover);">' +
         '<b>' + esc(m.subject) + '</b> → ' + esc(m.to_email) +
-        ' <span style="font-size:13px;color:#fff;background:' + (st[1] === 'ok' ? '#7cc49a' : st[1] === 'warn' ? '#f3b96d' : st[1] === 'off' ? '#c6cddb' : 'var(--accent-soft)') + ';border-radius:999px;padding:1px 9px;">' + st[0] + '</span>' +
+        ' <span style="font-size:13px;color:#fff;background:' + (st[1] === 'ok' ? 'var(--success,#5FA777)' : st[1] === 'warn' ? 'var(--warning,#E0A458)' : st[1] === 'off' ? '#c6cddb' : 'var(--accent-soft)') + ';border-radius:999px;padding:1px 9px;">' + st[0] + '</span>' +
         ' <span style="color:var(--muted);font-size:14px;">' + t + '</span>' +
-        (m.last_error ? '<div style="color:#b0603a;font-size:14px;">' + esc(m.last_error) + '</div>' : '') +
+        (m.last_error ? '<div style="color:var(--danger,#D96570);font-size:14px;">' + esc(m.last_error) + '</div>' : '') +
         '</div>';
     }).join('');
   }).catch(function () { box.innerHTML = '<p class="empty">加载失败，刷新重试</p>'; });
@@ -5891,7 +5895,7 @@ function loadEmailLog() {
       })
       .catch(function () {
         document.getElementById(el).textContent = '连接失败';
-        document.getElementById(el).style.color = '#d05a7a';
+        document.getElementById(el).style.color = 'var(--danger,#D96570)';
       });
   }
   function jwtEmail(token) {
@@ -6037,11 +6041,11 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026i"></script>
-<script src="js/admin-crm.js?v=20261026i"></script>
-<script src="js/admin-workbench.js?v=20261026i"></script>
-<script src="js/admin-biz.js?v=20261026i"></script>
-<script src="js/admin-export.js?v=20261026i"></script>
+<script src="js/admin-shop.js?v=20261026j"></script>
+<script src="js/admin-crm.js?v=20261026j"></script>
+<script src="js/admin-workbench.js?v=20261026j"></script>
+<script src="js/admin-biz.js?v=20261026j"></script>
+<script src="js/admin-export.js?v=20261026j"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

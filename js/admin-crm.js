@@ -282,7 +282,7 @@
         (x.id ? '' : ' <span style="font-size:12px;color:var(--muted,#A88E9B);">' + t('临时', 'custom') + '</span>') +
         '<div style="color:var(--price,#ff6fa5);font-weight:600;">$' + fmtMoney(x.price) + '</div></div>' +
         '<button class="qb pos-dec" data-i="' + i + '">−</button><b style="color:var(--text,#604C57);">' + x.qty + '</b><button class="qb pos-inc" data-i="' + i + '">＋</button>' +
-        '<button class="pos-rm" data-i="' + i + '" style="border:none;background:none;color:#d96570;font-size:13px;cursor:pointer;text-decoration:underline;">' + t('删', 'Del') + '</button>' +
+        '<button class="pos-rm" data-i="' + i + '" style="border:none;background:none;color:var(--danger,#D96570);font-size:13px;cursor:pointer;text-decoration:underline;">' + t('删', 'Del') + '</button>' +
         '<b style="min-width:70px;text-align:right;color:var(--text,#604C57);">$' + fmtMoney(x.price * x.qty) + '</b></div>';
     }).join('');
     var sum = document.getElementById('pos-sum');
@@ -364,7 +364,7 @@
               '<b>TEST</b> ' + t('测试付款链接（手机扫码或复制打开，测试卡 4242…，不产生真实扣款）：', 'Test link (no real charge):') + '<br>' +
               '<a href="' + escAttr(res.x.url) + '" target="_blank" style="color:var(--accent-strong,#A04A68);text-decoration:underline;">' + esc(res.x.url.slice(0, 60)) + '…</a>' +
             '</div></div>';
-      }).catch(function () { sbox.innerHTML = '<p style="color:#d96570;font-size:14px;">' + t('网络异常，再试一次', 'Network error') + '</p>'; });
+      }).catch(function () { sbox.innerHTML = '<p style="color:var(--danger,#D96570);font-size:14px;">' + t('网络异常，再试一次', 'Network error') + '</p>'; });
     });
   }
 

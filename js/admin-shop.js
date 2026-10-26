@@ -119,20 +119,20 @@
 
   var ST = {
     pending:   ['待付款',   '#c4bcb6'],
-    reviewing: ['待审核',   '#f3b96d'],
+    reviewing: ['待审核',   'var(--warning,#E0A458)'],
     rejected:  ['凭证有误', '#e6a9c3'],
-    paid:      ['待发货',   '#e8a0c8'],
+    paid:      ['待发货',   'var(--success,#5FA777)'],
     shipped:   ['已发货',   '#b3ace0'],
-    completed: ['已完成',   '#9ecfae'],
+    completed: ['已完成',   'var(--success,#5FA777)'],
     cancelled: ['已取消',   '#c4bcb6'],
-    refunding: ['退款处理', '#f3b96d'],
+    refunding: ['退款处理', 'var(--warning,#E0A458)'],
     refunded:  ['已退款',   '#c4bcb6']
   };
   var O_CHIPS = [['', '全部'], ['pending', '待付款'], ['reviewing', '待审核'], ['paid', '待发货'],
                  ['shipped', '已发货'], ['completed', '已完成'], ['rejected', '凭证有误'],
                  ['refunding', '退款中'], ['refunded', '已退款'], ['cancelled', '已取消']];
-  var G_ST = { open: ['进行中', '#e8a0c8'], success: ['已成团', '#9ecfae'], failed: ['已失败', '#c4bcb6'], cancelled: ['已取消', '#c4bcb6'] };
-  var AS_ST = { open: ['待处理', '#f3b96d'], done: ['已结案', '#9ecfae'], rejected: ['已拒绝', '#c4bcb6'] };
+  var G_ST = { open: ['进行中', 'var(--success,#5FA777)'], success: ['已成团', 'var(--success,#5FA777)'], failed: ['已失败', '#c4bcb6'], cancelled: ['已取消', '#c4bcb6'] };
+  var AS_ST = { open: ['待处理', 'var(--warning,#E0A458)'], done: ['已结案', 'var(--success,#5FA777)'], rejected: ['已拒绝', '#c4bcb6'] };
 
   function badge(st, map) {
     var m = map[st] || [st, '#c4bcb6'];
@@ -542,7 +542,7 @@
     if (!SM.coupons.length) { box.innerHTML = '<p class="sm-empty">还没有优惠券</p>'; return; }
     box.innerHTML = SM.coupons.map(function (c) {
       return '<div class="sm-c-row" data-cid="' + escAttr(c.id) + '">' +
-        '<span class="sm-c-code">' + esc(c.code || '') + '</span>' + badge(c.active ? 'open' : 'cancelled', { open: ['生效中', '#9ecfae'], cancelled: ['已停用', '#c4bcb6'] }) +
+        '<span class="sm-c-code">' + esc(c.code || '') + '</span>' + badge(c.active ? 'open' : 'cancelled', { open: ['生效中', 'var(--success,#5FA777)'], cancelled: ['已停用', '#c4bcb6'] }) +
         '<span>' + couponDesc(c) + '</span>' +
         '<span class="sm-io-sub">满 $' + fmtMoney(c.min_spend) + ' 可用 · 已用 ' + (c.used || 0) + (num(c.max_uses) > 0 ? '/' + c.max_uses : '') + ' 次 · 每人限 ' + (c.per_user || 0) + ' 次</span>' +
         '<span class="sm-io-sub">' + (c.starts_at ? fmtTime(c.starts_at) + ' 起' : '') + (c.ends_at ? ' ~ ' + fmtTime(c.ends_at) : '') + (c.tag ? ' · 仅「' + esc(c.tag) + '」' : ' · 全场') + (c.allow_group ? ' · 可与拼团同用' : '') + '</span>' +

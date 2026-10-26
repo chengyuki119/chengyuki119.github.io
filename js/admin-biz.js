@@ -40,9 +40,9 @@
     st.id = 'biz-style';
     st.textContent = [
       /* 自定义勾选 chip：边框 #FFD9E6、选中 var(--accent-soft,#FCE4EC)、圆头 SVG 勾（铁律：不用原生 checkbox） */
-      '.biz-chip{display:inline-flex;align-items:center;border:1.5px solid #FFD9E6;background:#fff;color:var(--muted,#A88E9B);border-radius:999px;padding:5px 13px;font-size:14px;cursor:pointer;font-family:inherit;user-select:none;white-space:nowrap;transition:background .15s,color .15s;}',
+      '.biz-chip{display:inline-flex;align-items:center;border:1.5px solid var(--border,#FFD9E6);background:#fff;color:var(--muted,#A88E9B);border-radius:999px;padding:5px 13px;font-size:15px;cursor:pointer;font-family:inherit;user-select:none;white-space:nowrap;transition:background .15s,color .15s;}',
       '.biz-chip:hover{color:var(--text,#604C57);}',
-      '.biz-chip.on{background:var(--accent-soft,#FCE4EC);border-color:var(--accent-soft,#FCE4EC);color:var(--text,#604C57);font-weight:600;}',
+      '.biz-chip.on{background:var(--accent-soft,#FCE4EC);border-color:var(--accent-soft,#FCE4EC);color:var(--accent-strong,#A04A68);font-weight:600;}',
       '.biz-chip .ck{display:none;}',
       '.biz-chip.on .ck{display:inline-block;}',
       '.biz-chip:disabled{opacity:.5;cursor:default;}',

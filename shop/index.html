@@ -48,7 +48,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     border-radius: 999px;
     color: #fff;
   }
-  .st-on { background: #9ecfae; }
+  .st-on { background: var(--success,#5FA777); }
   .st-display { background: #fff; color: var(--text, #604C57); font-weight: 600; } /* 白底深字（浅紫白字看不清） */
   .st-out { background: #fff; color: var(--muted, #A88E9B); font-weight: 600; }
   .product.off .product-img { filter: grayscale(.7); }
@@ -313,10 +313,14 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     #pg-lightbox .lb-prev { left: 8px; } #pg-lightbox .lb-next { right: 8px; }
     #pg-lightbox .lb-img { max-width: 96vw; max-height: 74vh; }
   }
+
+  /* ── 原生 select 外观对齐设计系统（仅样式，行为不变 · 20261026j） ── */
+  select { font-family: inherit; font-size: 15px; color: var(--text, #604C57); background: #fff; border: 1.5px solid var(--border, #FFD9E6); border-radius: 10px; padding: 7px 10px; outline: none; max-width: 100%; cursor: pointer; box-sizing: border-box; }
+  select:focus { border-color: var(--text, #604C57); }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261026i">
-  <script src="/js/site-common.js?v=20261026i"></script>
-  <script src="/site-menu.js?v=20261026i" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261026j">
+  <script src="/js/site-common.js?v=20261026j"></script>
+  <script src="/site-menu.js?v=20261026j" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -814,8 +818,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261026i"></script>
-<script src="/js/site-footer.js?v=20261026i"></script>
+<script src="/js/shop-app.js?v=20261026j"></script>
+<script src="/js/site-footer.js?v=20261026j"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }
