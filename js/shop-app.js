@@ -942,7 +942,8 @@
     Promise.all([
       getUid()
     ]).then(function (r2) {
-      var uid = r2[1];
+      var uid = r2[0];
+      if (!uid) { showView('account'); return; } // 拿不到 uid 就别打无效查询（防 id=eq.null 400）
       Promise.all([
         api('shop_profiles?select=*&id=eq.' + uid).then(function (r) { return r.json(); }),
         api('shop_addresses?select=*&order=created_at.desc').then(function (r) { return r.json(); })
