@@ -493,7 +493,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .photo-item .ph-meta { font-size:15px; color: var(--muted); }
   .photo-item .edit-grid { grid-template-columns: 1fr; margin-top: 6px; }
   .photo-item .actions { margin-top: 8px; }
-  /* 每行显示选择器（分区设置）：4 个可视化布局选项，不用原生 select */
+  /* 每行显示选择器（分区设置）：5 个可视化布局选项，不用原生 select */
   .pr-picker { display: flex; gap: 6px; flex-wrap: wrap; }
   .pr-opt { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 1px solid var(--accent,#FFD9E6); background: var(--card); border-radius: 10px; padding: 7px 8px 5px; cursor: pointer; font-size:14px; color: var(--muted); font-family: inherit; transition: background .2s, border-color .2s, color .2s; }
   .pr-opt:hover { background: var(--card-hover); }
@@ -2190,7 +2190,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     var s = SECTIONS.filter(function (x) { return x.key === key; })[0];
     return s ? s.name_zh : key;
   }
-  // 每分区「每行显示」（1..4）：存 site_settings.photo_grid（{ 分区key: N }），按分区独立保存
+  // 每分区「每行显示」（1..5）：存 site_settings.photo_grid（{ 分区key: N }），按分区独立保存
   function photoGridParse() {
     try { return JSON.parse(SETTINGS['photo_grid'] || '{}') || {}; } catch (e) { return {}; }
   }
@@ -2205,8 +2205,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     saveSetting('photo_grid', pg);
   }
   function prPickerHtml(val) {
-    val = val || 4;
-    return '<div class="pr-picker" data-value="' + val + '">' + [1, 2, 3, 4].map(function (n) {
+    val = val || 5;
+    return '<div class="pr-picker" data-value="' + val + '">' + [1, 2, 3, 4, 5].map(function (n) {
       var cells = '';
       for (var i = 0; i < n * 2; i++) cells += '<i></i>';
       return '<button type="button" class="pr-opt' + (n === val ? ' active' : '') + '" data-n="' + n + '">' +
@@ -2223,7 +2223,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   });
   (function initSecPr() {
     var el = document.getElementById('sec-pr');
-    if (el && !el.innerHTML) el.innerHTML = prPickerHtml(4); // 新增分区默认 4 个一排
+    if (el && !el.innerHTML) el.innerHTML = prPickerHtml(5); // 新增分区默认 5 个一排
   })();
 
   function loadSections(done) {
@@ -6192,14 +6192,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027a"></script>
-<script src="js/admin-crm.js?v=20261027a"></script>
-<script src="js/vendor/jsQR.js?v=20261027a"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027a"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027a"></script>
-<script src="js/admin-workbench.js?v=20261027a"></script>
-<script src="js/admin-biz.js?v=20261027a"></script>
-<script src="js/admin-export.js?v=20261027a"></script>
+<script src="js/admin-shop.js?v=20261027b"></script>
+<script src="js/admin-crm.js?v=20261027b"></script>
+<script src="js/vendor/jsQR.js?v=20261027b"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027b"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027b"></script>
+<script src="js/admin-workbench.js?v=20261027b"></script>
+<script src="js/admin-biz.js?v=20261027b"></script>
+<script src="js/admin-export.js?v=20261027b"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
