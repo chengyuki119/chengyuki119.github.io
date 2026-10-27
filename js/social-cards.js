@@ -26,9 +26,7 @@
   // 后台「主页管理」保存过 links 设置时以库里的为准
   var DEFAULT_LINKS = [
     { icon: 'discord', name: 'Discord', sub: '小柚的服务器', url: 'https://discord.gg/aWSfnydGG' },
-    { icon: 'tiktok', name: 'TikTok', sub: '账号整理中', url: '' },
     { icon: 'douyin', name: '抖音', sub: '小柚ovo', url: 'https://v.douyin.com/rDWydc4QlBE/' },
-    { icon: 'youtube', name: 'YouTube', sub: '账号整理中', url: '' },
     { icon: 'instagram', name: 'Instagram', sub: 'zyc.0119', url: 'https://instagram.com/zyc.0119' },
     { icon: 'wechat', name: '微信', sub: 'yuki_060119', url: '' },
     { icon: 'gmail', name: 'Gmail', sub: 'snowyuzustudio', url: 'mailto:snowyuzustudio@gmail.com' },

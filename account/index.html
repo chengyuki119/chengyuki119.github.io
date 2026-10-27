@@ -284,7 +284,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .lang-switch {
     display: flex;
     gap: 4px;
-    background: var(--card);
+    background: var(--accent-soft, #FCE4EC); /* 20261026s 她指定款：粉胶囊底座+白胶囊选中（全站同款） */
     padding: 4px;
     border-radius: 999px;
   }
@@ -296,11 +296,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     border-radius: 999px;
     cursor: pointer;
     color: var(--muted);
-    transition: background .2s, color .2s;
+    transition: background .2s, color .2s, box-shadow .2s;
   }
   .lang-btn.active {
-    background: var(--accent-soft);
-    color: var(--accent-strong);
+    background: #ffffff;
+    color: var(--text, #604C57);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(180,120,150,.28);
   }
 
   @media (max-width: 400px) {
@@ -333,9 +335,9 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   select { font-family: inherit; font-size: 15px; color: var(--text, #604C57); background: #fff; border: 1.5px solid var(--border, #FFD9E6); border-radius: 10px; padding: 7px 10px; outline: none; max-width: 100%; cursor: pointer; box-sizing: border-box; }
   select:focus { border-color: var(--text, #604C57); }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261026r">
-  <script src="/js/site-common.js?v=20261026r"></script>
-  <script src="/site-menu.js?v=20261026r" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261026s">
+  <script src="/js/site-common.js?v=20261026s"></script>
+  <script src="/site-menu.js?v=20261026s" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -872,8 +874,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261026r"></script>
-<script src="/js/site-footer.js?v=20261026r"></script>
+<script src="/js/shop-app.js?v=20261026s"></script>
+<script src="/js/site-footer.js?v=20261026s"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

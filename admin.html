@@ -64,9 +64,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   .back-link:hover { background: var(--card-hover); }
   /* 语言切换（与前台同款组件样式；admin 不加载 site.css，样式内联） */
-  .lang-switch { display: flex; gap: 4px; background: var(--card); padding: 4px; border-radius: 999px; }
-  .lang-btn { border: none; background: none; color: var(--muted); font-size:14px; font-family: inherit; padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s; }
-  .lang-btn.active { background: var(--accent-soft, #FCE4EC); color: var(--accent-strong, #A04A68); font-weight: 600; }
+  .lang-switch { display: flex; gap: 4px; background: var(--accent-soft, #FCE4EC); padding: 4px; border-radius: 999px; } /* 20261026s 她指定款：粉胶囊底座+白胶囊选中（前台后台同款） */
+  .lang-btn { border: none; background: none; color: var(--muted); font-size:14px; font-family: inherit; padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s, box-shadow .2s; }
+  .lang-btn.active { background: #fff; color: var(--text, #604C57); font-weight: 600; box-shadow: 0 1px 4px rgba(180,120,150,.28); }
 
   .wrap { max-width: none; width: 100%; margin: 0 auto; padding: 40px 24px 64px; box-sizing: border-box; }
   a { color: inherit; text-decoration: none; }
@@ -6113,13 +6113,13 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026r"></script>
-<script src="js/admin-crm.js?v=20261026r"></script>
-<script src="js/vendor/jsQR.js?v=20261026r"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261026r"></script>
-<script src="js/admin-workbench.js?v=20261026r"></script>
-<script src="js/admin-biz.js?v=20261026r"></script>
-<script src="js/admin-export.js?v=20261026r"></script>
+<script src="js/admin-shop.js?v=20261026s"></script>
+<script src="js/admin-crm.js?v=20261026s"></script>
+<script src="js/vendor/jsQR.js?v=20261026s"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261026s"></script>
+<script src="js/admin-workbench.js?v=20261026s"></script>
+<script src="js/admin-biz.js?v=20261026s"></script>
+<script src="js/admin-export.js?v=20261026s"></script>
 <div style="padding:0 24px;"><a class="back-link" href="/" style="margin:26px 0 8px;">← 返回主页</a></div>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>

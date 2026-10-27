@@ -54,7 +54,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .lang-switch {
     display: flex;
     gap: 4px;
-    background: var(--card);
+    background: var(--accent-soft, #FCE4EC); /* 20261026s 她指定款：粉胶囊底座+白胶囊选中（全站同款） */
     padding: 4px;
     border-radius: 999px;
   }
@@ -66,9 +66,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     border-radius: 999px;
     cursor: pointer;
     color: var(--muted);
-    transition: background .2s, color .2s;
+    transition: background .2s, color .2s, box-shadow .2s;
   }
-  .lang-btn.active { background: var(--accent-soft); color: var(--accent-strong); } /* 全站统一粉色选中（20261026 Header 任务书） */
+  .lang-btn.active { background: #ffffff; color: var(--text, #604C57); font-weight: 600; box-shadow: 0 1px 4px rgba(180,120,150,.28); } /* 20261026s 白胶囊浮起（她截图指定，前台后台同款） */
   .wrap { max-width: 1000px; margin: 0 auto; padding: 48px 24px 64px; }
   .back-link {
     display: inline-flex; align-items: center; gap: 8px;
@@ -176,7 +176,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 h1::after { content: " ♥"; font-size: .75em; }
 h2::after { content: " ♥"; font-size: .75em; }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261026r">
+  <link rel="stylesheet" href="/site-menu.css?v=20261026s">
   <script src="/site-menu.js" defer></script>
   <style>a { color: inherit; text-decoration: none; }</style>
 <script>/* 主题色本地快照（无 site-common 页）；完整主题来自 site_settings.theme_colors */
@@ -428,7 +428,7 @@ try { var __t = JSON.parse(localStorage.getItem('yuki-theme-colors') || 'null');
 </script>
 <a class="back-link page-back" href="/" data-zh="← 返回主页" data-en="← Back to Home" style="margin:38px 0 10px;">← 返回主页</a>
 <footer>© 2026 Yuki · Made with Cola</footer>
-<script src="/js/site-footer.js?v=20261026r"></script>
+<script src="/js/site-footer.js?v=20261026s"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

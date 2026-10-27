@@ -51,7 +51,7 @@
   .lang-switch {
     display: flex;
     gap: 4px;
-    background: var(--card);
+    background: var(--accent-soft, #FCE4EC); /* 20261026s 她指定款：粉色胶囊底座（截图 18:23） */
     padding: 4px;
     border-radius: 999px;
   }
@@ -63,12 +63,14 @@
     border-radius: 999px;
     cursor: pointer;
     color: var(--muted);
-    transition: background .2s, color .2s;
+    transition: background .2s, color .2s, box-shadow .2s;
   }
-  /* 选中态全站统一为小铺粉色胶囊（她 20261026 Header 任务书：浅粉底+深粉字，铁律 #FCE4EC/#A04A68） */
+  /* 选中态：白色胶囊浮起（她 20261026 截图指定，前台后台同款） */
   .lang-btn.active {
-    background: var(--accent-soft, #FCE4EC);
-    color: var(--accent-strong, #A04A68);
+    background: #ffffff;
+    color: var(--text, #604C57);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(180,120,150,.28);
   }
 
 
