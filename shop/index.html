@@ -247,6 +247,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
 
 
+h1::after { content: " ♥"; font-size: .75em; }
+h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
 /* 多图翻页：与 site.css 同步（大图‹› + 极简圆点 + 底部小图预览） */
 .pg-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,.92); color: var(--text); font-size: 16px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(180,120,150,.25); font-family: inherit; padding: 0; }
 .pg-prev { left: 8px; }
@@ -323,9 +325,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   select { font-family: inherit; font-size: 15px; color: var(--text, #604C57); background: #fff; border: 1.5px solid var(--border, #FFD9E6); border-radius: 10px; padding: 7px 10px; outline: none; max-width: 100%; cursor: pointer; box-sizing: border-box; }
   select:focus { border-color: var(--text, #604C57); }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261026v">
-  <script src="/js/site-common.js?v=20261026v"></script>
-  <script src="/site-menu.js?v=20261026v" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261026w">
+  <script src="/js/site-common.js?v=20261026w"></script>
+  <script src="/site-menu.js?v=20261026w" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -823,8 +825,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261026v"></script>
-<script src="/js/site-footer.js?v=20261026v"></script>
+<script src="/js/shop-app.js?v=20261026w"></script>
+<script src="/js/site-footer.js?v=20261026w"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

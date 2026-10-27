@@ -57,7 +57,7 @@
     if (!box) return;
     window.getSocialLinks().then(function (links) {
         if (!links.length) {
-          box.innerHTML = '<p style="color:var(--muted,#A88E9B);text-align:center;padding:30px 0;">社交账号配置即将上线，先去首页逛逛吧</p>';
+          box.innerHTML = '<p style="color:var(--muted,#A88E9B);text-align:center;padding:30px 0;">社交账号配置即将上线，先去首页逛逛吧 ♡</p>';
           return;
         }
         if (mode === 'text') {
@@ -110,7 +110,7 @@
     box.addEventListener('click', function (e) {
       var cp = e.target.closest ? e.target.closest('[data-sy-copy]') : null;
       if (cp) { e.preventDefault();
-        syCopyText(cp.getAttribute('data-sy-copy'), function(ok){ syToast(ok?'已复制微信号':'复制失败，请手动复制：'+cp.getAttribute('data-sy-copy'), ok); });
+        syCopyText(cp.getAttribute('data-sy-copy'), function(ok){ syToast(ok?'已复制微信号 ♡':'复制失败，请手动复制：'+cp.getAttribute('data-sy-copy'), ok); });
         return;
       }
       var gm = e.target.closest ? e.target.closest('[data-sy-mail]') : null;
@@ -128,7 +128,7 @@
         return;
       }
       var cb = e.target.closest ? e.target.closest('[data-sy-copybtn]') : null;
-      if (cb) { syCopyText(cb.getAttribute('data-sy-copybtn'), function(ok){ syToast(ok?'已复制邮箱':'复制失败，请手动复制', ok); }); }
+      if (cb) { syCopyText(cb.getAttribute('data-sy-copybtn'), function(ok){ syToast(ok?'已复制邮箱 ♡':'复制失败，请手动复制', ok); }); }
     });
   }
 })();

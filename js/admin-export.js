@@ -337,7 +337,7 @@
 
   /* ── 订单列表（两个 tab 共用渲染，各自独立状态）── */
   function listHtml(st, orders) {
-    if (!orders.length) return '<div class="ex-empty">没有符合条件的订单，换一下筛选再试试</div>';
+    if (!orders.length) return '<div class="ex-empty">没有符合条件的订单，换一下筛选再试试 ♡</div>';
     return orders.map(function (o) {
       var a = o.address || {};
       return '<div class="ex-row" data-oid="' + escAttr(o.id) + '">' +
@@ -676,9 +676,9 @@
         var imgCell;
         if (/^https:\/\//i.test(img)) {
           imgCell = '<img src="' + escAttr(img) + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
-            '<span class="img-ph" style="display:none"></span>';
+            '<span class="img-ph" style="display:none">♡</span>';
         } else {
-          imgCell = '<span class="img-ph"></span>';
+          imgCell = '<span class="img-ph">♡</span>';
         }
         return '<tr>' +
           '<td class="c-img">' + imgCell + '</td>' +
