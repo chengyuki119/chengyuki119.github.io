@@ -190,7 +190,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       z-index: 90;
     }
     #pp-btn { display: none; }
-    #adm-content { margin-left: calc(var(--adm-side-w) + var(--adm-gap)); }
+    #adm-content { margin-left: calc(var(--adm-side-w) + var(--adm-gap)); padding: 40px 20px; box-sizing: border-box; } /* 工作台四周留白：上下 40 / 左右 20（她 20261027 14:41 验收口径），右侧不再贴边 */
+    .adm-head { padding: 0 20px; box-sizing: border-box; } /* 标题行与加留白后的内容左缘对齐 */
     #pp-menu {
       position: static; display: block;
       box-shadow: none; border: 1px solid var(--card-hover);
@@ -206,7 +207,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       z-index: 90;
     }
     #pp-btn { display: none; }
-    #adm-content { margin-left: 160px; min-width: 0; }
+    #adm-content { margin-left: 160px; min-width: 0; padding: 20px 10px 64px; box-sizing: border-box; } /* 手机端同步留白（与 .wrap 手机口径一致）*/
     #pp-menu {
       position: static; display: block; width: 100%; padding: 6px;
       max-height: none; overflow: visible; box-shadow: 0 2px 12px rgba(255,143,171,.10); animation: none;
@@ -378,7 +379,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   /* ═══ 客户管理 / 线下开单（CRM，admin-crm.js）═══ */
   .sm-stat { display:inline-flex; align-items:baseline; gap:6px; font-size:13px; color:var(--muted,#A88E9B); background:#fff; border:1px solid var(--accent-soft,#FCE4EC); border-radius:999px; padding:5px 14px; }
   .cust-row:hover { background: var(--card-hover, #FFEDF3); }
-  .chip { display:inline-block; font-size:13px; padding:4px 14px; border-radius:999px; background:#fff; border:1.5px solid var(--accent-soft,#FCE4EC); color:var(--muted,#A88E9B); cursor:pointer; user-select:none; }
+  .chip { display:inline-block; font-size:13px; line-height:1.5; padding:4px 14px; border-radius:999px; background:#fff; border:1.5px solid var(--accent-soft,#FCE4EC); color:var(--muted,#A88E9B); cursor:pointer; user-select:none; } /* line-height 錡1.5：不再继承外层大行高被撑高（她 20261027 14:40 报按钮过大）*/
   .chip.on { background:var(--accent-soft,#FCE4EC); border-color:var(--accent-soft,#FCE4EC); color:var(--text,#604C57); font-weight:600; }
   .paytab { font-size:14px; padding:7px 16px; border-radius:999px; background:#fff; border:1.5px solid var(--accent-soft,#FCE4EC); color:var(--text,#604C57); cursor:pointer; }
   .paytab.on { background:var(--accent-soft,#FCE4EC); border-color:var(--accent-soft,#FCE4EC); font-weight:600; }
@@ -6053,7 +6054,7 @@ function loadEmailLog() {
           document.getElementById(el).style.color = '#3aa06a';
         } else {
           document.getElementById(el).textContent = anonBlockedText;
-          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g52 状态色语义统一） */
+          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g62 状态色语义统一） */
         }
       })
       .catch(function () {
@@ -6204,14 +6205,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027g5"></script>
-<script src="js/admin-crm.js?v=20261027g5"></script>
-<script src="js/vendor/jsQR.js?v=20261027g5"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027g5"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027g5"></script>
-<script src="js/admin-workbench.js?v=20261027g5"></script>
-<script src="js/admin-biz.js?v=20261027g5"></script>
-<script src="js/admin-export.js?v=20261027g5"></script>
+<script src="js/admin-shop.js?v=20261027g6"></script>
+<script src="js/admin-crm.js?v=20261027g6"></script>
+<script src="js/vendor/jsQR.js?v=20261027g6"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027g6"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027g6"></script>
+<script src="js/admin-workbench.js?v=20261027g6"></script>
+<script src="js/admin-biz.js?v=20261027g6"></script>
+<script src="js/admin-export.js?v=20261027g6"></script>
 <footer style="padding:18px 0 0; text-align:center;">© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

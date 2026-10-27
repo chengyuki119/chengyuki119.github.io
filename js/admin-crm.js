@@ -418,11 +418,12 @@
     if (panel.dataset.booted) return;
     panel.dataset.booted = '1';
     panel.innerHTML =
+      '<style>#tab-mailsync .chip { margin: 0 10px 0 0; } /* 胶囊之间留出空隙（她 20261027 14:40）*/</style>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:22px;align-items:stretch;">' +
         '<div class="card" style="padding:24px 26px;display:flex;flex-direction:column;">' +
           '<h3 style="margin:0 0 14px;font-size:18px;color:var(--text,#604C57);">' + t('Gmail 自动分类（过滤器方案）', 'Gmail auto labels (filters)') + '</h3>' +
           '<p style="font-size:15px;color:var(--muted,#A88E9B);line-height:1.8;margin-bottom:16px;">' + t('默认只加标签，不删邮件、不动收件箱。以下过滤器待你完成 Google OAuth 授权后一键创建：', 'Labels only — nothing deleted. Filters created after you authorize Google OAuth:') + '</p>' +
-          '<div style="font-size:15px;color:var(--text,#604C57);line-height:2.7;">' +
+          '<div style="font-size:15px;color:var(--text,#604C57);line-height:2.4;">' + /* 行高从 2.7 收到 2.4，胶囊不再被椑高（配合 .chip 自身 line-height 锡1.5）*/
             '<span class="chip on">Snow Yuzu/订单</span> ' + t('主题含「订单确认 / 付款成功」', 'subject: order confirm/paid') + '<br>' +
             '<span class="chip on">Snow Yuzu/发货</span> ' + t('主题含「订单已发货」', 'subject: shipped') + '<br>' +
             '<span class="chip on">Snow Yuzu/取消退款</span> ' + t('主题含「退款通知 / 订单已取消」', 'subject: refund/cancel') + '<br>' +
@@ -437,7 +438,7 @@
           '<div style="font-size:15px;color:var(--text,#604C57);line-height:2.2;display:grid;gap:10px;">' +
             t('同步范围：仅「已同意接收通知」的客户；字段：姓名 / 邮箱 / 电话。', 'Scope: only customers who agreed to notices; fields: name/email/phone.') + '<br>' +
             t('匹配：按邮箱精确匹配，已存在只更新不重建。', 'Match by exact email; update, never duplicate.') + '<br>' +
-            t('联系人标签：', 'Contact labels: ') + '<span class="chip on">Snow Yuzu/普通客户</span> <span class="chip on">Snow Yuzu/VIP</span> <span class="chip on">Snow Yuzu/回头客</span>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:0;align-items:center;">' + t('联系人标签：', 'Contact labels: ') + '<span class="chip on">Snow Yuzu/普通客户</span><span class="chip on">Snow Yuzu/VIP</span><span class="chip on">Snow Yuzu/回头客</span></div>' + /* 包 flex 防 grid 拉伸；间距靠 .chip margin（她 20261027 14:40 报撑满）*/
           '</div>' +
           '<div id="ms-sync-state" style="margin-top:18px;"></div>' +
           '<div style="font-size:14px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:14px 16px;margin-top:auto;line-height:1.8;">' + t('必须等你本人完成 Google 授权后才会开启真实同步；现有 Google 联系人不会被修改或删除。Gmail 标签（邮件）≠ Contacts 标签（人物），两套分开。', 'Real sync waits for your authorization. Existing contacts untouched. Gmail labels ≠ Contacts labels.') + '</div>' +
@@ -588,7 +589,7 @@
     if (panel.dataset.booted) return;
     panel.dataset.booted = '1';
     panel.innerHTML =
-      // 20261027g5：生日邮件总开关 + 测试发送（发到官方邮箱）
+      // 20261027g6：生日邮件总开关 + 测试发送（发到官方邮箱）
       '<div class="card" style="padding:16px 20px;margin-bottom:14px;border:1.5px solid var(--accent-soft,#FCE4EC);">' +
         '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
           '<h3 style="margin:0;font-size:17px;color:var(--text,#604C57);">' + t('生日邮件 ♡', 'Birthday emails ♡') + '</h3>' +
