@@ -71,15 +71,16 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .wrap { max-width: none; width: 100%; margin: 0 auto; padding: 40px 24px 64px; box-sizing: border-box; }
   /* 后台标题行 + 侧栏宽度变量（她 20261026t 任务书 §1：标题与右侧内容面板左缘对齐；变量复用避免魔法数重复） */
   :root { --adm-side-w: 190px; --adm-gap: 22px; }
-  .adm-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; position: relative; }
-  .adm-head .logout { float: none; flex-shrink: 0; }
+  .adm-head { display: flex; align-items: center; gap: 14px; position: relative; }
+  .adm-head .logout { float: none; flex-shrink: 0; margin-left: auto; }
   @media (min-width: 900px) {
-    .adm-head { padding-left: calc(var(--adm-side-w) + var(--adm-gap)); }
-    /* 返回主页：与「柚子的后台」标题同一行，贴内容区左上角（不挤占标题对齐面板的对齐） */
-    .adm-head .adm-home-btn { position: absolute; left: 24px; top: 22px; margin-bottom: 0; }
+    /* 标题行整体推进内容列（侧栏 fixed 占左侧），返回主页按钮为行内首项：与「柚子的后台」同一行且在内容区左上，不再被侧栏盖住也不贴屏幕左缘（她 20261027 01:16） */
+    .adm-head { margin-left: calc(var(--adm-side-w) + var(--adm-gap)); }
+    .adm-head .adm-home-btn { position: static; margin: 0 14px 0 0; flex-shrink: 0; }
   }
   @media (max-width: 899px) {
-    .adm-head .adm-home-btn { display: inline-block; order: -1; margin: 0 0 10px; }
+    .adm-head { margin-left: 160px; } /* 手机端标题行也让出左栏，返回主页不再被固定侧栏盖住（她 20261027 01:16） */
+    .adm-head .adm-home-btn { display: inline-block; order: -1; margin: 0 0 10px 2px; }
     .wrap { padding: 24px 10px 64px; } /* 两栏后手机端内容区变窄，内边距同步收紧 */
     .wrap h1 { font-size: 22px; margin: 16px 0 4px; } /* 内容区变窄，标题同步缩小避免截断 */
     .wrap .sub { font-size: 14px; }
@@ -6192,14 +6193,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027b"></script>
-<script src="js/admin-crm.js?v=20261027b"></script>
-<script src="js/vendor/jsQR.js?v=20261027b"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027b"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027b"></script>
-<script src="js/admin-workbench.js?v=20261027b"></script>
-<script src="js/admin-biz.js?v=20261027b"></script>
-<script src="js/admin-export.js?v=20261027b"></script>
+<script src="js/admin-shop.js?v=20261027c"></script>
+<script src="js/admin-crm.js?v=20261027c"></script>
+<script src="js/vendor/jsQR.js?v=20261027c"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027c"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027c"></script>
+<script src="js/admin-workbench.js?v=20261027c"></script>
+<script src="js/admin-biz.js?v=20261027c"></script>
+<script src="js/admin-export.js?v=20261027c"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
