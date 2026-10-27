@@ -11,7 +11,7 @@
     wechat: '<svg viewBox="0 0 24 24" fill="#57bb6a"><path d="M9.3 4C5.3 4 2 6.7 2 10.1c0 1.9 1 3.5 2.7 4.7l-.7 2.1 2.4-1.2c.7.2 1.4.4 2.2.4h.4a5.5 5.5 0 0 1-.2-1.5c0-3.2 3-5.8 6.7-5.8h.4C15.3 6 12.6 4 9.3 4ZM7 7.4a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8Zm4.6 0a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8ZM15.5 10c-3.2 0-5.8 2.1-5.8 4.8 0 2.6 2.6 4.8 5.8 4.8.6 0 1.2-.1 1.8-.3l2 1-.6-1.7c1.4-.9 2.3-2.2 2.3-3.8 0-2.6-2.6-4.8-5.5-4.8Zm-2 2.3a.8.8 0 1 1 0 1.6.8.8 0 1 1 0-1.6Zm4 0a.8.8 0 1 1 0 1.6.8.8 0 1 1 0-1.6Z"/></svg>',
     xhs: '<svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="#ff2442"/><text x="12" y="16.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffffff">红</text></svg>',
     douyin: '<svg viewBox="0 0 24 24" fill="#5ad7d0"><path d="M16.6 3c.4 2.3 1.9 3.8 4.4 4v3c-1.7 0-3.2-.5-4.4-1.4v6.6c0 3.5-2.6 5.8-5.9 5.8-3.1 0-5.7-2.4-5.7-5.6 0-3.3 2.9-5.8 6.3-5.4v3.1c-1.7-.5-3.2.5-3.2 2.2 0 1.5 1.2 2.6 2.6 2.6 1.6 0 2.8-1.1 2.8-3.2V3h3.1Z"/></svg>',
-    netease: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#C20C0C"/><path fill="#ffffff" d="M9.4 16.6a2.2 2.2 0 1 1-1.5-2.1V8.4l7.6-2v7.2a2.2 2.2 0 1 1-1.5-2.1V8.1l-4.6 1.2v7.3Z"/></svg>',
+    netease: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#C20C0C"/><path fill="#ffffff" d="M15.9 6.4v8.1a2.75 2.75 0 1 1-1.7-2.54V8.3l-4.2 1.1v6.6a2.75 2.75 0 1 1-1.7-2.54V7.6c0-.5.35-.93.84-1.03l5.3-1.15c.75-.16 1.46.4 1.46 1.18Z"/></svg>',
     tiktok: '<svg viewBox="0 0 24 24" fill="#1c1c1e"><path d="M16.6 3c.4 2.3 1.9 3.8 4.4 4v3c-1.7 0-3.2-.5-4.4-1.4v6.6c0 3.5-2.6 5.8-5.9 5.8-3.1 0-5.7-2.4-5.7-5.6 0-3.3 2.9-5.8 6.3-5.4v3.1c-1.7-.5-3.2.5-3.2 2.2 0 1.5 1.2 2.6 2.6 2.6 1.6 0 2.8-1.1 2.8-3.2V3h3.1Z"/></svg>',
     youtube: '<svg viewBox="0 0 24 24" fill="#ff0000"><path d="M23 12s0-3.8-.5-5.6c-.3-1-1-1.7-2-2C18.7 4 12 4 12 4s-6.7 0-8.5.4c-1 .3-1.7 1-2 2C1 8.2 1 12 1 12s0 3.8.5 5.6c.3 1 1 1.7 2 2 1.8.4 8.5.4 8.5.4s6.7 0 8.5-.4c1-.3 1.7-1 2-2 .5-1.8.5-5.6.5-5.6ZM9.8 15.5v-7l6.2 3.5-6.2 3.5Z"/></svg>',
     link: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--muted,#A88E9B)" stroke-width="2"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7L12.5 19"/></svg>'
@@ -57,7 +57,7 @@
     if (!box) return;
     window.getSocialLinks().then(function (links) {
         if (!links.length) {
-          box.innerHTML = '<p style="color:var(--muted,#A88E9B);text-align:center;padding:30px 0;">社交账号配置即将上线，先去首页逛逛吧 ♡</p>';
+          box.innerHTML = '<p style="color:var(--muted,#A88E9B);text-align:center;padding:30px 0;">社交账号配置即将上线，先去首页逛逛吧</p>';
           return;
         }
         if (mode === 'text') {
@@ -110,7 +110,7 @@
     box.addEventListener('click', function (e) {
       var cp = e.target.closest ? e.target.closest('[data-sy-copy]') : null;
       if (cp) { e.preventDefault();
-        syCopyText(cp.getAttribute('data-sy-copy'), function(ok){ syToast(ok?'已复制微信号 ♡':'复制失败，请手动复制：'+cp.getAttribute('data-sy-copy'), ok); });
+        syCopyText(cp.getAttribute('data-sy-copy'), function(ok){ syToast(ok?'已复制微信号':'复制失败，请手动复制：'+cp.getAttribute('data-sy-copy'), ok); });
         return;
       }
       var gm = e.target.closest ? e.target.closest('[data-sy-mail]') : null;
@@ -128,7 +128,7 @@
         return;
       }
       var cb = e.target.closest ? e.target.closest('[data-sy-copybtn]') : null;
-      if (cb) { syCopyText(cb.getAttribute('data-sy-copybtn'), function(ok){ syToast(ok?'已复制邮箱 ♡':'复制失败，请手动复制', ok); }); }
+      if (cb) { syCopyText(cb.getAttribute('data-sy-copybtn'), function(ok){ syToast(ok?'已复制邮箱':'复制失败，请手动复制', ok); }); }
     });
   }
 })();

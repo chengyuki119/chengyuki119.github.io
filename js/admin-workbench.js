@@ -40,7 +40,7 @@
     panel.dataset.booted = '1';
     panel.innerHTML =
       '<div class="card" style="padding:16px 20px;margin-bottom:14px;">' +
-        '<h3 style="margin:0 0 4px;font-size:17px;color:var(--text,#604C57);">🗂 ' + t('订单工作台', 'Order workbench') + '</h3>' +
+        '<h3 style="margin:0 0 4px;font-size:17px;color:var(--text,#604C57);">' + t('订单工作台', 'Order workbench') + '</h3>' +
         '<p style="margin:0;font-size:13px;color:var(--muted,#A88E9B);line-height:1.8;">' +
           t('草稿（含外部平台导入）先审核、再确认导入成正式订单；外部商品默认仅展示；定金/尾款/分期/退款都在这里记账，欠款自动算。', 'Review drafts (incl. imported ones) before confirming them into real orders; external items are display-only by default; deposits / final payments / installments / refunds are tracked here.') +
         '</p>' +
@@ -49,7 +49,7 @@
           '<span class="chip" data-view="orders" style="font-size:15px;">正式订单</span>' +
           '<input id="wb-search" placeholder="搜订单号 / 邮箱 / 姓名" style="flex:1;min-width:160px;padding:9px 14px;font-size:15px;border:1.5px solid var(--accent-soft,#FCE4EC);border-radius:12px;outline:none;font-family:inherit;color:var(--text,#604C57);background:#fff;">' +
           '<button class="btn-mini" id="wb-new-draft">＋ 新建订单草稿</button>' +
-          '<button class="btn-mini" id="wb-import">⬆ 批量导入</button>' +
+          '<button class="btn-mini" id="wb-import">批量导入</button>' +
         '</div>' +
         '<div id="wb-batch-note" style="margin-top:8px;font-size:12px;color:var(--muted,#A88E9B);"></div>' +
       '</div>' +
@@ -96,7 +96,7 @@
       return hay.indexOf(WB.search) !== -1;
     });
     if (!list.length) {
-      body.innerHTML = '<div class="empty">还没有草稿。点「＋ 新建订单草稿」或「⬆ 批量导入」开始吧～</div>';
+      body.innerHTML = '<div class="empty">还没有草稿。点「＋ 新建订单草稿」或「批量导入」开始吧～</div>';
       return;
     }
     body.innerHTML = '<div class="card" style="padding:6px 0;overflow:visible;">' + list.map(function (d) {
@@ -185,7 +185,7 @@
     body.innerHTML =
       '<div class="card" style="padding:16px 20px;">' +
         '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">' +
-          '<h3 style="margin:0;font-size:17px;color:var(--text,#604C57);">📝 ' + title + '</h3>' +
+          '<h3 style="margin:0;font-size:17px;color:var(--text,#604C57);">' + title + '</h3>' +
           '<span style="font-size:12px;color:var(--muted,#A88E9B);margin-left:auto;">' + (isNew ? '' : '原始单号：' + escHtml(d.src_no || '—')) + '</span>' +
         '</div>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">' +
@@ -451,7 +451,7 @@
     mask.innerHTML =
       '<div style="position:fixed;inset:0;background:rgba(96,76,87,.35);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;">' +
         '<div class="card" style="max-width:760px;width:100%;max-height:86vh;overflow-y:auto;padding:18px 22px;">' +
-          '<h3 style="margin:0 0 8px;font-size:17px;color:var(--text,#604C57);">⬆ 批量导入订单</h3>' +
+          '<h3 style="margin:0 0 8px;font-size:17px;color:var(--text,#604C57);">批量导入订单</h3>' +
           '<p style="margin:0;font-size:13px;color:var(--muted,#A88E9B);line-height:1.8;">支持 CSV / Excel(.xlsx)。一行一个商品，同一原始单号的多行会合并成一单多商品。解析后先预览校验，再保存为草稿。</p>' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center;">' +
             '<button class="btn-mini" id="wb-dl-tpl">下载 CSV 模板</button>' +

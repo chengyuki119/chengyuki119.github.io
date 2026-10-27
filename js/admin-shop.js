@@ -427,7 +427,7 @@
       '<span class="sold-badge" style="background:' + st[1] + ';">' + esc(dead ? (st[0] + ' · 无需发货') : st[0]) + '</span>' +
       '<span class="sold-badge" style="background:#fff;border:1.5px solid var(--accent-soft,#FCE4EC);color:var(--muted,#A88E9B);">付款：' + esc(payL) + '</span>' +
       '<span class="sm-o-mail">' + esc(o.email || '') + '</span>' +
-      ((o.note || o.coupon_code) ? '<span class="sm-o-cnt" title="' + escAttr((o.note ? '备注：' + o.note : '') + (o.coupon_code ? (o.note ? '；' : '') + '优惠码：' + o.coupon_code : '')) + '">' + (o.note ? '📝' : '') + (o.coupon_code ? '🎟' : '') + '</span>' : '') +
+      ((o.note || o.coupon_code) ? '<span class="sm-o-cnt" title="' + escAttr((o.note ? '备注：' + o.note : '') + (o.coupon_code ? (o.note ? '；' : '') + '优惠码：' + o.coupon_code : '')) + '">' + (o.note ? '' : '') + (o.coupon_code ? '' : '') + '</span>' : '') +
       '<span class="sm-o-cnt">' + arr(o.items).length + ' 件</span>' +
       '<span class="sm-o-total" style="color:var(--price,#ff6fa5);font-weight:700;">$' + fmtMoney(o.total) + '</span>' +
       '<span class="sm-o-time">' + fmtTime(o.created_at) + '</span>' +
@@ -1499,7 +1499,7 @@
         if (!SM.products.length) { // 商品列表还没加载完就点选择 → 现拉，别让买家只能选自定义（她 2026-10-25）
           loadProducts().then(function () {
             if (!MO_ITEMS[i]) return;
-            pickPop(pick, [{ v: '__custom__', label: '✍️ 自定义商品' }].concat(SM.products.map(function (pp) {
+            pickPop(pick, [{ v: '__custom__', label: '自定义商品' }].concat(SM.products.map(function (pp) {
               return { v: pp.id, label: (pp.name || '未命名') + ' · $' + fmtMoney(pp.price) };
             })), MO_ITEMS[i].pid || '', function (v) {
               applyMoPick(i, v); moRenderItems(); moCalc();
@@ -1507,7 +1507,7 @@
           });
           return;
         }
-        pickPop(pick, [{ v: '__custom__', label: '✍️ 自定义商品' }].concat(SM.products.map(function (pp) {
+        pickPop(pick, [{ v: '__custom__', label: '自定义商品' }].concat(SM.products.map(function (pp) {
           return { v: pp.id, label: (pp.name || '未命名') + ' · $' + fmtMoney(pp.price) };
         })), MO_ITEMS[i].pid || '', function (v) {
           applyMoPick(i, v); moRenderItems(); moCalc();

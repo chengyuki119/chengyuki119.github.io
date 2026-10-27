@@ -224,7 +224,7 @@
         '</div>' +
       '</div>' +
       '<div style="margin-top:14px;font-size:13px;color:var(--muted,#A88E9B);">' + t('编号规则：正式 SY-POS-001…，测试 SY-POS-TEST-001…，与线上订单独立计数；重复点击保存不会产生重复记录。', 'POS numbering is independent from online orders; duplicate submits are protected.') + '</div>';
-    var chans = [['cash', t('💵 现金', 'Cash')], ['zelle', 'Zelle'], ['venmo', 'Venmo'], ['paypal', 'PayPal'], ['stripe', t('Stripe 扫码', 'Stripe QR')], ['other', t('＋ 其他', 'Other')]];
+    var chans = [['cash', t('现金', 'Cash')], ['zelle', 'Zelle'], ['venmo', 'Venmo'], ['paypal', 'PayPal'], ['stripe', t('Stripe 扫码', 'Stripe QR')], ['other', t('＋ 其他', 'Other')]];
     var chansEl = panel.querySelector('#pos-chans');
     chansEl.innerHTML = chans.map(function (c) { return '<span class="paytab' + (POS.channel === c[0] ? ' on' : '') + '" data-ch="' + c[0] + '">' + c[1] + '</span>'; }).join('');
     chansEl.querySelectorAll('.paytab').forEach(function (el) {
@@ -390,11 +390,11 @@
     if (panel.dataset.booted) return;
     panel.dataset.booted = '1';
     panel.innerHTML =
-      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;">' +
-        '<div class="card" style="padding:16px 20px;">' +
-          '<h3 style="margin:0 0 10px;font-size:16px;color:var(--text,#604C57);">📧 ' + t('Gmail 自动分类（过滤器方案）', 'Gmail auto labels (filters)') + '</h3>' +
-          '<p style="font-size:13px;color:var(--muted,#A88E9B);line-height:1.8;">' + t('默认只加标签，不删邮件、不动收件箱。以下过滤器待你完成 Google OAuth 授权后一键创建：', 'Labels only — nothing deleted. Filters created after you authorize Google OAuth:') + '</p>' +
-          '<div style="font-size:14px;color:var(--text,#604C57);line-height:2.4;">' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:22px;">' +
+        '<div class="card" style="padding:24px 26px;">' +
+          '<h3 style="margin:0 0 14px;font-size:18px;color:var(--text,#604C57);">' + t('Gmail 自动分类（过滤器方案）', 'Gmail auto labels (filters)') + '</h3>' +
+          '<p style="font-size:15px;color:var(--muted,#A88E9B);line-height:1.8;margin-bottom:16px;">' + t('默认只加标签，不删邮件、不动收件箱。以下过滤器待你完成 Google OAuth 授权后一键创建：', 'Labels only — nothing deleted. Filters created after you authorize Google OAuth:') + '</p>' +
+          '<div style="font-size:15px;color:var(--text,#604C57);line-height:2.7;">' +
             '<span class="chip on">Snow Yuzu/订单</span> ' + t('主题含「订单确认 / 付款成功」', 'subject: order confirm/paid') + '<br>' +
             '<span class="chip on">Snow Yuzu/发货</span> ' + t('主题含「订单已发货」', 'subject: shipped') + '<br>' +
             '<span class="chip on">Snow Yuzu/取消退款</span> ' + t('主题含「退款通知 / 订单已取消」', 'subject: refund/cancel') + '<br>' +
@@ -402,17 +402,17 @@
             '<span class="chip on">Snow Yuzu/客户留言</span> ' + t('后台留言通知', 'contact notice') + '<br>' +
             '<span class="chip on">Snow Yuzu/VIP会员</span> ' + t('VIP 变更通知', 'VIP notice') +
           '</div>' +
-          '<div style="font-size:13px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:8px 12px;margin-top:10px;">' + t('需要 Google OAuth 授权（gmail.labels + gmail.filters）。SMTP 发信权限不等于邮箱管理权限——等你授权，我不会动你的邮箱。', 'Needs your Google OAuth (gmail.labels+filters). SMTP access is NOT mailbox access — nothing touched until you authorize.') + '</div>' +
+          '<div style="font-size:14px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:12px 14px;margin-top:18px;line-height:1.8;">' + t('需要 Google OAuth 授权（gmail.labels + gmail.filters）。SMTP 发信权限不等于邮箱管理权限——等你授权，我不会动你的邮箱。', 'Needs your Google OAuth (gmail.labels+filters). SMTP access is NOT mailbox access — nothing touched until you authorize.') + '</div>' +
         '</div>' +
-        '<div class="card" style="padding:16px 20px;">' +
-          '<h3 style="margin:0 0 10px;font-size:16px;color:var(--text,#604C57);">👥 ' + t('Google Contacts 联系人同步（默认关）', 'Google Contacts sync (off)') + '</h3>' +
-          '<div style="font-size:14px;color:var(--text,#604C57);line-height:1.9;">' +
+        '<div class="card" style="padding:24px 26px;">' +
+          '<h3 style="margin:0 0 14px;font-size:18px;color:var(--text,#604C57);">' + t('Google Contacts 联系人同步（默认关）', 'Google Contacts sync (off)') + '</h3>' +
+          '<div style="font-size:15px;color:var(--text,#604C57);line-height:2.2;display:grid;gap:10px;">' +
             t('同步范围：仅「已同意接收通知」的客户；字段：姓名 / 邮箱 / 电话。', 'Scope: only customers who agreed to notices; fields: name/email/phone.') + '<br>' +
             t('匹配：按邮箱精确匹配，已存在只更新不重建。', 'Match by exact email; update, never duplicate.') + '<br>' +
             t('联系人标签：', 'Contact labels: ') + '<span class="chip on">Snow Yuzu/普通客户</span> <span class="chip on">Snow Yuzu/VIP</span> <span class="chip on">Snow Yuzu/回头客</span>' +
           '</div>' +
-          '<div id="ms-sync-state" style="margin-top:12px;"></div>' +
-          '<div style="font-size:13px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:8px 12px;margin-top:10px;">' + t('必须等你本人完成 Google 授权后才会开启真实同步；现有 Google 联系人不会被修改或删除。Gmail 标签（邮件）≠ Contacts 标签（人物），两套分开。', 'Real sync waits for your authorization. Existing contacts untouched. Gmail labels ≠ Contacts labels.') + '</div>' +
+          '<div id="ms-sync-state" style="margin-top:18px;"></div>' +
+          '<div style="font-size:14px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:12px 14px;margin-top:16px;line-height:1.8;">' + t('必须等你本人完成 Google 授权后才会开启真实同步；现有 Google 联系人不会被修改或删除。Gmail 标签（邮件）≠ Contacts 标签（人物），两套分开。', 'Real sync waits for your authorization. Existing contacts untouched. Gmail labels ≠ Contacts labels.') + '</div>' +
         '</div>' +
       '</div>';
     loadSyncState();
@@ -425,12 +425,12 @@
       try { raw = JSON.parse(raw); } catch (e) {}
       var st = (raw && typeof raw === 'object') ? raw : {};
       box.innerHTML =
-        '<div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text,#604C57);">' +
+        '<div style="display:flex;align-items:center;gap:14px;font-size:15px;color:var(--text,#604C57);flex-wrap:wrap;">' +
           '<span>' + t('同步开关', 'Sync switch') + '</span>' +
           '<span style="font-size:12px;padding:2px 12px;border-radius:999px;background:' + (st.enabled ? 'var(--accent-soft,#FCE4EC);color:var(--accent-strong,#A04A68);' : '#f3ece6;color:var(--muted,#A88E9B);') + 'font-weight:600;">' + (st.enabled ? t('已开启（待授权）', 'Enabled (pending auth)') : t('关闭', 'Off')) + '</span>' +
           '<button class="btn-mini" id="ms-toggle">' + (st.enabled ? t('关闭', 'Turn off') : t('开启', 'Turn on')) + '</button>' +
         '</div>' +
-        '<div style="font-size:12px;color:var(--muted,#A88E9B);margin-top:6px;">' + t('状态：', 'Status: ') + (st.oauth_done ? t('Google 已授权，同步就绪', 'Google authorized, ready') : t('等待柚子完成 Google OAuth 授权', 'Waiting for your Google OAuth authorization')) + '</div>';
+        '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-top:10px;">' + t('状态：', 'Status: ') + (st.oauth_done ? t('Google 已授权，同步就绪', 'Google authorized, ready') : t('等待柚子完成 Google OAuth 授权', 'Waiting for your Google OAuth authorization')) + '</div>';
       box.querySelector('#ms-toggle').addEventListener('click', function () {
         var next = { enabled: !(st && st.enabled), oauth_done: false, updated: new Date().toISOString() };
         api('site_settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ key: 'crm_sync', value: next }) })
@@ -556,7 +556,7 @@
     panel.dataset.booted = '1';
     panel.innerHTML =
       '<div class="card" style="padding:16px 20px;margin-bottom:14px;">' +
-        '<h3 style="margin:0 0 4px;font-size:17px;color:var(--text,#604C57);">✉️ ' + t('邮件模板管理', 'Email templates') + '</h3>' +
+        '<h3 style="margin:0 0 4px;font-size:17px;color:var(--text,#604C57);">' + t('邮件模板管理', 'Email templates') + '</h3>' +
         '<p style="margin:0;font-size:13px;color:var(--muted,#A88E9B);line-height:1.8;">' +
           t('各用途邮件的主题与正文模板，中英文分开管理；带变量占位，发送时自动替换。当前仅保存与预览，不会自动发送任何邮件。', 'Subject & body templates per email type, zh/en managed separately. Save & preview only — nothing is sent automatically.') +
         '</p>' +
@@ -584,7 +584,7 @@
           '</div>' +
         '</div>' +
         '<div class="card" style="padding:16px 20px;align-self:start;">' +
-          '<h3 style="margin:0 0 10px;font-size:16px;color:var(--text,#604C57);">👁 ' + t('模板预览', 'Preview') + '</h3>' +
+          '<h3 style="margin:0 0 10px;font-size:16px;color:var(--text,#604C57);">' + t('模板预览', 'Preview') + '</h3>' +
           '<div id="tpl-preview" style="border:1px solid var(--accent-soft,#FCE4EC);border-radius:14px;padding:14px 16px;background:#fff;">' +
             '<p style="color:var(--muted,#A88E9B);font-size:14px;">' + t('点「预览」查看替换变量后的效果', 'Click Preview to see variable substitution') + '</p>' +
           '</div>' +
@@ -741,7 +741,7 @@
     panel.dataset.booted = '1';
     panel.innerHTML =
       '<div class="card" style="padding:16px 20px;">' +
-        '<h3 style="margin:0 0 4px;font-size:17px;color:var(--text,#604C57);">🎨 ' + t('主题颜色', 'Theme colors') + '</h3>' +
+        '<h3 style="margin:0 0 4px;font-size:17px;color:var(--text,#604C57);">' + t('主题颜色', 'Theme colors') + '</h3>' +
         '<p style="margin:0;font-size:13px;color:var(--muted,#A88E9B);line-height:1.8;">' +
           t('改的是全站同一套变量：前台每个页面、后台所有页签、按钮/边框/金额/文字全部同步，不用挨个改。改完点「保存并同步全站」。', 'One set of variables for the whole site. Save to sync every page, admin tab, button, border and price color.') +
         '</p>' +

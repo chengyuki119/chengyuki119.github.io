@@ -17,6 +17,10 @@
   function priceHtml(c, v) { return '<small>' + sym(c) + '</small>' + money(v); }
   function normImg(u) { u = String(u || ''); return /^(https?:\/\/|data:)/.test(u) ? u : '/' + u.replace(/^\/+/, ''); }
   function t(zh, en) { return (window.LANG === 'en') ? en : zh; }
+  function svgHeart(on) { // 收藏按钮：实心/空心 SVG（原 ♥/♡ 字符按「全站去 emoji」改矢量）
+    var p = 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z';
+    return '<svg viewBox="0 0 24 24" width="17" height="17" style="display:block;margin:auto;" ' + (on ? 'fill="#A04A68"' : 'fill="none" stroke="#A88E9B" stroke-width="1.8"') + '><path d="' + p + '"/></svg>';
+  }
 
   // ===== 买家登录态 =====
   var USER = null; // {a: access, r: refresh, email}
@@ -257,7 +261,7 @@
         '<div class="d-head" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
           '<h2 style="font-size:24px;margin:0;">' + esc(p.name) + '</h2>' +
           '<span class="product-tag">' + esc(p.tag || t('没有标签', 'Untagged')) + '</span>' +
-          '<button type="button" class="fav-btn detail-fav' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '" style="margin-left:auto;">' + (isFav(p.id) ? '♥' : '♡') + '</button>' +
+          '<button type="button" class="fav-btn detail-fav' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '" style="margin-left:auto;">' + svgHeart(isFav(p.id)) + '</button>' +
         '</div>' +
         '<div class="d-price">' +
           '<div style="font-size:26px;color:var(--price,#ff6fa5);font-weight:700;margin:10px 0;">' + sym(curOf(p, v)) + money(price) + '</div>' +
@@ -271,7 +275,7 @@
           }).join('') + '</div></div>' : '') +
         (st === 'on' ?
           '<div class="d-notice card" style="padding:12px 14px;margin:12px 0 0;background:var(--bg,#FFFBFC);border:1.5px solid var(--accent-soft,#FCE4EC);">' +
-            '<b style="font-size:15px;">' + t('购买须知 ♡', 'Before You Order ♡') + '</b>' +
+            '<b style="font-size:15px;">' + t('购买须知', 'Before You Order') + '</b>' +
             '<p style="font-size:14px;color:var(--muted);margin:6px 0 0;line-height:1.7;">' +
               t('下单前请仔细阅读商品描述与图片。手工制品与键帽可能存在轻微瑕疵或正常工艺差异，与描述一致的轻微差异不构成退款理由。详细规则见', 'Please review the description and photos carefully. Handmade items and keycaps may have minor imperfections or variations; minor variations consistent with the description are not grounds for refund. See our ') +
               '<a href="/return-policy/" style="color:var(--price,#ff6fa5);text-decoration:underline;">' + t('《退货与退款政策》', 'Return & Refund Policy') + '</a>' + t('。', '.') + '</p>' +
@@ -416,7 +420,7 @@
         var memberQ = USER ? api('shop_group_members?select=nickname,user_id,created_at&group_id=eq.' + gid) : Promise.resolve({ json: function () { return []; } });
         memberQ.then(function (r) { return r.json(); }).then(function (members) {
           members = arr(members);
-          var stText = { open: t('进行中', 'Open'), success: t('已成团 🎉'.replace(' 🎉', ''), 'Success'), failed: t('已失败', 'Failed'), cancelled: t('已取消', 'Cancelled') }[g.status];
+          var stText = { open: t('进行中', 'Open'), success: t('已成团', 'Success'), failed: t('已失败', 'Failed'), cancelled: t('已取消', 'Cancelled') }[g.status];
           box.innerHTML =
             '<a class="back-link" href="/shop/?sec=groups" style="margin-bottom:14px;display:inline-flex;">← ' + t('全部拼团', 'All groups') + '</a>' +
             '<div class="card" style="padding:18px;">' +
@@ -692,7 +696,7 @@
       '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + new Date(o.created_at).toLocaleString() + '</div>' +
       (o.items || []).map(function (it) {
         return '<div style="display:flex;gap:12px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--accent-soft,#FCE4EC);">' +
-          (it.image ? '<a href="/shop/?id=' + escAttr(it.id) + '" target="_blank" style="text-decoration:none;"><img src="' + escAttr(normImg(it.image)) + '" style="width:56px;height:56px;border-radius:12px;object-fit:cover;flex-shrink:0;"></a>' : '<div style="width:56px;height:56px;border-radius:12px;background:var(--accent-soft,#FCE4EC);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted,#A88E9B);font-size:20px;">♡</div>') +
+          (it.image ? '<a href="/shop/?id=' + escAttr(it.id) + '" target="_blank" style="text-decoration:none;"><img src="' + escAttr(normImg(it.image)) + '" style="width:56px;height:56px;border-radius:12px;object-fit:cover;flex-shrink:0;"></a>' : '<div style="width:56px;height:56px;border-radius:12px;background:var(--accent-soft,#FCE4EC);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted,#A88E9B);font-size:20px;"></div>') +
           '<div style="flex:1;min-width:0;">' +
             '<div style="font-size:16px;color:var(--text,#604C57);font-weight:600;">' + esc(it.name) + '</div>' +
             (it.sku ? '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-top:2px;">' + t('规格', 'Option') + '：' + esc(it.sku) + '</div>' : '') +
@@ -1201,7 +1205,7 @@
     document.querySelectorAll('[data-fav]').forEach(function (b) {
       var on = isFav(b.getAttribute('data-fav'));
       b.classList.toggle('on', on);
-      b.textContent = on ? '♥' : '♡';
+      b.innerHTML = svgHeart(on);
     });
   }
   document.addEventListener('click', function (e) {
@@ -1220,7 +1224,7 @@
     var items = FAVS.map(function (id) { return PRODUCTS.filter(function (p) { return String(p.id) === String(id); })[0]; }).filter(Boolean);
     sec.innerHTML = '<b style="font-size:17px;">' + t('我的收藏', 'Favorites') + '</b>' +
       (items.length ? '<div class="grid" style="margin-top:10px;">' + items.map(productCardShop).join('') + '</div>'
-                    : '<p style="font-size:15px;color:var(--muted);margin:8px 0 0;">' + t('还没有收藏，去逛逛点 ♡ 收起来', 'Nothing saved yet — tap ♡ on any item') + '</p>');
+                    : '<p style="font-size:15px;color:var(--muted);margin:8px 0 0;">' + t('还没有收藏，去逛逛收藏起来', 'Nothing saved yet — go browse and save items') + '</p>');
     box.appendChild(sec);
     var g2 = sec.querySelector('.grid'); if (g2) bindCards(g2);
     paintFavs();
@@ -1243,7 +1247,7 @@
       CART.map(function (x, i) {
         return '<div class="card" style="padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:center;">' +
           '<span class="ck-box" data-i="' + i + '" style="width:20px;height:20px;border-radius:6px;border:2px solid var(--border,#FFD9E6);flex-shrink:0;cursor:pointer;background:' + (x.checked !== false ? 'var(--accent-soft,#FCE4EC)' : '#fff') + ';display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1;color:var(--text,#604C57);">' + (x.checked !== false ? '<svg viewBox=\"0 0 16 16\" width=\"12\" height=\"12\" style=\"display:block;\"><path d=\"M3.2 8.6 L6.6 11.8 L12.8 4.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>' : '') + '</span>' +
-          (x.image ? '<img src="' + escAttr(normImg(x.image)) + '" style="width:64px;height:64px;border-radius:14px;object-fit:cover;flex-shrink:0;">' : '<div style="width:64px;height:64px;border-radius:14px;background:var(--accent-soft,#FCE4EC);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted,#A88E9B);font-size:22px;">♡</div>') +
+          (x.image ? '<img src="' + escAttr(normImg(x.image)) + '" style="width:64px;height:64px;border-radius:14px;object-fit:cover;flex-shrink:0;">' : '<div style="width:64px;height:64px;border-radius:14px;background:var(--accent-soft,#FCE4EC);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted,#A88E9B);font-size:22px;"></div>') +
           '<div style="flex:1;min-width:0;">' +
             '<div style="font-size:16px;color:var(--text,#604C57);font-weight:600;">' + esc(x.name) + '</div>' +
             (x.sku ? '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-top:2px;">' + t('规格', 'Option') + '：' + esc(x.sku) + '</div>' : '') +
@@ -1330,7 +1334,7 @@
     var off = st === 'on' ? '' : ' off';
     return '<div class="product' + off + '" data-pid="' + escAttr(p.id) + '" style="cursor:pointer;">' +
       '<div class="product-img">' + img + '<span class="st ' + stCls + '">' + stText + '</span>' +
-      '<button type="button" class="fav-btn' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '">' + (isFav(p.id) ? '♥' : '♡') + '</button></div>' +
+      '<button type="button" class="fav-btn' + (isFav(p.id) ? ' on' : '') + '" data-fav="' + escAttr(p.id) + '" aria-label="' + t('收藏', 'Favorite') + '">' + svgHeart(isFav(p.id)) + '</button></div>' +
       '<div class="product-info">' +
       '<span class="product-tag">' + esc(p.tag || t('没有标签', 'Untagged')) + '</span>' +
       '<h3>' + esc(p.name) + '</h3>' +

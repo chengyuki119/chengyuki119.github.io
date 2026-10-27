@@ -955,7 +955,7 @@ function ykGatePage(mode) {
       var wrapR = document.createElement('div');
       wrapR.style.cssText = 'min-height:62vh;display:flex;align-items:center;justify-content:center;padding:30px 16px;';
       wrapR.innerHTML = '<div style="background:var(--card,#FFFFFF);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
-        '<div style="font-size:34px;color:var(--text,#604C57);line-height:1;">♥</div>' +
+        '' +
         '<h2 style="font-size:20px;color:var(--text,#604C57);margin:14px 0 8px;">' + (en ? 'Checking your identity…' : '身份确认没成功') + '</h2>' +
         '<p style="font-size:15px;color:var(--muted,#A88E9B);margin:0 0 22px;">' + (en ? 'Network hiccup — your login is safe. Tap to retry.' : '刚才网络抖了一下，你的登录还在，点下面重试就好。') + '</p>' +
         '<button id="yk-retry" style="background:var(--accent,#ffd9e6);color:var(--text,#604C57);border:0;border-radius:999px;padding:11px 26px;font-size:16px;cursor:pointer;">' + (en ? 'Retry' : '重试') + '</button>' +
@@ -981,7 +981,7 @@ function ykGatePage(mode) {
              ' <a href="/" style="display:inline-block;margin-left:10px;color:var(--muted,#A88E9B);text-decoration:none;">' + (en ? 'Back to Home' : '返回主页') + '</a>';
     }
     wrap.innerHTML = '<div style="background:var(--card,#FFFFFF);border-radius:22px;padding:44px 34px;max-width:480px;width:100%;text-align:center;">' +
-      '<div style="font-size:34px;color:var(--text,#604C57);line-height:1;">♥</div>' +
+      '' +
       '<h2 style="font-size:20px;color:var(--text,#604C57);margin:14px 0 8px;">' + title + '</h2>' +
       '<p style="font-size:15px;color:var(--muted,#A88E9B);margin:0 0 22px;">' +
         (logged

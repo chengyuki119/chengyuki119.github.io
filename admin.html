@@ -71,10 +71,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .wrap { max-width: none; width: 100%; margin: 0 auto; padding: 40px 24px 64px; box-sizing: border-box; }
   /* 后台标题行 + 侧栏宽度变量（她 20261026t 任务书 §1：标题与右侧内容面板左缘对齐；变量复用避免魔法数重复） */
   :root { --adm-side-w: 190px; --adm-gap: 22px; }
-  .adm-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .adm-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; position: relative; }
   .adm-head .logout { float: none; flex-shrink: 0; }
   @media (min-width: 900px) {
     .adm-head { padding-left: calc(var(--adm-side-w) + var(--adm-gap)); }
+    /* 返回主页：与「柚子的后台」标题同一行，贴内容区左上角（不挤占标题对齐面板的对齐） */
+    .adm-head .adm-home-btn { position: absolute; left: 24px; top: 22px; margin-bottom: 0; }
+  }
+  @media (max-width: 899px) {
+    .adm-head .adm-home-btn { display: inline-block; order: -1; margin: 0 0 10px; }
   }
   a { color: inherit; text-decoration: none; }
   h1 { font-size:31px; margin: 20px 0 6px; }
@@ -184,9 +189,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       box-shadow: none; border: 1px solid var(--card-hover);
       width: 100%; max-height: calc(100vh - 60px - 36px); overflow-y: auto;
     }
-    .adm-home-btn { display: block; width: 100%; box-sizing: border-box; }
   }
-  /* 返回主页：粉色胶囊按钮，固定在侧栏顶部（#pp-wrap 为 sticky，不随菜单内部滚动）；点击进首页路由不依赖历史记录（她 20261026t 任务书 §2） */
+  /* 返回主页：粉色胶囊按钮，桌面端与「柚子的后台」标题同行（内容区左上角）；手机端在标题上方；点击进首页路由不依赖历史记录（她 20261026 21:50 任务书） */
   .adm-home-btn {
     display: inline-block; margin-bottom: 10px; padding: 9px 18px;
     background: var(--accent, #FFD9E6); color: var(--text, #604C57);
@@ -584,6 +588,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
 <div class="wrap">
   <div class="adm-head">
+    <a class="adm-home-btn" href="/">← 返回主页</a>
     <div>
       <h1 style="margin-bottom:4px;">柚子的后台</h1>
       <p class="sub" style="margin-bottom:0;">回留言 · 上小铺新品，全都在这里自己搞定</p>
@@ -602,7 +607,6 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   <!-- 登录后 -->
   <div id="admin-body" style="display:none;">
     <div class="pp-wrap" id="pp-wrap">
-      <a class="adm-home-btn" href="/">← 返回主页</a>
       <button class="pp-btn" id="pp-btn" type="button">当前页面：<span id="pp-cur">Profile 编辑</span> <span class="pp-arrow">▼</span></button>
       <div class="pp-menu" id="pp-menu">
         <div class="pp-group">主页设置</div>
@@ -6166,15 +6170,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026t"></script>
-<script src="js/admin-crm.js?v=20261026t"></script>
-<script src="js/vendor/jsQR.js?v=20261026t"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261026t"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261026t"></script>
-<script src="js/admin-workbench.js?v=20261026t"></script>
-<script src="js/admin-biz.js?v=20261026t"></script>
-<script src="js/admin-export.js?v=20261026t"></script>
-<div style="padding:0 24px;"><a class="back-link" href="/" style="margin:26px 0 8px;">← 返回主页</a></div>
+<script src="js/admin-shop.js?v=20261026v"></script>
+<script src="js/admin-crm.js?v=20261026v"></script>
+<script src="js/vendor/jsQR.js?v=20261026v"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261026v"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261026v"></script>
+<script src="js/admin-workbench.js?v=20261026v"></script>
+<script src="js/admin-biz.js?v=20261026v"></script>
+<script src="js/admin-export.js?v=20261026v"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
