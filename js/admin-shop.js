@@ -410,7 +410,7 @@
         '<input class="sm-ship-note" placeholder="备注" value="' + escAttr(o.ship_note || '') + '"></div>' +
         '<button type="button" class="btn-save sm-act-ship" style="padding:10px 26px;font-size:16px;">确认发货</button>' +
         '</div>' +
-        // 20261027g22：虚拟物流 6 状态推进（仅 TEST- 测试单号；加载当前进度后可点击切换）
+        // 20261027g32：虚拟物流 6 状态推进（仅 TEST- 测试单号；加载当前进度后可点击切换）
         ((o.tracking || '').indexOf('TEST-') === 0 ?
           '<div class="sm-act sm-act-v"><span class="sm-vlabel">虚拟物流状态（测试单号专用，点击切换 · 不会发给真实客户）</span>' +
           '<div class="sm-track-steps" data-no="' + escAttr(o.tracking) + '" style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;"><span style="font-size:13px;color:var(--muted);">加载中…</span></div>' +
@@ -1016,6 +1016,7 @@
       api('email_log', {
         method: 'POST', headers: { 'Prefer': 'return=representation' },
         body: JSON.stringify({
+          status: 'preview', // email_pick_batch 只取 pending/failed——预览永远不发信
           kind: 'order_shipped_preview', ref_id: (pvO ? pvO.order_no : 'TEST') + '#preview-' + Date.now(),
           to_email: (pvO ? pvO.email : ''), subject: '【预览 · 不发送】你的包裹出发啦！' + (pvO ? pvO.order_no : '') + ' ♡',
           body: '【这是一封预览邮件，不会发出】\n\n快递公司：' + (pvO ? (pvO.carrier || 'Snow Yuzu Test Carrier') : '') + '\n运单号：' + pvNo + '\n物流链接：https://chengyuki119.github.io/tracking/?no=' + pvNo + '\n\n最新物流状态以物流查询页为准；真实发货邮件由确认发货自动触发。\n— Snow Yuzu ♡'

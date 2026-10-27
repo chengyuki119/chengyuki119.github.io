@@ -182,7 +182,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   /* ── 桌面端：导航固定左侧栏，内容右侧 ──
      她 20261027 00:00：右栏怎么往下滑左栏都不动，左栏自己能滚。
      sticky 会被全局 overflow-x clip 祖先破坏（实测失效），改用 fixed 钉死视口。 */
-  /* ── 20261027g22：主内容白卡固定框（她 20261027 10:51：外框上下各留 50px、滚动时框不动、内容在框内滚）── */
+  /* ── 20261027g32：主内容白卡固定框（她 20261027 10:51：外框上下各留 50px、滚动时框不动、内容在框内滚）── */
   #adm-shell {
     position: fixed; top: 110px; bottom: 50px; left: 24px; right: 24px;
     background: var(--card,#fff); border-radius: 22px;
@@ -6056,7 +6056,7 @@ function loadEmailLog() {
           document.getElementById(el).style.color = '#3aa06a';
         } else {
           document.getElementById(el).textContent = anonBlockedText;
-          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g22 状态色语义统一） */
+          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g32 状态色语义统一） */
         }
       })
       .catch(function () {
@@ -6169,7 +6169,7 @@ function loadEmailLog() {
     if (ch.id && ch.id.indexOf('tab-') === 0) wrap.appendChild(ch);
   });
   body.appendChild(wrap);
-  // 20261027g22：主内容白卡固定框（含页脚一起进卡，页面本体不再滚动）
+  // 20261027g32：主内容白卡固定框（含页脚一起进卡，页面本体不再滚动）
   document.body.classList.add('admin-locked');
   var shell = document.createElement('div');
   shell.id = 'adm-shell';
@@ -6216,14 +6216,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027g2"></script>
-<script src="js/admin-crm.js?v=20261027g2"></script>
-<script src="js/vendor/jsQR.js?v=20261027g2"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027g2"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027g2"></script>
-<script src="js/admin-workbench.js?v=20261027g2"></script>
-<script src="js/admin-biz.js?v=20261027g2"></script>
-<script src="js/admin-export.js?v=20261027g2"></script>
+<script src="js/admin-shop.js?v=20261027g3"></script>
+<script src="js/admin-crm.js?v=20261027g3"></script>
+<script src="js/vendor/jsQR.js?v=20261027g3"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027g3"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027g3"></script>
+<script src="js/admin-workbench.js?v=20261027g3"></script>
+<script src="js/admin-biz.js?v=20261027g3"></script>
+<script src="js/admin-export.js?v=20261027g3"></script>
 <footer style="padding:18px 0 0; text-align:center;">© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
