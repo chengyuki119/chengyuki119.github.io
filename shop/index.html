@@ -324,7 +324,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   /* ── 原生 select 外观对齐设计系统（仅样式，行为不变 · 20261026k） ── */
   select { font-family: inherit; font-size: 15px; color: var(--text, #604C57); background: #fff; border: 1.5px solid var(--border, #FFD9E6); border-radius: 10px; padding: 7px 10px; outline: none; max-width: 100%; cursor: pointer; box-sizing: border-box; }
   select:focus { border-color: var(--text, #604C57); }
-  /* 20261027g3：键帽购买须知（标题+独立圆角文本框，与政策页同一布局语言） */
+  /* 20261027g4：键帽购买须知（标题+独立圆角文本框，与政策页同一布局语言） */
   .keycap-notes-wrap { margin: 6px 0 10px; }
   .keycap-notes-wrap .keycap-notes-title { font-size: 20px; font-weight: 800; color: var(--text,#604C57); margin: 18px 0 14px; }
   .keycap-notes-wrap .pol-sec { margin: 0 0 24px; }
@@ -334,10 +334,10 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
   .keycap-notes-wrap .pol-card p { margin: 0 0 10px; }
   .keycap-notes-wrap .pol-card p:last-child { margin-bottom: 0; }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261027g3">
-  <script src="/js/site-common.js?v=20261027g3"></script>
-  <script src="/js/policy-content.js?v=20261027g3"></script>
-  <script src="/site-menu.js?v=20261027g3" defer></script>
+  <link rel="stylesheet" href="/site-menu.css?v=20261027g4">
+  <script src="/js/site-common.js?v=20261027g4"></script>
+  <script src="/js/policy-content.js?v=20261027g4"></script>
+  <script src="/site-menu.js?v=20261027g4" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -385,7 +385,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     <h2 style="font-size:22px;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><span style="width:4px;height:18px;background:var(--accent,#ffd9e6);border-radius:2px;display:inline-block;"></span><span data-zh="评价返图" data-en="Reviews">评价返图</span></h2>
     <div class="card" style="background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:20px;">
       <p style="font-size:16px;color:var(--muted);margin-bottom:10px;"><span data-zh="买过小铺东西的小可爱，欢迎晒图评价～" data-en="Bought something? Share your photos & review~">买过小铺东西的小可爱，欢迎晒图评价～</span></p>
-      <input id="r-name" maxlength="30" data-ph-zh="你的名字（选填）" data-ph-en="Your name (optional)" style="width:100%;margin-bottom:10px;padding:12px 14px;font-size:18px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--text);font-family:inherit;">
+      <input id="r-name" maxlength="30" data-ph-zh="你的名字（选填）" data-ph-en="Your name (optional)" style="width:100%;margin-bottom:10px;padding:12px 14px;font-size:18px;border:1px solid #FFD9E6;border-radius:12px;background:#FFF8FA;outline:none;color:var(--text);font-family:inherit;box-sizing:border-box;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <span style="font-size:16px;color:var(--muted);"><span data-zh="评分" data-en="Rating">评分</span></span>
         <span id="r-stars" style="display:inline-flex;gap:4px;">
@@ -393,7 +393,7 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
         </span>
         <span id="r-star-text" style="font-size:16px;color:var(--text,#604C57);">5/5</span>
       </div>
-      <textarea id="r-text" style="width:100%;min-height:70px;border:none;border-radius:12px;background:#fff;padding:12px 14px;font-family:inherit;font-size:18px;color:var(--text);resize:none;outline:none;" data-ph-zh="写下你的评价～" data-ph-en="Write your review~"></textarea>
+      <textarea id="r-text" style="width:100%;min-height:70px;border:1px solid #FFD9E6;border-radius:12px;background:#FFF8FA;padding:12px 14px;font-family:inherit;font-size:18px;color:var(--text);resize:none;outline:none;box-sizing:border-box;" data-ph-zh="写下你的评价～" data-ph-en="Write your review~"></textarea>
       <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <label class="buy-btn" style="padding:7px 16px;font-size:16px;cursor:pointer;"><span data-zh="选择图片" data-en="Choose photo">选择图片</span><input id="r-file" type="file" accept="image/*" hidden></label>
         <span id="r-file-name" style="font-size:16px;color:var(--muted);"><span data-zh="未选择图片" data-en="No photo chosen">未选择图片</span></span>
@@ -835,8 +835,8 @@ h2 span[data-zh]::after { content: " ☆"; font-size: .85em; }
     }, 300);
   }
 </script>
-<script src="/js/shop-app.js?v=20261027g3"></script>
-<script src="/js/site-footer.js?v=20261027g3"></script>
+<script src="/js/shop-app.js?v=20261027g4"></script>
+<script src="/js/site-footer.js?v=20261027g4"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }
