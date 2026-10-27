@@ -177,8 +177,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
 h1::after { content: " ♥"; font-size: .75em; }
 h2::after { content: " ♥"; font-size: .75em; }
+  /* 统一横幅 header（她 20261027 02:24）：banner 顶格全宽，标题对齐内容列（本页不加载 site.css，样式内联） */
+  .subpage-header { background: var(--accent-soft,#FCE4EC); padding: 84px 0 40px; width: 100vw; margin-left: calc(50% - 50vw); }
+  .subpage-header h1, .subpage-header p.sub { max-width: 1000px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261027d">
+  <link rel="stylesheet" href="/site-menu.css?v=20261027f">
   <script src="/site-menu.js" defer></script>
   <style>a { color: inherit; text-decoration: none; }</style>
 <script>/* 主题色本地快照（无 site-common 页）；完整主题来自 site_settings.theme_colors */
@@ -204,10 +207,12 @@ try { var __t = JSON.parse(localStorage.getItem('yuki-theme-colors') || 'null');
 <div class="menu-mask" id="menu-mask"></div>
 <nav class="menu" id="menu"></nav>
 
+  <header class="subpage-header">
+    <h1><span data-zh="联系我们" data-en="Contact Us">联系我们</span></h1>
+    <p class="sub"><span data-zh="商品咨询、订单问题、售后与退款，或者想对我说的话，都可以在这里留言 · 柚子的回复会显示在下方" data-en="Product questions, order issues, after-sales, or just a hello — leave a message here · Yuki's replies are posted below">商品咨询、订单问题、售后与退款，或者想对我说的话，都可以在这里留言 · 柚子的回复会显示在下方</span></p>
+  </header>
 <div class="wrap">
   <a class="back-link page-back" href="/" style="margin:8px 0 24px 2px;"><span data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</span></a>
-  <h1><span data-zh="联系我们" data-en="Contact Us">联系我们</span></h1>
-  <p class="sub"><span data-zh="商品咨询、订单问题、售后与退款，或者想对我说的话，都可以在这里留言 · 柚子的回复会显示在下方" data-en="Product questions, order issues, after-sales, or just a hello — leave a message here · Yuki's replies are posted below">商品咨询、订单问题、售后与退款，或者想对我说的话，都可以在这里留言 · 柚子的回复会显示在下方</span></p>
 
   <div class="ask-card">
     <span class="f-label" data-zh="联系主题" data-en="Topic">联系主题</span>
@@ -430,7 +435,7 @@ try { var __t = JSON.parse(localStorage.getItem('yuki-theme-colors') || 'null');
   loadWall();
 </script>
 <footer>© 2026 Yuki · Made with Cola</footer>
-<script src="/js/site-footer.js?v=20261027d"></script>
+<script src="/js/site-footer.js?v=20261027f"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

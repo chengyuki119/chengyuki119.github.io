@@ -8,9 +8,9 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261027d">
-<link rel="stylesheet" href="/site-menu.css?v=20261027d">
-<script src="/site-menu.js?v=20261027d" defer></script>
+<link rel="stylesheet" href="/css/site.css?v=20261027f">
+<link rel="stylesheet" href="/site-menu.css?v=20261027f">
+<script src="/site-menu.js?v=20261027f" defer></script>
 <style>
   .policy-wrap { max-width: 1000px; margin: 0 auto; padding: 48px 24px 64px; }
   .policy-updated { color: var(--muted,#A88E9B); font-size: 15px; margin: 0 0 18px; }
@@ -23,6 +23,8 @@
   .pol-custom p { padding-left: 0; }
   .pol-custom a { color: var(--text,#604C57); text-decoration: underline; }
   @media (max-width: 520px) { .policy-wrap { padding: 36px 16px 56px; } .pol-card { padding: 18px 16px; } }
+  /* 统一横幅 header：banner 对齐 policy-wrap 内容列 */
+  .subpage-header h1, .subpage-header p { max-width: 1000px; }
 </style>
 </head>
 <body>
@@ -45,18 +47,20 @@
 <div class="menu-mask" id="menu-mask"></div>
 <nav class="menu" id="menu"></nav>
 
-<div class="policy-wrap">
-    <a class="back-link page-back" href="/" style="margin:8px 0 24px 2px;"><span data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</span></a>
+<header class="subpage-header">
 <h1 class="subpage-title" data-zh="退货与退款政策" data-en="Return & Refund Policy">退货与退款政策</h1>
   <p class="policy-updated">最后更新：2026-10-25 · Last updated: 2026-10-25</p>
+</header>
+<div class="policy-wrap">
+    <a class="back-link page-back" href="/" style="margin:8px 0 24px 2px;"><span data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</span></a>
   <div id="policy-content"></div>
 </div>
 
 <footer></footer>
 
-<script src="/js/site-common.js?v=20261027d"></script>
-<script src="/js/policy-content.js?v=20261027d"></script>
-<script src="/js/site-footer.js?v=20261027d"></script>
+<script src="/js/site-common.js?v=20261027f"></script>
+<script src="/js/policy-content.js?v=20261027f"></script>
+<script src="/js/site-footer.js?v=20261027f"></script>
 <script>
   function initPolicyPage() {
     window.__policyCurrentKey = 'return';

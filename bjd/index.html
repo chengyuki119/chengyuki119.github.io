@@ -26,8 +26,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261027d">
-  <link rel="stylesheet" href="/site-menu.css?v=20261027d">
+<link rel="stylesheet" href="/css/site.css?v=20261027f">
+  <link rel="stylesheet" href="/site-menu.css?v=20261027f">
     <script src="/site-menu.js" defer></script>
 </head>
 <body>
@@ -54,11 +54,11 @@
 
 <div class="page active" id="page-bjd-page">
   <div id="bjd-list-page">
-  <a class="back-link page-back" href="/" style="margin:8px 0 24px 2px;"><span data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</span></a>
-  <div class="subpage-header">
+<div class="subpage-header">
     <h1 class="subpage-title" data-zh="BJD" data-en="BJD">BJD</h1>
-    <p class="subpage-sub" data-zh="我的娃娃收藏档案 · 按尺寸分类" data-en="My doll collection · grouped by size">我的娃娃收藏档案 · 按尺寸分类</p>
+    <p class="subpage-sub" data-zh="我的娃娃收藏档案" data-en="My doll collection">我的娃娃收藏档案</p>
   </div>
+  <a class="back-link page-back" href="/" style="margin:8px 0 24px 2px;"><span data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</span></a>
   <div class="page-body" style="padding-top:0;">
 <div class="bjd-toolbar">
       <div class="bjd-chips" id="bjd-size-chips"></div>
@@ -98,7 +98,7 @@
 </div>
 <div id="share-pop"></div>
 <div class="toast" id="toast"></div>
-<script src="/js/site-common.js?v=20261027d"></script>
+<script src="/js/site-common.js?v=20261027f"></script>
 <script>
   // ===== BJD：独立子页（娃娃墙 + 娃娃详情 /bjd/?id=N）=====
   var BJD_FILTER = '全部';
@@ -163,19 +163,13 @@
         return BJD_SORT === 'nameAsc' ? r : -r;
       });
     }
-    var sizes = BJD_SIZES.slice();
-    if (BJD_SORT === 'sizeDesc') sizes.reverse();
-    if (BJD_FILTER !== '全部') sizes = [BJD_FILTER];
-    var html = '', any = false;
-    sizes.forEach(function (sz) {
-      var items = list.filter(function (x) { return x.b.head.size === sz; });
-      if (!items.length) return;
-      any = true;
-      html += '<h3 class="bjd-size-h">' + escDb(LANG === 'en' && window.sizeEnKeep ? sizeEnKeep(sz) : sz) + '</h3><div class="bjd-size-grid">' + items.map(bjdCardHtml).join('') + '</div>';
-    });
-    var others = list.filter(function (x) { return BJD_SIZES.indexOf(x.b.head.size) === -1; });
-    if (others.length) { any = true; html += '<h3 class="bjd-size-h">' + t('其他', 'Other') + '</h3><div class="bjd-size-grid">' + others.map(bjdCardHtml).join('') + '</div>'; }
-    grid.innerHTML = any ? html : '<p style="color:var(--muted);text-align:center;padding:30px 0;font-size:17px;">' + t('还没有 BJD 档案，去后台「BJD管理」新增吧', 'No BJD profiles yet. Add one in the admin BJD tab.') + '</p>';
+    if (BJD_SORT === 'sizeAsc' || BJD_SORT === 'sizeDesc') {
+      var srank = function (x) { var si = BJD_SIZES.indexOf(x.b.head.size); return si === -1 ? 999 : si; };
+      list.sort(function (a, b) { var r = srank(a) - srank(b); return BJD_SORT === 'sizeAsc' ? r : -r; });
+    }
+    // 她 20261027 02:31：不再按尺寸分组分栏，改色卡同款平铺网格（#bjd-grid 每行 5 个），尺寸筛选条继续可用
+    var html = list.map(bjdCardHtml).join('');
+    grid.innerHTML = list.length ? html : '<p style="color:var(--muted);text-align:center;padding:30px 0;font-size:17px;">' + t('还没有 BJD 档案，去后台「BJD管理」新增吧', 'No BJD profiles yet. Add one in the admin BJD tab.') + '</p>';
   }
   function renderBjdToolbar() {
     var chips = document.getElementById('bjd-size-chips');
@@ -287,7 +281,7 @@
   if (window.SiteMenu) SiteMenu.notify('bjd');
   applyLang(LANG);
 </script>
-<script src="/js/site-footer.js?v=20261027d"></script>
+<script src="/js/site-footer.js?v=20261027f"></script>
 <script>
   // 统一 Footer（页面没有 <footer> 时自动在页尾新建）
   function initSiteFooter() { renderSiteFooter(); }
