@@ -484,7 +484,7 @@
     var blob = new Blob(['\uFEFF' + head + '\r\n' + sample], { type: 'text/csv;charset=utf-8;' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'SnowYuzu-订单导入模板.csv';
+    a.download = 'Snow Yuzu-订单导入模板.csv';
     a.click();
     URL.revokeObjectURL(a.href);
     toast('模板已下载');

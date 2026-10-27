@@ -1614,11 +1614,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
           kind: 'reply',
           ref_id: id + '#r' + new Date().toISOString(),
           to_email: (MSG.cmap[id] || {}).email,
-          subject: 'SnowYuzu · 你的留言有回复啦',
-          body: '您好！' + E_NL + E_NL + '你在「联系我们」留言：' + E_NL + (function () {
+          subject: '你的留言有回复啦 ♡ · Snow Yuzu',
+          body: '嗨嗨，你的留言有回复啦！(˶ᵔ ᵕ ᵔ˶)♡' + E_NL + E_NL + '当时你留言说：' + E_NL + (function () {
             var q = MSG.list.find(function (x) { return String(x.id) === String(id); });
             return q ? q.content : '';
-          })() + E_NL + E_NL + '柚子回复：' + E_NL + mailReply + E_NL + E_NL + '— SnowYuzu 小柚的小世界'
+          })() + E_NL + E_NL + '柚子的回复：' + E_NL + mailReply + E_NL + E_NL + '如果还有想聊的，随时再来留言呀～' + E_NL + '— Snow Yuzu 的小店主 ♡'
         })
       }).then(function (r) {
         if (!r.ok) throw new Error();
@@ -6193,14 +6193,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027f"></script>
-<script src="js/admin-crm.js?v=20261027f"></script>
-<script src="js/vendor/jsQR.js?v=20261027f"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027f"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027f"></script>
-<script src="js/admin-workbench.js?v=20261027f"></script>
-<script src="js/admin-biz.js?v=20261027f"></script>
-<script src="js/admin-export.js?v=20261027f"></script>
+<script src="js/admin-shop.js?v=20261027g"></script>
+<script src="js/admin-crm.js?v=20261027g"></script>
+<script src="js/vendor/jsQR.js?v=20261027g"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027g"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027g"></script>
+<script src="js/admin-workbench.js?v=20261027g"></script>
+<script src="js/admin-biz.js?v=20261027g"></script>
+<script src="js/admin-export.js?v=20261027g"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

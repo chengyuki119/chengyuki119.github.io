@@ -296,10 +296,17 @@
         '</div>' +
         '<div class="d-desc"><p style="color:var(--muted);font-size:17px;line-height:1.8;margin:12px 0;">' + esc((window.LANG === 'en' && p.description_en) ? p.description_en : (p.description || '')) + '</p></div>' +
       '</div>' +
+      // 20261027g：键帽商品购买须知（手工/气泡/色差/兼容性/定制/规格；仅键帽类商品显示）
+      (isKeycapProduct(p) ? '<div class="keycap-notes-wrap" id="keycap-notes"></div>' : '') +
       '<div id="d-group-form" style="display:none;margin-top:16px;" class="card"></div>';
     return el;
   }
   function escAttr(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+  // 键帽类商品判定：名称/描述/标签含「键帽」或 keycap（不把树脂说明套到不相关商品）
+  function isKeycapProduct(p) {
+    if (!p) return false;
+    return /键帽|keycap/i.test([p.name, p.description, p.description_en, p.tag].join(' '));
+  }
   function paintDetail() {
     // 规格 → 图片/价格/库存/SKU 同步刷新
     var d = DETAIL; if (!d) return;
@@ -308,6 +315,8 @@
     box.innerHTML = '';
     box.appendChild(fresh);
     bindDetail();
+    // 键帽购买须知渲染（数据源 js/policy-content.js，与政策页口径一致）
+    if (isKeycapProduct(p) && typeof window.renderKeycapNotes === 'function') window.renderKeycapNotes('keycap-notes');
   }
   function bindDetail() {
     var d = DETAIL, p = d.p;

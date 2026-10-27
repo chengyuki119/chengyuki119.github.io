@@ -522,7 +522,7 @@
     Promise.all([fetchPayRecords(ids), fetchPackages(ids)]).then(function (res) {
       var ctx = { pay: indexBy(res[0], 'order_id'), pkg: indexBy(res[1], 'order_id') };
       var data = buildExport(orders, ctx, EX.groups);
-      var fname = 'SnowYuzu-订单导出-' + stamp() + (kind === 'csv' ? '.csv' : '.xls');
+      var fname = 'Snow Yuzu-订单导出-' + stamp() + (kind === 'csv' ? '.csv' : '.xls');
       exPreview(root, kind, fname, orders.length, data);
     }).catch(function () {
       toast('读取付款/物流记录失败，重试一下');
@@ -658,7 +658,7 @@
       toast('打印页已生成（' + orders.length + ' 笔订单）');
     } else {
       // 弹窗被拦截时兜底：下载独立 HTML 文件，双击打开再打印
-      download('SnowYuzu-商品清单-' + stamp() + '.html', html, 'text/html;charset=utf-8;');
+      download('Snow Yuzu-商品清单-' + stamp() + '.html', html, 'text/html;charset=utf-8;');
       toast('弹窗被浏览器拦了，已改成下载 HTML 文件，打开后点「打印」即可');
     }
   }

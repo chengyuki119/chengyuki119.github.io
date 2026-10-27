@@ -104,6 +104,17 @@
         '<input id="cf-email" placeholder="Email" value="' + escAttr(c ? c.email || '' : '') + '">' +
         '<input id="cf-phone" placeholder="' + t('电话', 'Phone') + '" value="' + escAttr(c ? c.phone || '' : '') + '">' +
         '<input id="cf-note" placeholder="' + t('备注（来源、喜好等）', 'Note') + '" value="' + escAttr(c ? c.note || '' : '') + '">' +
+        '<input id="cf-birthday" type="date" title="' + t('生日（当天自动发送生日邮件）', 'Birthday (birthday email auto-sends on the day)') + '" value="' + escAttr(c ? c.birthday || '' : '') + '">' +
+      '</div>' +
+      '<div style="margin-top:10px;display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--text,#604C57);">' +
+        '<div style="display:flex;align-items:center;gap:8px;">' + t('邮件语言', 'Email language') +
+          '<span class="chip' + (!c || (c.pref_lang || 'zh') === 'zh' ? ' on' : '') + '" id="cf-lang-zh">中文</span>' +
+          '<span class="chip' + (c && c.pref_lang === 'en' ? ' on' : '') + '" id="cf-lang-en">English</span>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' + t('生日邮件', 'Birthday email') +
+          '<span class="chip' + (!c || c.notify_birthday !== false ? ' on' : '') + '" id="cf-bday-on">' + t('开启', 'On') + '</span>' +
+          '<span class="chip' + (c && c.notify_birthday === false ? ' on' : '') + '" id="cf-bday-off">' + t('关闭', 'Off') + '</span>' +
+        '</div>' +
       '</div>' +
       '<div style="margin-top:12px;display:flex;gap:10px;">' +
         '<button class="btn-save-tb" id="cf-save">' + t('保存', 'Save') + '</button>' +
@@ -111,6 +122,18 @@
       '</div>';
     panel.insertBefore(div, panel.children[0]);
     div.querySelector('#cf-cancel').addEventListener('click', function () { div.remove(); });
+    var cfLang = c ? (c.pref_lang || 'zh') : 'zh';
+    var cfBday = c ? (c.notify_birthday !== false) : true;
+    function cfSyncChips() {
+      div.querySelector('#cf-lang-zh').classList.toggle('on', cfLang === 'zh');
+      div.querySelector('#cf-lang-en').classList.toggle('on', cfLang === 'en');
+      div.querySelector('#cf-bday-on').classList.toggle('on', cfBday);
+      div.querySelector('#cf-bday-off').classList.toggle('on', !cfBday);
+    }
+    div.querySelector('#cf-lang-zh').addEventListener('click', function () { cfLang = 'zh'; cfSyncChips(); });
+    div.querySelector('#cf-lang-en').addEventListener('click', function () { cfLang = 'en'; cfSyncChips(); });
+    div.querySelector('#cf-bday-on').addEventListener('click', function () { cfBday = true; cfSyncChips(); });
+    div.querySelector('#cf-bday-off').addEventListener('click', function () { cfBday = false; cfSyncChips(); });
     div.querySelector('#cf-save').addEventListener('click', function () {
       var body = {
         p_id: c ? c.id : null,
@@ -118,7 +141,10 @@
         p_email: div.querySelector('#cf-email').value.trim(),
         p_phone: div.querySelector('#cf-phone').value.trim(),
         p_note: div.querySelector('#cf-note').value.trim(),
-        p_source: c ? (c.source || 'offline') : 'offline'
+        p_source: c ? (c.source || 'offline') : 'offline',
+        p_birthday: div.querySelector('#cf-birthday').value || null,
+        p_pref_lang: cfLang,
+        p_notify_birthday: cfBday
       };
       api('rpc/shop_customer_save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
         .then(function (r) { return r.json(); })
@@ -151,6 +177,8 @@
         '<div>' + t('电话', 'Phone') + '：' + esc(c.phone || '—') + '</div>' +
         '<div>' + t('来源', 'Source') + '：' + (c.source === 'online' ? t('线上', 'Online') : t('线下', 'Offline')) + '</div>' +
         '<div>' + t('累计消费', 'Spent') + '：<span style="color:var(--price,#ff6fa5);font-weight:700;">$' + fmtMoney(st.sum) + '</span> · ' + st.count + t('次', '') + '</div>' +
+        '<div>' + t('生日', 'Birthday') + '：' + (c.birthday ? esc(c.birthday) : t('未设置', 'Not set')) + (c.birthday ? (c.notify_birthday !== false ? ' · ' + t('生日邮件开', 'email on') : ' · ' + t('生日邮件关', 'email off')) : '') + '</div>' +
+        '<div>' + t('邮件语言', 'Email language') + '：' + ((c.pref_lang || 'zh') === 'en' ? 'English' : '中文') + '</div>' +
       '</div>' +
       (c.note ? '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-bottom:10px;">' + t('备注', 'Note') + '：' + esc(c.note) + '</div>' : '') +
       '<div style="font-size:14px;color:var(--text,#604C57);font-weight:600;margin-bottom:6px;">' + t('购买历史', 'Purchase history') + '</div>' +
@@ -457,7 +485,8 @@
       { key: 'shipped_delay', name: t('发货延迟通知', 'Shipping delay'), desc: t('预计发货时间需要顺延肘发送', 'Sent when the ship date has to be pushed back') },
       { key: 'package_exception', name: t('包裹异常/清关通知', 'Package exception'), desc: t('物流异常、海关扣留等需要买家配合时发送', 'Sent when a package needs buyer action (customs, exception)') },
       { key: 'delivered_notice', name: t('签收提醒', 'Delivery reminder'), desc: t('物流显示已签收后发送确认与售后提醒', 'Sent after delivery confirmed') },
-      { key: 'review_invite', name: t('晒单/好评邀请', 'Review invite'), desc: t('签收几天后邀请晒单（带退订）', 'Sent days after delivery (with unsubscribe)') }
+      { key: 'review_invite', name: t('晒单/好评邀请', 'Review invite'), desc: t('签收几天后邀请晒单（带退订）', 'Sent days after delivery (with unsubscribe)') },
+      { key: 'birthday', name: t('生日祝福', 'Birthday wish'), desc: t('客户生日当天自动发送（可在客户资料设置生日）', 'Sent automatically on the customer\'s birthday (set it in customer profile)') }
     ],
     vars: [
       ['{{客户称呼}}', t('买家称呼或昵称', 'Buyer name/nick')],
@@ -480,68 +509,72 @@
     var shop = 'https://chengyuki119.github.io/shop/';
     var D = {
       order_confirm: {
-        zh: { subject: '【Snow Yuzu】订单确认 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n感谢你在 Snow Yuzu 下单！以下是本次订单详情：\n\n订单编号：{{订单编号}}\n商品：{{商品名称}}\n订单金额：{{订单金额}}\n\n我们会尽快为你安排制作与发货，有任何问题直接回复这封邮件就好。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Order Confirmation · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nThank you for your order at Snow Yuzu! Here are your order details:\n\nOrder No.: {{订单编号}}\nItems: {{商品名称}}\nTotal: {{订单金额}}\n\nWe will prepare and ship your order as soon as possible. Feel free to reply to this email if you have any questions.\n\nSnow Yuzu' }
+        zh: { subject: '订单收到啦！{{订单编号}} ♡ · Snow Yuzu', body: '呀～{{客户称呼}}的订单顺利收到啦！(˶ᵔ ᵕ ᵔ˶)♡\n\n谢谢你来 Snow Yuzu 小铺逛逛，也谢谢你把喜欢的小东西带回家！\n\n订单编号：{{订单编号}}\n这次下单的商品：{{商品名称}}\n订单金额：{{订单金额}}\n\n我会尽快确认订单的付款情况，之后再继续安排订单的准备工作哦。如果有任何问题，可以直接回复这封邮件来找我呀～\n\n希望这份小小的期待，能给你带来一点快乐 ₍ᐢ.ˬ.ᐢ₎♡\n— Snow Yuzu ♡' },
+        en: { subject: 'We Got Your Order! ♡ {{订单编号}} · Snow Yuzu', body: 'Hi {{客户称呼}}! Yay, your order came through! (˶ᵔ ᵕ ᵔ˶)♡\n\nThank you for stopping by Snow Yuzu and picking out something special!\n\nOrder No.: {{订单编号}}\nItems: {{商品名称}}\nTotal: {{订单金额}}\n\nI\'ll check your payment and get everything ready for the next step. I\'ll keep you posted as your order moves along!\n\nHave a question? Just hit reply. I\'m happy to help ♡\n— Snow Yuzu ♡' }
       },
       order_shipped: {
-        zh: { subject: '【Snow Yuzu】订单已发货 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 已经发货啦！\n\n物流单号：{{物流单号}}\n\n途中的小心等待，包裹很快就到～ 收到后欢迎回来说一声。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Order Shipped · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nYour order {{订单编号}} has been shipped!\n\nTracking No.: {{物流单号}}\n\nIt will arrive soon. Let us know once you receive it, we would love to hear from you!\n\nSnow Yuzu' }
+        zh: { subject: '你的包裹出发啦！{{订单编号}} ♡ · Snow Yuzu', body: '叮咚！{{客户称呼}}的包裹出发啦！(ﾉ˶>ᗜ<˵)ﾉ♡\n\n订单 {{订单编号}} 的小包裹已经交给快递公司啦，希望它能平平安安、顺顺利利地跑到你身边！\n\n物流单号：{{物流单号}}\n\n记得留意一下物流更新哦～如果有任何问题，也可以直接回复这封邮件来找我。\n\n希望你拆开包裹的时候会很开心呀 ₍ᐢ.ˬ.ᐢ₎♡\n— Snow Yuzu ♡' },
+        en: { subject: 'Your Little Package Is on Its Way! ♡ {{订单编号}} · Snow Yuzu', body: 'It\'s shipping day, {{客户称呼}}! Your package is on its way! (˶ᵔ ᵕ ᵔ˶)♡\n\nYour goodies from order {{订单编号}} have been handed over to the carrier, and they\'re officially on their way to you!\n\nTracking No.: {{物流单号}}\n\nYou can follow its journey with the tracking number above. If anything looks unusual, just reply to this email!\n\nHope your package arrives safe and sound and makes your day a little brighter ₍ᐢ.ˬ.ᐢ₎♡\n— Snow Yuzu ♡' }
       },
       order_refund: {
-        zh: { subject: '【Snow Yuzu】退款通知 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 已完成退款，退款金额 {{订单金额}} 将原路退回。\n\n到账时间依支付渠道而定，一般 1-5 个工作日。如有疑问随时回复这封邮件。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Refund Notice · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nYour order {{订单编号}} has been refunded. The amount {{订单金额}} will be returned via the original payment method.\n\nIt usually takes 1-5 business days depending on your payment provider. Feel free to reply if you have any questions.\n\nSnow Yuzu' }
+        zh: { subject: '关于你的退款，来跟你说一声呀 ♡ · Snow Yuzu', body: '{{客户称呼}}，来跟你更新一下订单的退款情况哦 (｡•́︿•̀｡)\n\n订单 {{订单编号}} 的退款已经处理啦，退款金额 {{订单金额}} 会原路退回。\n\n具体到账时间取决于支付渠道，一般 1-5 个工作日。如果暂时还没看到退款记录，可以稍后再查看一下；如果有疑问，也可以直接回复这封邮件，我会尽力帮你确认情况呀。\n\n抱歉这次没能让你拥有完美的购物体验，也谢谢你的理解 ♡\n— Snow Yuzu ♡' },
+        en: { subject: 'A Little Update About Your Refund ♡ · Snow Yuzu', body: 'Hi {{客户称呼}}, just a little update about your order (｡•́︿•̀｡)\n\nThe refund for order {{订单编号}} has been processed. The amount {{订单金额}} will be returned via the original payment method.\n\nIt usually takes 1-5 business days depending on your payment provider. If you don\'t see it just yet, please give it a little time. If you have any questions, simply reply to this email and I\'ll do my best to help!\n\nI\'m sorry things didn\'t go as smoothly as hoped, and I really appreciate your understanding ♡\n— Snow Yuzu ♡' }
       },
       order_cancel: {
-        zh: { subject: '【Snow Yuzu】订单已取消 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n很遗憾，你的订单 {{订单编号}} 已取消，订单金额 {{订单金额}} 不会产生扣款（已付款的部分会原路退回）。\n\n希望下次还能见到你～\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Order Cancelled · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nUnfortunately your order {{订单编号}} has been cancelled. No charge will be made for {{订单金额}} (paid amounts will be refunded via the original method).\n\nHope to see you next time!\n\nSnow Yuzu' }
+        zh: { subject: '关于订单 {{订单编号}} 的小通知 · Snow Yuzu', body: '{{客户称呼}}，来跟你说一下订单的情况呀 (｡•ᴗ•｡)\n\n订单 {{订单编号}} 已经取消啦，订单金额 {{订单金额}} 不会产生扣款（已付款的部分会原路退回）。\n\n如果不是你本人操作的取消，或者你觉得哪里不太对，可以直接回复这封邮件来找我，我会尽力帮你确认情况的～\n\n希望下次还能见到你呀！\n— Snow Yuzu ♡' },
+        en: { subject: 'A Little Update About Order {{订单编号}} · Snow Yuzu', body: 'Hi {{客户称呼}}! Just a quick update about your order (｡•ᴗ•｡)\n\nOrder {{订单编号}} has been cancelled. No charge will be made for {{订单金额}} (paid amounts will be refunded via the original method).\n\nIf you didn\'t request this cancellation or something doesn\'t look right, just reply to this email and I\'ll help you check what happened.\n\nHope to see you next time!\n— Snow Yuzu ♡' }
       },
       new_product: {
-        zh: { subject: '【Snow Yuzu】新品上架 · {{商品名称}}', body: '亲爱的 {{客户称呼}}：\n\nSnow Yuzu 上新啦！\n\n本期新品：{{商品名称}}\n\n数量不多，喜欢的话来看看：{{店铺链接}}\n\n如果不想再收到新品通知，可以用邮件底部的 Unsubscribe 一键退订，订单邮件不受影响。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] New Item · {{商品名称}}', body: 'Dear {{客户称呼}},\n\nNew arrivals at Snow Yuzu!\n\nThis time: {{商品名称}}\n\nLimited stock — take a look: {{店铺链接}}\n\nIf you no longer wish to receive new item notices, use the Unsubscribe link at the bottom. Order emails are not affected.\n\nSnow Yuzu' }
+        zh: { subject: '小铺上新啦！{{商品名称}} 来咯 ♡ · Snow Yuzu', body: '嘿嘿，{{客户称呼}}，今天小铺有新朋友来报到啦！(˶ᵔ ᵕ ᵔ˶)♡\n\n这次上新的是：{{商品名称}}\n\n喜欢的话就来看看嘛～说不定它就是你一直在找的小可爱呢：{{店铺链接}}\n\n如果不想再收到新品通知，可以用邮件底部的退订链接一键退订，订单邮件不受影响哦。\n\n希望你能找到喜欢的小东西呀！\n— Snow Yuzu ♡' },
+        en: { subject: 'A New Little Cutie Is Here! ♡ {{商品名称}} · Snow Yuzu', body: 'Hi {{客户称呼}}! Guess what? There\'s a new little cutie in the shop! (˶ᵔ ᵕ ᵔ˶)♡\n\nMeet our newest arrival: {{商品名称}}\n\nCurious? Come take a little look: {{店铺链接}}\n\nIf you no longer wish to receive new item notices, use the Unsubscribe link at the bottom. Order emails are not affected.\n\nHope you find something you love!\n— Snow Yuzu ♡' }
       },
       contact_reply: {
-        zh: { subject: '【Snow Yuzu】你的留言有新回复啦', body: '亲爱的 {{客户称呼}}：\n\n你留言的「{{留言内容}}」有了新回复：\n\n{{站长回复}}\n\n继续聊可以去小铺留言板：{{店铺链接}}\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] New Reply to Your Message', body: 'Dear {{客户称呼}},\n\nYour message "{{留言内容}}" has a new reply:\n\n{{站长回复}}\n\nContinue the conversation at: {{店铺链接}}\n\nSnow Yuzu' }
+        zh: { subject: '你的留言有回复啦 ♡ · Snow Yuzu', body: '{{客户称呼}}，你的留言有回复啦！(˶ᵔ ᵕ ᵔ˶)♡\n\n当时你留言说：{{留言内容}}\n\n柚子的回复：\n{{站长回复}}\n\n如果还有想聊的，随时再来留言呀：{{店铺链接}}\n\n— Snow Yuzu 的小店主 ♡' },
+        en: { subject: 'New Reply to Your Message ♡ · Snow Yuzu', body: 'Hi {{客户称呼}}, your message has a new reply! (˶ᵔ ᵕ ᵔ˶)♡\n\nYou wrote: {{留言内容}}\n\nYuki\'s reply:\n{{站长回复}}\n\nFeel free to keep the conversation going: {{店铺链接}}\n\n— Snow Yuzu\'s little shopkeeper ♡' }
       },
       vip_notice: {
-        zh: { subject: '【Snow Yuzu】VIP 会员通知', body: '亲爱的 {{客户称呼}}：\n\n你的 Snow Yuzu VIP 会员状态有更新，详情请到小铺查看：{{店铺链接}}\n\n谢谢你的喜欢与支持！\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] VIP Membership Notice', body: 'Dear {{客户称呼}},\n\nYour Snow Yuzu VIP membership has been updated. See your shop page for details: {{店铺链接}}\n\nThank you for your support!\n\nSnow Yuzu' }
+        zh: { subject: '你的 VIP 会员有小更新啦 ♡ · Snow Yuzu', body: '{{客户称呼}}，来跟你说一声～你的 Snow Yuzu VIP 会员状态有更新啦！\n\n详情请到小铺看看：{{店铺链接}}\n\n谢谢你的喜欢与支持，每次你来逛逛我们都很开心 ♡\n— Snow Yuzu ♡' },
+        en: { subject: 'A Little VIP Update for You ♡ · Snow Yuzu', body: 'Hi {{客户称呼}}! Just letting you know — your Snow Yuzu VIP membership has been updated!\n\nSee your shop page for details: {{店铺链接}}\n\nThank you for your support — we\'re always happy when you stop by ♡\n— Snow Yuzu ♡' }
       },
       order_paid: {
-        zh: { subject: '【Snow Yuzu】付款已确认 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 有一笔付款已确认到账：\n\n本次到账：{{付款金额}}\n剩余应付：{{欠款金额}}\n\n全部付清后我们就会排进制作队列，谢谢你的耐心～\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Payment Confirmed · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nA payment for order {{订单编号}} has been confirmed:\n\nReceived: {{付款金额}}\nOutstanding: {{欠款金额}}\n\nOnce fully paid, your order will join the making queue. Thank you for your patience!\n\nSnow Yuzu' }
+        zh: { subject: '收到付款啦！{{订单编号}} ♡ · Snow Yuzu', body: '好耶！{{客户称呼}}，来告诉你一个好消息～(˶˃ ᵕ ˂˶)♡\n\n订单 {{订单编号}} 有一笔付款已经确认到账：\n本次到账：{{付款金额}}\n剩余应付：{{欠款金额}}\n\n全部付清后我们就会排进制作队列，谢谢你的耐心等待～小小的期待正在慢慢准备中 ₍ᐢ.ˬ.ᐢ₎\n— Snow Yuzu ♡' },
+        en: { subject: 'Payment Confirmed! ♡ {{订单编号}} · Snow Yuzu', body: 'Yay, {{客户称呼}}! A little good news for you! (˶˃ ᵕ ˂˶)♡\n\nA payment for order {{订单编号}} has been confirmed:\nReceived: {{付款金额}}\nOutstanding: {{欠款金额}}\n\nOnce fully paid, your order will join the making queue. Thank you for your patience!\n— Snow Yuzu ♡' }
       },
       deposit_reminder: {
-        zh: { subject: '【Snow Yuzu】付款提醒 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 还有 {{欠款金额}} 待支付，方便的话尽快完成付款，我们好尽早为你安排制作～\n\n付款链接：{{付款链接}}\n\n如有任何问题直接回复这封邮件就好。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Payment Reminder · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nOrder {{订单编号}} still has {{欠款金额}} outstanding. Completing the payment soon helps us start making your order earlier!\n\nPayment link: {{付款链接}}\n\nFeel free to reply to this email if you have any questions.\n\nSnow Yuzu' }
+        zh: { subject: '小小的付款提醒 · {{订单编号}} ♡ · Snow Yuzu', body: '{{客户称呼}}，来小小提醒一下呀～\n\n订单 {{订单编号}} 还有 {{欠款金额}} 待支付。方便的话尽快完成付款，我们就可以尽早为你安排制作啦～\n\n付款链接：{{付款链接}}\n\n如果有任何问题，直接回复这封邮件就好，不用客气呀 ♡\n— Snow Yuzu ♡' },
+        en: { subject: 'A Gentle Payment Reminder · {{订单编号}} ♡ · Snow Yuzu', body: 'Hi {{客户称呼}}, just a gentle little reminder!\n\nOrder {{订单编号}} still has {{欠款金额}} outstanding. Completing the payment soon helps us start making your order earlier!\n\nPayment link: {{付款链接}}\n\nIf you have any questions, just reply to this email — happy to help ♡\n— Snow Yuzu ♡' }
       },
       order_risk: {
-        zh: { subject: '【Snow Yuzu】请确认你的大额订单 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n感谢你在 Snow Yuzu 下的大额订单 {{订单编号}}（金额 {{订单金额}}）。\n\n为了保障双方权益，发货前请你回复本邮件确认以下信息：\n1. 订单商品与数量无误\n2. 收货地址正确\n3. 知悉定金/大额订单的退款规则\n\n确认后我们会尽快安排制作与发货。谢谢理解！\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Please Confirm Your Order · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nThank you for your large order {{订单编号}} ({{订单金额}}) at Snow Yuzu.\n\nBefore shipping, please reply to this email to confirm:\n1. Items and quantities are correct\n2. Shipping address is correct\n3. You have read the deposit / large-order refund policy\n\nOnce confirmed, we will prepare and ship your order as soon as possible. Thank you!\n\nSnow Yuzu' }
+        zh: { subject: '请确认你的大额订单 · {{订单编号}} ♡ · Snow Yuzu', body: '{{客户称呼}}，谢谢你在 Snow Yuzu 下的大额订单 {{订单编号}}（金额 {{订单金额}}）！(˶ᵔ ᵕ ᵔ˶)\n\n为了保障我们双方，发货前请你回复本邮件确认以下信息：\n1. 订单商品与数量无误\n2. 收货地址正确\n3. 知悉定金/大额订单的退款规则\n\n确认后我们会尽快安排制作与发货，谢谢你的理解呀 ♡\n— Snow Yuzu ♡' },
+        en: { subject: 'Please Confirm Your Order · {{订单编号}} ♡ · Snow Yuzu', body: 'Thank you for your large order {{订单编号}} ({{订单金额}}) at Snow Yuzu, {{客户称呼}}! (˶ᵔ ᵕ ᵔ˶)\n\nBefore shipping, please reply to this email to confirm:\n1. Items and quantities are correct\n2. Shipping address is correct\n3. You have read the deposit / large-order refund policy\n\nOnce confirmed, we\'ll prepare and ship your order as soon as possible. Thank you! ♡\n— Snow Yuzu ♡' }
       },
       out_of_stock: {
-        zh: { subject: '【Snow Yuzu】商品暂时缺货 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n很抱歉，你订单 {{订单编号}} 中的「{{商品名称}}」目前暂时缺货。\n\n你可以选择：\n1. 等待补货（预计 {{预计发货日期}}），我们会第一时间通知你\n2. 更换其他商品\n3. 取消该商品并退款对应金额\n\n回复本邮件告诉我你的选择就好，给你带来不便非常抱歉！\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Item Temporarily Out of Stock · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nSorry! The item "{{商品名称}}" in order {{订单编号}} is temporarily out of stock.\n\nYou can choose to:\n1. Wait for restock (expected {{预计发货日期}})\n2. Swap for another item\n3. Cancel the item and get a refund for that amount\n\nJust reply with your choice. Sorry for the inconvenience!\n\nSnow Yuzu' }
+        zh: { subject: '商品暂时缺货啦 · {{订单编号}} ♡ · Snow Yuzu', body: '{{客户称呼}}，跟你说声抱歉 (｡•́︿•̀｡)\n\n你订单 {{订单编号}} 中的「{{商品名称}}」目前暂时缺货。\n\n你可以选择：\n1. 等待补货（预计 {{预计发货日期}}），一到货我们会第一时间通知你\n2. 更换其他商品\n3. 取消该商品并退款对应金额\n\n回复本邮件告诉我你的选择就好。给你带来不便真的非常抱歉，谢谢你的体谅呀 ♡\n— Snow Yuzu ♡' },
+        en: { subject: 'Item Temporarily Out of Stock · {{订单编号}} ♡ · Snow Yuzu', body: 'So sorry, {{客户称呼}} (｡•́︿•̀｡)\n\nThe item "{{商品名称}}" in order {{订单编号}} is temporarily out of stock.\n\nYou can choose to:\n1. Wait for restock (expected {{预计发货日期}}) — we\'ll notify you the moment it\'s back\n2. Swap for another item\n3. Cancel the item and get a refund for that amount\n\nJust reply with your choice. Sorry for the inconvenience, and thank you for your patience ♡\n— Snow Yuzu ♡' }
       },
       restock_notice: {
-        zh: { subject: '【Snow Yuzu】你等的商品补货啦 · {{商品名称}}', body: '亲爱的 {{客户称呼}}：\n\n好消息！你之前缺货的「{{商品名称}}」重新到货啦～\n\n数量有限，先到先得：{{店铺链接}}\n\n如果不想再收到补货通知，可以用邮件底部的 Unsubscribe 一键退订，订单邮件不受影响。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Back in Stock · {{商品名称}}', body: 'Dear {{客户称呼}},\n\nGood news! "{{商品名称}}" is back in stock!\n\nLimited quantity, first come first served: {{店铺链接}}\n\nIf you no longer wish to receive restock notices, use the Unsubscribe link at the bottom. Order emails are not affected.\n\nSnow Yuzu' }
+        zh: { subject: '你等的商品补货啦！{{商品名称}} ♡ · Snow Yuzu', body: '{{客户称呼}}，好消息！(ﾉ˶>ᗜ<˵)ﾉ♡\n\n你之前缺货的「{{商品名称}}」重新到货啦～\n\n数量有限，先到先得：{{店铺链接}}\n\n如果不想再收到补货通知，可以用邮件底部的退订链接一键退订，订单邮件不受影响哦。\n\n— Snow Yuzu ♡' },
+        en: { subject: 'Back in Stock! {{商品名称}} ♡ · Snow Yuzu', body: 'Good news, {{客户称呼}}! (ﾉ˶>ᗜ<˵)ﾉ♡\n\n"{{商品名称}}" is back in stock!\n\nLimited quantity, first come first served: {{店铺链接}}\n\nIf you no longer wish to receive restock notices, use the Unsubscribe link at the bottom. Order emails are not affected.\n\n— Snow Yuzu ♡' }
       },
       shipped_delay: {
-        zh: { subject: '【Snow Yuzu】发货时间顺延通知 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n非常抱歉，你的订单 {{订单编号}} 需要顺延发货，新的预计发货时间为 {{预计发货日期}}。\n\n我们深知等待的辛苦，感谢你的理解与耐心。如有任何疑问随时回复这封邮件。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Shipping Delay Notice · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nWe are very sorry — order {{订单编号}} needs a shipping delay. The new expected ship date is {{预计发货日期}}.\n\nWe know waiting is hard, and we truly appreciate your understanding. Feel free to reply if you have any questions.\n\nSnow Yuzu' }
+        zh: { subject: '发货时间要顺延一下 · {{订单编号}} ♡ · Snow Yuzu', body: '{{客户称呼}}，真的非常抱歉 (｡•́︿•̀｡)\n\n你的订单 {{订单编号}} 需要顺延发货，新的预计发货时间为 {{预计发货日期}}。\n\n我们知道等待的滋味不好受，谢谢你的理解与耐心。如果有任何疑问，随时回复这封邮件来找我呀 ♡\n— Snow Yuzu ♡' },
+        en: { subject: 'A Shipping Delay for Order {{订单编号}} ♡ · Snow Yuzu', body: 'We\'re truly sorry, {{客户称呼}} (｡•́︿•̀｡)\n\nOrder {{订单编号}} needs a shipping delay. The new expected ship date is {{预计发货日期}}.\n\nWe know waiting is hard, and we truly appreciate your understanding. Feel free to reply if you have any questions ♡\n— Snow Yuzu ♡' }
       },
       package_exception: {
-        zh: { subject: '【Snow Yuzu】包裹需要你的协助 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 的包裹在运输途中遇到异常（如海关扣留、地址问题等）。\n\n物流单号：{{物流单号}}\n\n可能需要你配合提供信息或支付关税，请留意快递公司的通知，或直接回复本邮件，我们会协助你处理。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Your Package Needs Attention · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nThe package of order {{订单编号}} has hit an exception in transit (customs hold, address issue, etc.).\n\nTracking No.: {{物流单号}}\n\nYou may need to provide information or pay customs fees. Please watch for carrier notices, or reply to this email and we will help you sort it out.\n\nSnow Yuzu' }
+        zh: { subject: '包裹需要你的协助 · {{订单编号}} ♡ · Snow Yuzu', body: '{{客户称呼}}，你的订单 {{订单编号}} 的包裹在运输途中遇到一点小状况（如海关扣留、地址问题等）。\n\n物流单号：{{物流单号}}\n\n可能需要你配合提供信息或支付关税，请留意快递公司的通知，或直接回复本邮件，我会协助你处理，不用太担心呀 ♡\n— Snow Yuzu ♡' },
+        en: { subject: 'Your Package Needs a Little Help · {{订单编号}} ♡ · Snow Yuzu', body: 'Hi {{客户称呼}}, the package of order {{订单编号}} has hit an exception in transit (customs hold, address issue, etc.).\n\nTracking No.: {{物流单号}}\n\nYou may need to provide information or pay customs fees. Please watch for carrier notices, or reply to this email and I\'ll help you sort it out — no worries ♡\n— Snow Yuzu ♡' }
       },
       delivered_notice: {
-        zh: { subject: '【Snow Yuzu】包裹已签收 · {{订单编号}}', body: '亲爱的 {{客户称呼}}：\n\n物流显示你的订单 {{订单编号}} 已经签收啦！\n\n拆箱的时候希望你一切都喜欢～如果有任何问题（缺件、损坏等），请在 48 小时内回复这封邮件并附上照片，我们会尽快帮你处理。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] Package Delivered · {{订单编号}}', body: 'Dear {{客户称呼}},\n\nTracking shows order {{订单编号}} has been delivered!\n\nWe hope you love everything! If there is any issue (missing parts, damage), reply within 48 hours with photos and we will make it right.\n\nSnow Yuzu' }
+        zh: { subject: '包裹签收啦！{{订单编号}} ♡ · Snow Yuzu', body: '{{客户称呼}}，物流显示你的订单 {{订单编号}} 已经安全签收啦！(˶ᵔ ᵕ ᵔ˶)♡\n\n拆箱的时候希望你一切都喜欢～如果有任何问题（缺件、损坏等），请在 48 小时内回复这封邮件并附上照片，我们会尽快帮你处理。\n\n谢谢你把它带回家呀！\n— Snow Yuzu ♡' },
+        en: { subject: 'Package Delivered! {{订单编号}} ♡ · Snow Yuzu', body: 'Hi {{客户称呼}}, tracking shows order {{订单编号}} has been safely delivered! (˶ᵔ ᵕ ᵔ˶)♡\n\nWe hope you love everything! If there is any issue (missing parts, damage), reply within 48 hours with photos and we\'ll make it right.\n\nThank you for bringing it home!\n— Snow Yuzu ♡' }
       },
       review_invite: {
-        zh: { subject: '【Snow Yuzu】喜欢这次的订单吗？', body: '亲爱的 {{客户称呼}}：\n\n你的订单 {{订单编号}} 已经到手几天啦，希望它有好好陪伴你～\n\n如果喜欢的话，欢迎来 {{店铺链接}} 留言晒单，你的反馈对小柚超级重要！\n\n如果不想再收到这类邀请，可以用邮件底部的 Unsubscribe 一键退订，订单邮件不受影响。\n\nSnow Yuzu 小柚' },
-        en: { subject: '[Snow Yuzu] How Is Your Order?', body: 'Dear {{客户称呼}},\n\nIt has been a few days since order {{订单编号}} arrived — we hope it is treating you well!\n\nIf you love it, we would be thrilled to see your photos or hear your thoughts: {{店铺链接}}\n\nIf you no longer wish to receive these invites, use the Unsubscribe link at the bottom. Order emails are not affected.\n\nSnow Yuzu' }
+        zh: { subject: '喜欢这次的订单吗？来聊聊呀 ♡ · Snow Yuzu', body: '{{客户称呼}}，你的订单 {{订单编号}} 已经到手几天啦，希望它有好好陪伴你～\n\n如果喜欢的话，欢迎来 {{店铺链接}} 留言晒单，你的反馈对小柚超级超级重要！\n\n如果不想再收到这类邀请，可以用邮件底部的退订链接一键退订，订单邮件不受影响哦。\n\n— Snow Yuzu ♡' },
+        en: { subject: 'How Is Your Order? Let\'s Chat ♡ · Snow Yuzu', body: 'Hi {{客户称呼}}, it\'s been a few days since order {{订单编号}} arrived — we hope it\'s treating you well!\n\nIf you love it, we\'d be thrilled to see your photos or hear your thoughts: {{店铺链接}}\n\nIf you no longer wish to receive these invites, use the Unsubscribe link at the bottom. Order emails are not affected.\n\n— Snow Yuzu ♡' }
+      },
+      birthday: {
+        zh: { subject: '今天是你的生日呀！生日快乐 ♡ · Snow Yuzu', body: '亲爱的 {{客户称呼}}：\n\n呀！今天是你的生日嘛！生日快乐！！(ﾉ˶>ᗜ<˵)ﾉ♡\n\n新的一岁也要开开心心的呀！希望你遇到喜欢的小东西、温柔的人，还有好多好多值得期待的小事 ♡\n\n谢谢你来到 Snow Yuzu 小铺～能陪你生活里的一小段时间，我们也觉得很开心。\n\n今天一定要好好庆祝，吃饱饱、玩开心，收获满满的幸福哦！\n\n送你一只电子小兔兔和好多祝福 ₍ᐢ.ˬ.ᐢ₎♡\n\n生日快乐呀！\n— Snow Yuzu 的小店主 ♡' },
+        en: { subject: 'Happy Birthday to You! A Little Wish from Snow Yuzu ♡', body: 'Hi {{客户称呼}}!\n\nIt\'s your birthday! Happy birthday!! (ﾉ˶>ᗜ<˵)ﾉ♡\n\nWishing you a new year filled with little joys, lovely surprises, and lots of things that make you smile ♡\n\nThank you for being part of Snow Yuzu. We\'re so happy our little shop gets to be a tiny part of your world!\n\nHave something yummy, enjoy your special day, and give yourself lots of reasons to smile ₍ᐢ.ˬ.ᐢ₎♡\n\nSending you a little virtual bunny and a whole lot of birthday wishes!\n\nHappy birthday!\n— Snow Yuzu\'s little shopkeeper ♡' }
       }
     };
     return (D[kind] && D[kind][lang]) || { subject: '', body: '' };
@@ -555,6 +588,18 @@
     if (panel.dataset.booted) return;
     panel.dataset.booted = '1';
     panel.innerHTML =
+      // 20261027g：生日邮件总开关 + 测试发送（发到官方邮箱）
+      '<div class="card" style="padding:16px 20px;margin-bottom:14px;border:1.5px solid var(--accent-soft,#FCE4EC);">' +
+        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+          '<h3 style="margin:0;font-size:17px;color:var(--text,#604C57);">' + t('生日邮件 ♡', 'Birthday emails ♡') + '</h3>' +
+          '<span class="chip" id="bday-sw-on">' + t('自动发送开', 'Auto on') + '</span>' +
+          '<span class="chip" id="bday-sw-off">' + t('自动发送关', 'Auto off') + '</span>' +
+          '<button class="btn-mini" id="bday-test" style="margin-left:auto;">' + t('给官方邮箱发一封测试', 'Send a test to the official mailbox') + '</button>' +
+        '</div>' +
+        '<p style="margin:8px 0 0;font-size:13px;color:var(--muted,#A88E9B);line-height:1.8;">' +
+          t('每天自动给当天生日的客户发一封生日祝福（客户资料里设置生日、可单独关闭）。这里控制全站自动发送。', 'Automatically sends a birthday wish to customers whose birthday is today (set birthdays in customer profiles; each profile can opt out). This switch controls the site-wide automation.') +
+        '</p>' +
+      '</div>' +
       '<div class="card" style="padding:16px 20px;margin-bottom:14px;">' +
         '<h3 style="margin:0 0 4px;font-size:17px;color:var(--text,#604C57);">' + t('邮件模板管理', 'Email templates') + '</h3>' +
         '<p style="margin:0;font-size:13px;color:var(--muted,#A88E9B);line-height:1.8;">' +
@@ -590,6 +635,37 @@
           '</div>' +
         '</div>' +
       '</div>';
+    // 生日邮件开关/测试发送
+    function bdaySync(on) {
+      panel.querySelector('#bday-sw-on').classList.toggle('on', on);
+      panel.querySelector('#bday-sw-off').classList.toggle('on', !on);
+    }
+    api('site_settings?select=key,value&key=eq.birthday_emails_enabled').then(function (r) { return r.json(); }).then(function (rows) {
+      var v = (rows && rows[0] && rows[0].value) || 'on';
+      bdaySync(v !== 'off');
+    }).catch(function () { bdaySync(true); });
+    function bdaySet(on) {
+      api('site_settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ key: 'birthday_emails_enabled', value: on ? 'on' : 'off' }) })
+        .then(function (r) { if (!r.ok) { toast(t('保存失败', 'Save failed')); return; } bdaySync(on); toast(on ? t('生日邮件自动发送已开启', 'Birthday emails on') : t('生日邮件自动发送已关闭', 'Birthday emails off')); });
+    }
+    panel.querySelector('#bday-sw-on').addEventListener('click', function () { bdaySet(true); });
+    panel.querySelector('#bday-sw-off').addEventListener('click', function () { bdaySet(false); });
+    panel.querySelector('#bday-test').addEventListener('click', function () {
+      var btn = this; btn.disabled = true;
+      var zh = (TPL.lang !== 'en');
+      api('email_log', {
+        method: 'POST', headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify({
+          kind: 'birthday', ref_id: 'test-bday-' + Date.now(), to_email: 'snowyuzustudio@gmail.com',
+          subject: '【测试】今天是你的生日呀！生日快乐 ♡',
+          body: (zh
+            ? '亲爱的 小柚：\n\n呀！今天是你的生日嘛！生日快乐！！(ﾉ˶>ᗜ<˵)ﾉ♡\n\n[生日图案]\n\n这是你自己点下「测试发送」的生日邮件样例～正式发送时，收件人会看到他们自己的称呼。\n\n送你一只电子小兔兔和好多祝福 ₍ᐢ.ˬ.ᐢ₎♡\n\n生日快乐呀！\n— Snow Yuzu 的小店主 ♡'
+            : 'Hi Yuki!\n\nIt\'s your birthday! Happy birthday!! (ﾉ˶>ᗜ<˵)ﾉ♡\n\n[生日图案]\n\nThis is the birthday email you sent yourself as a test — real sends will greet each customer by name.\n\nSending you a little virtual bunny and a whole lot of birthday wishes! ₍ᐢ.ˬ.ᐢ₎♡\n\nHappy birthday!\n— Snow Yuzu\'s little shopkeeper ♡')
+        })
+      }).then(function (r) { if (!r.ok) throw new Error(); toast(t('测试邮件已加入队列，约 1 分钟内发到官方邮箱', 'Test queued — arriving at the official mailbox in ~1 min')); })
+        .catch(function () { toast(t('加入队列失败，再试一次', 'Queue failed — try again')); })
+        .finally(function () { btn.disabled = false; });
+    });
     panel.querySelectorAll('[data-lang]').forEach(function (c) {
       c.addEventListener('click', function () { tplSwitchLang(c.getAttribute('data-lang')); });
     });

@@ -963,7 +963,8 @@
       var body = {
         carrier: carrier,
         tracking: card.querySelector('.sm-tracking').value.trim(),
-        track_url: card.querySelector('.sm-track-url').value.trim(),
+        // TEST- 前缀 = 测试单号：track_url 留空时自动指向站内测试物流查询页（虚拟物流）
+        track_url: card.querySelector('.sm-track-url').value.trim() || (card.querySelector('.sm-tracking').value.trim().indexOf('TEST-') === 0 ? 'https://chengyuki119.github.io/tracking/?no=' + card.querySelector('.sm-tracking').value.trim() : ''),
         ship_note: card.querySelector('.sm-ship-note').value.trim(),
         shipped_at: shipDate ? dpToInternal(shipDate) + 'T12:00:00Z' : new Date().toISOString(),
         status: 'shipped'
@@ -1712,7 +1713,7 @@
       var a = document.createElement('a');
       var today = (new Date()).toISOString().slice(0, 10);
       a.href = URL.createObjectURL(blob);
-      a.download = 'SnowYuzu_Orders_' + today + '.csv';
+      a.download = 'Snow Yuzu_Orders_' + today + '.csv';
       document.body.appendChild(a); a.click(); a.remove();
       var detailRows = lines.length - 1;
       toast('已导出 ' + rows.length + ' 笔订单（' + detailRows + ' 行明细）');

@@ -27,7 +27,7 @@
       'shipping-policy': '配送政策',
       'privacy-policy': '隐私政策',
       'terms-of-service': '服务条款',
-      copy: '© 2026 SnowYuzu. 保留所有权利。'
+      copy: '© 2026 Snow Yuzu. 保留所有权利。'
     },
     en: {
       account: 'My Account',
@@ -46,7 +46,7 @@
       'shipping-policy': 'Shipping Policy',
       'privacy-policy': 'Privacy Policy',
       'terms-of-service': 'Terms of Service',
-      copy: '© 2026 SnowYuzu. All rights reserved.'
+      copy: '© 2026 Snow Yuzu. All rights reserved.'
     }
   };
 
