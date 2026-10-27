@@ -410,6 +410,12 @@
         '<input class="sm-ship-note" placeholder="备注" value="' + escAttr(o.ship_note || '') + '"></div>' +
         '<button type="button" class="btn-save sm-act-ship" style="padding:10px 26px;font-size:16px;">确认发货</button>' +
         '</div>' +
+        // 20261027g22：虚拟物流 6 状态推进（仅 TEST- 测试单号；加载当前进度后可点击切换）
+        ((o.tracking || '').indexOf('TEST-') === 0 ?
+          '<div class="sm-act sm-act-v"><span class="sm-vlabel">虚拟物流状态（测试单号专用，点击切换 · 不会发给真实客户）</span>' +
+          '<div class="sm-track-steps" data-no="' + escAttr(o.tracking) + '" style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;"><span style="font-size:13px;color:var(--muted);">加载中…</span></div>' +
+          '<button type="button" class="btn-mini sm-ship-preview" style="margin-top:4px;">预览发货邮件（只预览，不发信）</button>' +
+          '</div>' : '') +
         '<div class="sm-act"><span class="lbl">包裹</span>' +
         '<div class="sm-pkgs" style="width:100%;display:flex;flex-direction:column;gap:6px;"><span style="font-size:14px;color:var(--muted);">加载中…</span></div>' +
         '<button type="button" class="btn-mini sm-pkg-add">＋ 加一个包裹</button>' +
@@ -434,6 +440,20 @@
       '<span class="sm-o-arrow">▸</span>' +
       '</div>' + body + '</div>';
   }
+  // 虚拟物流 6 状态 chip 渲染（TEST- 单号）
+  var TRACK_STEPS = ['已创建运单', '已发货', '运输途中', '到达当地配送站', '派送中', '已送达'];
+  function loadTrackSteps(no) {
+    var box = document.querySelector('.sm-track-steps[data-no="' + no.replace(/"/g, '') + '"]');
+    if (!box) return;
+    restGet('mock_tracking?select=step,status_zh&tracking_no=eq.' + encodeURIComponent(no) + '&order=step.asc').then(function (rows) {
+      var cur = (rows && rows.length) ? rows[rows.length - 1].step : 0;
+      box.innerHTML = TRACK_STEPS.map(function (st, i) {
+        var step = i + 1;
+        return '<button type="button" class="chip' + (step <= cur ? ' on' : '') + '" data-step="' + step + '">' + st + '</button>';
+      }).join('') + '<span style="font-size:12px;color:var(--muted);align-self:center;">' + (cur >= 6 ? '已送达' : '当前：' + (cur > 0 ? TRACK_STEPS[cur - 1] : '未开始')) + '</span>';
+    }).catch(function () { box.innerHTML = '<span style="font-size:13px;color:var(--muted);">进度加载失败，点其他地方刷新再试</span>'; });
+  }
+
   function renderOrders() {
     renderOrderChips();
     var list = document.getElementById('sm-o-list');
@@ -446,6 +466,7 @@
       return;
     }
     list.innerHTML = rows.length ? rows.map(orderHtml).join('') : '<p class="sm-empty">没有符合条件的订单</p>';
+    rows.forEach(function (o) { if ((o.tracking || '').indexOf('TEST-') === 0) loadTrackSteps(o.tracking); });
     // 已展开的行：补付款凭证签名图 + 包裹列表
     Array.prototype.forEach.call(list.querySelectorAll('img.sm-pay-img[data-paypath]'), function (img) {
       signedPay(img.getAttribute('data-paypath')).then(function (u) { if (u) img.src = u; });
@@ -972,6 +993,35 @@
       uiConfirm('确认 ' + (o.order_no || '') + ' 已交给 ' + carrier + ' 发出？', function () {
         patchOrder(id, body, '已发货，买家会看到物流信息', 'status', '确认发货 → shipped（' + carrier + ' ' + body.tracking + '）');
       }, '确认发货');
+      return;
+    }
+    if (e.target.closest('.sm-track-steps .chip')) { // 虚拟物流：点击状态推进/回退（仅 TEST- 单号，rpc 里也有校验）
+      var chip = e.target.closest('.chip');
+      var stNo = chip.parentElement.getAttribute('data-no');
+      var stStep = parseInt(chip.getAttribute('data-step'), 10);
+      api('rpc/mock_tracking_set', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ p_tracking_no: stNo, p_step: stStep }) })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j && j.message) { toast(j.message); return; }
+          toast(t('虚拟物流已切到「' + chip.textContent.trim() + '」', 'Mock tracking set to "' + chip.textContent.trim() + '"'));
+          loadTrackSteps(stNo);
+        })
+        .catch(function () { toast(t('切换失败，再试一次', 'Failed — try again')); });
+      return;
+    }
+    if (e.target.classList.contains('sm-ship-preview')) { // 预览发货邮件（status=preview，email_pick_batch 不会取它，绝不发信）
+      var pvNo = e.target.closest('.sm-act-v').querySelector('.sm-track-steps').getAttribute('data-no');
+      var pvO = byId(SM.orders, id);
+      var pvLang = 'zh';
+      api('email_log', {
+        method: 'POST', headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify({
+          kind: 'order_shipped_preview', ref_id: (pvO ? pvO.order_no : 'TEST') + '#preview-' + Date.now(),
+          to_email: (pvO ? pvO.email : ''), subject: '【预览 · 不发送】你的包裹出发啦！' + (pvO ? pvO.order_no : '') + ' ♡',
+          body: '【这是一封预览邮件，不会发出】\n\n快递公司：' + (pvO ? (pvO.carrier || 'Snow Yuzu Test Carrier') : '') + '\n运单号：' + pvNo + '\n物流链接：https://chengyuki119.github.io/tracking/?no=' + pvNo + '\n\n最新物流状态以物流查询页为准；真实发货邮件由确认发货自动触发。\n— Snow Yuzu ♡'
+        })
+      }).then(function (r) { if (!r.ok) throw new Error(); toast(t('预览已保存到邮件记录（状态 preview，不会发送），去「邮件与联系人同步」里查看正文', 'Preview saved to mail log (status=preview, never sent)')); })
+        .catch(function () { toast(t('预览失败，再试一次', 'Preview failed — try again')); });
       return;
     }
     if (e.target.classList.contains('sm-pkg-add')) { // 包裹：新增一行

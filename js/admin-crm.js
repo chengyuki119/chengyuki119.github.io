@@ -418,8 +418,8 @@
     if (panel.dataset.booted) return;
     panel.dataset.booted = '1';
     panel.innerHTML =
-      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:22px;">' +
-        '<div class="card" style="padding:24px 26px;">' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:22px;align-items:stretch;">' +
+        '<div class="card" style="padding:24px 26px;display:flex;flex-direction:column;">' +
           '<h3 style="margin:0 0 14px;font-size:18px;color:var(--text,#604C57);">' + t('Gmail 自动分类（过滤器方案）', 'Gmail auto labels (filters)') + '</h3>' +
           '<p style="font-size:15px;color:var(--muted,#A88E9B);line-height:1.8;margin-bottom:16px;">' + t('默认只加标签，不删邮件、不动收件箱。以下过滤器待你完成 Google OAuth 授权后一键创建：', 'Labels only — nothing deleted. Filters created after you authorize Google OAuth:') + '</p>' +
           '<div style="font-size:15px;color:var(--text,#604C57);line-height:2.7;">' +
@@ -430,9 +430,9 @@
             '<span class="chip on">Snow Yuzu/客户留言</span> ' + t('后台留言通知', 'contact notice') + '<br>' +
             '<span class="chip on">Snow Yuzu/VIP会员</span> ' + t('VIP 变更通知', 'VIP notice') +
           '</div>' +
-          '<div style="font-size:14px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:12px 14px;margin-top:18px;line-height:1.8;">' + t('需要 Google OAuth 授权（gmail.labels + gmail.filters）。SMTP 发信权限不等于邮箱管理权限——等你授权，我不会动你的邮箱。', 'Needs your Google OAuth (gmail.labels+filters). SMTP access is NOT mailbox access — nothing touched until you authorize.') + '</div>' +
+          '<div style="font-size:14px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:14px 16px;margin-top:auto;line-height:1.8;">' + t('需要 Google OAuth 授权（gmail.labels + gmail.filters）。SMTP 发信权限不等于邮箱管理权限——等你授权，我不会动你的邮箱。', 'Needs your Google OAuth (gmail.labels+filters). SMTP access is NOT mailbox access — nothing touched until you authorize.') + '</div>' +
         '</div>' +
-        '<div class="card" style="padding:24px 26px;">' +
+        '<div class="card" style="padding:24px 26px;display:flex;flex-direction:column;">' +
           '<h3 style="margin:0 0 14px;font-size:18px;color:var(--text,#604C57);">' + t('Google Contacts 联系人同步（默认关）', 'Google Contacts sync (off)') + '</h3>' +
           '<div style="font-size:15px;color:var(--text,#604C57);line-height:2.2;display:grid;gap:10px;">' +
             t('同步范围：仅「已同意接收通知」的客户；字段：姓名 / 邮箱 / 电话。', 'Scope: only customers who agreed to notices; fields: name/email/phone.') + '<br>' +
@@ -440,7 +440,7 @@
             t('联系人标签：', 'Contact labels: ') + '<span class="chip on">Snow Yuzu/普通客户</span> <span class="chip on">Snow Yuzu/VIP</span> <span class="chip on">Snow Yuzu/回头客</span>' +
           '</div>' +
           '<div id="ms-sync-state" style="margin-top:18px;"></div>' +
-          '<div style="font-size:14px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:12px 14px;margin-top:16px;line-height:1.8;">' + t('必须等你本人完成 Google 授权后才会开启真实同步；现有 Google 联系人不会被修改或删除。Gmail 标签（邮件）≠ Contacts 标签（人物），两套分开。', 'Real sync waits for your authorization. Existing contacts untouched. Gmail labels ≠ Contacts labels.') + '</div>' +
+          '<div style="font-size:14px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:14px 16px;margin-top:auto;line-height:1.8;">' + t('必须等你本人完成 Google 授权后才会开启真实同步；现有 Google 联系人不会被修改或删除。Gmail 标签（邮件）≠ Contacts 标签（人物），两套分开。', 'Real sync waits for your authorization. Existing contacts untouched. Gmail labels ≠ Contacts labels.') + '</div>' +
         '</div>' +
       '</div>';
     loadSyncState();
@@ -455,10 +455,10 @@
       box.innerHTML =
         '<div style="display:flex;align-items:center;gap:14px;font-size:15px;color:var(--text,#604C57);flex-wrap:wrap;">' +
           '<span>' + t('同步开关', 'Sync switch') + '</span>' +
-          '<span style="font-size:12px;padding:2px 12px;border-radius:999px;background:' + (st.enabled ? 'var(--accent-soft,#FCE4EC);color:var(--accent-strong,#A04A68);' : '#f3ece6;color:var(--muted,#A88E9B);') + 'font-weight:600;">' + (st.enabled ? t('已开启（待授权）', 'Enabled (pending auth)') : t('关闭', 'Off')) + '</span>' +
+          '<span style="font-size:13px;padding:4px 16px;border-radius:999px;border:1.5px solid ' + (st.enabled ? 'transparent;background:var(--accent-soft,#FCE4EC);color:var(--accent-strong,#A04A68);' : '#e8d8e0;background:#fff;color:var(--muted,#A88E9B);') + 'font-weight:600;display:inline-flex;align-items:center;">' + (st.enabled ? t('已开启（待授权）', 'Enabled (pending auth)') : t('关闭', 'Off')) + '</span>' +
           '<button class="btn-mini" id="ms-toggle">' + (st.enabled ? t('关闭', 'Turn off') : t('开启', 'Turn on')) + '</button>' +
         '</div>' +
-        '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-top:10px;">' + t('状态：', 'Status: ') + (st.oauth_done ? t('Google 已授权，同步就绪', 'Google authorized, ready') : t('等待柚子完成 Google OAuth 授权', 'Waiting for your Google OAuth authorization')) + '</div>';
+        '<div style="font-size:13px;color:var(--muted,#A88E9B);margin-top:14px;">' + t('状态：', 'Status: ') + (st.oauth_done ? t('Google 已授权，同步就绪', 'Google authorized, ready') : t('等待柚子完成 Google OAuth 授权', 'Waiting for your Google OAuth authorization')) + '</div>';
       box.querySelector('#ms-toggle').addEventListener('click', function () {
         var next = { enabled: !(st && st.enabled), oauth_done: false, updated: new Date().toISOString() };
         api('site_settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ key: 'crm_sync', value: next }) })
@@ -588,7 +588,7 @@
     if (panel.dataset.booted) return;
     panel.dataset.booted = '1';
     panel.innerHTML =
-      // 20261027g：生日邮件总开关 + 测试发送（发到官方邮箱）
+      // 20261027g2：生日邮件总开关 + 测试发送（发到官方邮箱）
       '<div class="card" style="padding:16px 20px;margin-bottom:14px;border:1.5px solid var(--accent-soft,#FCE4EC);">' +
         '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
           '<h3 style="margin:0;font-size:17px;color:var(--text,#604C57);">' + t('生日邮件 ♡', 'Birthday emails ♡') + '</h3>' +

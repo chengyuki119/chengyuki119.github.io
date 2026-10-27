@@ -41,6 +41,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   button { font-family: inherit; }
   /* ===== 顶部白色长条 + 汉堡菜单（与主页一致）===== */
+  html, body { height: 100%; }
+  body.admin-locked { overflow: hidden; }
   .topbar {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -68,7 +70,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .lang-btn { border: none; background: none; color: var(--muted); font-size:14px; font-family: inherit; padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s, box-shadow .2s; }
   .lang-btn.active { background: #fff; color: var(--text, #604C57); font-weight: 600; box-shadow: 0 1px 4px rgba(180,120,150,.28); }
 
-  .wrap { max-width: none; width: 100%; margin: 0 auto; padding: 40px 24px 64px; box-sizing: border-box; }
+  .wrap { max-width: none; width: 100%; margin: 0 auto; padding: 0; box-sizing: border-box; }
   /* 后台标题行 + 侧栏宽度变量（她 20261026t 任务书 §1：标题与右侧内容面板左缘对齐；变量复用避免魔法数重复） */
   :root { --adm-side-w: 190px; --adm-gap: 22px; }
   .adm-head { display: flex; align-items: center; gap: 14px; position: relative; }
@@ -180,12 +182,21 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   /* ── 桌面端：导航固定左侧栏，内容右侧 ──
      她 20261027 00:00：右栏怎么往下滑左栏都不动，左栏自己能滚。
      sticky 会被全局 overflow-x clip 祖先破坏（实测失效），改用 fixed 钉死视口。 */
+  /* ── 20261027g22：主内容白卡固定框（她 20261027 10:51：外框上下各留 50px、滚动时框不动、内容在框内滚）── */
+  #adm-shell {
+    position: fixed; top: 110px; bottom: 50px; left: 24px; right: 24px;
+    background: var(--card,#fff); border-radius: 22px;
+    box-shadow: 0 6px 24px rgba(180,120,150,.14);
+    overflow-y: auto; box-sizing: border-box; padding: 26px 30px 28px;
+    z-index: 80; scrollbar-gutter: stable;
+  }
   #adm-content { min-width: 0; }
   @media (min-width: 900px) {
     #admin-body { display: block; }
+    #adm-shell { left: calc(var(--adm-side-w) + var(--adm-gap) + 24px); }
     #pp-wrap {
-      position: fixed; left: 24px; top: 78px; width: var(--adm-side-w);
-      margin-bottom: 0; max-height: calc(100vh - 60px - 18px); overflow-y: auto; /* 左栏自己滚 */
+      position: fixed; left: 24px; top: 110px; width: var(--adm-side-w);
+      margin-bottom: 0; max-height: calc(100vh - 110px - 50px); overflow-y: auto; /* 左栏自己滚，顶与主卡对齐 */
       z-index: 90;
     }
     #pp-btn { display: none; }
@@ -199,9 +210,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   /* ── 手机端：同款两栏，左栏窄条常驻（原来收在“管理面板”下拉里；她 20261027 00:00 要两图分开、左固定右独立滚）── */
   @media (max-width: 899px) {
     #admin-body { display: block; }
+    #adm-shell { left: 165px; right: 10px; padding: 20px 14px 24px; }
     #pp-wrap {
-      position: fixed; left: 10px; top: 68px; width: 150px; margin-bottom: 0;
-      max-height: calc(100vh - 60px - 14px); overflow-y: auto;
+      position: fixed; left: 10px; top: 110px; width: 150px; margin-bottom: 0;
+      max-height: calc(100vh - 110px - 50px); overflow-y: auto;
       z-index: 90;
     }
     #pp-btn { display: none; }
@@ -5965,14 +5977,15 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 
 <!-- 系统状态 -->
 <div id="tab-system" style="display:none;">
-  <div class="card" style="max-width:640px;">
+  <div class="card" style="max-width:none;">
     <h3 style="margin:0 0 12px;">邮件发送记录（最近 30 封）</h3>
     <div id="email-log-list" style="font-size:15px; line-height:1.9; max-height:420px; overflow-y:auto;"><p class="empty">加载中…</p></div>
     <p style="color:var(--muted); font-size:14px; line-height:1.8; margin:12px 0 0;">
       发件邮箱：snowyuzustudio@gmail.com（需在 Supabase 配置 SMTP_USER / SMTP_PASS 后才会真实发信，未配置前队列保留不丢弃）。
     </p>
   </div>
-  <div class="card" style="max-width:640px;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;align-items:start;margin-top:14px;">
+  <div class="card" style="max-width:none;margin:0;">
     <h3 style="margin:0 0 12px;">系统状态</h3>
     <div style="font-size:16px; line-height:2;">
       <div>数据库连接：<b id="sys-db">检测中…</b></div>
@@ -5989,7 +6002,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       <a class="btn-mini" href="/photos/" target="_blank" rel="noopener">打开照片页</a>
     </div>
   </div>
-  <div class="card" style="max-width:640px; margin-top:14px;">
+  <div class="card" style="max-width:none;margin:0;">
     <h3 style="margin:0 0 12px;">专属权限自检</h3>
     <div id="yk-self-check" style="font-size:16px; line-height:2; color:var(--muted);">检测中…</div>
     <p style="color:var(--muted); font-size:13px; line-height:1.8; margin:10px 0 0;">
@@ -5997,6 +6010,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       说明本机还留着另一个账号的登录（比如商城测试账号），前台会按这个账号判断权限；
       退出登录或切换账号后前台即恢复正确。
     </p>
+  </div>
   </div>
 </div>
 
@@ -6012,11 +6026,11 @@ function loadEmailLog() {
       var st = ST[m.status] || ST.pending;
       var t = m.sent_at ? new Date(m.sent_at).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
         : new Date(m.created_at).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-      return '<div style="padding:7px 0; border-bottom:1px dashed var(--card-hover);">' +
-        '<b>' + esc(m.subject) + '</b> → ' + esc(m.to_email) +
-        ' <span style="font-size:13px;color:#fff;background:' + (st[1] === 'ok' ? 'var(--success,#5FA777)' : st[1] === 'warn' ? 'var(--warning,#E0A458)' : st[1] === 'off' ? '#c6cddb' : 'var(--accent-soft)') + ';border-radius:999px;padding:1px 9px;">' + st[0] + '</span>' +
-        ' <span style="color:var(--muted);font-size:14px;">' + t + '</span>' +
-        (m.last_error ? '<div style="color:var(--danger,#D96570);font-size:14px;">' + esc(m.last_error) + '</div>' : '') +
+      return '<div style="padding:8px 0; border-bottom:1px dashed var(--card-hover);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+        '<span style="flex:1;min-width:200px;"><b>' + esc(m.subject) + '</b> <span style="color:var(--muted);">→ ' + esc(m.to_email) + '</span></span>' +
+        '<span style="white-space:nowrap;font-size:13px;color:#fff;background:' + (st[1] === 'ok' ? 'var(--success,#5FA777)' : st[1] === 'warn' ? 'var(--warning,#E0A458)' : st[1] === 'off' ? '#c6cddb' : 'var(--accent-soft)') + ';border-radius:999px;padding:2px 10px;display:inline-block;">' + st[0] + '</span>' +
+        '<span style="white-space:nowrap;color:var(--muted);font-size:14px;min-width:86px;text-align:right;">' + t + '</span>' +
+        (m.last_error ? '<div style="color:var(--danger,#D96570);font-size:14px;width:100%;">' + esc(m.last_error) + '</div>' : '') +
         '</div>';
     }).join('');
   }).catch(function () { box.innerHTML = '<p class="empty">加载失败，刷新重试</p>'; });
@@ -6042,7 +6056,7 @@ function loadEmailLog() {
           document.getElementById(el).style.color = '#3aa06a';
         } else {
           document.getElementById(el).textContent = anonBlockedText;
-          document.getElementById(el).style.color = '#c98a2b';
+          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g22 状态色语义统一） */
         }
       })
       .catch(function () {
@@ -6155,6 +6169,15 @@ function loadEmailLog() {
     if (ch.id && ch.id.indexOf('tab-') === 0) wrap.appendChild(ch);
   });
   body.appendChild(wrap);
+  // 20261027g22：主内容白卡固定框（含页脚一起进卡，页面本体不再滚动）
+  document.body.classList.add('admin-locked');
+  var shell = document.createElement('div');
+  shell.id = 'adm-shell';
+  Array.prototype.slice.call(document.body.children).forEach(function (ch) {
+    if (ch.id === 'pp-wrap' || ch.id === 'adm-content' || ch.tagName === 'SCRIPT' || ch.tagName === 'STYLE' || ch.classList.contains('topbar') || ch.classList.contains('menu') || ch.classList.contains('menu-mask')) return;
+    shell.appendChild(ch);
+  });
+  document.body.appendChild(shell);
 })();
 </script>
 
@@ -6193,14 +6216,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027g"></script>
-<script src="js/admin-crm.js?v=20261027g"></script>
-<script src="js/vendor/jsQR.js?v=20261027g"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027g"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027g"></script>
-<script src="js/admin-workbench.js?v=20261027g"></script>
-<script src="js/admin-biz.js?v=20261027g"></script>
-<script src="js/admin-export.js?v=20261027g"></script>
-<footer>© 2026 Yuki · Made with Cola</footer>
+<script src="js/admin-shop.js?v=20261027g2"></script>
+<script src="js/admin-crm.js?v=20261027g2"></script>
+<script src="js/vendor/jsQR.js?v=20261027g2"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027g2"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027g2"></script>
+<script src="js/admin-workbench.js?v=20261027g2"></script>
+<script src="js/admin-biz.js?v=20261027g2"></script>
+<script src="js/admin-export.js?v=20261027g2"></script>
+<footer style="padding:18px 0 0; text-align:center;">© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>

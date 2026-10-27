@@ -8,9 +8,9 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/icon-yuki2-180.png">
 <link rel="icon" type="image/png" sizes="180x180" href="/icon-yuki2-180.png">
 <meta name="apple-mobile-web-app-title" content="小柚的小世界">
-<link rel="stylesheet" href="/css/site.css?v=20261027g">
-<link rel="stylesheet" href="/site-menu.css?v=20261027g">
-<script src="/site-menu.js?v=20261027g" defer></script>
+<link rel="stylesheet" href="/css/site.css?v=20261027g2">
+<link rel="stylesheet" href="/site-menu.css?v=20261027g2">
+<script src="/site-menu.js?v=20261027g2" defer></script>
 <style>
   .track-wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 64px; }
   .track-sub { color: var(--muted,#A88E9B); font-size: 15px; margin: 0 0 20px; }
@@ -34,6 +34,7 @@
   .tl .tl-time { font-size: 13px; color: #A88E9B; }
   .tl .tl-place { font-size: 13px; color: #A88E9B; }
   .tl .tl-note { font-size: 15px; line-height: 1.7; color: #604C57; margin: 4px 0 0; word-break: break-word; overflow-wrap: anywhere; }
+  .track-sim { background: #FFF0C2; border: 1.5px solid #E8C96A; color: #7A5B00; border-radius: 12px; padding: 10px 14px; font-size: 13px; font-weight: 700; letter-spacing: .5px; line-height: 1.6; margin-bottom: 16px; text-align: center; word-break: break-word; }
   .track-empty { text-align: center; padding: 34px 18px; color: var(--muted,#A88E9B); font-size: 16px; }
   .track-empty .big { font-size: 34px; margin-bottom: 10px; }
   @media (max-width: 520px) { .track-wrap { padding: 30px 16px 56px; } .track-meta { padding: 15px 16px; } }
@@ -76,8 +77,8 @@
 
 <footer></footer>
 
-<script src="/js/site-common.js?v=20261027g"></script>
-<script src="/js/site-footer.js?v=20261027g"></script>
+<script src="/js/site-common.js?v=20261027g2"></script>
+<script src="/js/site-footer.js?v=20261027g2"></script>
 <script>
 (function () {
   'use strict';
@@ -106,7 +107,8 @@
       }
       var zh = window.LANG !== 'en';
       var last = rows[rows.length - 1];
-      var meta = '<div class="track-meta">'
+      var simBanner = /^TEST-/.test(no) ? '<div class="track-sim">测试数据 · SIMULATED TRACKING — NOT A REAL SHIPMENT<br><span style="font-weight:400;">此单号为虚拟物流测试记录，不会出现在任何真实包裹上</span></div>' : '';
+      var meta = simBanner + '<div class="track-meta">'
         + '<div class="tm-row"><span>' + t('运单号', 'Tracking No.') + '</span><b>' + esc(no) + '</b></div>'
         + '<div class="tm-row"><span>' + t('最新状态', 'Latest status') + '</span><b><span class="track-status">' + esc(zh ? (last.status_zh || last.status_en || '—') : (last.status_en || last.status_zh || '—')) + '</span></b></div>'
         + '<div class="tm-row"><span>' + t('当前位置', 'Current location') + '</span><b>' + esc(last.place || '—') + '</b></div>'
@@ -122,7 +124,7 @@
           + '</li>';
       }).join('');
       box.innerHTML = meta + '<ul class="tl">' + steps + '</ul>'
-        + '<p style="font-size:13px;color:var(--muted,#A88E9B);margin:14px 0 0;">' + t('测试物流记录仅供参考 · 实际物流以承运商官方信息为准', 'Test tracking records are for reference only · actual shipping info follows the carrier') + '</p>';
+        + '<p style="font-size:13px;color:var(--muted,#A88E9B);margin:14px 0 0;">' + t('测试数据仅供参考 · 真实包裹请以承运商官方信息为准', 'Simulated data for testing only · real shipments follow the carrier\'s official info') + '</p>';
     }).catch(function () {
       box.innerHTML = '<div class="track-empty">' + t('查询失败，稍后再试试呀～', 'Search failed — please try again later~') + '</div>';
     });
