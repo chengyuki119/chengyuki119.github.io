@@ -99,6 +99,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     margin: 0 auto;
     display: flex; flex-direction: column; gap: 12px;
   }
+  /* 登录页比例：内容区撑满视口高度，登录卡垂直居中，不再下方塌一大段空白（她 20261027 16:35）*/
+  .wrap:has(> form.gate) { min-height: calc(100vh - 200px); display: flex; flex-direction: column; }
+  .wrap:has(> form.gate) .adm-head { flex: none; }
+  .wrap:has(> form.gate) form.gate { margin: auto; width: 100%; }
   .gate input {
     border: 1.5px solid var(--accent-soft); border-radius: 12px;
     background: #fff; padding: 11px 14px;
@@ -6054,7 +6058,7 @@ function loadEmailLog() {
           document.getElementById(el).style.color = '#3aa06a';
         } else {
           document.getElementById(el).textContent = anonBlockedText;
-          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g72 状态色语义统一） */
+          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g82 状态色语义统一） */
         }
       })
       .catch(function () {
@@ -6205,14 +6209,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027g7"></script>
-<script src="js/admin-crm.js?v=20261027g7"></script>
-<script src="js/vendor/jsQR.js?v=20261027g7"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027g7"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027g7"></script>
-<script src="js/admin-workbench.js?v=20261027g7"></script>
-<script src="js/admin-biz.js?v=20261027g7"></script>
-<script src="js/admin-export.js?v=20261027g7"></script>
+<script src="js/admin-shop.js?v=20261027g8"></script>
+<script src="js/admin-crm.js?v=20261027g8"></script>
+<script src="js/vendor/jsQR.js?v=20261027g8"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027g8"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027g8"></script>
+<script src="js/admin-workbench.js?v=20261027g8"></script>
+<script src="js/admin-biz.js?v=20261027g8"></script>
+<script src="js/admin-export.js?v=20261027g8"></script>
 <footer style="padding:18px 0 0; text-align:center;">© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
