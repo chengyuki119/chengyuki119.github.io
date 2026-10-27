@@ -219,24 +219,8 @@
         var ga = areas.gallery;
         if (ga && ga.title_zh) { gal.zh = ga.title_zh; gal.en = ga.title_en || ga.title_zh; }
       }
-      // BJD 名单 → BJD 分组（有娃娃才展开成组，没有就是普通入口）
-      var bjdIdx = -1;
-      nav.forEach(function (item, i) { if (item.key === 'bjd') bjdIdx = i; });
-      if (bjdIdx > -1 && bjds.length) {
-        nav[bjdIdx] = { key: 'bjd', group: true, nav: 'bjd', zh: 'BJD', en: 'BJD', items: bjds.map(function (b, i) {
-          var nm = b.name || '未命名娃娃';
-          return { key: 'bjd-' + i, zh: nm, en: nm, page: 'bjd', url: '/bjd/?id=' + i, sub: String(i) };
-        })};
-      }
-      // 色卡名单 → 色卡分组（同一套数据）
-      var cardsIdx = -1;
-      nav.forEach(function (item, i) { if (item.key === 'cards') cardsIdx = i; });
-      if (cardsIdx > -1 && cards.length) {
-        nav[cardsIdx] = { key: 'cards', group: true, nav: 'cards', zh: '色卡', en: 'Color Cards', items: cards.map(function (c, i) {
-          var nm = c.name || '未命名色卡';
-          return { key: 'card-' + i, zh: nm, en: nm, page: 'cards', url: '/color-card/?card=' + i, sub: String(i) };
-        })};
-      }
+      // BJD/色卡（她 20261027 02:16：只要一个按钮，点进去就是列表页）——不再按名单展开成子项分组，一律保持单链接直达
+      // 权限过滤照旧：permFilter 控制未授权时隐藏
       render(nav);
       applyCurrent();
       document.dispatchEvent(new CustomEvent('sitemenu:rendered'));
