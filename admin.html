@@ -69,6 +69,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .lang-btn.active { background: #fff; color: var(--text, #604C57); font-weight: 600; box-shadow: 0 1px 4px rgba(180,120,150,.28); }
 
   .wrap { max-width: none; width: 100%; margin: 0 auto; padding: 40px 24px 64px; box-sizing: border-box; }
+  /* 后台标题行 + 侧栏宽度变量（她 20261026t 任务书 §1：标题与右侧内容面板左缘对齐；变量复用避免魔法数重复） */
+  :root { --adm-side-w: 190px; --adm-gap: 22px; }
+  .adm-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .adm-head .logout { float: none; flex-shrink: 0; }
+  @media (min-width: 900px) {
+    .adm-head { padding-left: calc(var(--adm-side-w) + var(--adm-gap)); }
+  }
   a { color: inherit; text-decoration: none; }
   h1 { font-size:31px; margin: 20px 0 6px; }
   .sub { color: var(--muted); font-size:16px; margin-bottom: 20px; }
@@ -106,6 +113,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .hint { font-size:15px; color: var(--muted); }
 
   .tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .adm-subtabs { display: none; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .adm-subtab { border: none; background: var(--card); color: var(--muted); font-size: 15px; padding: 7px 16px; border-radius: 999px; cursor: pointer; font-family: inherit; transition: background .2s, color .2s; }
+  .adm-subtab:hover { background: var(--card-hover); color: var(--text); }
+  .adm-subtab.active { background: var(--accent-soft); color: var(--accent-strong); font-weight: 600; }
   .tab-btn { font-family: "Millo Body", -apple-system, "PingFang SC", sans-serif;
     flex: 1 1 auto; white-space: nowrap;
     border: none; background: var(--card);
@@ -160,10 +171,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   /* ── 桌面端：导航固定左侧栏，内容右侧 ── */
   #adm-content { min-width: 0; }
   @media (min-width: 900px) {
-    #admin-body { display: flex; align-items: flex-start; gap: 22px; }
+    #admin-body { display: flex; align-items: flex-start; gap: var(--adm-gap); }
     #pp-wrap {
       /* 顶栏是 fixed 60px 高（z-index 200），sticky 顶偏移必须让出顶栏，否则菜单会钻到顶栏底下被盖住（她 2026-10-25） */
-      position: sticky; top: 78px; width: 190px; flex-shrink: 0;
+      position: sticky; top: 78px; width: var(--adm-side-w); flex-shrink: 0;
       margin-bottom: 0; align-self: flex-start;
     }
     #pp-btn { display: none; }
@@ -173,7 +184,16 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       box-shadow: none; border: 1px solid var(--card-hover);
       width: 100%; max-height: calc(100vh - 60px - 36px); overflow-y: auto;
     }
+    .adm-home-btn { display: block; width: 100%; box-sizing: border-box; }
   }
+  /* 返回主页：粉色胶囊按钮，固定在侧栏顶部（#pp-wrap 为 sticky，不随菜单内部滚动）；点击进首页路由不依赖历史记录（她 20261026t 任务书 §2） */
+  .adm-home-btn {
+    display: inline-block; margin-bottom: 10px; padding: 9px 18px;
+    background: var(--accent, #FFD9E6); color: var(--text, #604C57);
+    font-size: 16px; font-weight: 600; text-decoration: none;
+    border-radius: 999px; transition: filter .2s; font-family: inherit;
+  }
+  .adm-home-btn:hover { filter: brightness(1.05); }
 
   .card {
     background: #fff;
@@ -563,8 +583,13 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
 <nav class="menu" id="menu"></nav>
 
 <div class="wrap">
-  <h1>柚子的后台 <button class="logout" id="btn-logout" style="display:none;">退出登录</button></h1>
-  <p class="sub">回留言 · 上小铺新品，全都在这里自己搞定</p>
+  <div class="adm-head">
+    <div>
+      <h1 style="margin-bottom:4px;">柚子的后台</h1>
+      <p class="sub" style="margin-bottom:0;">回留言 · 上小铺新品，全都在这里自己搞定</p>
+    </div>
+    <button class="logout" id="btn-logout" style="display:none;">退出登录</button>
+  </div>
 
   <!-- 登录 -->
   <form class="gate" id="gate">
@@ -577,6 +602,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   <!-- 登录后 -->
   <div id="admin-body" style="display:none;">
     <div class="pp-wrap" id="pp-wrap">
+      <a class="adm-home-btn" href="/">← 返回主页</a>
       <button class="pp-btn" id="pp-btn" type="button">当前页面：<span id="pp-cur">Profile 编辑</span> <span class="pp-arrow">▼</span></button>
       <div class="pp-menu" id="pp-menu">
         <div class="pp-group">主页设置</div>
@@ -592,17 +618,10 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <button class="tab-btn" data-tab="shop">小铺上架</button>
         <button class="tab-btn" data-tab="shopmgr">订单管理</button>
         <button class="tab-btn" data-tab="crm">客户管理</button>
-        <button class="tab-btn" data-tab="reviews">评价返图管理</button>
         <button class="tab-btn" data-tab="pos">线下开单</button>
-        <div class="pp-group">订单与履约工具</div>
-        <button class="tab-btn" data-tab="workbench">订单工作台</button>
-        <button class="tab-btn" data-tab="export">订单导出</button>
-        <button class="tab-btn" data-tab="print">清单打印</button>
-        <button class="tab-btn" data-tab="units">商品编码</button>
-        <button class="tab-btn" data-tab="qcscan">扫码验货</button>
-        <button class="tab-btn" data-tab="cost">成本计算</button>
         <div class="pp-sub">互动管理</div>
         <button class="tab-btn" data-tab="messages">联系与留言管理</button>
+        <button class="tab-btn" data-tab="reviews">评价返图管理</button>
         <button class="tab-btn" data-tab="ai">AI 对话</button>
         <div class="pp-group">系统设置</div>
         <button class="tab-btn" data-tab="mailsync">邮件与联系人同步</button>
@@ -739,6 +758,20 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       <h3 class="outside">AI 对话数据</h3>
       <div class="aix-list" id="ai-list"></div>
       <div class="aix-pager" id="ai-pager"></div>
+    </div>
+
+    <!-- 子页签条：整合后的「小铺上架」与「订单管理」内部页签（她 20261026t 任务书 §三；子页签条放在面板外，宿主页签显隐时同步显隐） -->
+    <div class="adm-subtabs" id="shop-subtabs" style="display:none;">
+      <button class="adm-subtab" data-sub="shop">商品上架</button>
+      <button class="adm-subtab" data-sub="units">商品编码</button>
+      <button class="adm-subtab" data-sub="qcscan">扫码验货</button>
+      <button class="adm-subtab" data-sub="cost">成本计算</button>
+    </div>
+    <div class="adm-subtabs" id="shopmgr-subtabs" style="display:none;">
+      <button class="adm-subtab" data-sub="shopmgr">订单列表</button>
+      <button class="adm-subtab" data-sub="workbench">订单工作台</button>
+      <button class="adm-subtab" data-sub="export">订单导出</button>
+      <button class="adm-subtab" data-sub="print">清单打印</button>
     </div>
 
     <!-- 小铺管理 -->
@@ -1117,6 +1150,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (h === 'records') h = 'cards'; // 兼容旧链接 admin.html#records
     // 直达名单改为动态判断：只要有对应页签按钮就允许（旧写死名单漏掉了 mailtpl/theme 等新页签）
     if (h && document.querySelector('.tab-btn[data-tab="' + h + '"]')) PENDING_TAB = h;
+    else if (h && document.getElementById('tab-' + h)) PENDING_TAB = h; // 整合后子页（#units 等）也允许直达
   })();
   // 语言切换（她 20261026 最终合并版 §1.1）：与前台同一存储键 yuki-lang；切换后重载让 t() 动态文案生效
   (function () {
@@ -1141,6 +1175,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (h2 === 'records') h2 = 'cards';
     var pb2 = h2 && document.querySelector('.tab-btn[data-tab="' + h2 + '"]');
     if (pb2 && !pb2.classList.contains('active')) pb2.click();
+    else if (h2 && !pb2 && document.getElementById('tab-' + h2)) switchTab(h2); // 整合后子页（如 #units/#workbench）不再有菜单按钮，直达也安全
   });
 
   function toast(msg) {
@@ -1258,6 +1293,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (PENDING_TAB) {
       var pb = document.querySelector('.tab-btn[data-tab="' + PENDING_TAB + '"]');
       if (pb) pb.click();
+      else switchTab(PENDING_TAB); // 整合后子页（#units/#workbench 等）直达
       PENDING_TAB = null;
     }
   }
@@ -1354,37 +1390,54 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (!e.target.closest('#pp-wrap')) ppClose();
   });
   document.querySelectorAll('.tab-btn').forEach(function (b) {
-    b.addEventListener('click', function () {
-      document.querySelectorAll('.tab-btn').forEach(function (x) { x.classList.remove('active'); });
-      b.classList.add('active');
-      document.getElementById('pp-cur').textContent = b.textContent;
-      ppClose();
-      ['messages', 'shop', 'shopmgr', 'crm', 'pos', 'mailsync', 'mailtpl', 'theme', 'workbench', 'export', 'print', 'cost', 'units', 'qcscan', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (name) {
-        var panel = document.getElementById('tab-' + name);
-        if (panel) panel.style.display = b.dataset.tab === name ? '' : 'none';
-      });
-      // §1.2 左侧导航内部滚动位置保留（她第三轮任务书：切页不能把菜单跳回顶部）；仅当选中项不可见时在导航内部轻微滚动到可见
-      try { b.scrollIntoView({ block: 'nearest' }); } catch (e) {}
-      try { window.scrollTo(0, 0); } catch (e) {} // §1.1 右侧新页面主体从顶部显示
-      setTimeout(function () { try { window.scrollTo(0, 0); } catch (e) {} }, 80); // 异步渲染后再次确认（不刷新页面、不清表单）
-      if (b.dataset.tab === 'works') renderWorks();
-      if (b.dataset.tab === 'reviews') loadReviewsAdmin();
-      if (b.dataset.tab === 'system') loadEmailLog();
-      if (b.dataset.tab === 'days') renderDays(); // 每次切到重要日子都重渲染，避免 settings 迟到导致自动列表空白
-      if (b.dataset.tab === 'crm' && window.CRM) CRM.bootCrm();
-      if (b.dataset.tab === 'pos' && window.CRM) CRM.bootPos();
-      if (b.dataset.tab === 'mailsync' && window.CRM) CRM.bootMailsync();
-      if (b.dataset.tab === 'mailtpl' && window.CRM) CRM.bootMailtpl();
-      if (b.dataset.tab === 'theme' && window.CRM) CRM.bootTheme();
-      if (b.dataset.tab === 'workbench' && window.WB) WB.bootWorkbench();
-      if (b.dataset.tab === 'export' && window.EXPORT) EXPORT.bootExport();
-      if (b.dataset.tab === 'print' && window.EXPORT) EXPORT.bootPrint();
-      if (b.dataset.tab === 'cost' && window.BIZ) BIZ.bootCost();
-      if (b.dataset.tab === 'units' && window.BIZ) BIZ.bootUnits();
-      if (b.dataset.tab === 'qcscan' && window.BIZ) BIZ.bootQcscan();
-      try { history.replaceState(null, '', '#' + b.dataset.tab); } catch (e) {} // 把当前 tab 写进地址：刷新后停留在原页
-    });
+    b.addEventListener('click', function () { switchTab(b.dataset.tab); });
   });
+  document.querySelectorAll('.adm-subtab').forEach(function (s) {
+    s.addEventListener('click', function () { switchTab(s.dataset.sub); });
+  });
+  // 菜单整合映射（她 20261026t 任务书 §三）：编码/验货/成本归小铺上架，工作台/导出/打印归订单管理；子页签条随宿主显隐
+  var TAB_ALIAS = { units: 'shop', qcscan: 'shop', cost: 'shop', workbench: 'shopmgr', export: 'shopmgr', print: 'shopmgr' };
+  var SUBTABS = { shop: ['shop', 'units', 'qcscan', 'cost'], shopmgr: ['shopmgr', 'workbench', 'export', 'print'] };
+  function switchTab(name) {
+    var main = TAB_ALIAS[name] || name;
+    document.querySelectorAll('.tab-btn').forEach(function (x) { x.classList.remove('active'); });
+    var btn = document.querySelector('.tab-btn[data-tab="' + main + '"]');
+    if (btn) btn.classList.add('active');
+    ['messages', 'shop', 'shopmgr', 'crm', 'pos', 'mailsync', 'mailtpl', 'theme', 'workbench', 'export', 'print', 'cost', 'units', 'qcscan', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (n) {
+      var panel = document.getElementById('tab-' + n);
+      if (panel) panel.style.display = (n === name) ? '' : 'none';
+    });
+    Object.keys(SUBTABS).forEach(function (host) {
+      var bar = document.getElementById(host + '-subtabs');
+      if (bar) bar.style.display = (main === host) ? 'flex' : 'none';
+    });
+    document.querySelectorAll('.adm-subtab').forEach(function (s) {
+      s.classList.toggle('active', s.dataset.sub === name);
+    });
+    var subBtn = document.querySelector('.adm-subtab[data-sub="' + name + '"]');
+    document.getElementById('pp-cur').textContent = subBtn ? subBtn.textContent : (btn ? btn.textContent : name);
+    ppClose();
+    // §1.2 左侧导航内部滚动位置保留（她第三轮任务书：切页不能把菜单跳回顶部）；仅当选中项不可见时在导航内部轻微滚动到可见
+    try { if (btn) btn.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+    try { window.scrollTo(0, 0); } catch (e) {} // §1.1 右侧新页面主体从顶部显示
+    setTimeout(function () { try { window.scrollTo(0, 0); } catch (e) {} }, 80); // 异步渲染后再次确认（不刷新页面、不清表单）
+    if (name === 'works') renderWorks();
+    if (name === 'reviews') loadReviewsAdmin();
+    if (name === 'system') loadEmailLog();
+    if (name === 'days') renderDays(); // 每次切到重要日子都重渲染，避免 settings 迟到导致自动列表空白
+    if (name === 'crm' && window.CRM) CRM.bootCrm();
+    if (name === 'pos' && window.CRM) CRM.bootPos();
+    if (name === 'mailsync' && window.CRM) CRM.bootMailsync();
+    if (name === 'mailtpl' && window.CRM) CRM.bootMailtpl();
+    if (name === 'theme' && window.CRM) CRM.bootTheme();
+    if (name === 'workbench' && window.WB) WB.bootWorkbench();
+    if (name === 'export' && window.EXPORT) EXPORT.bootExport();
+    if (name === 'print' && window.EXPORT) EXPORT.bootPrint();
+    if (name === 'cost' && window.BIZ) BIZ.bootCost();
+    if (name === 'units' && window.BIZ) BIZ.bootUnits();
+    if (name === 'qcscan' && window.BIZ) BIZ.bootQcscan();
+    try { history.replaceState(null, '', '#' + name); } catch (e) {} // 把当前 tab 写进地址：刷新后停留在原页（含子页如 #units）
+  }
 
   // ===== 联系与留言管理（原匿名留言）：主题/状态/称呼/Email/备注/搜索/回复 =====
   var MSG = { search: '', status: '', list: [] };
@@ -6113,13 +6166,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026s"></script>
-<script src="js/admin-crm.js?v=20261026s"></script>
-<script src="js/vendor/jsQR.js?v=20261026s"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261026s"></script>
-<script src="js/admin-workbench.js?v=20261026s"></script>
-<script src="js/admin-biz.js?v=20261026s"></script>
-<script src="js/admin-export.js?v=20261026s"></script>
+<script src="js/admin-shop.js?v=20261026t"></script>
+<script src="js/admin-crm.js?v=20261026t"></script>
+<script src="js/vendor/jsQR.js?v=20261026t"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261026t"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261026t"></script>
+<script src="js/admin-workbench.js?v=20261026t"></script>
+<script src="js/admin-biz.js?v=20261026t"></script>
+<script src="js/admin-export.js?v=20261026t"></script>
 <div style="padding:0 24px;"><a class="back-link" href="/" style="margin:26px 0 8px;">← 返回主页</a></div>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>

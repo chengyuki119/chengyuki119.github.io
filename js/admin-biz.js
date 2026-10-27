@@ -805,11 +805,13 @@
     });
   }
 
-  /* ── 生成表单（单件 / 批量共用）── */
+  /* ── 生成表单（单件 / 批量共用；连续生成版：生成完不关弹窗，可「继续生成」接着做，她 20261026t 任务书 §二）── */
   function openUnitForm(presetN) {
     var today = ymd();
+    var isBulk = !(presetN >= 1);
     var mask = bizModal(
-      '<b style="font-size:17px;color:var(--text,#604C57);">生成单件编码</b>' +
+      '<b style="font-size:17px;color:var(--text,#604C57);">' + (isBulk ? '批量生成编码' : '生成单件编码') + '</b>' +
+      '<div style="font-size:12px;color:var(--muted,#A88E9B);margin-top:2px;">' + (isBulk ? '一次生成多件，共用型号/批次，编号按次序连续发放' : '一件一个编码；生成后不关弹窗，可点「继续生成」接着做下一件') + '</div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin-top:12px;">' +
         '<label style="font-size:13px;color:var(--muted,#A88E9B);grid-column:1 / -1;">关联商品（可选，选了会带出商品图和质检关联）' +
           '<button type="button" class="biz-in" id="biz-uf-prod" style="width:100%;text-align:left;cursor:pointer;margin-top:4px;">不关联商品</button></label>' +
@@ -821,12 +823,17 @@
           '<input id="biz-uf-order" class="biz-in" style="width:100%;margin-top:4px;" placeholder="点这里搜索订单号，留空不关联" autocomplete="off"></label>' +
         '<label style="font-size:13px;color:var(--muted,#A88E9B);grid-column:1 / -1;">备注<input id="biz-uf-note" class="biz-in" style="width:100%;margin-top:4px;" placeholder="选填"></label>' +
       '</div>' +
+      '<div id="biz-uf-result" style="display:none;margin-top:12px;max-height:190px;overflow-y:auto;"></div>' +
       '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">' +
         '<button class="btn-mini" id="biz-uf-cancel" style="padding:8px 16px;">取消</button>' +
         '<button class="btn-save-tb" id="biz-uf-ok">生成编码</button>' +
+        '<button class="btn-mini" id="biz-uf-again" style="padding:8px 16px;display:none;">继续生成</button>' +
+        '<button class="btn-save-tb" id="biz-uf-done" style="padding:8px 16px;display:none;">完成</button>' +
       '</div>'
     );
-    var st = { productId: '', orderId: '', orderNo: '' };
+    var st = { productId: '', orderId: '', orderNo: '', pending: false };
+    var okBtn = mask.querySelector('#biz-uf-ok');
+    var resBox = mask.querySelector('#biz-uf-result');
     mask.querySelector('#biz-uf-prod').addEventListener('click', function () {
       var btn = this;
       bizPop(btn, [{ v: '', label: '不关联商品' }].concat(UNITS.products.map(function (p) {
@@ -852,43 +859,91 @@
         bizPopClose();
       });
     });
-    mask.querySelector('#biz-uf-cancel').addEventListener('click', bizCloseModal);
-    mask.querySelector('#biz-uf-ok').addEventListener('click', function () {
+    // 校验失败：具体说明哪个字段有问题，并标红该输入框（她 20261026t 任务书 §二）
+    function badField(sel, msg) {
+      var el = mask.querySelector(sel);
+      el.style.borderColor = '#D96570';
+      el.focus();
+      toast(msg);
+      setTimeout(function () { el.style.borderColor = ''; }, 2200);
+    }
+    mask.querySelector('#biz-uf-cancel').addEventListener('click', bizCloseModal); // 编码即时入库，取消/关闭都不会删掉已保存的编码
+    mask.querySelector('#biz-uf-again').addEventListener('click', function () {
+      resBox.innerHTML = ''; resBox.style.display = 'none';
+      mask.querySelector('#biz-uf-again').style.display = 'none';
+      mask.querySelector('#biz-uf-done').style.display = 'none';
+      mask.querySelector('#biz-uf-cancel').style.display = '';
+      okBtn.style.display = '';
+      mask.querySelector('#biz-uf-n').value = isBulk ? '' : '1';
+      mask.querySelector('#biz-uf-n').focus();
+    });
+    mask.querySelector('#biz-uf-done').addEventListener('click', function () {
+      bizCloseModal();
+      loadUnits();
+    });
+    okBtn.addEventListener('click', function () {
+      if (st.pending) return; // 请求处理中拦截重复提交，防止重复编码
       var model = mask.querySelector('#biz-uf-model').value.trim();
       var batch = mask.querySelector('#biz-uf-batch').value.trim();
-      var n = Math.max(1, Math.round(num(mask.querySelector('#biz-uf-n').value) || 1));
+      var nRaw = mask.querySelector('#biz-uf-n').value.trim();
+      var n = Math.max(1, Math.round(num(nRaw) || 1));
       var made = mask.querySelector('#biz-uf-made').value || '';
       var note = mask.querySelector('#biz-uf-note').value.trim();
-      if (!model) { toast('型号编码还没填'); return; }
-      if (!batch) { toast('批次号还没填'); return; }
-      uiConfirm('确认为「' + model + '」批次「' + batch + '」生成 ' + n + ' 个单件编码？' + (st.orderNo ? '\n关联订单：' + st.orderNo : ''), function () {
-        createUnits(model, batch, n, st.productId, st.orderId, made, note);
-      }, '生成');
-    });
-  }
-
-  function createUnits(model, batch, n, productId, orderId, made, note) {
-    bizCloseModal();
-    var done = 0, fail = 0, i = 0;
-    // 顺序循环：SYU 编码按调用次序发放，保证同一批里号码连续
-    function next() {
-      if (i >= n) {
-        if (fail) toast('成功 ' + done + ' / ' + n + ' 个，' + fail + ' 个失败，请刷新后重试');
-        else toast('已生成 ' + done + ' 个编码（' + batch + '）');
-        loadUnits();
-        return;
+      if (!model) { badField('#biz-uf-model', '「型号编码」还没填'); return; }
+      if (!batch) { badField('#biz-uf-batch', '「批次号」还没填'); return; }
+      if (nRaw && (!/^\d+$/.test(nRaw) || parseInt(nRaw, 10) < 1)) { badField('#biz-uf-n', '「数量 N」要是不小于 1 的整数'); return; }
+      var run = function () {
+        st.pending = true;
+        okBtn.disabled = true; okBtn.textContent = '生成中…';
+        resBox.style.display = 'block';
+        var done = 0, fail = 0, i = 0;
+        // 顺序循环：SYU 编码按调用次序发放，保证同一批里号码连续
+        function next() {
+          if (i >= n) {
+            st.pending = false;
+            okBtn.disabled = false; okBtn.textContent = '生成编码';
+            okBtn.style.display = 'none';
+            mask.querySelector('#biz-uf-cancel').style.display = 'none';
+            mask.querySelector('#biz-uf-again').style.display = '';
+            mask.querySelector('#biz-uf-done').style.display = '';
+            var summary = '<div style="font-size:14px;color:#5FA777;font-weight:600;">✓ 已生成 ' + done + ' / ' + n + ' 个编码（批次 ' + esc(batch) + (st.orderNo ? ' · 订单 ' + esc(st.orderNo) : '') + '）</div>' +
+              '<div style="font-size:12px;color:var(--muted,#A88E9B);margin-top:2px;">条形码为 CODE128，扫码枪可直接读取；编号已即时保存</div>' +
+              '<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+            var old = resBox.innerHTML;
+            resBox.innerHTML = summary + old + '</div>';
+            if (fail) toast('成功 ' + done + ' / ' + n + ' 个，' + fail + ' 个失败，请刷新后重试');
+            else toast('已生成 ' + done + ' 个编码（' + batch + '）');
+            loadUnits();
+            return;
+          }
+          i++;
+          api('rpc/shop_unit_create', {
+            method: 'POST', headers: { 'Prefer': 'params=single-object' },
+            body: JSON.stringify({ p_model_code: model, p_batch_code: batch, p_product_id: st.productId || null, p_order_id: st.orderId || null, p_made_at: made || null, p_note: note || '' })
+          }).then(function (res) {
+            if (!res.ok) throw new Error();
+            return res.json();
+          }).then(function (d) {
+            var code = d && d.unit_code ? d.unit_code : (Array.isArray(d) && d[0] && d[0].unit_code) || '';
+            done++;
+            if (code) {
+              var div = document.createElement('div');
+              div.style.cssText = 'border:1px solid var(--card-hover);border-radius:10px;padding:8px 10px;background:#fff;';
+              div.innerHTML = '<div style="font-size:15px;font-weight:700;color:var(--price,#ff6fa5);">' + esc(code) + '</div>' +
+                '<div style="max-width:250px;margin-top:4px;">' + barcodeSvg(code, { height: 44 }) + '</div>';
+              resBox.appendChild(div);
+            }
+            next();
+          }).catch(function () { fail++; next(); });
+        }
+        next();
+      };
+      if (isBulk) {
+        uiConfirm('确认为「' + model + '」批次「' + batch + '」生成 ' + n + ' 个单件编码？' + (st.orderNo ? '\n关联订单：' + st.orderNo : ''), run, '生成');
+      } else {
+        run();
       }
-      i++;
-      api('rpc/shop_unit_create', {
-        method: 'POST', headers: { 'Prefer': 'params=single-object' },
-        body: JSON.stringify({ p_model_code: model, p_batch_code: batch, p_product_id: productId || null, p_order_id: orderId || null, p_made_at: made || null, p_note: note || '' })
-      }).then(function (r) {
-        if (!r.ok) throw new Error();
-        done++; next();
-      }).catch(function () { fail++; next(); });
-    }
-    toast('正在生成…');
-    next();
+    });
   }
 
   /* ── 单件详情卡 ── */
@@ -909,7 +964,7 @@
       '</div>' +
       '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">' +
         '<button class="btn-mini" id="biz-ud-close" style="padding:8px 16px;">关闭</button>' +
-        '<button class="btn-save-tb" id="biz-ud-print">打印标签（二维码）</button>' +
+        '<button class="btn-save-tb" id="biz-ud-print">打印标签（条形码）</button>' +
       '</div>'
     );
     $('biz-ud-close').addEventListener('click', bizCloseModal);
@@ -918,19 +973,40 @@
     $('biz-ud-print').addEventListener('click', function () { printLabel(u, p); });
   }
 
-  // 本地生成二维码 SVG（qrcode-generator，MIT）：不外泄扫码链接，矢量打印更清晰
-  function qrSvg(text) {
-    var qr = window.qrcode(0, 'M');
-    qr.addData(text);
-    qr.make();
-    try { return qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
-    catch (e) { return qr.createSvgTag(4, 2); }
+  // Code128 条形码 SVG（JsBarcode v3.11.6，MIT，本地 vendor）：扫码枪可直接读取，矢量打印更清晰
+  //（她 20261026t 任务书 §一：编码标签用真条形码，不再用二维码）
+  function barcodeSvg(code, opts) {
+    var o = opts || {};
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    try {
+      window.JsBarcode(svg, String(code || ''), {
+        format: 'CODE128',
+        width: o.width || 2,
+        height: o.height || 56,
+        margin: o.margin != null ? o.margin : 6,
+        displayValue: true, // 条形码下方直接印可读编码
+        font: 'monospace',
+        fontSize: 13,
+        textMargin: 2,
+        background: '#ffffff',
+        lineColor: '#1c1c1e'
+      });
+      var w = parseFloat(svg.getAttribute('width')), h = parseFloat(svg.getAttribute('height'));
+      if (w && h) {
+        svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.removeAttribute('width'); svg.removeAttribute('height');
+        svg.style.width = '100%'; svg.style.height = 'auto'; svg.style.display = 'block';
+      }
+      return svg.outerHTML;
+    } catch (e) {
+      return '<div style="color:#D96570;font-size:12px;">条形码生成失败</div>';
+    }
   }
   // 标签文字区：商品名称 + 商品种类 + 单件编码（必显），型号 SKU / 批次（有则显示），与记录一一对应
   function labelHtml(u, p, big) {
-    var scanUrl = 'https://chengyuki119.github.io/admin.html#qcscan?code=' + encodeURIComponent(u.unit_code || '');
     return '<div class="label">' +
-      '<div class="qr">' + qrSvg(scanUrl) + '</div>' +
+      '<div class="bcode">' + barcodeSvg(u.unit_code || '') + '</div>' +
       '<div class="txt">' +
         '<div class="pname">' + esc(p ? p.name : (u.model_code || '未关联商品')) + '</div>' +
         (p && p.tag ? '<div class="meta">商品种类：' + esc(p.tag) + '</div>' : '') +
@@ -953,7 +1029,7 @@
       '.pname{font-size:16px;color:#604C57;font-weight:600;line-height:1.4;}',
       '.ucode{font-size:20px;font-weight:800;color:#ff6fa5;margin-top:4px;letter-spacing:1px;}',
       '.meta{font-size:12px;color:#A88E9B;margin-top:4px;line-height:1.7;}',
-      '.label .qr{width:150px;flex:none;}.label .qr svg{width:150px;height:150px;display:block;}',
+      '.label .bcode{width:240px;flex:none;}.label .bcode svg{width:100%;height:auto;display:block;}',
       '.label .txt{flex:1;min-width:0;}',
       '.foot{font-size:10px;color:#D9A7C7;margin-top:8px;}',
       '.noprint{border:none;background:#ffd9e6;color:var(--text,#604C57);font-size:15px;padding:9px 26px;border-radius:999px;cursor:pointer;font-family:inherit;}',
@@ -961,7 +1037,7 @@
       '</style></head><body>',
       '<div class="brand">Snow Yuzu<small>SNOW YUZU STUDIO</small></div>',
       labelHtml(u, p, true),
-      '<div class="foot">扫码可查真伪与质检信息</div>',
+      '<div class="foot">条形码（CODE128）可被扫码枪直接读取；编码印在条码下方</div>',
       '<button class="noprint" onclick="window.print()">打印标签</button>',
       '</body></html>'
     ].join('\n');
@@ -984,7 +1060,7 @@
         '@page{size:' + size + ';margin:8mm;}',
         '.sheet{display:flex;flex-wrap:wrap;gap:4mm;align-content:flex-start;}',
         '.label{width:88mm;height:54mm;border:1px dashed #bbb;border-radius:3mm;padding:4mm;display:flex;gap:4mm;align-items:center;break-inside:avoid;page-break-inside:avoid;background:#fff;}',
-        '.label .qr{width:40mm;flex:none;}.label .qr svg{width:40mm;height:40mm;display:block;}',
+        '.label .bcode{width:52mm;flex:none;}.label .bcode svg{width:100%;height:auto;display:block;}',
         '.label .txt{flex:1;min-width:0;overflow:hidden;}',
         '.label .pname{font-size:13px;font-weight:700;color:#604C57;line-height:1.35;}',
         '.label .ucode{font-size:16px;font-weight:800;color:#ff6fa5;letter-spacing:.5px;margin-top:1.5mm;}',
@@ -995,7 +1071,7 @@
         '<div class="noprint-wrap"><button class="noprint" onclick="window.print()">打印（' + size + '）</button>',
         '<button class="noprint" onclick="window.switchPaper(\'A4\')">切 A4</button>',
         '<button class="noprint" onclick="window.switchPaper(\'LETTER\')">切 Letter</button>',
-        '<span style="font-size:12px;color:#A88E9B;">每页 8 张（2×4），普通纸打印后沿线剪开即可；二维码矢量清晰，手机可直接识别</span></div>',
+        '<span style="font-size:12px;color:#A88E9B;">每页 8 张（2×4），普通纸打印后沿线剪开即可；条形码矢量清晰，扫码枪直接读取，编码印在条码下方</span></div>',
         '<div class="sheet">' + labels + '</div>',
         '<scr' + 'ipt>function switchPaper(p){window.PAPER=p;window.build();}</scr' + 'ipt>',
         '</body></html>'
