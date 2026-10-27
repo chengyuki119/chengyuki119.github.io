@@ -441,11 +441,109 @@
             '<div style="display:flex;flex-wrap:wrap;gap:0;align-items:center;">' + t('联系人标签：', 'Contact labels: ') + '<span class="chip on">Snow Yuzu/普通客户</span><span class="chip on">Snow Yuzu/VIP</span><span class="chip on">Snow Yuzu/回头客</span></div>' + /* 包 flex 防 grid 拉伸；间距靠 .chip margin（她 20261027 14:40 报撑满）*/
           '</div>' +
           '<div id="ms-sync-state" style="margin-top:18px;"></div>' +
+          '<div id="ms-oauth" style="margin-top:16px;"></div>' +
           '<div style="font-size:14px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:14px 16px;margin-top:auto;line-height:1.8;">' + t('必须等你本人完成 Google 授权后才会开启真实同步；现有 Google 联系人不会被修改或删除。Gmail 标签（邮件）≠ Contacts 标签（人物），两套分开。', 'Real sync waits for your authorization. Existing contacts untouched. Gmail labels ≠ Contacts labels.') + '</div>' +
         '</div>' +
       '</div>';
     loadSyncState();
+    loadOAuth();
+    // OAuth 回调返回提示（回调 URL：admin.html?oauth=ok&email=…#mailsync）
+    var mo = new URLSearchParams(location.search).get('oauth');
+    if (mo === 'ok') { toast(t('Google 账号已连接 ✓', 'Google account connected ✓')); }
+    else if (mo === 'error') { var mm = decodeURIComponent(new URLSearchParams(location.search).get('msg') || ''); uiConfirm(t('连接未完成：' + mm, 'Connect failed: ' + mm), function () {}); }
+    if (mo) history.replaceState(null, '', location.pathname + location.hash);
   };
+
+  /* ── Google OAuth 连接区（真功能：授权/同步/断开；后端 google-oauth Edge Function）── */
+  function msAdminJwt() {
+    return (typeof ACCESS !== 'undefined' && ACCESS) || (function () { try { return (JSON.parse(localStorage.getItem('yuki-admin-session') || 'null') || {}).a || ''; } catch (e) { return ''; } })();
+  }
+  function msApi(action, opts) {
+    opts = opts || {};
+    return fetch(SUPA + '/functions/v1/google-oauth?action=' + action, {
+      method: opts.method || 'GET',
+      headers: { 'Authorization': 'Bearer ' + msAdminJwt(), 'Content-Type': 'application/json' },
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); });
+  }
+  function loadOAuth() {
+    var box = document.getElementById('ms-oauth');
+    if (!box) return;
+    msApi('status').then(function (r) {
+      if (!r.ok || r.j.error) { box.innerHTML = '<p style="font-size:14px;color:var(--muted,#A88E9B);">' + t('连接状态读取失败：', 'Status load failed: ') + ((r.j && r.j.error) || '网络异常') + '</p>'; return; }
+      var st = r.j;
+      if (!st.connected) {
+        box.innerHTML =
+          '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+            '<button class="btn-save-tb" id="ms-connect">' + t('连接 Google 账号', 'Connect Google account') + '</button>' +
+            '<span style="font-size:13px;color:var(--muted,#A88E9B);">' + t('未连接', 'Not connected') + '</span>' +
+          '</div>' +
+          (!st.configured ? '<p style="font-size:13px;color:#8a6d3b;background:#fff7f0;border:1px solid #f0d9c0;border-radius:10px;padding:8px 12px;margin-top:10px;">' + t('后端 Google 凭据尚未配置完成，连接按钮暂时不可用。', 'Backend Google credentials not ready yet.') + '</p>' : '');
+        var cb = box.querySelector('#ms-connect');
+        if (cb) cb.addEventListener('click', function () {
+          cb.disabled = true;
+          msApi('start').then(function (r2) {
+            if (!r2.ok || !r2.j.url) { toast(r2.j.error || t('发起授权失败', 'Failed to start auth')); cb.disabled = false; return; }
+            location.href = r2.j.url; // 跳 Google 官方授权页，回来时自动刷新本页
+          });
+        });
+        return;
+      }
+      box.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;color:var(--text,#604C57);">' +
+          '<span class="chip on">✓ ' + escAttr(st.email || 'Google') + '</span>' +
+          '<button class="btn-save-tb" id="ms-sync-dry">' + t('同步联系人', 'Sync contacts') + '</button>' +
+          '<button class="btn-mini" id="ms-filters">' + t('一键创建 Gmail 标签过滤器', 'Create Gmail labels & filters') + '</button>' +
+          '<button class="btn-del" id="ms-disconnect">' + t('断开连接', 'Disconnect') + '</button>' +
+        '</div>' +
+        '<div id="ms-sync-result" style="margin-top:12px;"></div>';
+      box.querySelector('#ms-sync-dry').addEventListener('click', function () {
+        var btn = this; btn.disabled = true;
+        msApi('sync', { method: 'POST', body: { dry: true } }).then(function (r) {
+          btn.disabled = false;
+          var res = document.getElementById('ms-sync-result');
+          if (!r.ok) { res.innerHTML = '<p style="font-size:14px;color:var(--danger,#D96570);">' + ((r.j && r.j.error) || '失败') + '</p>'; return; }
+          var pv = (r.j.preview || []).map(function (p) { return '<span style="font-size:13px;color:var(--muted,#A88E9B);">' + escAttr(p.name || p.email) + ' → ' + escAttr(p.group || '') + '</span>'; }).join('<br>');
+          res.innerHTML =
+            '<div style="font-size:14px;color:var(--text,#604C57);background:var(--bg,#FFFBFC);border:1px solid var(--border,#FFD9E6);border-radius:12px;padding:12px 14px;">' +
+              '<b>' + t('本次同步预计：', 'Preview: ') + '</b>' +
+              t('新增 ' + r.j.created + ' 人，补全 ' + r.j.updated + ' 人，已完整跳过 ' + r.j.skipped + ' 人（共 ' + r.j.total + ' 位同意接收通知的客户）', '+' + r.j.created + ' new, ' + r.j.updated + ' to update, ' + r.j.skipped + ' unchanged, of ' + r.j.total + ' opted-in customers') +
+              (pv ? '<br><br><b>' + t('将新增：', 'New: ') + '</b><br>' + pv : '') +
+              '<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">' +
+                '<button class="btn-ok" id="ms-sync-go">' + t('确认真正同步', 'Confirm & sync') + '</button>' +
+                '<button class="btn-mini" id="ms-sync-cancel">' + t('先不同步', 'Not now') + '</button>' +
+              '</div>' +
+            '</div>';
+          res.querySelector('#ms-sync-cancel').addEventListener('click', function () { res.innerHTML = ''; });
+          res.querySelector('#ms-sync-go').addEventListener('click', function () {
+            var go = this; go.disabled = true; go.textContent = t('同步中…', 'Syncing…');
+            msApi('sync', { method: 'POST', body: { dry: false } }).then(function (r2) {
+              go.disabled = false; go.textContent = t('确认真正同步', 'Confirm & sync');
+              if (!r2.ok) { toast(r2.j.error || t('同步失败', 'Sync failed')); return; }
+              toast(t('同步完成：新增 ' + r2.j.created + '，补全 ' + r2.j.updated + '，跳过 ' + r2.j.skipped, 'Done: +' + r2.j.created + ' / ~' + r2.j.updated + ' / =' + r2.j.skipped));
+              res.innerHTML = '';
+            });
+          });
+        });
+      });
+      box.querySelector('#ms-filters').addEventListener('click', function () {
+        var btn = this; btn.disabled = true;
+        uiConfirm(t('将在你的 Gmail 里创建 6 个「Snow Yuzu/…」标签和对应过滤器（只加标签，不删邮件、不动收件箱；已有同名的会跳过）。继续吗？', 'Creates 6 Snow Yuzu labels + filters in your Gmail (labels only). Continue?'), function () {
+          msApi('filters').then(function (r) {
+            btn.disabled = false;
+            if (!r.ok) { toast(r.j.error || t('创建失败', 'Failed')); return; }
+            toast(t('Gmail 标签与过滤器已就绪 ✓', 'Gmail labels & filters ready ✓'));
+          });
+        });
+        btn.disabled = false;
+      });
+      box.querySelector('#ms-disconnect').addEventListener('click', function () {
+        uiConfirm(t('断开后联系人同步和 Gmail 分类都会停止；已同步到 Google 的联系人不会被删除。确认断开？', 'Disconnect stops syncing; already-synced contacts stay. Confirm?'), function () {
+          msApi('disconnect').then(function () { toast(t('已断开', 'Disconnected')); loadSyncState(); loadOAuth(); });
+        });
+      });
+    });
+  }
 
   function loadSyncState() {
     var box = document.getElementById('ms-sync-state');
@@ -589,7 +687,7 @@
     if (panel.dataset.booted) return;
     panel.dataset.booted = '1';
     panel.innerHTML =
-      // 20261027g6：生日邮件总开关 + 测试发送（发到官方邮箱）
+      // 20261027g7：生日邮件总开关 + 测试发送（发到官方邮箱）
       '<div class="card" style="padding:16px 20px;margin-bottom:14px;border:1.5px solid var(--accent-soft,#FCE4EC);">' +
         '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
           '<h3 style="margin:0;font-size:17px;color:var(--text,#604C57);">' + t('生日邮件 ♡', 'Birthday emails ♡') + '</h3>' +
