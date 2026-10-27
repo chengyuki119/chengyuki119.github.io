@@ -35,8 +35,8 @@
 <meta name="twitter:title" content="小柚的小世界">
 <meta name="twitter:description" content="欢迎来到小柚的小世界">
 <meta name="twitter:image" content="https://yukicheng.com/og-image.jpg">
-<link rel="stylesheet" href="/css/site.css?v=20261026p2">
-  <link rel="stylesheet" href="/site-menu.css?v=20261026p2">
+<link rel="stylesheet" href="/css/site.css?v=20261026q">
+  <link rel="stylesheet" href="/site-menu.css?v=20261026q">
     <script src="/site-menu.js" defer></script>
 </head>
 <body class="home">
@@ -207,7 +207,7 @@
 <div id="share-pop"></div>
 
 
-<script src="/js/site-common.js?v=20261026p2"></script>
+<script src="/js/site-common.js?v=20261026q"></script>
 
 <!-- ═══════════ 小柚助手（AI 入口 · 第一阶段测试：模拟回复 + 后台知识库匹配，未接真 AI）═══════════ -->
 <style>
@@ -587,7 +587,7 @@
         shareBtnHtml(x.i, 'bjd', true) +
         bjdEditBtn(x.i) + // 登录后台后才出现
         '</div>' +
-        (b.head.size ? '<div style="font-size:15px;color:var(--muted);margin-top:2px;">' + escDb(LANG === 'en' && window.sizeEnKeep ? sizeEnKeep(b.head.size) : b.head.size) + '</div>' : '') +
+        (b.head.size ? '<div style="font-size:15px;color:var(--muted);margin-top:4px;">' + escDb(LANG === 'en' && window.sizeEnKeep ? sizeEnKeep(b.head.size) : b.head.size) + '</div>' : '') +
         '<div style="display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;"><span style="flex:1;font-size:17px;color:var(--text,#604C57);font-weight:600;">' + (LANG === 'en' ? 'Total ' : '总价 ') + '</span><span style="color:var(--price,#ff6fa5);font-weight:600;">' + (pv ? '¥' + pv : '—') + '</span></div>' +
         '</div></div>';
     }).join('');
@@ -786,7 +786,7 @@
             '<b style="flex:1;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escDb(c.name || '未命名色卡') + '</b>' +
             shareBtnHtml(i, null, true) +
             '</div>' +
-            '<div style="font-size:15px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (c.shop ? escDb(c.shop) : '&nbsp;') + '</div>' +
+            '<div style="font-size:15px;color:var(--muted);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (c.shop ? escDb(c.shop) : '&nbsp;') + '</div>' +
             '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">' +
             '<span style="flex:1;font-size:17px;color:var(--text,#604C57);font-weight:600;">' + (LANG === 'en' ? 'Total ' : '色卡总价 ') + '</span><span style="color:var(--price,#ff6fa5);font-weight:600;">¥' + fmtMoney(cardFinalV(c)) + '</span>' +
             cardEditBtn(i) +
@@ -1488,7 +1488,7 @@
   });
 })();
 </script>
-<script src="/js/site-footer.js?v=20261026p2"></script>
+<script src="/js/site-footer.js?v=20261026q"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }
