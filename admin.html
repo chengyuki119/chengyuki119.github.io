@@ -80,6 +80,9 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   @media (max-width: 899px) {
     .adm-head .adm-home-btn { display: inline-block; order: -1; margin: 0 0 10px; }
+    .wrap { padding: 24px 10px 64px; } /* 两栏后手机端内容区变窄，内边距同步收紧 */
+    .wrap h1 { font-size: 22px; margin: 16px 0 4px; } /* 内容区变窄，标题同步缩小避免截断 */
+    .wrap .sub { font-size: 14px; }
   }
   a { color: inherit; text-decoration: none; }
   h1 { font-size:31px; margin: 20px 0 6px; }
@@ -173,22 +176,41 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     font-size: 12px; color: var(--muted); letter-spacing: .05em; opacity: .85;
     padding: 10px 12px 2px; user-select: none;
   }
-  /* ── 桌面端：导航固定左侧栏，内容右侧 ── */
+  /* ── 桌面端：导航固定左侧栏，内容右侧 ──
+     她 20261027 00:00：右栏怎么往下滑左栏都不动，左栏自己能滚。
+     sticky 会被全局 overflow-x clip 祖先破坏（实测失效），改用 fixed 钉死视口。 */
   #adm-content { min-width: 0; }
   @media (min-width: 900px) {
-    #admin-body { display: flex; align-items: flex-start; gap: var(--adm-gap); }
+    #admin-body { display: block; }
     #pp-wrap {
-      /* 顶栏是 fixed 60px 高（z-index 200），sticky 顶偏移必须让出顶栏，否则菜单会钻到顶栏底下被盖住（她 2026-10-25） */
-      position: sticky; top: 78px; width: var(--adm-side-w); flex-shrink: 0;
-      margin-bottom: 0; align-self: flex-start;
+      position: fixed; left: 24px; top: 78px; width: var(--adm-side-w);
+      margin-bottom: 0; max-height: calc(100vh - 60px - 18px); overflow-y: auto; /* 左栏自己滚 */
+      z-index: 90;
     }
     #pp-btn { display: none; }
-    #adm-content { flex: 1; }
+    #adm-content { margin-left: calc(var(--adm-side-w) + var(--adm-gap)); }
     #pp-menu {
       position: static; display: block;
       box-shadow: none; border: 1px solid var(--card-hover);
-      width: 100%; max-height: calc(100vh - 60px - 36px); overflow-y: auto;
+      width: 100%; max-height: none; overflow: visible;
     }
+  }
+  /* ── 手机端：同款两栏，左栏窄条常驻（原来收在“管理面板”下拉里；她 20261027 00:00 要两图分开、左固定右独立滚）── */
+  @media (max-width: 899px) {
+    #admin-body { display: block; }
+    #pp-wrap {
+      position: fixed; left: 10px; top: 68px; width: 150px; margin-bottom: 0;
+      max-height: calc(100vh - 60px - 14px); overflow-y: auto;
+      z-index: 90;
+    }
+    #pp-btn { display: none; }
+    #adm-content { margin-left: 160px; min-width: 0; }
+    #pp-menu {
+      position: static; display: block; width: 100%; padding: 6px;
+      max-height: none; overflow: visible; box-shadow: 0 2px 12px rgba(255,143,171,.10); animation: none;
+    }
+    #pp-menu .tab-btn { font-size: 14px; padding: 8px 10px; }
+    #pp-menu .pp-group { font-size: 12px; padding: 8px 10px 2px; }
   }
   /* 返回主页：粉色胶囊按钮，桌面端与「柚子的后台」标题同行（内容区左上角）；手机端在标题上方；点击进首页路由不依赖历史记录（她 20261026 21:50 任务书） */
   .adm-home-btn {
@@ -6170,14 +6192,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261026w"></script>
-<script src="js/admin-crm.js?v=20261026w"></script>
-<script src="js/vendor/jsQR.js?v=20261026w"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261026w"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261026w"></script>
-<script src="js/admin-workbench.js?v=20261026w"></script>
-<script src="js/admin-biz.js?v=20261026w"></script>
-<script src="js/admin-export.js?v=20261026w"></script>
+<script src="js/admin-shop.js?v=20261027a"></script>
+<script src="js/admin-crm.js?v=20261027a"></script>
+<script src="js/vendor/jsQR.js?v=20261027a"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027a"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027a"></script>
+<script src="js/admin-workbench.js?v=20261027a"></script>
+<script src="js/admin-biz.js?v=20261027a"></script>
+<script src="js/admin-export.js?v=20261027a"></script>
 <footer>© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
