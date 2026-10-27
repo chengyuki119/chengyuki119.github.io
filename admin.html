@@ -651,6 +651,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <button class="tab-btn" data-tab="shop">小铺上架</button>
         <button class="tab-btn" data-tab="shopmgr">订单管理</button>
         <button class="tab-btn" data-tab="crm">客户管理</button>
+        <button class="tab-btn" data-tab="vip">VIP 客户查询</button>
         <button class="tab-btn" data-tab="pos">线下开单</button>
         <div class="pp-sub">互动管理</div>
         <button class="tab-btn" data-tab="messages">联系与留言管理</button>
@@ -866,6 +867,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     <div id="tab-pos" style="display:none;"></div>
     <!-- 邮件与联系人同步 -->
     <div id="tab-mailsync" style="display:none;"></div>
+    <div id="tab-vip" style="display:none;"></div>
     <!-- 邮件模板管理（js/admin-crm.js） -->
     <div id="tab-mailtpl" style="display:none;"></div>
     <!-- 主题颜色（js/admin-crm.js） -->
@@ -1436,7 +1438,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     document.querySelectorAll('.tab-btn').forEach(function (x) { x.classList.remove('active'); });
     var btn = document.querySelector('.tab-btn[data-tab="' + main + '"]');
     if (btn) btn.classList.add('active');
-    ['messages', 'shop', 'shopmgr', 'crm', 'pos', 'mailsync', 'mailtpl', 'theme', 'workbench', 'export', 'print', 'cost', 'units', 'qcscan', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (n) {
+    ['messages', 'shop', 'shopmgr', 'crm', 'vip', 'pos', 'mailsync', 'mailtpl', 'theme', 'workbench', 'export', 'print', 'cost', 'units', 'qcscan', 'reviews', 'photos', 'home', 'profile', 'works', 'cards', 'bjd', 'days', 'ai', 'system'].forEach(function (n) {
       var panel = document.getElementById('tab-' + n);
       if (panel) panel.style.display = (n === name) ? '' : 'none';
     });
@@ -1461,6 +1463,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     if (name === 'crm' && window.CRM) CRM.bootCrm();
     if (name === 'pos' && window.CRM) CRM.bootPos();
     if (name === 'mailsync' && window.CRM) CRM.bootMailsync();
+    if (name === 'vip' && window.bootVip) window.bootVip();
     if (name === 'mailtpl' && window.CRM) CRM.bootMailtpl();
     if (name === 'theme' && window.CRM) CRM.bootTheme();
     if (name === 'workbench' && window.WB) WB.bootWorkbench();
@@ -6058,7 +6061,7 @@ function loadEmailLog() {
           document.getElementById(el).style.color = '#3aa06a';
         } else {
           document.getElementById(el).textContent = anonBlockedText;
-          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g82 状态色语义统一） */
+          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g92 状态色语义统一） */
         }
       })
       .catch(function () {
@@ -6209,14 +6212,15 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027g8"></script>
-<script src="js/admin-crm.js?v=20261027g8"></script>
-<script src="js/vendor/jsQR.js?v=20261027g8"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027g8"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027g8"></script>
-<script src="js/admin-workbench.js?v=20261027g8"></script>
-<script src="js/admin-biz.js?v=20261027g8"></script>
-<script src="js/admin-export.js?v=20261027g8"></script>
+<script src="js/admin-shop.js?v=20261027g9"></script>
+<script src="js/admin-crm.js?v=20261027g9"></script>
+<script src="js/admin-vip.js?v=20261027g9"></script>
+<script src="js/vendor/jsQR.js?v=20261027g9"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027g9"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027g9"></script>
+<script src="js/admin-workbench.js?v=20261027g9"></script>
+<script src="js/admin-biz.js?v=20261027g9"></script>
+<script src="js/admin-export.js?v=20261027g9"></script>
 <footer style="padding:18px 0 0; text-align:center;">© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
