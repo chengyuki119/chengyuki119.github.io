@@ -91,11 +91,11 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   }
   .ask-card textarea {
     width: 100%; min-height: 110px;
-    border: none; border-radius: 12px;
-    background: #fff; padding: 12px 14px;
+    border: 1px solid #FFD9E6; border-radius: 12px;
+    background: #FFF8FA; padding: 12px 14px;
     font-family: inherit; font-size:17px;
     color: var(--text); line-height: 1.6;
-    resize: none; outline: none;
+    resize: none; outline: none; box-sizing: border-box;
   }
   .ask-card textarea::placeholder { color: var(--muted); }
   .ask-card input {
@@ -109,23 +109,23 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
   .f-label { display: block; font-size: 14px; color: var(--muted); margin: 14px 0 0; }
   .f-label:first-of-type { margin-top: 0; }
   .topic-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .topic-chips button {
+  .ask-card .topic-chips button {
     border: none; border-radius: 999px;
-    background: #fff; color: var(--muted);
+    background: #fff; color: var(--text, #604C57);
     font-family: inherit; font-size:16px; padding: 7px 16px;
     cursor: pointer; transition: background .15s, color .15s;
   }
-  .topic-chips button.active { background: var(--accent-soft); color: var(--accent-strong); }
+  .ask-card .topic-chips button.active { background: var(--accent-soft); color: var(--accent-strong); }
   .f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
   @media (max-width: 560px) { .f-grid { grid-template-columns: 1fr; } }
   .contact-hint { font-size:15px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
   .ask-card button {
     align-self: flex-end; margin-top: 12px;
-    border: none; background: var(--accent-soft); color: #fff;
+    border: none; background: var(--accent-soft); color: var(--accent-strong);
     font-size:17px; padding: 9px 22px; border-radius: 999px;
-    cursor: pointer; transition: opacity .2s;
+    cursor: pointer; transition: background .2s;
   }
-  .ask-card button:hover { opacity: .85; }
+  .ask-card button:hover { background: var(--accent, #FFD9E6); }
   .ask-card button:disabled { opacity: .5; cursor: default; }
 
   h2 { font-size:21px; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
@@ -182,7 +182,7 @@ h2::after { content: " ♥"; font-size: .75em; }
   .subpage-header { background: var(--accent-soft,#FCE4EC); padding: 84px 0 40px; width: 100vw; margin-left: calc(50% - 50vw); }
   .subpage-header h1, .subpage-header p.sub { max-width: 1000px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; }
 </style>
-  <link rel="stylesheet" href="/site-menu.css?v=20261027g4">
+  <link rel="stylesheet" href="/site-menu.css?v=20261027g5">
   <script src="/site-menu.js" defer></script>
   <style>a { color: inherit; text-decoration: none; }</style>
 <script>/* 主题色本地快照（无 site-common 页）；完整主题来自 site_settings.theme_colors */
@@ -436,7 +436,7 @@ try { var __t = JSON.parse(localStorage.getItem('yuki-theme-colors') || 'null');
   loadWall();
 </script>
 <footer>© 2026 Yuki · Made with Cola</footer>
-<script src="/js/site-footer.js?v=20261027g4"></script>
+<script src="/js/site-footer.js?v=20261027g5"></script>
 <script>
   // 统一 Footer（已有 <footer> 则替换其内容，不新建第二个）
   function initSiteFooter() { renderSiteFooter(); }

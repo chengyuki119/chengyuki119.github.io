@@ -1608,19 +1608,27 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
       var mailReply = card.querySelector('textarea').value.trim();
       if (!mailReply) { toast('先写下要发送的回复内容'); return; }
       e.target.disabled = true;
-      api('email_log', {
-        method: 'POST',
-        headers: { 'Prefer': 'return=representation' },
-        body: JSON.stringify({
-          kind: 'reply',
-          ref_id: id + '#r' + new Date().toISOString(),
-          to_email: (MSG.cmap[id] || {}).email,
-          subject: '你的留言有回复啦 ♡ · Snow Yuzu',
-          body: '嗨嗨，你的留言有回复啦！(˶ᵔ ᵕ ᵔ˶)♡' + E_NL + E_NL + '当时你留言说：' + E_NL + (function () {
-            var q = MSG.list.find(function (x) { return String(x.id) === String(id); });
-            return q ? q.content : '';
-          })() + E_NL + E_NL + '柚子的回复：' + E_NL + mailReply + E_NL + E_NL + '如果还有想聊的，随时再来留言呀～' + E_NL + '— Snow Yuzu 的小店主 ♡'
-        })
+      var replyTo = (MSG.cmap[id] || {}).email;
+      // 语言判定：收件邮箱在客户管理里有英文档案 → 英文版回复邮件
+      api('shop_customers?email=eq.' + encodeURIComponent(replyTo || '') + '&select=pref_lang').then(function (r) { return r.json(); }).then(function (cs) {
+        var isEn = !!(cs && cs[0] && cs[0].pref_lang === 'en');
+        var q = MSG.list.find(function (x) { return String(x.id) === String(id); });
+        var qText = q ? q.content : '';
+        var subject = isEn ? 'You\u2019ve Got a Reply! \u2661 \u00b7 Snow Yuzu' : '你的留言有回复啦 ♡ · Snow Yuzu';
+        var body = isEn
+          ? 'Hi! Your message got a reply! (\u02b6\u1d54 \u1d55 \u1d54\u02b6)\u2661' + E_NL + E_NL + 'You wrote:' + E_NL + qText + E_NL + E_NL + 'Yuki\u2019s reply:' + E_NL + mailReply + E_NL + E_NL + 'Feel free to leave another message anytime~' + E_NL + '\u2014 Snow Yuzu\u2019s little shopkeeper \u2661 [lang:en]'
+          : '嗨嗨，你的留言有回复啦！(˶ᵔ ᵕ ᵔ˶)♡' + E_NL + E_NL + '当时你留言说：' + E_NL + qText + E_NL + E_NL + '柚子的回复：' + E_NL + mailReply + E_NL + E_NL + '如果还有想聊的，随时再来留言呀～' + E_NL + '— Snow Yuzu 的小店主 ♡';
+        return api('email_log', {
+          method: 'POST',
+          headers: { 'Prefer': 'return=representation' },
+          body: JSON.stringify({
+            kind: 'reply',
+            ref_id: id + '#r' + new Date().toISOString(),
+            to_email: replyTo,
+            subject: subject,
+            body: body
+          })
+        });
       }).then(function (r) {
         if (!r.ok) throw new Error();
         toast('已加入邮件发送队列，约 1 分钟内发出（系统状态可查记录）');
@@ -6045,7 +6053,7 @@ function loadEmailLog() {
           document.getElementById(el).style.color = '#3aa06a';
         } else {
           document.getElementById(el).textContent = anonBlockedText;
-          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g42 状态色语义统一） */
+          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g52 状态色语义统一） */
         }
       })
       .catch(function () {
@@ -6196,14 +6204,14 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027g4"></script>
-<script src="js/admin-crm.js?v=20261027g4"></script>
-<script src="js/vendor/jsQR.js?v=20261027g4"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027g4"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027g4"></script>
-<script src="js/admin-workbench.js?v=20261027g4"></script>
-<script src="js/admin-biz.js?v=20261027g4"></script>
-<script src="js/admin-export.js?v=20261027g4"></script>
+<script src="js/admin-shop.js?v=20261027g5"></script>
+<script src="js/admin-crm.js?v=20261027g5"></script>
+<script src="js/vendor/jsQR.js?v=20261027g5"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027g5"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027g5"></script>
+<script src="js/admin-workbench.js?v=20261027g5"></script>
+<script src="js/admin-biz.js?v=20261027g5"></script>
+<script src="js/admin-export.js?v=20261027g5"></script>
 <footer style="padding:18px 0 0; text-align:center;">© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
