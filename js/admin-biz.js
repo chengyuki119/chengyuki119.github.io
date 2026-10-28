@@ -51,6 +51,10 @@
       '.biz-in:focus{border-color:#F8BBD0;}',
       /* 状态徽章 */
       '.biz-badge{display:inline-block;font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;color:#fff;white-space:nowrap;}',
+      /* 勾选方块（自定义，非原生 checkbox）：白底粉框 → 选中深玫瑰底白勾 */
+      '.biz-uchk{width:22px;height:22px;flex:none;border:1.5px solid var(--border,#FFD9E6);background:#fff;border-radius:7px;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;font-family:inherit;transition:background .15s,border-color .15s;}',
+      '.biz-uchk:hover{border-color:#F8BBD0;background:var(--accent-soft,#FCE4EC);}',
+      '.biz-uchk.on{background:var(--accent-strong,#A04A68);border-color:var(--accent-strong,#A04A68);}',
       /* 自定义下拉弹层（同 admin.html sel-menu 视觉，独立 id 防冲突） */
       '#biz-pop{position:fixed;z-index:10001;background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(180,120,150,.18);padding:6px;min-width:170px;max-height:280px;overflow-y:auto;display:none;box-sizing:border-box;}',
       '#biz-pop .biz-opt{display:block;width:100%;text-align:left;border:none;background:none;font-family:inherit;font-size:14px;color:var(--text,#604C57);padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;}',
@@ -83,6 +87,7 @@
 
   /* 圆头 SVG 勾（chip 选中态显示） */
   var CK = '<svg class="ck" width="14" height="14" viewBox="0 0 24 24" style="margin-right:5px;vertical-align:-2px;"><circle cx="12" cy="12" r="10" fill="#F48FB1"/><path d="M7.2 12.6l3 3L16.8 9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var UCHK = '<svg width="14" height="14" viewBox="0 0 24 24"><path d="M7.2 12.6l3 3L16.8 9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   /* qc_status 徽章配色（pass 绿 / fail 红 / pending 灰 / rework 橙 / quarantine 紫） */
   var QC_COLOR = { pass: '#9ecfae', fail: 'var(--danger,#d96570)', pending: '#c4bcb6', rework: '#f3b96d', quarantine: '#b39ddb' };
@@ -691,7 +696,7 @@
   /* ══════════════════════════════════════════════════════════════
      模块二：商品编码（bootUnits → #tab-units）
      ══════════════════════════════════════════════════════════════ */
-  var UNITS = { list: [], products: [], orders: [], filter: 'all', search: '', pmap: {}, omap: {} };
+  var UNITS = { list: [], products: [], orders: [], filter: 'all', search: '', pmap: {}, omap: {}, sel: {} };
   var UNIT_FILTERS = [
     { v: 'all', label: '全部' }, { v: 'pending', label: '待质检' }, { v: 'pass', label: '合格' },
     { v: 'fail', label: '不合格' }, { v: 'rework', label: '返工' }, { v: 'quarantine', label: '隔离' }
@@ -713,6 +718,7 @@
           '<button class="btn-save-tb" id="biz-u-new" style="margin-left:auto;">＋ 生成单件编码</button>' +
           '<button class="btn-mini" id="biz-u-bulk" style="padding:7px 16px;">批量生成</button>' +
           '<button class="btn-mini" id="biz-u-print" style="padding:7px 16px;">打印标签（当前列表）</button>' +
+          '<button class="biz-chip" id="biz-u-print-sel" style="display:none;">打印标签（<span id="biz-u-seln">0</span> 张勾选）</button>' +
         '</div>' +
         '<div id="biz-u-filters" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;"></div>' +
         '<input id="biz-u-q" placeholder="搜索单件编码 / 型号编码 / 批次号" style="margin-top:10px;width:100%;max-width:360px;padding:8px 14px;font-size:14px;border:1.5px solid #FFD9E6;border-radius:12px;outline:none;font-family:inherit;color:var(--text,#604C57);background:#fff;box-sizing:border-box;">' +
@@ -730,6 +736,12 @@
       printLabelsBatch(rows);
     });
     $('biz-u-bulk').addEventListener('click', function () { openUnitForm(null); });
+    $('biz-u-print-sel').addEventListener('click', function () {
+      var rows = UNITS.list.filter(function (u) { return UNITS.sel[u.id]; });
+      if (!rows.length) { toast('先勾选要打印的编码'); return; }
+      if (rows.length > 100) { toast('一次最多打印 100 张，请减少勾选'); return; }
+      printLabelsBatch(rows);
+    });
     $('biz-u-q').addEventListener('input', function () { UNITS.search = this.value.trim().toLowerCase(); renderUnitRows(); });
     renderUnitFilters();
   }
@@ -784,6 +796,7 @@
       var p = u.product_id ? UNITS.pmap[u.product_id] : null;
       var o = u.order_id ? UNITS.omap[u.order_id] : null;
       return '<div class="card" style="padding:10px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">' +
+        '<button type="button" class="biz-uchk'+(UNITS.sel[u.id]?' on':'')+'" data-chk="'+escAttr(u.id)+'" title="勾选后可批量打印标签" aria-label="勾选 '+escAttr(u.unit_code||'')+'">'+(UNITS.sel[u.id]?UCHK:'')+'</button>' +
         (p && p.image_url
           ? '<img src="' + escAttr(p.image_url) + '" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:12px;flex:none;">'
           : '<span style="width:60px;height:60px;border-radius:12px;background:var(--accent-soft,#FCE4EC);display:inline-flex;align-items:center;justify-content:center;color:#D9A7C7;font-size:11px;flex:none;">无图</span>') +
@@ -795,14 +808,63 @@
         '<span style="font-size:13px;color:var(--muted,#A88E9B);">制作 ' + esc(u.made_at || '—') + '</span>' +
         qcBadge(u.qc_status) +
         '<span style="margin-left:auto;font-size:13px;color:var(--muted,#A88E9B);">' + (o ? '订单 ' + esc(o.order_no) : '未关联订单') + '</span>' +
+        '<button type="button" class="btn-mini" data-act="viewcode" data-id="'+escAttr(u.id)+'" style="padding:5px 12px;font-size:13px;">查看条码</button>' +
       '</div>';
     }).join('');
+    box.querySelectorAll('[data-chk]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var id = b.getAttribute('data-chk');
+        if (UNITS.sel[id]) delete UNITS.sel[id]; else UNITS.sel[id] = true;
+        b.classList.toggle('on', !!UNITS.sel[id]);
+        b.innerHTML = UNITS.sel[id] ? UCHK : '';
+        updatePrintSel();
+      });
+    });
+    box.querySelectorAll('[data-act="viewcode"]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var u = UNITS.list.filter(function (x) { return x.id === b.getAttribute('data-id'); })[0];
+        if (u) openCodeModal(u);
+      });
+    });
     box.querySelectorAll('[data-act="unit"]').forEach(function (b) {
       b.addEventListener('click', function () {
         var u = UNITS.list.filter(function (x) { return x.id === b.getAttribute('data-id'); })[0];
         if (u) openUnitDetail(u);
       });
     });
+  }
+
+  /* 勾选计数条：勾选后顶部出现「打印标签（N 张勾选）」 */
+  function updatePrintSel() {
+    var n = Object.keys(UNITS.sel).length;
+    var btn = $('biz-u-print-sel'), nEl = $('biz-u-seln');
+    if (btn) btn.style.display = n ? 'inline-flex' : 'none';
+    if (nEl) nEl.textContent = n;
+  }
+
+  /* 单件条码弹窗：只展示这一件自己创建的码（大图 + 单张打印），不带其他编码 */
+  function openCodeModal(u) {
+    var p = u.product_id ? UNITS.pmap[u.product_id] : null;
+    var mask = document.createElement('div');
+    mask.id = 'biz-mask';
+    mask.innerHTML =
+      '<div class="biz-modal" style="max-width:420px;text-align:center;">' +
+        '<b style="font-size:16px;color:var(--text,#604C57);">单件条码</b>' +
+        '<div style="margin:14px auto 8px;max-width:320px;background:#fff;border:1.5px dashed #F8BBD0;border-radius:16px;padding:16px;">' + barcodeSvg(u.unit_code || '', { height: 80 }) + '</div>' +
+        '<div style="font-size:20px;font-weight:800;color:var(--price,#ff6fa5);letter-spacing:1px;">' + esc(u.unit_code || '') + '</div>' +
+        '<div style="font-size:14px;color:var(--muted,#A88E9B);margin-top:4px;">' + esc(p ? p.name : (u.model_code || '未关联商品')) + '</div>' +
+        '<div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;">' +
+          '<button type="button" class="btn-save-tb" id="biz-cm-print">打印此标签</button>' +
+          '<button type="button" class="btn-mini" id="biz-cm-close" style="padding:7px 18px;">关闭</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(mask);
+    var close = function () { if (mask.parentNode) mask.parentNode.removeChild(mask); document.removeEventListener('keydown', onKey); };
+    var onKey = function (e) { if (e.key === 'Escape') close(); };
+    mask.addEventListener('click', function (e) { if (e.target === mask) close(); });
+    document.addEventListener('keydown', onKey);
+    $('biz-cm-close').addEventListener('click', close);
+    $('biz-cm-print').addEventListener('click', function () { printLabel(u, p); });
   }
 
   /* ── 生成表单（单件 / 批量共用；连续生成版：生成完不关弹窗，可「继续生成」接着做，她 20261026t 任务书 §二）── */
