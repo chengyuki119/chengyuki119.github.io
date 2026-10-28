@@ -357,11 +357,7 @@
   /* ═══ 手机端 Index 页面选择入口（她 20261028 总任务书 B3）═══
      仅手机端显示（CSS ≤700px）；同一导航数据源 NAV + 同一套 permFilter 权限过滤；
      样式与后台「当前页面」选择器同款（胶囊 + 白底圆角浮层 + 浅粉高亮）；后台页不挂载。 */
-  function idxBuild() {
-    var old = document.getElementById('idx-wrap');
-    if (old && old.parentNode) old.parentNode.removeChild(old);
-    var page = document.querySelector('.page.active');
-    if (!page || curPage === 'admin') return;
+  function buildWrap() {
     var wrap = el('<div class="idx-wrap" id="idx-wrap"><button class="idx-btn" id="idx-btn" type="button">Index <span class="idx-arrow">▾</span></button><div class="idx-menu" id="idx-menu"></div></div>');
     var menu = wrap.querySelector('.idx-menu');
     var flat = [];
@@ -375,7 +371,19 @@
       if (isCurrent(it)) a.classList.add('current');
       menu.appendChild(a);
     });
-    page.insertBefore(wrap, page.firstChild);
+    return wrap;
+  }
+  function idxBuild() {
+    var old = document.getElementById('idx-wrap');
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+    var page = document.querySelector('.page.active');
+    if (page && curPage !== 'admin') {
+      page.insertBefore(buildWrap(), page.firstChild);
+      return;
+    }
+    var tb = document.querySelector('.topbar'); // shop 等无 .page 容器的页面：挂在 topbar 之后（B3 兼容）
+    if (!tb || curPage === 'admin') return;
+    tb.insertAdjacentElement('afterend', buildWrap());
   }
   function idxToggle(force) {
     var m = document.getElementById('idx-menu');
