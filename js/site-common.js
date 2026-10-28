@@ -304,6 +304,14 @@ function ykImgAlt(src) { // 被 R2 重写过的 URL → 返回原 Supabase 地�
   }
   return '';
 }
+// 全局图片回退：任何 <img>（含动态渲染）R2 加载失败自动换回 Supabase 原图源
+document.addEventListener('error', function (e) {
+  var t = e.target;
+  if (t && t.tagName === 'IMG' && t.src) {
+    var alt = ykImgAlt(t.src);
+    if (alt) { t.src = alt; return; }
+  }
+}, true);
 function normImg(u) { // 相对图片路径转根绝对（子页在 /photos/ /bjd/ 等目录下也能正确加载）+ R2 重写
   u = String(u || '');
   if (R2_BASE && !/^data:/.test(u)) {
