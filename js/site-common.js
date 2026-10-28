@@ -292,8 +292,26 @@ function toast(msg) {
   t0.classList.add('show');
   setTimeout(function () { t0.classList.remove('show'); }, 1800);
 }
-function normImg(u) { // 相对图片路径转根绝对（子页在 /photos/ /bjd/ 等目录下也能正确加载）
+// ── R2 图片适配层（Cloudflare R2 迁移）─────────────────────────
+// 启用：R2_BASE = 'https://img.yukicheng.com'；回滚：置空 '' 即全部回到 Supabase 原图源
+// 规则：Supabase 公开桶 URL（完整域名或 /storage 相对路径）→ 重写到 R2 同路径镜像；
+//       其他相对路径（GitHub 静态图）/ data: URI 原样；pay 私桶（authenticated 签名）不经过此函数
+var R2_BASE = ''; // 试迁移时填写
+function ykImgAlt(src) { // 被 R2 重写过的 URL → 返回原 Supabase 地址（加载失败回退用）
+  if (R2_BASE && src && src.indexOf(R2_BASE + '/') === 0) {
+    var p = src.slice(R2_BASE.length + 1).split('?')[0];
+    return 'https://zajcglvlzsolygvjeumb.supabase.co/storage/v1/object/public/' + p;
+  }
+  return '';
+}
+function normImg(u) { // 相对图片路径转根绝对（子页在 /photos/ /bjd/ 等目录下也能正确加载）+ R2 重写
   u = String(u || '');
+  if (R2_BASE && !/^data:/.test(u)) {
+    var m = u.match(/https?:\/\/[^/]+\.supabase\.co\/storage\/v1\/object\/public\/([^?#]+)/);
+    if (m) return R2_BASE + '/' + m[1];
+    var m2 = u.match(/^\/?storage\/v1\/object\/public\/([^?#]+)/);
+    if (m2) return R2_BASE + '/' + m2[1];
+  }
   return /^(https?:\/\/|data:)/.test(u) ? u : '/' + u.replace(/^\/+/, '');
 }
 function loadPhoto(el, hideIfMissing) {
@@ -308,6 +326,13 @@ function loadPhoto(el, hideIfMissing) {
     el.appendChild(img);
   };
   if (hideIfMissing) probe.onerror = function () { el.style.display = 'none'; };
+  probe.onerror = probe.onerror || function () {};
+  var origOnError = probe.onerror;
+  probe.onerror = function () {
+    var alt = ykImgAlt(src);
+    if (alt) { src = alt; probe.src = alt; return; }
+    origOnError();
+  };
   probe.src = src;
 }
 function loadDbImg(el, src) {
@@ -322,6 +347,8 @@ function loadDbImg(el, src) {
     el.appendChild(img);
   };
   probe.onerror = function () {
+    var alt = ykImgAlt(src);
+    if (alt) { src = alt; probe.src = alt; return; }
     var box = el.closest('.album-item, .photo');
     if (box) box.style.display = 'none';
   };
