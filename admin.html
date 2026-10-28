@@ -650,7 +650,6 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
         <div class="pp-group">商城管理</div>
         <button class="tab-btn" data-tab="shop">小铺上架</button>
         <button class="tab-btn" data-tab="shopmgr">订单管理</button>
-        <button class="tab-btn" data-tab="crm">客户管理</button>
         <button class="tab-btn" data-tab="vip">VIP 客户查询</button>
         <button class="tab-btn" data-tab="pos">线下开单</button>
         <div class="pp-sub">互动管理</div>
@@ -805,6 +804,7 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     </div>
     <div class="adm-subtabs" id="shopmgr-subtabs" style="display:none;">
       <button class="adm-subtab" data-sub="shopmgr">订单列表</button>
+      <button class="adm-subtab" data-sub="crm">客户管理</button>
       <button class="adm-subtab" data-sub="workbench">订单工作台</button>
       <button class="adm-subtab" data-sub="export">订单导出</button>
       <button class="adm-subtab" data-sub="print">清单打印</button>
@@ -1433,8 +1433,8 @@ h1, h2, .subpage-title { font-family: "Millo Body Heavy", -apple-system, "PingFa
     s.addEventListener('click', function () { switchTab(s.dataset.sub); });
   });
   // 菜单整合映射（她 20261026t 任务书 §三）：编码/验货/成本归小铺上架，工作台/导出/打印归订单管理；子页签条随宿主显隐
-  var TAB_ALIAS = { units: 'shop', qcscan: 'shop', cost: 'shop', workbench: 'shopmgr', export: 'shopmgr', print: 'shopmgr' };
-  var SUBTABS = { shop: ['shop', 'units', 'qcscan', 'cost'], shopmgr: ['shopmgr', 'workbench', 'export', 'print'] };
+  var TAB_ALIAS = { units: 'shop', qcscan: 'shop', cost: 'shop', workbench: 'shopmgr', export: 'shopmgr', print: 'shopmgr', crm: 'shopmgr' };
+  var SUBTABS = { shop: ['shop', 'units', 'qcscan', 'cost'], shopmgr: ['shopmgr', 'crm', 'workbench', 'export', 'print'] };
   function switchTab(name) {
     var main = TAB_ALIAS[name] || name;
     document.querySelectorAll('.tab-btn').forEach(function (x) { x.classList.remove('active'); });
@@ -6063,7 +6063,7 @@ function loadEmailLog() {
           document.getElementById(el).style.color = '#3aa06a';
         } else {
           document.getElementById(el).textContent = anonBlockedText;
-          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g102 状态色语义统一） */
+          document.getElementById(el).style.color = '#3aa06a'; /* 匿名被拦截=权限生效，正常态用绿色（20261027g112 状态色语义统一） */
         }
       })
       .catch(function () {
@@ -6214,15 +6214,15 @@ function loadEmailLog() {
 </script>
 
 
-<script src="js/admin-shop.js?v=20261027g10"></script>
-<script src="js/admin-crm.js?v=20261027g10"></script>
-<script src="js/admin-vip.js?v=20261027g10"></script>
-<script src="js/vendor/jsQR.js?v=20261027g10"></script>
-<script src="js/vendor/qrcode-generator.js?v=20261027g10"></script>
-<script src="js/vendor/JsBarcode.all.min.js?v=20261027g10"></script>
-<script src="js/admin-workbench.js?v=20261027g10"></script>
-<script src="js/admin-biz.js?v=20261027g10"></script>
-<script src="js/admin-export.js?v=20261027g10"></script>
+<script src="js/admin-shop.js?v=20261027g11"></script>
+<script src="js/admin-crm.js?v=20261027g11"></script>
+<script src="js/admin-vip.js?v=20261027g11"></script>
+<script src="js/vendor/jsQR.js?v=20261027g11"></script>
+<script src="js/vendor/qrcode-generator.js?v=20261027g11"></script>
+<script src="js/vendor/JsBarcode.all.min.js?v=20261027g11"></script>
+<script src="js/admin-workbench.js?v=20261027g11"></script>
+<script src="js/admin-biz.js?v=20261027g11"></script>
+<script src="js/admin-export.js?v=20261027g11"></script>
 <footer style="padding:18px 0 0; text-align:center;">© 2026 Yuki · Made with Cola</footer>
 </body>
 </html>
