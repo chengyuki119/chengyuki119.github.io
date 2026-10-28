@@ -296,7 +296,7 @@ function toast(msg) {
 // 启用：R2_BASE = 'https://img.yukicheng.com'；回滚：置空 '' 即全部回到 Supabase 原图源
 // 规则：Supabase 公开桶 URL（完整域名或 /storage 相对路径）→ 重写到 R2 同路径镜像；
 //       其他相对路径（GitHub 静态图）/ data: URI 原样；pay 私桶（authenticated 签名）不经过此函数
-var R2_BASE = ''; // 试迁移时填写
+var R2_BASE = 'https://img.yukicheng.com'; // 试迁移已启用（3 张图）
 function ykImgAlt(src) { // 被 R2 重写过的 URL → 返回原 Supabase 地址（加载失败回退用）
   if (R2_BASE && src && src.indexOf(R2_BASE + '/') === 0) {
     var p = src.slice(R2_BASE.length + 1).split('?')[0];
